@@ -1,3 +1,12 @@
+Current status after integration, 2026-11-08: CYC100 is Accepted and merged to
+main at 2ab6dbe287bd3a9e3df260a4c04567de54eae215, then pushed. The maintainer
+requests a CSS review/refactor roadmap item because the styles are becoming
+awkward and overlong. The suite roadmap now records ownership/cascade review,
+concrete examples, design discussion and preservation checks before a future
+implementation cycle. No CSS change or next-cycle selection is made here.
+Contacts enhancements and restoring the original download budget remain planned.
+Earlier pre-integration/pending statements below are historical.
+
 ## Workspace foundation accepted, 2026-11-08
 
 The maintainer explicitly accepts CYC100 and requests commit, merge and push.

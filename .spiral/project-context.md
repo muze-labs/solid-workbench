@@ -1380,3 +1380,15 @@ and the retained timing limitation remain open. Contacts enhancements stay
 future work. After integration, record the requested CSS review/refactor roadmap
 item without starting its implementation or selecting another cycle.
 
+## CYC100 integrated; CSS review requested, 2026-11-08
+
+Accepted CYC100 is merged into main at
+2ab6dbe287bd3a9e3df260a4c04567de54eae215 and pushed, preserving its causal
+commits. Exact-candidate integration validation passed with the documented
+pinned-Gitlink/manifest-base input adapters and 14 historical references checked.
+The maintainer then requests a CSS review/refactor roadmap item. The suite
+roadmap records a design-first review of style ownership, cascade, duplication,
+theme/focus/background rules and shared/app boundaries, preserving the accepted
+UI and existing named editable SimplyFlow styles. This documentation addition
+starts no implementation cycle; Contacts enhancements and the temporary budget
+follow-up remain open. Unrelated user files are preserved.

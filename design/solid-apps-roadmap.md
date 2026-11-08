@@ -742,6 +742,51 @@ underlying protocol details are diagnostic. Review the target and first delivery
 slice before implementation. No debug-panel design, control-removal list or
 implementation cycle is selected by this clarification.
 
+## CSS review and refactor
+
+Requested by the maintainer on 2026-11-08 after accepting CYC100: the CSS is
+becoming awkward and overlong. Review the accumulated suite styles and propose
+a simpler structure before implementing the refactor. This is a roadmap item;
+it does not start another cycle or change the accepted interface.
+
+Start with the Launcher changes, then inspect shared design/account/Preferences
+styles and the other apps for the same causes. Build on CYC87's existing named,
+feature-owned SimplyFlow styles and source origins. Keep those sources editable
+for the future IDE; avoid replacing them with one opaque stylesheet.
+
+- Map ownership and cascade order across the-ds defaults, shared components and
+  app features. Identify unused legacy selectors, repeated declarations and
+  overrides that exist only to undo another feature's rules. Establish which
+  rules belong in each layer before moving or deleting them.
+- Simplify selectors and specificity so a reader can find the rule responsible
+  for an element without following a long override chain. For example, shortcut
+  focus appears in both shortcuts.css and background.css; review one deliberate
+  owner for the accepted focus treatment. Review background.css's header/account
+  reach and legacy saved-apps rules alongside the current home grid. These are
+  review targets, not a preapproved deletion list.
+- Consolidate theme, spacing, icon and surface choices around existing the-ds
+  tokens and public APIs. Keep exceptions explicit and component-scoped. Preserve
+  light/dark/automatic behavior, transparent home title/labels, padded blue icon
+  backgrounds, the filled menu marker and visible keyboard focus.
+- Keep the result straightforward for people altering their apps: clear feature
+  boundaries and readable names, with reusable rules extracted only where the
+  same responsibility is actually shared. Reduced duplication and a predictable
+  cascade matter more than an arbitrary line-count target.
+
+Present the ownership map, concrete before/after examples, preservation criteria
+and proposed implementation slice for discussion before starting product changes.
+Verify phone and desktop layouts, all theme modes, preset/custom/no backgrounds,
+long workspace/shortcut labels, menus, dialogs and keyboard focus. Include checks
+across Contacts, Files and Profile when shared styles change; distinguish browser
+assertions from manual keyboard and assistive-technology review. Preserve local/
+offline behavior and existing SimplyFlow style editing. Measure CSS and complete
+app downloads, including readable CSS embedded in JavaScript, without expanding
+the temporary Workbench budget allowance. Keep restoring the original JavaScript
+budget visible as its own follow-up.
+
+Contacts multi-book/search/selection remains planned separately. Adding this
+review does not select the next cycle or reorder the governing broker phases.
+
 ## MVP UI and reusable design components
 
 Added at the maintainer's request on 2026-11-07. Bring Launcher, Contacts,
