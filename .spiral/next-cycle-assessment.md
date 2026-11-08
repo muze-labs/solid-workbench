@@ -1,3 +1,35 @@
+Current acceptance, 2026-11-08: CYC106 separate Preferences is Accepted after
+the maintainer confirms the initial-focus and icon corrections work and requests
+commit, merge and push. ACC111 records the decision; EVD110 retains final timing
+failures and unchanged isolated passes. Integrate the exact accepted candidate
+against current main. No next cycle is selected. Contacts enhancements, broader
+CSS review/refactor and the original Workbench budget remain open. Earlier
+Active/pending evaluation notes below are historical.
+
+Latest review correction, 2026-11-08: Preferences sections now support Up/Down,
+Enter, Tab into controls and Shift-Tab back, with native form keys retained.
+CYC106 remains Active for human review. All 157 tests/builds and six Chrome
+suites pass; EVD110 retains earlier failures. Current readable graphs are
+Workbench 216224 bytes and Preferences 189084, under unchanged caps. No next
+cycle, acceptance or integration is selected by this correction.
+
+Current evaluation, 2026-11-08: CYC106 is ready for human UI review on its matching
+branch. Separate Preferences, app-owned section components, existing list-details,
+immediate durable edits, shared propagation and inactive workspace editing are
+implemented. Check: 157 tests plus builds; all six Chrome suites pass. EVD110
+retains the intermittent managed connection failure/retry and measured costs.
+Readable Workbench is 215215 gzip bytes and Preferences 187311; the original
+Workbench budget follow-up remains. No next cycle is chosen, and human acceptance,
+commit and integration are pending. Earlier design-phase notes are historical.
+
+Current selection, 2026-11-08: CYC106 Preferences app/dialog is Active in its
+design phase. Continue stage-one Preferences UI and propagation, revise the
+embedded editor into a separate app. Reuse existing list-details, support app
+sections, apply changes immediately and edit inactive workspaces without
+activation. SRC107/DES108 retain confirmed intent and the design proposal; no
+product implementation precedes review. General CSS refactoring and Contacts
+remain future work; governing broker phases stay unchanged.
+
 Current status after integration, 2026-11-08: CYC100 is Accepted and merged to
 main at 2ab6dbe287bd3a9e3df260a4c04567de54eae215, then pushed. The maintainer
 requests a CSS review/refactor roadmap item because the styles are becoming

@@ -528,9 +528,10 @@ propagate without losing app data/drafts. Measure the actual host/editor graphs
 and first useful interaction; savings are an evaluated outcome, not an assumed
 consequence of moving files.
 
-CYC106 is Active; SRC107/DES108/IMP109/EVD110 govern scope and evaluation. Broader
-CSS review and Contacts enhancements remain separate. Cycle completion and
-human acceptance are not inferred from this roadmap update.
+CYC106 is Accepted by explicit maintainer review, recorded in ACC111;
+SRC107/DES108/IMP109/EVD110 retain scope, implementation and evaluation limits.
+Broader CSS review, Contacts enhancements and Workbench budget follow-up remain
+separate; no next cycle is selected.
 
 ### Apply shared preference changes across open apps
 
