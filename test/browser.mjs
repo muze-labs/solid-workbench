@@ -1,6 +1,7 @@
 import { checkEventBindings } from './support/events.mjs';
 import { checkStyleOwnership } from './support/style-ownership.mjs';
 import { recordVisualStyles } from './support/visual-styles.mjs';
+import { checkPickerReflow, checkZoomLayout } from './support/style-contracts.mjs';
 import {
   checkCurrentActions,
   checkRetainedProfileDraft
@@ -321,6 +322,7 @@ try {
       await checkCurrentActions(page);
       await checkEventBindings(page);
       await checkStyleOwnership(page);
+      await checkZoomLayout(page, name);
       inspectedFeatures.add(name);
     }
     assert.equal(
@@ -340,7 +342,7 @@ try {
     if (name !== 'launcher') {
       assert.deepEqual(
         await evaluate(
-          'return [...document.querySelectorAll("a[href]:not(.account-name)")].map(link=>link.getAttribute("href")).filter(href=>/^(?:\\.\\.\\/|\\/)(?:workbench|launcher|contacts|profile|files)(?:\\/|$)/.test(href));'
+          'return [...document.querySelectorAll("a[href]:not(.swb-account-name)")].map(link=>link.getAttribute("href")).filter(href=>/^(?:\\.\\.\\/|\\/)(?:workbench|launcher|contacts|profile|files)(?:\\/|$)/.test(href));'
         ),
         []
       );
@@ -428,7 +430,7 @@ try {
     });
   }
   async function account(command) {
-    await click('.account-button');
+    await click('.swb-account-button');
     await wait(
       'document.querySelector("#muze-solid-ui-account-menu").matches(":popover-open")'
     );
@@ -515,8 +517,8 @@ try {
   }).toString();
   await visit('profile/#' + resourceFragment);
   await wait(
-    'document.querySelector(".profile-card h2")?.textContent==="Launch Alice" && ' +
-      'document.querySelector(".profile-toolbar [name=url]").value===' +
+    'document.querySelector(".swb-profile-card h2")?.textContent==="Launch Alice" && ' +
+      'document.querySelector(".swb-profile-toolbar [name=url]").value===' +
       JSON.stringify(launchResource)
   );
   assert.equal(
@@ -525,7 +527,7 @@ try {
   );
   assert.equal(
     await evaluate(
-      'return document.querySelector(".profile-toolbar [name=url]").value;'
+      'return document.querySelector(".swb-profile-toolbar [name=url]").value;'
     ),
     launchResource
   );
@@ -550,7 +552,7 @@ try {
   );
   await visit('profile/?launch-case=fragment#foo%3Fbar?' + launchFragment);
   await wait(
-    'window.solidProfile?.host.session && document.querySelector(".profile-card h2")?.textContent==="Launch Alice"'
+    'window.solidProfile?.host.session && document.querySelector(".swb-profile-card h2")?.textContent==="Launch Alice"'
   );
   assert.equal(
     await evaluate('return location.href;'),
@@ -584,7 +586,7 @@ try {
 
   await visit('profile/#' + launchFragment);
   await wait(
-    'window.solidProfile?.host.session && document.querySelector(".profile-card h2")?.textContent==="Launch Alice"'
+    'window.solidProfile?.host.session && document.querySelector(".swb-profile-card h2")?.textContent==="Launch Alice"'
   );
   assert.equal(
     await evaluate('return window.solidProfile.host.session.webId;'),
@@ -606,7 +608,7 @@ try {
     const before = calls.length;
     await visit('profile/#' + fragment);
     await wait(
-      'document.querySelector(".suite-status").textContent.includes("solid-app-data/launch:")'
+      'document.querySelector(".swb-suite-status").textContent.includes("solid-app-data/launch:")'
     );
     assert.equal(calls.length, before);
     assert.equal(await evaluate('return location.hash;'), '#' + fragment);
@@ -618,7 +620,7 @@ try {
   ]) {
     await visit('profile/#' + new URLSearchParams({ resource }));
     await wait(
-      'document.querySelector(".suite-status").textContent.includes(' +
+      'document.querySelector(".swb-suite-status").textContent.includes(' +
         JSON.stringify(message) +
         ')'
     );
@@ -633,11 +635,11 @@ try {
   const beforeMismatch = calls.length;
   await visit('profile/#' + launchFragment);
   await wait(
-    'window.solidProfile && document.querySelector(".suite-status").textContent.includes("WebID / connection")'
+    'window.solidProfile && document.querySelector(".swb-suite-status").textContent.includes("WebID / connection")'
   );
   assert.match(
     await evaluate(
-      'return document.querySelector(".suite-status").textContent;'
+      'return document.querySelector(".swb-suite-status").textContent;'
     ),
     /WebID \/ connection/
   );
@@ -661,7 +663,7 @@ try {
   await wait(
     'window.solidProfile.host.session?.webId===' +
       JSON.stringify(webId) +
-      ' && document.querySelector(".profile-card h2")?.textContent==="Launch Alice"'
+      ' && document.querySelector(".swb-profile-card h2")?.textContent==="Launch Alice"'
   );
   await evaluate('localStorage.removeItem("solid-apps.webId");');
   assert(
@@ -670,7 +672,7 @@ try {
 
   await visit('contacts/');
   await wait('window.solidContacts?.store');
-  await click('.account-button');
+  await click('.swb-account-button');
   await wait(
     'document.querySelector("#muze-solid-ui-account-menu").matches(":popover-open")'
   );
@@ -689,7 +691,7 @@ try {
   await wait(
     '!document.querySelector("#muze-solid-ui-account-menu").matches(":popover-open")'
   );
-  await click('.account-button');
+  await click('.swb-account-button');
   await wait(
     'document.querySelector("#muze-solid-ui-account-menu").matches(":popover-open")'
   );
@@ -794,25 +796,25 @@ try {
   await evaluate(
     'document.querySelector("[data-simply-command=newContact]").click();'
   );
-  await submit('.contacts-list form', { name: 'Sparse person' });
+  await submit('.swb-contacts-list form', { name: 'Sparse person' });
   await wait(
-    'document.querySelector(".profile-card h2")?.textContent==="Sparse person"'
+    'document.querySelector(".swb-profile-card h2")?.textContent==="Sparse person"'
   );
   await evaluate(
     'document.querySelector("[data-simply-command=editProfile]").click();'
   );
   await evaluate(
-    'const input=document.querySelector(".profile-card [name=notes]");' +
+    'const input=document.querySelector(".swb-profile-card [name=notes]");' +
       'input.value="Unsaved workspace draft";' +
       'input.dispatchEvent(new Event("input",{bubbles:true}));' +
       'const managed=window.solidContacts.host.managed;' +
       'const state=await managed.getState();' +
-      'document.querySelector(".profile-card [data-simply-command=cancelProfile]").click();' +
+      'document.querySelector(".swb-profile-card [data-simply-command=cancelProfile]").click();' +
       'await managed.restoreState(state);'
   );
   await wait(
-    '!document.querySelector(".profile-card form").hidden && ' +
-      'document.querySelector(".profile-card [name=notes]").value===' +
+    '!document.querySelector(".swb-profile-card form").hidden && ' +
+      'document.querySelector(".swb-profile-card [name=notes]").value===' +
       '"Unsaved workspace draft"'
   );
   assert(
@@ -824,17 +826,17 @@ try {
     ).includes('Unsaved workspace draft')
   );
   await checkRetainedProfileDraft(page);
-  await submit('.profile-card form', {
+  await submit('.swb-profile-card form', {
     name: 'Edited contact',
     email: 'first@example.org\nsecond@example.org'
   });
   await wait(
-    'document.querySelector(".profile-card h2")?.textContent==="Edited contact" && ' +
-      'document.querySelector(".profile-card form").hidden'
+    'document.querySelector(".swb-profile-card h2")?.textContent==="Edited contact" && ' +
+      'document.querySelector(".swb-profile-card form").hidden'
   );
   assert.match(
     await evaluate(
-      'return document.querySelector(".contact-profile").innerText;'
+      'return document.querySelector(".swb-contact-profile").innerText;'
     ),
     /second@example.org/
   );
@@ -846,13 +848,13 @@ try {
   );
   await visit('profile/?contact=' + encodeURIComponent(localContactId));
   await wait(
-    'document.querySelector(".profile-card h2")?.textContent==="Edited contact"'
+    'document.querySelector(".swb-profile-card h2")?.textContent==="Edited contact"'
   );
   await visit('contacts/');
   await wait('window.solidContacts?.store');
   await account('connectDialog');
   assert.equal(
-    await evaluate('return document.querySelector(".logout-section").hidden;'),
+    await evaluate('return document.querySelector(".swb-logout-section").hidden;'),
     true
   );
   await submit('.connect-dialog form', { webId });
@@ -860,7 +862,7 @@ try {
     'window.solidContacts.host.session && !document.querySelector(".connect-dialog").open'
   );
   await wait(
-    'document.querySelector(".account-name").textContent.trim()==="Remote Person"'
+    'document.querySelector(".swb-account-name").textContent.trim()==="Remote Person"'
   );
   assert.equal(
     await evaluate(
@@ -869,7 +871,7 @@ try {
     false
   );
   await account('connectDialog');
-  await wait('!document.querySelector(".logout-section").hidden');
+  await wait('!document.querySelector(".swb-logout-section").hidden');
   assert.equal(
     await evaluate(
       'return document.querySelector(".connect-dialog [name=webId]").value;'
@@ -909,29 +911,29 @@ try {
   );
   assert.equal(await evaluate('return document.documentElement.lang;'), 'nl');
   await wait(
-    'document.querySelector(".account-name").textContent.trim()==="Remote Person"'
+    'document.querySelector(".swb-account-name").textContent.trim()==="Remote Person"'
   );
   await evaluate(
     'document.querySelector("[data-simply-command=mine]").click();'
   );
   await wait(
-    'document.querySelector(".profile-card h2")?.textContent==="Remote Person"'
+    'document.querySelector(".swb-profile-card h2")?.textContent==="Remote Person"'
   );
   await evaluate(
     'document.querySelector("[data-simply-command=editProfile]").click();'
   );
   await wait(
-    'document.querySelector(".profile-card [name=email]").value==="owner@example.org"'
+    'document.querySelector(".swb-profile-card [name=email]").value==="owner@example.org"'
   );
   assert.doesNotMatch(
     await evaluate(
-      'return document.querySelector(".profile-details").textContent;'
+      'return document.querySelector(".swb-profile-details").textContent;'
     ),
     /\[object Object\]|unresolved-email/
   );
-  await submit('.profile-card form', { name: 'Changed remote profile' });
+  await submit('.swb-profile-card form', { name: 'Changed remote profile' });
   await wait(
-    'document.querySelector(".profile-card h2")?.textContent==="Changed remote profile"'
+    'document.querySelector(".swb-profile-card h2")?.textContent==="Changed remote profile"'
   );
   assert.match(String(resources.get(base + '/profile').body), /Keep me/);
   assert.match(
@@ -946,7 +948,7 @@ try {
   await capture('profile-desktop');
   assert.equal(
     await evaluate(`
-      const button = document.querySelector('.account-name');
+      const button = document.querySelector('.swb-account-name');
       return button.tagName === 'BUTTON' &&
         button.getAttribute('aria-haspopup') === 'dialog' &&
         button.getAttribute('aria-label').includes(button.textContent.trim()) &&
@@ -956,7 +958,7 @@ try {
     true,
     'Account name is a plain, labelled dialog button with inherited text color'
   );
-  await evaluate('document.querySelector(".account-name").focus();');
+  await evaluate('document.querySelector(".swb-account-name").focus();');
   await page.send('Input.dispatchKeyEvent', {
     type: 'keyDown',
     key: ' ',
@@ -984,13 +986,13 @@ try {
   );
   assert.equal(
     await evaluate(
-      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".suite-status").textContent);'
+      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".swb-suite-status").textContent);'
     ),
     false,
     'Normal capability cancellation does not produce an error notice'
   );
   assert.equal(
-    await evaluate('return document.activeElement.matches(".account-name");'),
+    await evaluate('return document.activeElement.matches(".swb-account-name");'),
     true,
     'Closing the profile dialog returns keyboard focus to its name button'
   );
@@ -1020,11 +1022,11 @@ try {
       }
     });
   `);
-  await click('.account-name');
+  await click('.swb-account-name');
   await wait('document.querySelector(".muze-solid-ui-capability-dialog").open');
   await wait(profileFrame + '.solidProfile?.host.managed?.ready');
   await wait(
-    profileFrame + '.document.querySelector(".profile-card")?.hidden===false'
+    profileFrame + '.document.querySelector(".swb-profile-card")?.hidden===false'
   );
   await wait('window.presentationMessages.length > 0');
   await wait(
@@ -1065,12 +1067,12 @@ try {
   );
   await wait(
     profileFrame +
-      '.document.querySelector(".suite-status").textContent.includes("Connection needs attention")'
+      '.document.querySelector(".swb-suite-status").textContent.includes("Connection needs attention")'
   );
   assert.equal(
     await evaluate(`
       const provider = ${profileFrame};
-      const account = provider.document.querySelector('.account');
+      const account = provider.document.querySelector('.swb-account');
       const connect = provider.document.querySelector('.muze-solid-ui-task-connect');
       return account.getClientRects().length === 0 &&
         connect.getClientRects().length > 0;
@@ -1110,12 +1112,12 @@ try {
   );
   await wait(
     profileFrame +
-      '.document.querySelector(".profile-card form").hidden===false'
+      '.document.querySelector(".swb-profile-card form").hidden===false'
   );
   await evaluate(
     'const input=' +
       profileFrame +
-      '.document.querySelector(".profile-card [name=name]");input.value="Capability edited profile";input.dispatchEvent(new Event("input",{bubbles:true}));'
+      '.document.querySelector(".swb-profile-card [name=name]");input.value="Capability edited profile";input.dispatchEvent(new Event("input",{bubbles:true}));'
   );
   await capture('capability-profile-desktop');
   await page.send('Emulation.setDeviceMetricsOverride', {
@@ -1129,7 +1131,7 @@ try {
     await evaluate(
       'const provider=' +
         profileFrame +
-        ';const footer=provider.document.querySelector(".profile-card form .muze-solid-design-dialog-footer").getBoundingClientRect();return footer.top>=0 && footer.bottom<=provider.innerHeight;'
+        ';const footer=provider.document.querySelector(".swb-profile-card form .muze-solid-design-dialog-footer").getBoundingClientRect();return footer.top>=0 && footer.bottom<=provider.innerHeight;'
     ),
     true,
     'Profile actions stay visible on mobile without scrolling the form'
@@ -1144,7 +1146,7 @@ try {
   profileSaveDelay = 500;
   await evaluate(
     profileFrame +
-      '.document.querySelector(".profile-card form").requestSubmit();'
+      '.document.querySelector(".swb-profile-card form").requestSubmit();'
   );
   await click('[data-simply-command=muzeSolidUiCloseCapability]');
   await wait(
@@ -1156,7 +1158,7 @@ try {
   );
   assert.equal(
     await evaluate(
-      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".suite-status").textContent);'
+      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".swb-suite-status").textContent);'
     ),
     false,
     'Normal capability cancellation does not produce an error notice'
@@ -1178,10 +1180,10 @@ try {
   const profileWrites = calls.filter(
     (call) => call.method === 'PUT' && call.url === base + '/profile'
   ).length;
-  await click('.account-name');
+  await click('.swb-account-name');
   await wait(profileFrame + '.solidProfile?.host.managed?.ready');
   await wait(
-    profileFrame + '.document.querySelector(".profile-card")?.hidden===false'
+    profileFrame + '.document.querySelector(".swb-profile-card")?.hidden===false'
   );
   await evaluate(
     profileFrame +
@@ -1189,12 +1191,12 @@ try {
   );
   await wait(
     profileFrame +
-      '.document.querySelector(".profile-card form").hidden===false'
+      '.document.querySelector(".swb-profile-card form").hidden===false'
   );
   await evaluate(
     'const input=' +
       profileFrame +
-      '.document.querySelector(".profile-card [name=name]");input.value="Unsaved capability name";input.dispatchEvent(new Event("input",{bubbles:true}));'
+      '.document.querySelector(".swb-profile-card [name=name]");input.value="Unsaved capability name";input.dispatchEvent(new Event("input",{bubbles:true}));'
   );
   await click('[data-simply-command=muzeSolidUiCloseCapability]');
   await wait(
@@ -1211,7 +1213,7 @@ try {
     await evaluate(
       'return ' +
         profileFrame +
-        '.document.querySelector(".profile-card [name=name]").value;'
+        '.document.querySelector(".swb-profile-card [name=name]").value;'
     ),
     'Unsaved capability name'
   );
@@ -1223,7 +1225,7 @@ try {
     await evaluate(
       'return ' +
         profileFrame +
-        '.document.querySelector(".profile-card [name=name]").value;'
+        '.document.querySelector(".swb-profile-card [name=name]").value;'
     ),
     'Unsaved capability name',
     'A routing failure must preserve the provider and its draft until explicit discard'
@@ -1238,7 +1240,7 @@ try {
   );
   assert.equal(
     await evaluate(
-      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".suite-status").textContent);'
+      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".swb-suite-status").textContent);'
     ),
     false,
     'Normal capability cancellation does not produce an error notice'
@@ -1256,9 +1258,10 @@ try {
   );
   await wait(profileFrame + '.solidFiles?.host.managed?.ready');
   await wait(
-    profileFrame + '.document.querySelector(".picker-request")?.hidden===false'
+    profileFrame + '.document.querySelector(".swb-picker-request")?.hidden===false'
   );
   await wait(profileFrame + '.solidFiles.ui.runtime.current');
+  await checkPickerReflow(page);
   await evaluate(
     profileFrame +
       '.document.querySelector("[data-simply-command=selectFolder]").click();'
@@ -1268,7 +1271,7 @@ try {
   );
   assert.equal(
     await evaluate(
-      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".suite-status").textContent);'
+      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".swb-suite-status").textContent);'
     ),
     false,
     'Normal capability cancellation does not produce an error notice'
@@ -1296,7 +1299,7 @@ try {
         JSON.stringify(base + '/presentation-provider/?mode=' + mode) +
         ';'
     );
-    await click('.account-name');
+    await click('.swb-account-name');
     await wait('window.presentationRequest');
     const loadingBounds = await evaluate(`
       const bounds = document.querySelector('.muze-solid-ui-capability-stage').getBoundingClientRect();
@@ -1428,7 +1431,7 @@ try {
       JSON.stringify(base + '/embedded-profile/') +
       ';'
   );
-  await click('.account-name');
+  await click('.swb-account-name');
   const framingDeadline = Date.now() + 26000;
   while (
     await evaluate(
@@ -1453,16 +1456,16 @@ try {
   launchedPage = profileTab.page;
   page = launchedPage;
   await wait('window.solidProfile?.host.managed?.ready');
-  await wait('document.querySelector(".profile-card")?.hidden===false');
+  await wait('document.querySelector(".swb-profile-card")?.hidden===false');
   assert.equal(
     await evaluate('return solidProfile.host.managed.embedded;'),
     false
   );
   assert.equal(await evaluate('return solidProfile.host.managed.task;'), true);
   await click('[data-simply-command=editProfile]');
-  await wait('document.querySelector(".profile-card form").hidden===false');
+  await wait('document.querySelector(".swb-profile-card form").hidden===false');
   await evaluate(
-    'document.querySelector(".profile-card form").requestSubmit();'
+    'document.querySelector(".swb-profile-card form").requestSubmit();'
   );
   page = originalLauncher;
   await wait(
@@ -1470,7 +1473,7 @@ try {
   );
   assert.equal(
     await evaluate(
-      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".suite-status").textContent);'
+      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".swb-suite-status").textContent);'
     ),
     false,
     'Normal capability cancellation does not produce an error notice'
@@ -1485,16 +1488,16 @@ try {
 
   assert.equal(
     await evaluate(
-      'return document.querySelectorAll(".app-grid a[href]").length;'
+      'return document.querySelectorAll(".swb-app-grid a[href]").length;'
     ),
     3
   );
-  await submit('.saved-apps form', {
+  await submit('.swb-saved-apps form', {
     name: 'Example app',
     url: 'https://example.org/app'
   });
   await wait(
-    'document.querySelector(".saved-apps .person-list").textContent.includes("Example app")'
+    'document.querySelector(".swb-saved-apps .swb-person-list").textContent.includes("Example app")'
   );
   await evaluate(
     'document.querySelector("[data-simply-command=sync]").click();'
@@ -1507,10 +1510,10 @@ try {
     /Example app/
   );
   await wait(
-    'document.querySelector(".account-name").textContent.trim()==="Capability edited profile"'
+    'document.querySelector(".swb-account-name").textContent.trim()==="Capability edited profile"'
   );
   await wait(
-    'new URLSearchParams(new URL(document.querySelector(".app-grid a[href*=profile]").href).hash.slice(1)).get("webid")===' +
+    'new URLSearchParams(new URL(document.querySelector(".swb-app-grid a[href*=profile]").href).hash.slice(1)).get("webid")===' +
       JSON.stringify(webId)
   );
   const savedLaunchUrl =
@@ -1520,15 +1523,15 @@ try {
       webid: otherWebId,
       resource: launchResource
     });
-  await submit('.saved-apps form', {
+  await submit('.swb-saved-apps form', {
     name: 'Profile launch example',
     url: savedLaunchUrl
   });
   await wait(
-    '[...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent.trim()==="Profile launch example")'
+    '[...document.querySelectorAll(".swb-saved-apps a")].some(a=>a.textContent.trim()==="Profile launch example")'
   );
   const currentLaunch = await evaluate(
-    'return [...document.querySelectorAll(".saved-apps a")].find(a=>a.textContent.trim()==="Profile launch example").href;'
+    'return [...document.querySelectorAll(".swb-saved-apps a")].find(a=>a.textContent.trim()==="Profile launch example").href;'
   );
   const savedFragment = new URL(currentLaunch).hash;
   assert(savedFragment.startsWith('#foo?'));
@@ -1544,18 +1547,18 @@ try {
   const preferencesBeforeLaunch = String(resources.get(base + '/prefs').body);
   const resourceBeforeLaunch = String(resources.get(launchDocument).body);
   await evaluate(
-    'document.querySelector(".launch-profile [name=resource]").value=' +
+    'document.querySelector(".swb-launch-profile [name=resource]").value=' +
       JSON.stringify(launchResource) +
       ';'
   );
   const launcherPage = page;
-  const profileWindow = await openApp('.launch-profile button');
+  const profileWindow = await openApp('.swb-launch-profile button');
   const launchTarget = profileWindow.target;
   launchedPage = profileWindow.page;
   page = launchedPage;
   await page.ready();
   await wait(
-    'window.solidProfile?.host.session && document.querySelector(".profile-card h2")?.textContent==="Launch Alice"'
+    'window.solidProfile?.host.session && document.querySelector(".swb-profile-card h2")?.textContent==="Launch Alice"'
   );
   assert.equal(
     await evaluate('return window.solidProfile.host.session.webId;'),
@@ -1590,7 +1593,7 @@ try {
   );
   // A managed child delegates an embedded task through the same Launcher broker.
   await wait('window.solidProfile.host.managed?.ready');
-  await click('.account-name');
+  await click('.swb-account-name');
   await wait(profileFrame + '.solidProfile?.host.managed?.ready');
   await wait(profileFrame + '.solidProfile.ui.runtime.muzeSolidProfileRequest');
   await click('[data-simply-command=muzeSolidUiCloseCapability]');
@@ -1599,14 +1602,14 @@ try {
   );
   assert.equal(
     await evaluate(
-      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".suite-status").textContent);'
+      'return /Selection cancelled|Task cancelled/.test(document.querySelector(".swb-suite-status").textContent);'
     ),
     false,
     'Normal capability cancellation does not produce an error notice'
   );
   assert.equal(
     await evaluate(
-      'return document.querySelector(".profile-card h2").textContent;'
+      'return document.querySelector(".swb-profile-card h2").textContent;'
     ),
     'Launch Alice'
   );
@@ -1634,7 +1637,7 @@ try {
     'window.solidLauncher?.host.session && ' +
       'window.solidLauncher.host.preferences.launchTarget==="window"'
   );
-  const contactsWindow = await openApp('.app-grid a[href*=contacts]', 'window');
+  const contactsWindow = await openApp('.swb-app-grid a[href*=contacts]', 'window');
   contactsWindow.page.close();
   await page.send('Target.closeTarget', {
     targetId: contactsWindow.target.targetId
@@ -1652,7 +1655,7 @@ try {
   await closePreferences();
 
   const declaredLink =
-    '[...document.querySelectorAll(".saved-apps a")]' +
+    '[...document.querySelectorAll(".swb-saved-apps a")]' +
     '.find(a=>a.textContent.trim()==="Declared server app")';
   await wait(declaredLink);
   assert.equal(
@@ -1739,24 +1742,24 @@ try {
   );
   await wait('new URL(' + declaredLink + '.href).searchParams.has("webid")');
 
-  await submit('.saved-apps form', {
+  await submit('.swb-saved-apps form', {
     name: 'User query app',
     url: serverAppUrl,
     launchMode: 'query'
   });
   await wait(
-    '[...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent.trim()==="User query app")'
+    '[...document.querySelectorAll(".swb-saved-apps a")].some(a=>a.textContent.trim()==="User query app")'
   );
   const userUrl = new URL(
     await evaluate(
-      'return [...document.querySelectorAll(".saved-apps a")].find(a=>a.textContent.trim()==="User query app").href;'
+      'return [...document.querySelectorAll(".swb-saved-apps a")].find(a=>a.textContent.trim()==="User query app").href;'
     )
   );
   assert.equal(userUrl.searchParams.get('webid'), webId);
   assert.equal(userUrl.searchParams.get('resource'), launchResource);
 
   const serverLauncher = page;
-  const serverWindow = await openApp('.saved-apps a[href*="/server-app"]');
+  const serverWindow = await openApp('.swb-saved-apps a[href*="/server-app"]');
   launchedPage = serverWindow.page;
   page = launchedPage;
   await wait('document.body.innerText.includes("Server-side app received")');
@@ -1777,14 +1780,14 @@ try {
   launchedPage = null;
   page = serverLauncher;
 
-  await submit('.saved-apps form', {
+  await submit('.swb-saved-apps form', {
     name: 'Anonymous query app',
     url: serverAppUrl,
     launchMode: 'query',
     anonymous: true
   });
   const anonymousLink =
-    '[...document.querySelectorAll(".saved-apps a")]' +
+    '[...document.querySelectorAll(".swb-saved-apps a")]' +
     '.find(a=>a.textContent.trim()==="Anonymous query app")';
   await wait(
     anonymousLink +
@@ -1836,7 +1839,7 @@ try {
       '?.closest("li").querySelector("input[type=checkbox]").checked'
   );
   const identifiedLink =
-    '[...document.querySelectorAll(".saved-apps a")]' +
+    '[...document.querySelectorAll(".swb-saved-apps a")]' +
     '.find(a=>a.textContent.trim()==="User query app")';
   assert.equal(
     new URL(
@@ -1846,7 +1849,7 @@ try {
   );
   const anonymousLauncher = page;
   const anonymousWindow = await openApp(
-    '.saved-apps a[href*="/server-app"]:not([href*="webid="])'
+    '.swb-saved-apps a[href*="/server-app"]:not([href*="webid="])'
   );
   launchedPage = anonymousWindow.page;
   page = launchedPage;
@@ -1866,13 +1869,13 @@ try {
   page = anonymousLauncher;
 
   const anonymousBase = base + '/server-app?view=plain#landing';
-  await submit('.saved-apps form', {
+  await submit('.swb-saved-apps form', {
     name: 'Anonymous no resource',
     url: anonymousBase,
     launchMode: 'query',
     anonymous: true
   });
-  const bareSelector = '.saved-apps a[href*="view=plain"]';
+  const bareSelector = '.swb-saved-apps a[href*="view=plain"]';
   await wait('document.querySelector(' + JSON.stringify(bareSelector) + ')');
   const bareWindow = await openApp(bareSelector);
   launchedPage = bareWindow.page;
@@ -1899,7 +1902,7 @@ try {
     mobile: true
   });
   await evaluate(
-    'document.querySelector(".saved-apps").scrollIntoView({block:"start"});'
+    'document.querySelector(".swb-saved-apps").scrollIntoView({block:"start"});'
   );
   assert(
     await evaluate('return document.documentElement.scrollWidth<=innerWidth;')
@@ -1921,10 +1924,8 @@ try {
   await wait(
     'document.querySelector(".muze-solid-design-toast").textContent.includes("Marked deleted")'
   );
-  assert(
-    !(await evaluate(
-      'return document.querySelector("tbody").textContent.includes("test.txt");'
-    ))
+  await wait(
+    '!document.querySelector("tbody").textContent.includes("test.txt")'
   );
   assert.equal(resources.get(base + '/storage/test.txt').body, 'file contents');
   assert.match(
@@ -1945,32 +1946,32 @@ try {
   await capture('files-desktop');
   await visit('contacts/');
   await wait('window.solidContacts?.store');
-  await wait('document.querySelector(".person-list button")');
-  await evaluate('document.querySelector(".person-list button").click();');
-  await wait('!document.querySelector(".contact-actions .actions").hidden');
+  await wait('document.querySelector(".swb-person-list button")');
+  await evaluate('document.querySelector(".swb-person-list button").click();');
+  await wait('!document.querySelector(".contact-actions .swb-actions").hidden');
   await evaluate('document.querySelector(".contact-actions button").click();');
   await wait(
-    'document.querySelector(".contacts-list .empty").textContent.includes("No contacts")'
+    'document.querySelector(".swb-contacts-list .swb-empty").textContent.includes("No contacts")'
   );
   await evaluate(
     'document.querySelector("[data-simply-command=newContact]").click();'
   );
-  await submit('.contacts-list form', {
+  await submit('.swb-contacts-list form', {
     name: '<img src=x onerror="window.injected=true">'
   });
   await wait(
-    'document.querySelector(".profile-card h2").textContent.includes("<img")'
+    'document.querySelector(".swb-profile-card h2").textContent.includes("<img")'
   );
   assert.equal(
     await evaluate(
-      'return Boolean(window.injected || document.querySelector(".profile-card img, .person-list img"));'
+      'return Boolean(window.injected || document.querySelector(".swb-profile-card img, .swb-person-list img"));'
     ),
     false
   );
   await evaluate(
     'document.querySelector("[data-simply-command=editProfile]").click();'
   );
-  await submit('.profile-card form', {
+  await submit('.swb-profile-card form', {
     name: 'Robin de Vries',
     email: 'robin@example.org',
     phone: '+31205550123',
@@ -1978,7 +1979,7 @@ try {
     notes: 'Met at the Solid meetup.'
   });
   await wait(
-    'document.querySelector(".profile-card h2").textContent==="Robin de Vries"'
+    'document.querySelector(".swb-profile-card h2").textContent==="Robin de Vries"'
   );
   await page.send('Emulation.setDeviceMetricsOverride', {
     width: 1280,
@@ -1998,7 +1999,7 @@ try {
   );
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   await evaluate(`
-    document.querySelector('.contact-search input').focus();
+    document.querySelector('.swb-contact-search input').focus();
     window.solidContacts.host.message('Persistent recovery guidance');
     window.solidContacts.host.notify('Contact changes saved.');
   `);
@@ -2021,8 +2022,8 @@ try {
       const region = document.querySelector('.muze-solid-design-toasts');
       return region.getAttribute('role') === 'status' &&
         region.getAttribute('aria-live') === 'polite' &&
-        document.activeElement.matches('.contact-search input') &&
-        document.querySelector('.suite-status').textContent === 'Persistent recovery guidance';
+        document.activeElement.matches('.swb-contact-search input') &&
+        document.querySelector('.swb-suite-status').textContent === 'Persistent recovery guidance';
     `),
     true,
     'Toast announces politely without stealing focus or replacing recovery guidance'
@@ -2056,7 +2057,7 @@ try {
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   assert.equal(
     await evaluate(
-      'return document.activeElement.matches(".contact-search input");'
+      'return document.activeElement.matches(".swb-contact-search input");'
     ),
     true,
     'Dismissing a keyboard-focused toast restores the previous focus'
@@ -2119,7 +2120,7 @@ try {
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   await page.send('Emulation.setEmulatedMedia', { features: [] });
   await evaluate(`window.solidContacts.host.message('');`);
-  await click('.account-button');
+  await click('.swb-account-button');
   await wait(
     'document.querySelector("#muze-solid-ui-account-menu").matches(":popover-open")'
   );
@@ -2133,7 +2134,7 @@ try {
     true,
     'Pointer opening does not select or highlight the first row'
   );
-  await evaluate('document.querySelector(".account-button").focus();');
+  await evaluate('document.querySelector(".swb-account-button").focus();');
   async function menuArrow(key) {
     await page.send('Input.dispatchKeyEvent', {
       type: 'keyDown',
@@ -2216,7 +2217,7 @@ try {
   await click('[data-simply-command=preferences]');
   assert.equal(
     await evaluate(`
-      return ['.account-button', '.muze-solid-ui-capability-dialog .muze-solid-design-dialog-close'].every(selector => {
+      return ['.swb-account-button', '.muze-solid-ui-capability-dialog .muze-solid-design-dialog-close'].every(selector => {
         const button = document.querySelector(selector).getBoundingClientRect();
         const icon = document.querySelector(selector + ' svg').getBoundingClientRect();
         return Math.abs((icon.top + icon.bottom) / 2 - (button.top + button.bottom) / 2) < 1;
@@ -2260,14 +2261,14 @@ try {
   );
   assert.equal(
     await evaluate(
-      'const pane=document.querySelector(".contacts-list");const layout=document.querySelector(".split-view");return pane.clientWidth<=layout.clientWidth && [...pane.querySelectorAll(".contacts-toolbar button")].every(button=>button.getBoundingClientRect().right<=innerWidth);'
+      'const pane=document.querySelector(".swb-contacts-list");const layout=document.querySelector(".swb-split-view");return pane.clientWidth<=layout.clientWidth && [...pane.querySelectorAll(".swb-contacts-toolbar button")].every(button=>button.getBoundingClientRect().right<=innerWidth);'
     ),
     true,
     'All mobile Contacts toolbar actions must fit in the visible pane'
   );
   assert.equal(
     await evaluate(
-      'const range=document.createRange();range.selectNodeContents(document.querySelector("h1"));return range.getBoundingClientRect().right<=document.querySelector(".account-name").getBoundingClientRect().left;'
+      'const range=document.createRange();range.selectNodeContents(document.querySelector("h1"));return range.getBoundingClientRect().right<=document.querySelector(".swb-account-name").getBoundingClientRect().left;'
     ),
     true,
     'The account name must not overlap the mobile app title'
@@ -2317,7 +2318,7 @@ try {
     })
   );
   await account('connectDialog');
-  await wait('!document.querySelector(".logout-section").hidden');
+  await wait('!document.querySelector(".swb-logout-section").hidden');
   await evaluate(
     'await solidContacts.host.view.actions.swb_refreshPreferences();'
   );
@@ -2337,20 +2338,20 @@ try {
   );
   assert.equal(
     await evaluate(
-      'return document.querySelector(".account-name").textContent.trim();'
+      'return document.querySelector(".swb-account-name").textContent.trim();'
     ),
     ''
   );
   assert.equal(
     await evaluate(
-      'return document.querySelector(".person-list").textContent.includes("Robin de Vries");'
+      'return document.querySelector(".swb-person-list").textContent.includes("Robin de Vries");'
     ),
     false,
     'Signing out opens anonymous local data, retaining owner data separately.'
   );
   await account('connectDialog');
   assert.equal(
-    await evaluate('return document.querySelector(".logout-section").hidden;'),
+    await evaluate('return document.querySelector(".swb-logout-section").hidden;'),
     true
   );
   assert.equal(
@@ -2362,7 +2363,7 @@ try {
   await click('[data-simply-command=closeConnect]');
   await click('[data-simply-command=sync]');
   await wait(
-    'document.querySelector(".suite-status").textContent.includes("Connect to Solid first")'
+    'document.querySelector(".swb-suite-status").textContent.includes("Connect to Solid first")'
   );
   assert.equal(calls.length, beforeLogout);
   await visit('workbench/');
@@ -2370,17 +2371,17 @@ try {
   assert.equal(await evaluate('return solidLauncher.persistence.owner;'), '');
   assert.equal(
     await evaluate(
-      'return [...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent.trim()==="Profile launch example");'
+      'return [...document.querySelectorAll(".swb-saved-apps a")].some(a=>a.textContent.trim()==="Profile launch example");'
     ),
     false,
     'Owner shortcuts stay scoped to the signed-out workspace.'
   );
   await evaluate(
-    'const form=document.querySelector(".launch-profile form");' +
+    'const form=document.querySelector(".swb-launch-profile form");' +
       'form.elements.resource.value="";form.elements.anonymous.checked=true;'
   );
   const loggedOutLauncher = page;
-  const bareProfile = await openApp('.launch-profile button');
+  const bareProfile = await openApp('.swb-launch-profile button');
   launchedPage = bareProfile.page;
   page = launchedPage;
   await wait('window.solidProfile');

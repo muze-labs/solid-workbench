@@ -1,60 +1,69 @@
-.muze-solid-design-list-details {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  height: 100%;
-  gap: var(--ds-space);
-}
-.muze-solid-design-list-details .ds-panels-pane {
-  min-width: 0;
-  height: 100%;
-  overflow: auto;
-  flex: 0 0 100%;
-  scroll-snap-align: start;
-}
-.muze-solid-design-list-details .app-toolbar {
-  position: sticky;
-  bottom: 0;
-  background: var(--ds-color-background);
-  padding-block: var(--ds-space-d2);
-  margin-bottom: 0;
-  z-index: 2;
-}
-.muze-solid-design-list-details .muze-solid-design-list-back {
-  display: block;
-}
-@media (min-width: 720px) {
+/* DS adapter: resolve host values at this component boundary. */
+@layer theme {
   .muze-solid-design-list-details {
-    display: grid;
-    grid-template-columns: var(--ds-panels-list-width) minmax(0, 1fr);
-    scroll-snap-type: none;
-  }
-  .muze-solid-design-list-details .muze-solid-design-list-back {
-    display: none;
+    --swb-list-details-space: var(--ds-space);
+    --swb-list-details-surface: var(--ds-color-background);
+    --swb-list-details-space-small: var(--ds-space-d2);
+    --swb-list-details-list-width: var(--ds-panels-list-width);
   }
 }
 
-/* Shared suite primitives formerly in the coarse appearance sheet. */
-.split-view > * {
-  min-width: 0;
-}
-.split-view .ds-panels-pane {
-  width: auto;
-  padding: 0;
-}
-.app-content:has(.muze-solid-design-list-details) {
-  height: 100%;
-  min-height: 0;
-}
+@layer component {
+  .muze-solid-design-list-details {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    height: 100%;
+    gap: var(--swb-list-details-space, 1rem);
+  }
+  .swb-list-pane {
+    min-width: 0;
+    height: 100%;
+    overflow: auto;
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    width: auto;
+    padding: 0;
+  }
+  .swb-list-toolbar {
+    position: var(--swb-list-toolbar-position, sticky);
+    bottom: 0;
+    background: var(--swb-list-details-surface, Canvas);
+    padding-block: var(--swb-list-details-space-small, 0.5rem);
+    margin-bottom: 0;
+    z-index: 2;
+  }
+  .muze-solid-design-list-back {
+    display: block;
+  }
+  @media (min-width: 720px) {
+    .muze-solid-design-list-details {
+      display: grid;
+      grid-template-columns: var(--swb-list-details-list-width, 20em) minmax(
+          0,
+          1fr
+        );
+      scroll-snap-type: none;
+    }
+    .muze-solid-design-list-back {
+      display: none;
+    }
+  }
 
-/* Section navigation and previews reuse the list/details panes in dialogs. */
-.muze-solid-design-list-details .ds-navbar-nav .ds-nav {
-  width: 100%;
-  white-space: normal;
-}
-.muze-solid-design-list-preview {
-  display: block;
-  max-inline-size: 100%;
-  max-block-size: 12rem;
-  object-fit: contain;
+  .swb-section-choice {
+    width: 100%;
+    white-space: normal;
+  }
+  .muze-solid-design-list-preview {
+    display: block;
+    max-inline-size: 100%;
+    max-block-size: 12rem;
+    object-fit: contain;
+  }
+  @media (max-height: 400px) {
+    /* A sticky toolbar must not fill the whole zoomed/landscape pane. */
+    .muze-solid-design-list-details {
+      --swb-list-toolbar-position: static;
+    }
+  }
 }

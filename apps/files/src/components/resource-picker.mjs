@@ -1,9 +1,13 @@
 import styles from './resource-picker.css' with { type: 'text' };
 import sourceFilesPicker from '../picker.html' with { type: 'text' };
+import sourcePickerActions from '../picker-actions.html' with { type: 'text' };
 
 export const resourcePicker = {
   styles: { 'swb-resource-picker': styles },
-  templates: { 'files-picker': sourceFilesPicker },
+  templates: {
+    'files-picker': sourceFilesPicker,
+    'files-picker-actions': sourcePickerActions
+  },
   commands: {
     selectResource(_element, url) {
       return this.runtime.host.run(() => this.actions.selectFile(url));

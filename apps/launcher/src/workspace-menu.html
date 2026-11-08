@@ -1,16 +1,19 @@
 <li
-  class="ds-dropdown-item swb-workspace-menu"
+  class="ds-dropdown-item swb-workspace-menu swb-dropdown-item"
   hidden
   data-simply-field="swb_workspaceMenuVisibility"
   data-simply-transform="attributes"
   data-simply-attributes="hidden"
 >
-  <ul class="ds-dropdown-list" data-simply-list="swb_workspaceMenu">
+  <ul
+    class="ds-dropdown-list swb-dropdown-list"
+    data-simply-list="swb_workspaceMenu"
+  >
     <template
-      ><li class="ds-dropdown-item">
+      ><li class="ds-dropdown-item swb-dropdown-item">
         <button
           type="button"
-          class="ds-button ds-button-naked ds-dropdown-link"
+          class="ds-button ds-button-naked ds-dropdown-link swb-account-link swb-dropdown-link"
           data-simply-command="swb_switchWorkspace"
           data-simply-value=":value.id"
           data-simply-field="attributes"

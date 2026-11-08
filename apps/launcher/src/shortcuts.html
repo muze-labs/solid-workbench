@@ -1,13 +1,13 @@
 <div style="display: contents">
-  <section class="saved-apps">
+  <section class="swb-saved-apps">
     <h2 class="swb-visually-hidden">Your shortcuts</h2>
     <dialog
       data-simply-behavior="muzeSolidDesignDialog"
       class="ds-dialog muze-solid-design-dialog muze-solid-launcher-add-dialog"
     >
-      <form data-simply-command="add">
+      <form class="swb-dialog-form" data-simply-command="add">
         <header class="muze-solid-design-dialog-header">
-          <h2>Add shortcut</h2>
+          <h2 class="swb-dialog-title">Add shortcut</h2>
           <button
             type="button"
             class="ds-button muze-solid-design-dialog-close"
@@ -20,14 +20,27 @@
           </button>
         </header>
         <div class="muze-solid-design-dialog-content">
-          <label>Name<input name="name" /></label>
-          <label>Application URL<input name="url" type="url" /></label>
+          <label
+            >Name<input class="swb-control swb-labeled-control" name="name"
+          /></label>
+          <label
+            >Application URL<input
+              class="swb-control swb-labeled-control"
+              name="url"
+              type="url"
+          /></label>
           <label
             >Application manifest URL (optional)<input
+              class="swb-control swb-labeled-control"
               name="manifest"
               type="url"
           /></label>
-          <label>Icon URL (optional)<input name="icon" type="url" /></label>
+          <label
+            >Icon URL (optional)<input
+              class="swb-control swb-labeled-control"
+              name="icon"
+              type="url"
+          /></label>
           <p>
             Enter an application URL, or use its RDF manifest. You can change
             the name and icon.
@@ -35,17 +48,24 @@
           <details>
             <summary>Launch options</summary>
             <label
-              >Launch mode<select name="launchMode">
+              >Launch mode<select
+                class="swb-control swb-labeled-control"
+                name="launchMode"
+              >
                 <option value="">Follow application</option>
                 <option value="fragment">URL fragment (#)</option>
                 <option value="query">URL query (?)</option>
               </select></label
             >
             <label
-              ><input type="checkbox" name="anonymous" /> Launch anonymously
-              (omit WebID)</label
+              ><input
+                class="swb-control swb-labeled-control"
+                type="checkbox"
+                name="anonymous"
+              />
+              Launch anonymously (omit WebID)</label
             >
-            <p class="muted">
+            <p class="swb-muted">
               Anonymous applies to this shortcut. It does not sign you out of
               the receiving app.
             </p>
@@ -64,10 +84,14 @@
       </form>
     </dialog>
     <div class="swb-launcher-grid">
-      <ul class="person-list swb-shortcut-list" data-simply-list="shortcuts">
+      <ul
+        class="swb-person-list swb-shortcut-list"
+        data-simply-list="shortcuts"
+      >
         <template
-          ><li>
+          ><li class="swb-shortcut swb-list-item">
             <a
+              class="swb-shortcut-link"
               data-simply-command="launchApp"
               data-simply-field="link"
               data-simply-transform="attributes"
@@ -85,6 +109,7 @@
                   data-simply-attributes="href"
                 ></use></svg
               ><img
+                class="swb-shortcut-image"
                 alt=""
                 width="64"
                 height="64"
@@ -97,7 +122,7 @@
             ></a>
             <button
               type="button"
-              class="ds-button swb-shortcut-settings"
+              class="ds-button swb-shortcut-settings swb-list-action"
               data-simply-command="swb_shortcutSettings"
             >
               Shortcut settings
@@ -108,7 +133,7 @@
               aria-label="Shortcut settings"
             >
               <header class="muze-solid-design-dialog-header">
-                <h2>Shortcut settings</h2>
+                <h2 class="swb-dialog-title">Shortcut settings</h2>
                 <button
                   type="button"
                   class="ds-button muze-solid-design-dialog-close"
@@ -122,10 +147,14 @@
               </header>
               <div class="muze-solid-design-dialog-content">
                 <label
-                  >Name<input name="swb_shortcutName" data-simply-field="label"
+                  >Name<input
+                    class="swb-control swb-labeled-control"
+                    name="swb_shortcutName"
+                    data-simply-field="label"
                 /></label>
                 <label
                   >Icon URL override<input
+                    class="swb-control swb-labeled-control"
                     name="swb_shortcutIcon"
                     type="url"
                     data-simply-field="iconUrl"
@@ -141,6 +170,7 @@
                 </button>
                 <label
                   >Launch mode<select
+                    class="swb-control swb-labeled-control"
                     data-simply-field="mode"
                     data-simply-command="setLaunchMode"
                     data-simply-value=":value.id"
@@ -151,6 +181,7 @@
                   </select></label
                 ><label
                   ><input
+                    class="swb-control swb-labeled-control"
                     type="checkbox"
                     data-simply-field="anonymous"
                     data-simply-command="setAnonymous"
@@ -165,14 +196,14 @@
                   Remove shortcut
                 </button>
                 <p
-                  class="muted"
+                  class="swb-muted"
                   data-simply-field="modeNote"
                   data-simply-transform="escape_html"
                 ></p>
               </div>
             </dialog>
             <p
-              class="muted"
+              class="swb-muted"
               role="status"
               data-simply-field="problem"
               data-simply-transform="escape_html"
@@ -191,7 +222,7 @@
       </button>
     </div>
     <p
-      class="empty"
+      class="swb-empty swb-home-empty"
       data-simply-field="empty"
       data-simply-transform="escape_html"
     ></p>

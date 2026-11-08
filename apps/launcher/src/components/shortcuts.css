@@ -1,115 +1,127 @@
-.app-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-  gap: var(--ds-space);
-}
-.app-card {
-  padding: var(--ds-space);
-  border-block-start: 0.25rem solid var(--ds-primary);
-  background: var(--ds-color-background);
-}
-.app-card h2 {
-  margin-block-start: 0;
-}
-.app-card .ds-button {
-  margin-bottom: 0;
-}
-.saved-apps {
-  margin-block-start: var(--ds-space-x2);
-}
-.saved-apps .person-list li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--ds-space);
-}
-.saved-apps .person-list a {
-  overflow-wrap: anywhere;
-}
-.muze-solid-launcher-suite-apps {
-  margin-block: var(--ds-space);
+/* DS adapter: resolve host values at this component boundary. */
+@layer theme {
+  .swb-saved-apps,
+  .muze-solid-launcher-suite-apps {
+    --swb-shortcuts-space: var(--ds-space);
+    --swb-shortcuts-accent: var(--ds-primary);
+    --swb-shortcuts-surface: var(--ds-color-background);
+    --swb-shortcuts-space-large: var(--ds-space-x2);
+    --swb-shortcuts-accent-text: var(--ds-primary-contrast);
+  }
 }
 
-.swb-launcher-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-  gap: var(--ds-space);
-  padding: 0;
-  list-style: none;
-}
-.saved-apps .swb-shortcut-list li {
-  display: block;
-  min-width: 0;
-  padding: 0.5rem;
-  background: transparent;
-}
-.saved-apps .swb-launcher-grid a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ds-space);
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.5rem;
-  text-align: center;
-  text-decoration: none;
-  font-size: 1rem;
-  min-height: 7rem;
-}
-.swb-launcher-grid img {
-  flex: 0 0 auto;
-  width: 4rem;
-  height: 4rem;
-  object-fit: contain;
-}
-.swb-shortcut-list {
-  display: contents;
-}
-.swb-add-shortcut {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  gap: var(--ds-space);
-  padding: 1rem;
-  margin: 0;
-  min-height: 7rem;
-  font-size: 1rem;
-  background: transparent;
-  box-shadow: none;
-}
-.swb-app-icon {
-  --ds-icon-height: 4rem;
-  width: 4rem;
-  height: 4rem;
-}
-.swb-launcher-grid .swb-app-icon,
-.swb-launcher-grid img {
-  box-sizing: content-box;
-  padding: 0.625rem;
-  background: var(--ds-primary);
-  color: var(--ds-primary-contrast);
-}
-.swb-shortcut-settings {
-  width: 100%;
-  font-size: 0.85rem;
-  padding: 0.5rem;
-  background: transparent;
-  box-shadow: none;
-}
-.swb-visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
+@layer page {
+  .swb-app-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--swb-shortcuts-space);
+  }
+  .swb-app-card {
+    padding: var(--swb-shortcuts-space);
+    border-block-start: 0.25rem solid var(--swb-shortcuts-accent);
+    background: var(--swb-shortcuts-surface);
+  }
+  .swb-app-card-title {
+    margin-block-start: 0;
+  }
+  .swb-app-card-action {
+    margin-bottom: 0;
+  }
+  .swb-saved-apps {
+    margin-block-start: var(--swb-shortcuts-space-large);
+  }
+  .muze-solid-launcher-suite-apps {
+    margin-block: var(--swb-shortcuts-space);
+  }
 
-.swb-launcher-grid a:focus-visible {
-  outline: 2px solid var(--ds-primary);
-  outline-offset: 2px;
-}
+  .swb-launcher-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+    gap: var(--swb-shortcuts-space);
+    padding: 0;
+    list-style: none;
+  }
+  .swb-shortcut {
+    display: block;
+    min-width: 0;
+    padding: 0.5rem;
+    background: transparent;
+  }
+  .swb-shortcut-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--swb-shortcuts-space);
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5rem;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1rem;
+    min-height: 7rem;
+    overflow-wrap: anywhere;
+  }
+  .swb-shortcut-image {
+    flex: 0 0 auto;
+    width: 4rem;
+    height: 4rem;
+    object-fit: contain;
+  }
+  .swb-shortcut-list {
+    display: contents;
+  }
+  .swb-add-shortcut {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    gap: var(--swb-shortcuts-space);
+    padding: 1rem;
+    margin: 0;
+    min-height: 7rem;
+    overflow-wrap: anywhere;
+    font-size: 1rem;
+    background: transparent;
+    box-shadow: none;
+  }
+  .swb-app-icon {
+    width: 4rem;
+    height: 4rem;
+  }
+  .swb-app-icon,
+  .swb-shortcut-image {
+    box-sizing: content-box;
+    padding: 0.625rem;
+    background: var(--swb-shortcuts-accent);
+    color: var(--swb-shortcuts-accent-text);
+  }
+  .swb-shortcut-settings {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    background: transparent;
+    box-shadow: none;
+  }
 
-.swb-launcher-grid [hidden] {
-  display: none;
+  .swb-shortcut-link,
+  .swb-shortcut-settings,
+  .swb-add-shortcut,
+  .swb-home-empty {
+    color: var(--swb-home-text);
+    text-shadow: var(--swb-home-text-shadow);
+  }
+  .swb-home-empty {
+    opacity: 1;
+  }
+  .swb-app-icon,
+  .swb-shortcut-image {
+    filter: drop-shadow(0 1px 1px black) drop-shadow(0 0 1px black);
+  }
+  .swb-shortcut-link:focus-visible,
+  .swb-shortcut-settings:focus-visible,
+  .swb-add-shortcut:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px black;
+  }
 }

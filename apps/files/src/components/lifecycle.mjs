@@ -3,7 +3,7 @@ export const lifecycle = {
     async initialize() {
       this.actions.initializeFiles();
       this.runtime.container =
-        this.runtime.host.main.querySelector('.file-controls');
+        this.runtime.host.main.querySelector('.swb-file-controls');
       this.runtime.current = '';
       this.runtime.root = '';
       this.runtime.busy = false;

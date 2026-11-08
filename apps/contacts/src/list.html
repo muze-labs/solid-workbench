@@ -1,13 +1,17 @@
 <div style="display: contents">
   <section
-    class="contacts-list ds-panels-pane ds-panels-list"
+    class="swb-contacts-list ds-panels-pane ds-panels-list swb-list-pane"
     aria-label="Contacts"
   >
-    <ul class="person-list" data-simply-list="people">
+    <ul class="swb-person-list swb-contacts-people" data-simply-list="people">
       <template
-        ><li>
-          <button data-simply-command="select" data-simply-value=":value.id">
-            <span class="person-avatar" aria-hidden="true"
+        ><li class="swb-list-item">
+          <button
+            class="swb-contact-select swb-list-action"
+            data-simply-command="select"
+            data-simply-value=":value.id"
+          >
+            <span class="swb-person-avatar" aria-hidden="true"
               ><svg class="ds-icon ds-icon-feather">
                 <use href="../assets/feather-icons.svg#user"></use></svg></span
             ><span
@@ -18,20 +22,24 @@
       ></template>
     </ul>
     <p
-      class="empty"
+      class="swb-empty"
       data-simply-field="empty"
       data-simply-transform="escape_html"
     ></p>
     <div
-      class="contacts-toolbar app-toolbar"
+      class="swb-contacts-toolbar swb-app-toolbar swb-list-toolbar"
       role="toolbar"
       aria-label="Contact actions"
     >
-      <label class="contact-search"
-        ><span class="visually-hidden">Search contacts</span
-        ><svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <label class="swb-contact-search"
+        ><span class="swb-visually-hidden">Search contacts</span
+        ><svg
+          class="ds-icon ds-icon-feather swb-contact-search-icon"
+          aria-hidden="true"
+        >
           <use href="../assets/feather-icons.svg#search"></use></svg
         ><input
+          class="swb-control swb-labeled-control swb-contact-search-input"
           type="search"
           aria-label="Search contacts"
           placeholder="Search"
@@ -40,7 +48,7 @@
           data-simply-immediate="true"
       /></label>
       <button
-        class="ds-button ds-button-primary icon-button"
+        class="ds-button ds-button-primary swb-icon-button swb-toolbar-button"
         type="button"
         data-simply-command="newContact"
         aria-label="Add contact"
@@ -51,7 +59,7 @@
         </svg>
       </button>
       <button
-        class="ds-button icon-button"
+        class="ds-button swb-icon-button swb-toolbar-button"
         type="button"
         data-simply-command="sync"
         aria-label="Sync with Solid"
@@ -76,9 +84,9 @@
       data-simply-behavior="muzeSolidDesignDialog"
       class="ds-dialog new-contact-dialog muze-solid-design-dialog"
     >
-      <form data-simply-command="add">
+      <form class="swb-dialog-form" data-simply-command="add">
         <header class="muze-solid-design-dialog-header">
-          <h2>New contact</h2>
+          <h2 class="swb-dialog-title">New contact</h2>
           <button
             type="button"
             class="ds-button muze-solid-design-dialog-close"
@@ -91,7 +99,12 @@
           </button>
         </header>
         <div class="muze-solid-design-dialog-content">
-          <label>Name<input name="name" placeholder="Name (optional)" /></label>
+          <label
+            >Name<input
+              class="swb-control swb-labeled-control"
+              name="name"
+              placeholder="Name (optional)"
+          /></label>
         </div>
         <footer class="muze-solid-design-dialog-footer">
           <button class="ds-button ds-button-primary">Add contact</button

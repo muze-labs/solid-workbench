@@ -1,56 +1,59 @@
 <div style="display: contents">
   <p
-    class="empty"
+    class="swb-empty"
     data-simply-field="profile.empty"
     data-simply-transform="escape_html"
   >
     No profile selected.
   </p>
   <article
-    class="profile-card"
+    class="swb-profile-card"
     hidden
     data-simply-field="profile.visibility"
     data-simply-transform="attributes"
     data-simply-attributes="hidden"
   >
     <section
-      class="profile-details"
+      class="swb-profile-details"
       data-simply-field="profile.detailsVisibility"
       data-simply-transform="attributes"
       data-simply-attributes="hidden"
     >
       <h2
+        class="swb-profile-title"
         data-simply-field="profile.title"
         data-simply-transform="escape_html"
       ></h2>
       <details class="muze-solid-profile-source">
         <summary>Profile source</summary>
         <p
-          class="resource-url"
+          class="swb-resource-url"
           data-simply-field="profile.id"
           data-simply-transform="escape_html"
         ></p>
         <p
-          class="muted"
+          class="swb-muted"
           data-simply-field="profile.sourceLabel"
           data-simply-transform="escape_html"
         ></p>
       </details>
-      <dl data-simply-list="profile.details">
+      <dl class="swb-profile-fields" data-simply-list="profile.details">
         <template
-          ><div>
+          ><div class="swb-profile-field">
             <dt
+              class="swb-profile-label"
               data-simply-field="label"
               data-simply-transform="escape_html"
             ></dt>
             <dd
+              class="swb-profile-value"
               data-simply-field="value"
               data-simply-transform="escape_html"
             ></dd></div
         ></template>
       </dl>
       <p
-        class="empty"
+        class="swb-empty"
         data-simply-field="profile.noDetails"
         data-simply-transform="escape_html"
       ></p>
@@ -69,13 +72,14 @@
       </button>
     </section>
     <form
+      class="swb-profile-form"
       hidden
       data-simply-field="profile.formVisibility"
       data-simply-transform="attributes"
       data-simply-attributes="hidden"
       data-simply-command="saveProfile"
     >
-      <h2>Edit profile</h2>
+      <h2 class="swb-profile-title swb-profile-form-title">Edit profile</h2>
       <div class="muze-solid-profile-body">
         <p>
           Leave unknown details empty. Use one value per line for multiple
@@ -83,6 +87,7 @@
         </p>
         <label
           >Name<textarea
+            class="swb-control swb-labeled-control swb-profile-line"
             name="name"
             data-simply-field="profile.name"
             data-simply-command="profileChanged"
@@ -91,6 +96,7 @@
           ></textarea></label
         ><label
           >Email addresses<textarea
+            class="swb-control swb-labeled-control swb-profile-line"
             name="email"
             data-simply-field="profile.email"
             data-simply-command="profileChanged"
@@ -99,6 +105,7 @@
           ></textarea></label
         ><label
           >Phone numbers<textarea
+            class="swb-control swb-labeled-control swb-profile-line"
             name="phone"
             data-simply-field="profile.phone"
             data-simply-command="profileChanged"
@@ -107,6 +114,7 @@
           ></textarea></label
         ><label
           >Websites<textarea
+            class="swb-control swb-labeled-control swb-profile-line"
             name="website"
             data-simply-field="profile.website"
             data-simply-command="profileChanged"
@@ -115,6 +123,7 @@
           ></textarea></label
         ><label
           >WebID / public profile URL<textarea
+            class="swb-control swb-labeled-control swb-profile-line"
             name="webId"
             data-simply-field="profile.webId"
             data-simply-command="profileChanged"
@@ -123,6 +132,7 @@
           ></textarea></label
         ><label
           >Notes<textarea
+            class="swb-control swb-labeled-control swb-profile-notes"
             name="notes"
             data-simply-field="profile.notes"
             data-simply-command="profileChanged"
@@ -136,7 +146,9 @@
           data-simply-transform="escape_html"
         ></p>
       </div>
-      <div class="actions muze-solid-design-dialog-footer">
+      <div
+        class="swb-actions muze-solid-design-dialog-footer swb-profile-actions swb-dialog-footer-standalone"
+      >
         <button
           class="ds-button ds-button-primary"
           data-simply-field="profile.buttons"

@@ -4,6 +4,7 @@
 >
   <header class="muze-solid-design-dialog-header">
     <h2
+      class="swb-dialog-title"
       data-simply-field="muzeSolidUiDialog.title"
       data-simply-transform="escape_html"
     ></h2>
@@ -18,15 +19,16 @@
       </svg>
     </button>
   </header>
-  <div class="muze-solid-design-dialog-content">
+  <div class="muze-solid-design-dialog-content swb-capability-content">
     <p
+      class="swb-capability-status"
       role="status"
       data-simply-field="muzeSolidUiDialog.message"
       data-simply-transform="escape_html"
     ></p>
     <div class="muze-solid-ui-capability-stage">
       <div
-        class="muze-solid-ui-capability-loading"
+        class="muze-solid-ui-capability-loading swb-capability-status"
         role="status"
         hidden
         data-simply-field="muzeSolidUiDialog.loading"
@@ -71,7 +73,9 @@
     data-simply-transform="attributes"
     data-simply-attributes="hidden"
   >
-    <p>Closing this task will discard the unsaved edits in it.</p>
+    <p class="swb-dialog-message">
+      Closing this task will discard the unsaved edits in it.
+    </p>
     <button
       type="button"
       class="ds-button"

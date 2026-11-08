@@ -1,13 +1,13 @@
-<span
-  class="muze-solid-ui-embedded"
-  hidden
-  data-simply-field="muzeSolidUiEmbedded"
-  data-simply-transform="attributes"
-  data-simply-attributes="hidden"
-></span>
-<header class="suite-header ds-panels-heading">
+<header class="swb-suite-header ds-panels-heading">
+  <span
+    class="muze-solid-ui-embedded"
+    hidden
+    data-simply-field="muzeSolidUiEmbedded"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  ></span>
   <h1
-    class="ds-panels-title"
+    class="ds-panels-title swb-header-title"
     tabindex="-1"
     data-simply-field="muzeSolidUiTitle"
     data-simply-transform="escape_html"
@@ -15,7 +15,7 @@
     {{title}}
   </h1>
   <div
-    class="account ds-dropdown muze-solid-design-dropdown"
+    class="swb-account ds-dropdown muze-solid-design-dropdown"
     data-simply-shortcuts="muzeSolidDesignDropdown"
     hidden
     data-simply-field="muzeSolidUiMenuVisibility"
@@ -25,7 +25,7 @@
     <button
       type="button"
       data-simply-command="muzeSolidUiOwnProfile"
-      class="account-name"
+      class="swb-account-name"
       title="View and edit your profile"
       aria-haspopup="dialog"
       data-simply-field="muzeSolidUiProfileButton"
@@ -39,7 +39,7 @@
     </button>
     <button
       type="button"
-      class="ds-button ds-button-naked account-button"
+      class="ds-button ds-button-naked swb-account-button"
       popovertarget="muze-solid-ui-account-menu"
       aria-label="Account and preferences"
       title="Account and preferences"
@@ -50,24 +50,24 @@
     </button>
     <nav
       id="muze-solid-ui-account-menu"
-      class="ds-dropdown-nav ds-dropdown-right"
+      class="ds-dropdown-nav ds-dropdown-right swb-account-menu swb-dropdown-menu"
       popover="auto"
       aria-label="Account"
     >
-      <ul class="ds-dropdown-list">
-        <li class="ds-dropdown-item">
+      <ul class="ds-dropdown-list swb-dropdown-list">
+        <li class="ds-dropdown-item swb-dropdown-item">
           <button
             type="button"
-            class="ds-button ds-button-naked ds-dropdown-link"
+            class="ds-button ds-button-naked ds-dropdown-link swb-account-link swb-dropdown-link"
             data-simply-command="connectDialog"
           >
             WebID / connection
           </button>
         </li>
-        <li class="ds-dropdown-item">
+        <li class="ds-dropdown-item swb-dropdown-item">
           <button
             type="button"
-            class="ds-button ds-button-naked ds-dropdown-link"
+            class="ds-button ds-button-naked ds-dropdown-link swb-account-link swb-dropdown-link"
             data-simply-command="preferences"
           >
             Preferences
@@ -89,7 +89,7 @@
     WebID / connection
   </button>
   <p
-    class="suite-status"
+    class="swb-suite-status"
     role="status"
     data-simply-field="message"
     data-simply-transform="escape_html"
@@ -126,7 +126,9 @@
     aria-describedby="muze-solid-ui-recovery-description"
   >
     <header class="muze-solid-design-dialog-header">
-      <h2 id="muze-solid-ui-recovery-title">Sign in again</h2>
+      <h2 class="swb-dialog-title" id="muze-solid-ui-recovery-title">
+        Sign in again
+      </h2>
       <button
         type="button"
         class="ds-button muze-solid-design-dialog-close"
@@ -138,7 +140,7 @@
         </svg>
       </button>
     </header>
-    <div class="muze-solid-design-dialog-content">
+    <div class="muze-solid-design-dialog-content swb-recovery-content">
       <p id="muze-solid-ui-recovery-description">
         Your Solid session needs a new sign-in. Your edits are retained. Sign in
         to continue the pending request, or cancel and try later.
@@ -173,9 +175,9 @@
     data-simply-behavior="muzeSolidDesignDialog"
     class="ds-dialog connect-dialog muze-solid-design-dialog"
   >
-    <form data-simply-command="connect">
+    <form class="swb-dialog-form" data-simply-command="connect">
       <header class="muze-solid-design-dialog-header">
-        <h2>WebID / connection</h2>
+        <h2 class="swb-dialog-title">WebID / connection</h2>
         <button
           type="button"
           class="ds-button muze-solid-design-dialog-close"
@@ -190,6 +192,7 @@
       <div class="muze-solid-design-dialog-content">
         <label
           >WebID<input
+            class="swb-control swb-labeled-control"
             type="url"
             name="webId"
             data-simply-field="webId"
@@ -199,7 +202,7 @@
         /></label>
         <p>Your profile supplies your storage and preferences locations.</p>
         <section
-          class="logout-section"
+          class="swb-logout-section"
           hidden
           data-simply-field="logoutVisibility"
           data-simply-transform="attributes"

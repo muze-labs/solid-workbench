@@ -4,6 +4,7 @@ import { mkdir, copyFile, writeFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
+import theds from '@muze-nl/theds';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const readable = process.argv.includes('--readable');
 let scriptSuffix = '.min';
@@ -17,9 +18,14 @@ await rm(path.join(root, 'www/assets'), { recursive: true, force: true });
 await mkdir(path.join(root, 'www/assets'), { recursive: true });
 // The maintainer explicitly retires the old entry; no compatibility page.
 await rm(path.join(root, 'www/launcher'), { recursive: true, force: true });
-await copyFile(
-  path.join(root, 'node_modules/@muze-nl/theds/dist/theds.css'),
-  path.join(root, 'www/assets/theds.css')
+// Use the DS's stylesheet composition API without its optional remote fonts.
+// The installed distribution's unterminated import also consumes layer order;
+// composing its named local sheets preserves the rules and explicit layers.
+const localDesignStyles = { ...theds.css };
+delete localDesignStyles.import;
+await writeFile(
+  path.join(root, 'www/assets/theds.css'),
+  await theds.actions.dsBuildSheet.call({ css: localDesignStyles })
 );
 await copyFile(
   path.join(root, 'packages/solid-app-ui/src/feather-icons.svg'),
@@ -72,7 +78,7 @@ for (const name of [
   }
   await writeFile(
     path.join(root, `www/${route}/index.html`),
-    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title><link rel="describedby" type="text/turtle" href="manifest.ttl"><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto"><div id="app">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
+    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title><link rel="describedby" type="text/turtle" href="manifest.ttl"><style>@layer reset, setup, theme, base, component, page, utility;</style><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto swb-${name}"><div id="app" class="swb-root">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
   );
 }
 await writeFile(

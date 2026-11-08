@@ -1,26 +1,26 @@
 <div style="display: contents">
   <p
-    class="muted"
+    class="swb-muted"
     data-simply-field="editing"
     data-simply-transform="attributes"
     data-simply-attributes="hidden"
   >
     Deleted files are hidden; their contents remain in your storage.
   </p>
-  <table class="file-list">
+  <table class="swb-file-list">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Actions</th>
+        <th class="swb-file-heading swb-file-cell">Name</th>
+        <th class="swb-file-heading swb-file-cell">Type</th>
+        <th class="swb-file-heading swb-file-cell">Actions</th>
       </tr>
     </thead>
     <tbody data-simply-list="entries">
       <template
         ><tr>
-          <td>
+          <td class="swb-file-cell">
             <button
-              class="ds-button"
+              class="ds-button swb-file-action"
               data-simply-command="open"
               data-simply-value=":value.url"
             >
@@ -30,10 +30,14 @@
               ></span>
             </button>
           </td>
-          <td data-simply-field="type" data-simply-transform="escape_html"></td>
-          <td>
+          <td
+            class="swb-file-cell"
+            data-simply-field="type"
+            data-simply-transform="escape_html"
+          ></td>
+          <td class="swb-file-cell">
             <button
-              class="ds-button"
+              class="ds-button swb-file-action"
               data-simply-command="selectResource"
               data-simply-value=":value.url"
               hidden
@@ -44,7 +48,7 @@
               Select
             </button>
             <button
-              class="ds-button"
+              class="ds-button swb-file-action"
               data-simply-command="remove"
               data-simply-value=":value.url"
               data-simply-field="edit"
@@ -59,7 +63,7 @@
     </tbody>
   </table>
   <p
-    class="empty"
+    class="swb-empty"
     data-simply-field="empty"
     data-simply-transform="escape_html"
   ></p>

@@ -23,7 +23,7 @@ export const contactSession = {
     async initialize() {
       this.actions.initializeList();
       this.runtime.widget = this.api.profileView(
-        this.container.querySelector('.contact-profile'),
+        this.container.querySelector('.swb-contact-profile'),
         {
           app: this,
           emptyText: 'Select a contact to view their profile.',

@@ -9,7 +9,7 @@ export const profileEditing = {
       if (this.actions.profileBeginEdit()) {
         requestAnimationFrame(() =>
           this.container
-            .querySelector('.profile-card form')
+            .querySelector('.swb-profile-card form')
             .elements.name.focus()
         );
       }

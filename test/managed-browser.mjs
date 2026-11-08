@@ -271,7 +271,7 @@ async function changePodWorkspace(resource) {
   workspaceETag = '"external-' + resource.split('/').pop() + '"';
 }
 async function connect(page, app) {
-  await click(page, '.account-button');
+  await click(page, '.swb-account-button');
   await click(page, '[data-simply-command=connectDialog]');
   await submit(page, '.connect-dialog form', { webId });
   await wait(page, 'window.solid' + app + '?.host.session');
@@ -300,7 +300,7 @@ async function openFiles() {
       (target) => target.targetId
     )
   );
-  await click(launcher, '.saved-apps a[href^="' + filesBase + '"]');
+  await click(launcher, '.swb-saved-apps a[href^="' + filesBase + '"]');
   for (let i = 0; i < 100; i++) {
     const target = (await control.send('Target.getTargets')).targetInfos.find(
       (item) => item.url.startsWith(filesBase) && !before.has(item.targetId)
@@ -338,13 +338,13 @@ try {
   await connect(launcher, 'Launcher');
   await wait(launcher, 'window.solidLauncher.persistence.prepared');
   await authorizeWorkspace(launcher);
-  await submit(launcher, '.saved-apps form', {
+  await submit(launcher, '.swb-saved-apps form', {
     name: 'Managed Files',
     url: filesBase
   });
   await wait(
     launcher,
-    'document.querySelector(".saved-apps").textContent.includes("Managed Files")'
+    'document.querySelector(".swb-saved-apps").textContent.includes("Managed Files")'
   );
   let child = await openFiles();
   files = child.page;
@@ -354,8 +354,8 @@ try {
     files,
     'document.querySelector("tbody").textContent.includes("notes")'
   );
-  await click(launcher, '.managed-workspace input[type=checkbox]');
-  await submit(files, '.file-controls form[data-simply-command=browse]', {
+  await click(launcher, '.swb-managed-workspace input[type=checkbox]');
+  await submit(files, '.swb-file-controls form[data-simply-command=browse]', {
     url: base + '/storage/notes/'
   });
   await wait(
@@ -374,12 +374,12 @@ try {
   await wait(launcher, pickerWindow + '.solidFiles?.host.managed?.ready');
   await wait(
     launcher,
-    pickerWindow + '.document.querySelector(".picker-request").hidden===false'
+    pickerWindow + '.document.querySelector(".swb-picker-request").hidden===false'
   );
   assert.equal(
     await evaluate(
       files,
-      'return document.querySelector(".picker-request").hidden;'
+      'return document.querySelector(".swb-picker-request").hidden;'
     ),
     true,
     'An embedded task must not replace the independently open Files view'
@@ -396,7 +396,7 @@ try {
   assert.equal(
     await evaluate(
       launcher,
-      'return document.querySelector(".launch-profile [role=status]").textContent;'
+      'return document.querySelector(".swb-launch-profile [role=status]").textContent;'
     ),
     '',
     'Cancelling selection quietly leaves the caller ready for another request'
@@ -409,13 +409,13 @@ try {
   await wait(launcher, pickerWindow + '.solidFiles?.host.managed?.ready');
   await wait(
     launcher,
-    pickerWindow + '.document.querySelector(".picker-request").hidden===false'
+    pickerWindow + '.document.querySelector(".swb-picker-request").hidden===false'
   );
   await evaluate(
     launcher,
     'const form=' +
       pickerWindow +
-      '.document.querySelector(".file-controls form[data-simply-command=browse]");form.elements.url.value=' +
+      '.document.querySelector(".swb-file-controls form[data-simply-command=browse]");form.elements.url.value=' +
       JSON.stringify(base + '/storage/notes/') +
       ';form.requestSubmit();'
   );
@@ -441,17 +441,17 @@ try {
       launcher,
       'const provider=' +
         pickerWindow +
-        ';const rect=provider.document.querySelector(".picker-request .actions").getBoundingClientRect();return provider.document.documentElement.scrollWidth<=provider.innerWidth && rect.bottom<=provider.innerHeight;'
+        ';const rect=provider.document.querySelector(".swb-picker-actions").getBoundingClientRect();return provider.document.documentElement.scrollWidth<=provider.innerWidth && rect.bottom<=provider.innerHeight;'
     )
   );
   await evaluate(
     launcher,
     pickerWindow +
-      '.document.querySelector(".file-list tbody tr [data-simply-command=selectResource]").click();'
+      '.document.querySelector(".swb-file-list tbody tr [data-simply-command=selectResource]").click();'
   );
   await wait(
     launcher,
-    'document.querySelector(".launch-profile [name=resource]").value===' +
+    'document.querySelector(".swb-launch-profile [name=resource]").value===' +
       JSON.stringify(base + '/storage/notes/note.ttl')
   );
   await launcher.send('Emulation.setDeviceMetricsOverride', {
@@ -465,7 +465,7 @@ try {
   await click(launcher, '[data-simply-command=saveWorkspace]');
   await wait(
     launcher,
-    'document.querySelector(".managed-workspace [role=status]").textContent.includes("saved to your Solid Pod")'
+    'document.querySelector(".swb-managed-workspace [role=status]").textContent.includes("saved to your Solid Pod")'
   );
   assert(
     !records.get('/workspace.ttl').includes('retired pre-release snapshot')
@@ -514,7 +514,7 @@ try {
   await wait(
     launcher,
     '!document.querySelector("[data-simply-command=saveWorkspace]").disabled && ' +
-      'document.querySelector(".managed-workspace [role=status]")' +
+      'document.querySelector(".swb-managed-workspace [role=status]")' +
       '.textContent.includes("saved to your Solid Pod")'
   );
   assert.equal(puts.length, beforeSlowSave + 1);
@@ -530,9 +530,9 @@ try {
   await click(launcher, '[data-simply-command=closeWorkspace]');
   await wait(
     launcher,
-    'document.querySelector(".managed-workspace [role=status]")' +
+    'document.querySelector(".swb-managed-workspace [role=status]")' +
       '.textContent.includes("Managed Files") && ' +
-      'document.querySelector(".managed-workspace [role=status]").textContent.includes("timed out")'
+      'document.querySelector(".swb-managed-workspace [role=status]").textContent.includes("timed out")'
   );
   assert.equal(puts.length, beforeTimeout);
   assert(
@@ -558,7 +558,7 @@ try {
   await click(launcher, '[data-simply-command=saveWorkspace]');
   await wait(
     launcher,
-    'document.querySelector(".managed-workspace [role=status]")' +
+    'document.querySelector(".swb-managed-workspace [role=status]")' +
       '.textContent.includes("saved to your Solid Pod")'
   );
   assert.equal(await evaluate(files, 'return window.replayedRestore;'), 0);
@@ -607,7 +607,7 @@ try {
     await click(launcher, '[data-simply-command=closeWorkspace]');
     await wait(
       launcher,
-      'document.querySelector(".suite-status").textContent' +
+      'document.querySelector(".swb-suite-status").textContent' +
         '.toLowerCase().includes(' +
         JSON.stringify(message) +
         ')'
@@ -631,7 +631,7 @@ try {
   await wait(launcher, 'window.solidLauncher?.workspace');
   await wait(
     launcher,
-    'document.querySelector(".managed-workspace [role=status]")' +
+    'document.querySelector(".swb-managed-workspace [role=status]")' +
       '.textContent.toLowerCase().includes("fetch")'
   );
   await wait(
@@ -669,7 +669,7 @@ try {
   await click(launcher, '[data-simply-command=closeWorkspace]');
   await wait(
     launcher,
-    'document.querySelector(".managed-workspace [role=status]")' +
+    'document.querySelector(".swb-managed-workspace [role=status]")' +
       '.textContent.includes("Review Pod conflict")'
   );
   assert.equal(await evaluate(launcher, 'return window.authOperations;'), 0);
@@ -728,7 +728,7 @@ try {
   );
   await wait(
     launcher,
-    'document.querySelector(".managed-workspace [role=status]")' +
+    'document.querySelector(".swb-managed-workspace [role=status]")' +
       '.textContent.includes("saved to your Solid Pod")'
   );
   delayPut = 0;
@@ -746,7 +746,7 @@ try {
   await click(launcher, '[data-simply-command=usePodWorkspace]');
   await wait(
     launcher,
-    'document.querySelector(".launch-profile [name=resource]")' +
+    'document.querySelector(".swb-launch-profile [name=resource]")' +
       '.value===' +
       JSON.stringify(base + '/use-pod-version')
   );
@@ -810,7 +810,7 @@ try {
     'document.querySelector("tbody").textContent.includes("notes") || ' +
       'document.querySelector("tbody").textContent.includes("note.ttl")'
   );
-  await submit(files, '.file-controls form[data-simply-command=browse]', {
+  await submit(files, '.swb-file-controls form[data-simply-command=browse]', {
     url: base + '/storage/notes/'
   });
   await wait(

@@ -1,11 +1,11 @@
 <div style="display: contents">
-  <section class="managed-workspace">
+  <section class="swb-managed-workspace">
     <h2>Workspace</h2>
-    <p class="muted">
+    <p class="swb-muted">
       Apps opened here belong to this workspace. Allow popups to restore several
       apps. Participating apps share restoration state with Solid Workbench.
     </p>
-    <div class="actions">
+    <div class="swb-actions">
       <button class="ds-button" data-simply-command="restoreWorkspace">
         Restore apps
       </button>
@@ -38,6 +38,7 @@
       </button>
     </div>
     <p
+      class="swb-workspace-status"
       role="status"
       data-simply-field="workspaceMessage"
       data-simply-transform="escape_html"
@@ -70,6 +71,7 @@
         <details>
           <summary>Local workspace</summary>
           <pre
+            class="swb-workspace-source"
             data-simply-field="localVersion"
             data-simply-transform="escape_html"
           ></pre>
@@ -77,6 +79,7 @@
         <details>
           <summary>Pod workspace</summary>
           <pre
+            class="swb-workspace-source"
             data-simply-field="podVersion"
             data-simply-transform="escape_html"
           ></pre>
@@ -86,7 +89,7 @@
           version closes managed apps and replaces this local session, including
           its drafts. Saved app data is unchanged.
         </p>
-        <div class="actions">
+        <div class="swb-actions">
           <button
             class="ds-button"
             data-simply-command="keepLocalWorkspace"
@@ -110,20 +113,22 @@
     </section>
     <details class="muze-solid-launcher-workspace-apps">
       <summary>Open apps and permissions</summary>
-      <ul class="person-list" data-simply-list="workspaceEntries">
+      <ul class="swb-person-list" data-simply-list="workspaceEntries">
         <template
-          ><li>
+          ><li class="swb-list-item swb-workspace-entry">
             <span
+              class="swb-workspace-label"
               data-simply-field="label"
               data-simply-transform="escape_html"
             ></span>
             <span
-              class="muted"
+              class="swb-muted"
               data-simply-field="status"
               data-simply-transform="escape_html"
             ></span>
             <label
               ><input
+                class="swb-control swb-labeled-control swb-workspace-permission"
                 type="checkbox"
                 data-simply-field="allowBrowse"
                 data-simply-command="allowBrowse"
@@ -132,14 +137,14 @@
               Allow resource selection</label
             >
             <button
-              class="ds-button"
+              class="ds-button swb-list-action"
               data-simply-command="restoreInstance"
               data-simply-value=":value.id"
             >
               Open / focus
             </button>
             <button
-              class="ds-button"
+              class="ds-button swb-list-action"
               data-simply-command="closeInstance"
               data-simply-value=":value.id"
             >
