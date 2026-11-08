@@ -1,3 +1,4 @@
+import { checkEventBindings } from './support/events.mjs';
 import { checkStyleOwnership } from './support/style-ownership.mjs';
 import { recordVisualStyles } from './support/visual-styles.mjs';
 import {
@@ -318,6 +319,7 @@ try {
     if (!inspectedFeatures.has(name)) {
       await checkFeatureSources(page, name);
       await checkCurrentActions(page);
+      await checkEventBindings(page);
       await checkStyleOwnership(page);
       inspectedFeatures.add(name);
     }

@@ -1077,3 +1077,53 @@ The existing style-ID mechanism, named feature ownership and checked layouts/dat
 are accepted. The documented workspace timing concern remains unresolved; the
 final pass does not erase its evidence. The unrelated untracked design copy is
 left untouched.
+
+
+## Lifecycle ownership cycle: design first, 2026-11-08
+
+The maintainer agrees to the lifecycle-ownership recommendation and explicitly
+requests design and discussion before implementation, as part of the same cycle.
+CYC-20261108-QG24H-92 is Active on its mechanically verified matching branch from
+main fd7a6e6b943c1d862110107bb0353ba91bd3d3c6. SRC93 retains the instruction;
+DES94 proposes the library-owned binding contract and first migration boundary.
+Its API, activation semantics and lower-library scope remain for discussion.
+No product/dependency change, external library edit/release, commit, merge or
+push is authorized by this design phase. Preserve the pending assessment and
+unrelated untracked design copy. This continues stage-one moldability; further
+broker progression and stage-two documents/signing work remain later.
+
+
+## CYC92 design clarification: separate event package, 2026-11-08
+
+The maintainer selects an events section supported by a separate experimental
+package injected into Workbench's SimplyFlow composition. Integrating it into
+SimplyFlow core is deferred until it proves useful. SRC95 retains the decision;
+DES94 now proposes a private workspace package with explicit installation and
+package-owned activation/disposal. This supersedes the upstream-first design
+option. API details remain in discussion; no implementation, publication or
+external repository changes have started.
+
+
+## CYC92 implemented and ready for evaluation, 2026-11-08
+
+After choosing the package boundary and custom EventTarget/subscription support,
+the maintainer confirms “Ok, lets try this design” (SRC96). This supersedes the
+earlier design-only restriction. IMP97 implements the private experimental
+simplyflow-events package and four Workbench/account event migrations; EVD98
+records final passing checks, all five Chrome suites, custom-source/lifecycle
+contracts and measured costs. No core SimplyFlow or external version change.
+The actual branch matches CYC92. Human acceptance remains pending; no commit,
+merge, push or publication is authorized. Previously retained workspace timing,
+full offline/reload-draft, account ownership and IDE follow-ups remain future work.
+
+
+## Lifecycle event extension accepted, 2026-11-08
+
+The maintainer requests “accepted, commit, merge and push please”. ACC99 records
+acceptance of CYC92, IMP97 at 08c7eaf78c109dadccb31a1f9d1364ae7a070003 and EVD98
+at 8988e5f753461c23fb9bfdc8062d2dd672057a04. CYC92 is Accepted, superseding earlier
+Active/pending/no-commit statements. Normal direct main integration instead of a
+PR and pushing main are authorized; package publication, core integration and a
+new implementation cycle are not requested. Existing limits/failures remain in
+evidence, including narrow download headroom and the unresolved workspace timing
+concern. No product change follows the final passing evaluation snapshot.

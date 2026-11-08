@@ -9,7 +9,8 @@ export function exposeDefinition(view, options, sources) {
     'shortcuts',
     'behaviors',
     'routes',
-    'transformers'
+    'transformers',
+    'events'
   ];
   view.definition = {
     components: options.components,
@@ -25,10 +26,14 @@ export function exposeDefinition(view, options, sources) {
   const destroy = view.destroy.bind(view);
   view.destroy = () => {
     if (!view.destroyed) {
-      if (Object.hasOwn(view.actions || {}, 'cleanup')) {
-        view.actions.cleanup();
+      try {
+        if (Object.hasOwn(view.actions || {}, 'cleanup')) {
+          view.actions.cleanup();
+        }
       }
-      destroy();
+      finally {
+        destroy();
+      }
     }
   };
   return view;

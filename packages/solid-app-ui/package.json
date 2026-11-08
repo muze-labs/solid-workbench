@@ -13,6 +13,7 @@
     "@muze-labs/solid-app-data": "0.1.0",
     "@muze-labs/solid-preferences": "0.1.0",
     "@muze-labs/solid-profile": "0.1.0",
-    "@muze-labs/solid-design": "0.1.0"
+    "@muze-labs/solid-design": "0.1.0",
+    "@muze-labs/simplyflow-events": "0.1.0"
   }
 }

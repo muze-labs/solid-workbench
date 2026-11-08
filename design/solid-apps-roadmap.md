@@ -147,6 +147,16 @@ feature CSS and preserves originals/ID linking, without implementing an IDE or
 persistent override layer. EVD90 retains final preservation/visual checks and
 known timing limits; the maintainer requests commit, merge and push.
 
+CYC-20261108-QG24H-92 is **Accepted** (ACC99), with commit, normal direct main
+merge and push requested. Its design
+phase is part of the cycle. After discussion the maintainer selects a separate
+experimental events package injected into Workbench's SimplyFlow composition,
+with custom EventTarget/subscription sources; core integration remains deferred.
+IMP97/EVD98 record the four Workbench/account event migrations and lifecycle,
+source, preservation and download evidence. Element behaviors, protocol listeners
+and live descriptor rebinding are not completed by this experiment. No package
+publication or core promotion is requested.
+
 Track these follow-ups in the review's recommended order:
 
 1. **Reconcile the design documents.** Resolve the review's described personal

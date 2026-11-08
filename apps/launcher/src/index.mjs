@@ -1,3 +1,4 @@
+import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   muzeSolidDesignDialog,
   muzeSolidDesignListDetails
@@ -97,6 +98,7 @@ const definition = {
 };
 const ui = app(definition);
 exposeDefinition(ui, definition, sources);
+installEvents(ui);
 ui.definition.modules = {
   picker: {
     source: pickerSource,
