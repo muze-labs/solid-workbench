@@ -35,6 +35,13 @@ claims unless explicitly identified as existing behavior.
 
 ## Standing feature guardrails
 
+Temporary CYC100 exception, 2026-11-08: after readable Workbench reached 205233
+gzip bytes, the maintainer authorizes expanding the budget for now and revisiting
+it later. This cycle uses a temporary 220000-byte ceiling for readable Workbench;
+the final readable graph is 217367 bytes. Production and other app graphs retain the original 200000-byte ceiling. Retain
+actual full-graph/cold-task costs and revisit the allowance; the standing target
+below remains the long-term direction.
+
 Confirmed by the maintainer on 2026-11-07 after discussing focused apps,
 local-first/mobile-first design, accessibility and slow-connection usability.
 These are standing planning and delivery constraints for both roadmap stages,
@@ -551,8 +558,10 @@ preserving unknown RDF. This report does not establish a root cause or a fix.
 ## Workspaces, Launcher dashboard and logout
 
 Support multiple named workspaces and offer workspace choice when more than one
-is available. Creating a workspace and switching workspaces belong in Launcher's
-app-specific preferences. Workspace identity, discovery through linked preferences,
+is available. The 2026-11-08 discussion settles placement: create/delete
+workspaces in Workbench-specific Preferences; switch among available workspaces
+from the Launcher dropdown. Workspace identity,
+discovery through linked preferences,
 Pod/local persistence and switching recovery extend the existing
 [Pod-synced workspace direction](solid-capability-broker-roadmap.md#retained-roadmap-item--pod-synced-workspaces).
 Keep each workspace's shortcuts, resource contexts, pending edits and restoration
@@ -592,6 +601,146 @@ reopen without mixing state, and check the specified Launcher/child logout
 behavior. With multiple profile storage roots, the default home contains only
 the corresponding Files links; adding a shortcut through the dialog adds that
 item without introducing permanent built-in app tiles.
+
+### Workspace home-screen direction under discussion, 2026-11-08
+
+The maintainer explicitly leaves cycle selection open to discuss the eventual
+product. Use a desktop/phone start screen as the familiar Launcher model, with
+recognizable application icons supplied by application manifests and editable
+or replaceable by the user. Do not infer a finalized manifest vocabulary, icon
+format, editing mechanism or layout from that direction. Keep arbitrary external
+app links usable; how those without a manifest obtain an icon is still to design.
+
+Each workspace has its own Launcher/shortcut collection and an editable title;
+the default title may be Solid Workbench. Users can create and switch between
+workspaces, for example Work, Private or a particular interest. The maintainer
+initially suggests listing workspaces in a Launcher dropdown. They subsequently
+clarify: limit workspace creation and deletion to the Workbench Preferences
+dialog, and add only workspace-switching entries to the Launcher dropdown.
+This refines the earlier Preferences-only direction; it does not put app
+navigation into the shared account menu. The maintainer confirms that deleting
+a workspace removes only its launcher, shortcuts and workspace-specific settings;
+address books, files and other linked data remain intact, including data reused
+by other workspaces. This does not authorize cascading deletion of linked data.
+The maintainer additionally specifies a protected default workspace: our UI
+must not allow deleting it. If someone deletes that workspace directly in
+storage, use the initial-load behavior to create a new default workspace,
+including the established default launcher/address-book setup. A title change
+does not itself decide which workspace is protected; stable identification and
+recovery details remain to design. Confirm actual absence rather than treating
+an offline, permission, authentication or transient read failure as deletion.
+The maintainer also prohibits deleting the currently active workspace through
+our UI. Only inactive, non-default workspaces can be deleted; users must switch
+away first, using the normal state-preserving switch flow. There is no automatic
+switch as part of deletion. Verify eligibility when deletion is performed, not
+only when the Preferences dialog opens. These are UI rules and recovery
+behavior, not storage ACLs that prevent other clients from deleting resources.
+Recovery of unsaved state belonging to an inactive workspace still needs design;
+retaining linked datasets does not by itself preserve every draft.
+
+For someone with no workspace, provide a default workspace and Launcher seeded
+with File-manager shortcuts to the defined storage endpoints. Retain the earlier
+per-advertised-storage-root direction and preserve existing user choices. This
+does not assume that storage endpoints can be discovered while offline or that
+workspace creation should copy data. The app-store app or menu entry comes later;
+a catalog is not required merely to provide the initial launcher.
+
+A workspace may have its own contacts, storage, preferences and apps. Treat it
+as a context for useful tasks while keeping native RDF and existing linked
+preferences authoritative. The following discussion settles shared versus
+app-specific settings; detailed per-app context selection remains to design.
+Do not infer duplicated contacts or an enforced access-security boundary from
+a workspace name.
+
+The maintainer settles identity and switching in the following clarification:
+design for a user with **one WebID**. Multiple WebIDs must remain usable, but
+only one is selected at a time. Work/Private/interest workspaces are contexts
+under the selected identity; changing workspace does not itself change WebID or
+require another account. Account selection is a separate operation. Local caches,
+drafts and workspace records must retain their owner so later account selection
+cannot silently reuse or write another identity's state. The precise existing
+account/logout integration remains to design, rather than being claimed solved.
+
+Switching workspace **closes the current workspace's apps and restores the new
+workspace's apps**. Do not design simultaneous active app sets as the default.
+Preserve each workspace's pending edits and restoration state; design checkpoint,
+close, activation and restore ordering with cancellation, offline/authentication
+failure and partial restoration recovery before implementing it. A failed remote
+checkpoint must not silently discard recoverable local work. The exact recovery
+interaction and local-versus-Pod acknowledgement policy are still to design.
+
+#### Address books, private endpoints and settings scope
+
+The maintainer confirms the following in the ongoing 2026-11-08 discussion:
+
+- A workspace may select multiple address books, and books can be reused across
+  workspaces. It has a default address book. For a new workspace, initially reuse
+  an existing default address book; create one if none exists. Do not create a
+  separate empty book for every workspace. The definition/discovery of an
+  existing default, initial creation location, offline setup and recovery still
+  need design. Current Contacts opens one local collection and attaches it on
+  explicit sync to contactsResource or apps/solid-apps/contacts.ttl under the first
+  profile storage root. It does not currently discover multiple books or create
+  a workspace, so that broader setup behavior is a requirement, not a claim of
+  existing support. A Share action should invoke a
+  Contacts-provided contact-selection dialog, following the Files picker pattern.
+  The dialog initially shows the current workspace's default book and lets the
+  user choose another book. Recipient selection remains future capability work;
+  this discussion does not implement a sharing/permission editor or change the
+  broker phase order. Keep provider-owned selection distinct from the calling
+  app's responsibility for the requested sharing operation.
+- The maintainer subsequently confirms picker-local browsing of another
+  workspace's address books. The active Workbench workspace stays unchanged;
+  do not close the caller or abandon the pending sharing task. Clearly identify
+  the workspace/address book being browsed. Returning a selected contact does
+  not itself perform the calling app's sharing operation.
+- The ordinary Contacts app initially shows only the workspace's default
+  address book and allows switching books. The maintainer explicitly requests
+  search across all address books and across all workspaces as additional
+  options. Design three clear scopes: the current book, all books in the current
+  workspace, and books across all workspaces under the selected WebID. Do not
+  silently widen a normal book search. Result source labels, shared-book
+  deduplication and incomplete/offline search behavior remain to design; an
+  all-workspaces search does not switch the active workspace or identity.
+- Profile-advertised storage endpoints provide the base set. A workspace can add
+  further endpoints privately, without publishing them into the public profile.
+  Workspace additions are not a new identity, an implicit access grant or a
+  requirement to create/copy data. Discovery, endpoint management, automatic
+  shortcut creation and behavior when an endpoint is unavailable remain to design.
+- Keep shared preferences shared across workspaces. App-specific preferences can
+  be linked to a workspace, including app data-source choices. This supersedes
+  the proposed workspace-specific overrides of common theme/language/text-size
+  settings: those remain common. Use the existing linked-preferences authority;
+  the exact RDF links, fallback for apps with no workspace context and editing
+  interaction have not yet been selected.
+
+Active widgets are a stretch goal, outside the MVP: optional pieces run when the
+Launcher starts and supply UI in a small area, inspired by Windows 8 Metro.
+Their lifecycle, rendering/capability integration, data access, failure isolation,
+permissions, offline behavior, accessibility and download costs need later design.
+No third-party script execution or embedding model is selected by this idea.
+
+This discussion establishes direction and open choices, not a selected cycle,
+implementation design, immediate workspace/onboarding/widget delivery or approval
+to commit, merge or publish. Continue with ordinary user flows and target layouts
+before choosing the implementation boundary.
+
+### Everyday Launcher UI before diagnostic readability work
+
+Clarified by the maintainer on 2026-11-08 after CYC92 integration. Establish a
+clear design of the eventual everyday Launcher/Workbench UI before selecting
+readability refactors around current workspace status and broker-facing controls.
+These technical details should not dominate the ordinary home screen; a future
+diagnostic panel may provide them. This reorders the proposed next work rather
+than accepting the current interface as the target.
+
+Design the ordinary shortcut/workspace/account tasks first, with phone and
+keyboard interaction, and distinguish primary tasks, secondary operations and
+technical diagnostics. Preserve reachable save/sync, permissions, unsaved-work
+feedback and failure/conflict recovery; those are user needs even when their
+underlying protocol details are diagnostic. Review the target and first delivery
+slice before implementation. No debug-panel design, control-removal list or
+implementation cycle is selected by this clarification.
 
 ## MVP UI and reusable design components
 
@@ -958,3 +1107,14 @@ best-effort prepared write. Subsequent roadmap additions above refine named-work
 home-screen and catalog behavior. Named workspaces, continuous automatic app-data
 sync, PWA rollout and collaboration still require future implementation cycles.
 The [managed-workspace design](solid-managed-workspace.md) records the boundary.
+
+## Workspace foundation accepted, 2026-11-08
+
+CYC100 is Accepted (ACC105). The foundation includes named workspace launcher
+homes, manifest/Feather icons, Preferences management, protected switching and
+deletion, private storage/app settings and locally retained backgrounds. Shared
+menu items stay first and workspace entries have distinguishing icons. The
+final light theme uses dark home text without shadow; dark theme retains its
+shadow. Contacts multi-book/search/selection, widgets and app store remain future
+work. Earlier proposed/unimplemented wording records design history; the cycle's
+source, design, implementation and evidence define the delivered boundary.

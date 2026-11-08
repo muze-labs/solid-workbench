@@ -1127,3 +1127,256 @@ PR and pushing main are authorized; package publication, core integration and a
 new implementation cycle are not requested. Existing limits/failures remain in
 evidence, including narrow download headroom and the unresolved workspace timing
 concern. No product change follows the final passing evaluation snapshot.
+
+
+## Launcher target UI before readability refactor, 2026-11-08
+
+After CYC92 integration, the maintainer corrects the proposed next-cycle example:
+workspace status is diagnostic/debug information, and the actual eventual
+Launcher UI needs a clear design before refactoring it. The readability-first
+recommendation is superseded. The assessment/roadmap retain the sparse everyday
+home direction and distinguish technical diagnostics from necessary user-facing
+save/permissions/recovery flows. No new cycle or implementation is selected;
+a debug panel is a design possibility, not an approved implementation.
+
+
+## Workspace home-screen discussion; cycle choice open, 2026-11-08
+
+The maintainer explicitly asks to leave the cycle decision open. Their direction
+is a desktop/phone-like Launcher, manifest-provided recognizable icons that users
+can change, named workspaces with their own launcher/icons and editable title,
+and a default Solid Workbench workspace for new users with Files shortcuts to
+defined storage endpoints. They suggest a workspace list in the Launcher's
+dropdown, revisiting the earlier Preferences-only placement; placement is still
+a proposal. An app-store entry comes later. Startup widgets inspired by Windows
+8 Metro are a stretch goal outside the MVP.
+
+Work, Private and interest-based workspaces may have their own contacts, storage,
+preferences and apps. Whether these contexts share identity/default settings,
+how app data contexts are selected and what happens to open apps on a switch
+remain open. Do not silently choose separate WebIDs, copied datasets, simultaneous
+workspace operation or a widget execution/authority model. The suite roadmap
+retains this direction and distinguishes proposals from settled constraints.
+No cycle, implementation, commit, merge or publication is requested here.
+
+
+## One selected WebID and workspace switch lifecycle confirmed, 2026-11-08
+
+The maintainer clarifies: “A user should have just one WebID, we need to design
+around that assumption. If you have multiple WebID's the system should still
+work, but you select just one at a time.” They also confirm that switching
+workspace closes the current apps and restores the new workspace's apps.
+
+This settles the two open questions in the preceding home-screen discussion.
+Design for one selected identity across its workspace contexts; account selection
+is separate from workspace switching. Do not default Work/Private contexts to
+different WebIDs or simultaneous active app sets. Preserve owner identity and
+recoverable state; checkpoint/close/restore failure ordering remains to design.
+Shared settings versus workspace overrides, per-app data contexts, manifest/icon
+handling and final menu layout remain open. Cycle selection is still explicitly
+open; no implementation, commit, merge or publication is requested.
+
+
+## Address books, workspace storage and preferences clarified, 2026-11-08
+
+The maintainer confirms multiple selected address books per workspace, with a
+default book and reuse across workspaces. Share should open a Contacts-owned
+picker like Files selection, initially showing this workspace's default book
+and allowing another book. Accessing a book from another workspace inside that
+picker is tentative and needs careful design; do not infer an actual active
+Workbench switch that closes the requesting app. Recipient selection/sharing
+remain future work and no broker phases are reordered.
+
+Profile-discovered endpoints supply the base storage set; workspaces may add
+private endpoints without publishing them in the public profile. Shared
+preferences stay shared, while app-specific preferences can be workspace-linked.
+This rejects the earlier proposed per-workspace common-appearance overrides.
+Native linked preferences remain authoritative; representation and standalone-app
+fallback are still to design. The suite roadmap records settled direction and
+open choices. Cycle selection remains open; no implementation/commit is requested.
+
+
+## Contacts browsing and explicit search scope confirmed, 2026-11-08
+
+The maintainer answers “yes” to picker-local browsing of another workspace's
+address books while leaving the active Workbench workspace unchanged. This
+supersedes the tentative status above. For ordinary Contacts they specify:
+“show default only, allow switching, have an explicit search across all address
+book option, and search across all workspaces as well”.
+
+The normal initial view is the workspace's default book. Switching books and
+broader searches are explicit choices. The roadmap distinguishes current-book,
+all-books-in-workspace and all-workspaces scopes under the selected WebID;
+source labelling, deduplication and incomplete/offline results remain to design.
+These choices do not select a cycle or authorize implementation/commit.
+
+
+## Workspace defaults and management placement clarified, 2026-11-08
+
+The maintainer chooses reusing an existing default address book for a new
+workspace, creating one only when none exists. They ask whether this is already
+how it works. Read-only code inspection finds Contacts opens one local collection;
+explicit Sync attaches it to configured contactsResource or the conventional
+apps/solid-apps/contacts.ttl under the first profile storage root. Multiple-book
+discovery and workspace initialization are not implemented; do not claim that
+finding/creating a default across books already exists.
+
+The maintainer specifies workspace creation and deletion in Workbench-specific
+Preferences, with only available-workspace switching entries added to the
+Launcher dropdown. This settles the prior menu-placement question. The shared
+account menu keeps its existing role. Deletion data retention, active/last
+workspace behavior and default-book discovery/creation details remain to design.
+Cycle selection remains open; no product implementation or commit is requested.
+
+
+## Workspace deletion retains linked data, 2026-11-08
+
+The maintainer answers “Yes” to deleting only the workspace's launcher,
+shortcuts and workspace-specific settings while retaining address books, files
+and other linked data. Shared/referenced datasets must not be deleted as a
+consequence of workspace deletion. Active/last-workspace handling and protection
+of recoverable drafts remain to design. This is product-direction clarification,
+not implementation or a selected cycle.
+
+
+## Protected default workspace and missing-resource recovery, 2026-11-08
+
+The maintainer specifies that the default workspace cannot be deleted through
+our UI. If someone deletes it directly in storage, revert to initial-load
+behavior and create a new default workspace. This settles last-workspace
+availability through a protected default, without claiming storage-level
+protection. Use established initial launcher/default-address-book behavior;
+retain linked data. Stable default identity, positive missing-resource evidence,
+offline/auth-failure recovery and deletion of an active non-default workspace
+remain design details. Do not infer deletion from an unsuccessful read. No
+cycle or implementation is selected by this clarification.
+
+
+## Active workspace protected from UI deletion, 2026-11-08
+
+The maintainer says: “Lets make it impossible to delete the current active
+workspace as well, that avoids the whole problem.” Only inactive, non-default
+workspaces may be deleted through our UI. Users first switch away using the
+normal preservation/close/restore flow; deletion itself does not switch the
+workspace. This settles the active-workspace deletion question above. Linked
+data remains intact, the default remains protected, and confirmed external
+default deletion still invokes initial setup. No cycle or implementation is
+selected; details of recoverable inactive drafts remain for design.
+
+
+## Workspace foundation selected and temporary budget allowance, 2026-11-08
+
+The maintainer authorizes starting the cycle and selects workspace/Launcher
+foundation first, deferring multi-book Contacts, cross-workspace search and
+recipient capability work. CYC100 is Active on its matching verified branch;
+SRC101/DES102 retain product decisions and implementation boundary. After the
+readable Workbench graph measures 205233 gzip bytes, the maintainer explicitly
+allows budget expansion for now, to revisit later. Use a temporary 215000-byte
+ceiling for that variant; other graphs remain at 200000. Keep actual metrics and
+retain the budget follow-up. No separate diagnostic app, commit, integration or
+publication is selected. Prior cycle-selection-open notes are superseded.
+
+
+## CYC100 foundation evaluation, 2026-11-08
+
+IMP103 implements the named workspace directory, private workspace app context,
+Preferences management, home icons/manifests and protected switching/deletion.
+Default book references are reused; multiple-book discovery/provisioning/search
+and contact selection remain the next scoped design discussion. EVD104 records
+native RDF preservation/recovery, phone/keyboard checks and download evidence.
+The matching cycle branch remains isolated and Active awaiting human acceptance;
+no commit or integration is authorized. Keep readable Workbench budget reduction
+visible despite the temporary allowance. Earlier discussion-only/open-cycle
+statements in this document are historical and superseded by the cycle selection.
+
+## CYC100 Launcher UI review correction, 2026-11-08
+
+The maintainer rejects the duplicate title, home switch/save toolbar and expanding
+home sections. Retain the original header as the sole active-workspace title;
+workspace choices go in its existing dropdown only when there are multiple
+workspaces. Add shortcut is an icon tile. Preferences now gives access to a
+Launcher-owned Diagnostics dialog; shortcut options use dialogs. Tabs remain an
+optional future preference-layout choice. This is a correction inside Active
+CYC100, not human acceptance. SRC101/DES102/IMP103/EVD104 retain the design and
+verification; no persistence contract, commit or integration is selected.
+
+## Workspace-switch tab activation, 2026-11-08
+
+The maintainer reports restored tabs taking focus. Chrome testing reproduces it;
+self-focus and named-context attempts do not regain tab focus after native opens
+consume transient activation. After the browser limitation is explained, the
+maintainer selects “Keep tabs and accept browser-controlled focus”. Normal tab
+restoration remains; ineffective workarounds are removed. This disposes of the
+focus requirement without changing app presentation preferences or accepting the
+whole cycle. EVD104 retains the failed probes and revised two-app scenario.
+
+## Confirmed Launcher background review, 2026-11-08
+
+The maintainer requests the shared Feather sprite from poef/solid-apps, matching
+the-ds SVG/use classes, common menu items first, and distinguishing workspace
+icons. They explicitly confirm the proposed workspace-specific backgrounds:
+None, six reused preset photos, URL or upload; local image retention through
+reload/offline use and upload with Save to Pod. Main state stays native RDF.
+A narrow binary CacheStorage bridge fills the installed Turtle-only local-source
+gap; Metro owns HTTP. Images use the configured workspace folder's existing Pod
+permissions; no new ACL editor or claim of verified provider privacy is added.
+
+The new readable Workbench graph measures 216803 bytes. The existing temporary
+budget-expansion authorization is applied with a 220000 local ceiling for that
+variant, superseding the prior 215000 cap for this revision. Other graphs retain
+200000; budget reduction remains open. CYC100 remains Active, with no overall
+acceptance, commit or integration requested. Other repositories are read-only
+references; their existing user work is preserved.
+
+## Background failure was a stale server process, 2026-11-08
+
+The maintainer's Photo 6 failure is traced to the old port-4174 dev server still
+returning application/octet-stream after JPEG MIME support had been added in
+source. Restarting the verified checkout-owned process yields image/jpeg and
+passes an isolated actual-server Photo 6 apply/reload check. Keep the image
+validation and retained workspace choice. Rebuilding assets does not reload the
+Node server's startup configuration; restart it after server changes. The cycle
+remains Active and uncommitted.
+
+## Launcher surface refinement, 2026-11-08
+
+The maintainer confirms background loading works and requests transparent title/
+icon surfaces with contrasting text shadows. Launcher-only styles now let the
+photo extend behind the original header and home shortcuts. White home text and
+icons have dark shadows, with a visible two-color keyboard focus outline. Menus,
+dialogs and other apps keep their theme surfaces. This supersedes the earlier
+opaque-home-panel design while retaining all state/recovery behavior. CYC100
+remains Active and uncommitted pending overall acceptance.
+
+## Icon-only backing refinement, 2026-11-08
+
+The maintainer refines the transparent-home look: restore the dropdown marker's
+background and make icons readable with fill or a padded background, not a text
+panel. Keep shared Feather glyphs with small padded DS accent squares, including
+Add shortcut/custom icon images; restore the shared angled marker. Title and
+labels remain transparent with shadows. This supersedes the floating-icon/
+transparent-marker part of the previous entry. The cycle is still Active and
+uncommitted pending overall acceptance.
+
+## Light-mode Launcher foreground, 2026-11-08
+
+The maintainer requests dark home text without text shadow in light mode. The
+Launcher now uses the public DS foreground token; only explicit dark mode or
+automatic mode with dark OS preference adds the existing shadow. Explicit light
+remains shadow-free even with dark OS preference. Padded blue icon boxes and the
+filled marker retain their white glyph contrast. This is a CSS refinement within
+Active CYC100; no new setting, theme engine or data format is introduced.
+
+## Workspace foundation accepted, 2026-11-08
+
+The maintainer explicitly accepts CYC100 and requests commit, merge and push.
+ACC105 records implementation 6cf2824397c2a3e7740f1e309d99f377d3b048a3 and
+EVD104 at debe7458518286766934539c3060f7d04d70086a. Earlier Active/pending
+statements are historical and superseded. The matching cycle branch is ready
+for exact latest-main integration validation and normal direct merge. No product
+change follows the passing checks and six-suite browser snapshot. Readable
+Workbench is 217367 gzip bytes under the temporary 220000 cap; budget reduction
+and the retained timing limitation remain open. Contacts enhancements stay
+future work. After integration, record the requested CSS review/refactor roadmap
+item without starting its implementation or selecting another cycle.
+

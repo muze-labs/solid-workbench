@@ -1,4 +1,165 @@
+## Workspace foundation accepted, 2026-11-08
+
+The maintainer explicitly accepts CYC100 and requests commit, merge and push.
+ACC105 records implementation 6cf2824397c2a3e7740f1e309d99f377d3b048a3 and
+EVD104 at debe7458518286766934539c3060f7d04d70086a. Earlier Active/pending
+statements are historical and superseded. The matching cycle branch is ready
+for exact latest-main integration validation and normal direct merge. No product
+change follows the passing checks and six-suite browser snapshot. Readable
+Workbench is 217367 gzip bytes under the temporary 220000 cap; budget reduction
+and the retained timing limitation remain open. Contacts enhancements stay
+future work. After integration, record the requested CSS review/refactor roadmap
+item without starting its implementation or selecting another cycle.
+
+Latest light-mode refinement uses the DS foreground token and no text shadow in
+light mode; dark mode retains the shadow, including automatic OS theme changes.
+The real Preferences browser scenario and all six suites pass. Readable Workbench
+is 217367 bytes under the temporary 220000 cap. EVD104 retains the current evidence
+and light-mode preview. CYC100 remains Active and uncommitted.
+
+Latest visual review restores the shared dropdown marker and adds padded icon-only
+accent squares, retaining transparent home labels/title. Current readable
+Workbench is 217298 bytes under the temporary 220000 cap. Source/native checks
+and all six browser suites pass; EVD104 retains an intermittent session-recovery
+timeout and successful unchanged reruns. CYC100 remains Active and uncommitted.
+
+Latest CYC100 review includes confirmed workspace backgrounds and Feather/shared
+menu conventions; see SRC101/DES102/IMP103/EVD104. All six revised Chrome suites
+pass. Readable Workbench is 216865 gzip bytes under the temporarily expanded
+220000 cap; returning to 200000 remains a follow-up. The cycle remains Active
+pending human acceptance, with no commit/integration requested.
+
+Current status, 2026-11-08: the discussion below led to the confirmed
+workspace/Launcher foundation cycle CYC100. Implementation and evaluation are on
+its dedicated branch, with `npm run check` and all six browser suites passing; Contacts enhancements are explicitly deferred. The cycle
+record, DES102, IMP103 and EVD104 supersede earlier open-cycle recommendations.
+Human acceptance and commit/integration remain pending. The maintainer permits a
+temporary readable Workbench budget expansion, to revisit after evaluation.
+
 # Roadmap and next-cycle assessment
+
+Current conversation, 2026-11-08: the maintainer explicitly leaves the next-cycle
+decision open while discussing the eventual Launcher. See the suite roadmap's
+workspace home-screen discussion: manifest icons/user changes, workspace-owned
+launchers/titles/contexts, a proposed workspace dropdown and default Files links.
+App-store access comes later; active widgets are outside the MVP. The maintainer
+subsequently confirms one selected WebID at a time and switching by closing the
+current apps then restoring the selected workspace's apps. Those questions are
+settled; persistence/recovery details remain for design. Subsequent discussion
+adds multiple/default address books, a future Contacts-owned sharing picker,
+private workspace storage additions and shared-common/workspace-app preferences.
+Picker-local cross-workspace browsing is subsequently confirmed. Contacts starts
+with the default book, supports switching, and offers explicit all-books and
+all-workspaces searches. New workspaces reuse an existing default book, creating
+one only if none exists. Creation/deletion belong in Workbench Preferences;
+workspace-switching entries belong in the Launcher dropdown. Deletion removes
+workspace configuration while retaining linked address books/files/other data;
+the default workspace is protected from UI deletion, and confirmed deletion in
+storage triggers initial setup to create a new default. The active workspace is
+also protected: users must switch away before deleting an inactive non-default
+workspace. Detailed state/recovery semantics remain for design. Current Contacts
+uses a single local/configured collection, so broader default-book setup is not
+already implemented. No proposed cycle below is selected by this discussion.
+
+## Maintainer correction: establish Workbench UI first, 2026-11-08
+
+The maintainer identifies the proposed workspace-status readability example as
+part of a diagnostic/debug view rather than the intended everyday Launcher UI.
+They explicitly say that the actual eventual Launcher interface must be clear
+before doing that refactor. This supersedes the readability-first recommendation
+below; no readability cycle was selected or implementation begun.
+
+Revised next direction: **design the everyday Workbench/Launcher interface and
+its boundary with diagnostics before selecting implementation changes**. This
+revises the proposed local order, continuing the existing sparse-home/MVP UI
+roadmap while deferring the review's readability task and further broker work.
+It does not authorize automatically putting every current control into debug UI.
+
+Current templates corroborate the distinction: index.html composes suite-app
+navigation, resource-selection tools, the workspace/checkpoint section and saved
+shortcuts. The workspace section presents save/restore/close controls and verbose
+conflict review; its per-instance status/permissions list is already inside a
+details element. Collapsing technical content has not established the intended
+ordinary home-screen hierarchy. Existing add-shortcut dialog is useful work to
+retain, not redesign by assumption.
+
+Design from ordinary tasks: open a shortcut, add/edit/remove shortcuts, understand
+the active workspace, find account/Preferences controls, and handle a failure
+without losing work. Retain the confirmed home-screen direction: sparse user
+shortcuts, default Files links per advertised storage root, blue/square/panel
+visual language and Workbench-only app navigation. Workspace creation/switching
+belongs in Workbench Preferences under the existing direction; distinguish the
+future multiple-workspace design from the currently implemented single workspace.
+
+Discuss phone-first target layouts and concrete flows, then desktop adaptations.
+Identify secondary workspace operations separately from technical diagnostics.
+Needed save/sync, unsaved changes, failed launches, permission decisions and
+conflict recovery must remain understandable and reachable in ordinary use;
+putting raw broker state/technical detail in diagnostics must not hide these.
+A diagnostic panel is a candidate design surface, not an already agreed feature.
+
+The design should identify the eventual target UI and a first coherent delivery
+slice, with current supported behavior versus dependencies made explicit. No
+automatic sync, multi-workspace/onboarding implementation, source refactor,
+control deletion or new diagnostic panel is authorized by this clarification.
+No new cycle, commit, merge or push is selected. Retain the existing 1317-byte
+Workbench headroom, offline/recovery, keyboard/assistive-technology and phone
+constraints when evaluating the eventual proposal.
+
+## Earlier readability-first recommendation (superseded)
+
+## Reassessment after CYC92 integration, 2026-11-08
+
+Disposition: **Analyze/Plan; no next cycle selected.** CYC92 is Accepted and
+merged/pushed as 576a3780035e1f7226303bca529508c00045e834. main and origin/main
+match. The unrelated untracked design copy remains untouched.
+
+**Recommend meaningful customization and readability**, beginning with
+Workbench status decisions and built-in feature configuration. This continues
+the moldability review's next item after action dispatch, feature-owned styles
+and the bounded lifecycle-events experiment. It deliberately defers broker
+Phase 2 again, without changing its phase order. Stage-two documents/signing
+and collaboration remain later. CYC92 does not require widening the new package
+or promoting it into SimplyFlow before it sees ordinary use.
+
+Read-only evidence on current main: workspaceControls.renderWorkspace still
+contains nested decisions for Needs attention/Connected/Restoring/Opening/Saved.
+createWorkspace mixes the built-in Profile/Files provider defaults with broker
+construction and persistence wiring. Those decisions are exposed only inside
+larger actions. Source inspection establishes an opportunity to make particular
+edits easier to locate, not that non-professional users have tried and failed.
+
+Proposed outcome: a person can locate, understand, change and restore a workspace
+status label/condition and an existing built-in feature default without learning
+broker or persistence internals. Choose concrete edits during design and expose
+only the app-owned choices they require, with descriptive names and ordinary
+control flow. Keep native RDF, conditional saves, provider authorization and
+original behavior intact. This does not add a preferred-provider registry,
+change trust policy or build the IDE. Do not grow the scope into an arbitrary
+suite-wide cleanup or demand a new feature-structure pilot.
+
+Evaluate actual edit -> observe -> restore in existing instances with retained
+working data. Automated source reconstruction and behavior checks are useful;
+human review of finding/understanding the changes is needed to support the
+readability outcome. Existing phone/keyboard/offline recovery remains the
+baseline. Download is tight: readable Workbench has only 1317 gzip bytes below
+the 200000-byte ceiling. Favor clearer arrangement of existing behavior; measure
+actual graphs rather than assume a refactor is free. Run required checks and
+browser suites after implementation.
+
+The strongest visible-feature alternative is **shared Preferences propagation**:
+apply saved common settings in other open tabs/windows and embedded dialogs,
+retaining dirty choices and recovering after reconnection. Settle account and
+preferences identity plus same-/cross-origin reach before implementation; the
+events package is a connection mechanism, not a synchronization design.
+Account/local-data ownership and logout remain prerequisites to resolve before
+multi-account/named-workspace/background-sync expansion. No new wrong-account
+failure is claimed. The known workspace timing concern remains unresolved.
+
+This is a recommendation, not a confirmed cycle, implementation authorization
+or request to commit/merge/push this documentation update.
+
+## Previous disposition at CYC92 acceptance
 
 Current disposition: **CYC92 is Accepted** (ACC99). The maintainer requests
 commit, normal direct main merge and push. Implementation/evidence are
