@@ -509,6 +509,29 @@ Verification covers common appearance across apps, per-app storage fields and
 preservation of omitted settings and unrelated native RDF. Launcher workspace
 creation/switching still needs its own implementation and verification.
 
+### Separate Preferences application: CYC106
+
+Selected by the maintainer after CYC100, with design discussion before
+implementation. Preferences is a separate app, normally embedded through the
+existing capability dialog, with Ubuntu-like section navigation. Reuse the
+existing list-details component and extend it for evidenced gaps; do not create
+another Preferences layout/CSS component. Common sections stay first and the
+calling app contributes named SimplyFlow sections with its own templates and
+behavior. Standalone use offers selecting the app context.
+
+The maintainer explicitly chooses immediate application and editing any
+workspace inside Preferences without activating it or closing its apps. Valid
+edits persist locally before application and synchronize conditionally to the
+Pod; retain incomplete drafts, offline changes and conflicts. Workbench keeps
+workspace authority. Shared preference consumers remain in hosts, and changes
+propagate without losing app data/drafts. Measure the actual host/editor graphs
+and first useful interaction; savings are an evaluated outcome, not an assumed
+consequence of moving files.
+
+CYC106 is Active; SRC107/DES108/IMP109/EVD110 govern scope and evaluation. Broader
+CSS review and Contacts enhancements remain separate. Cycle completion and
+human acceptance are not inferred from this roadmap update.
+
 ### Apply shared preference changes across open apps
 
 Requested by the maintainer after CYC77 acceptance: when shared preferences
