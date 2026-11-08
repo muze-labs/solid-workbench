@@ -323,24 +323,10 @@ try {
       await checkStyleOwnership(page);
       inspectedFeatures.add(name);
     }
-    const storageFields = {
-      contacts: ['contactsResource'],
-      launcher: [
-        'workspaceResource',
-        'swb_contactsResource',
-        'swb_filesRoot',
-        'swb_launcherResource',
-        'swb_backgroundUrl'
-      ],
-      files: ['filesRoot'],
-      profile: []
-    };
-    assert.deepEqual(
-      await evaluate(
-        'return [...document.querySelectorAll(' +
-          '\'.preferences-dialog input[type="url"]\')].map(input=>input.name);'
-      ),
-      storageFields[name]
+    assert.equal(
+      await evaluate('return !!document.querySelector(".preferences-dialog");'),
+      false,
+      'The editor is delivered by its own application'
     );
     assert.equal(
       await evaluate('return document.querySelector("h1").textContent;'),
@@ -359,6 +345,33 @@ try {
         []
       );
     }
+  }
+  async function preferencesFrame() {
+    await wait(
+      'document.querySelector("iframe").contentWindow.swbPreferencesApp?.runtime.request'
+    );
+  }
+  async function changePreferences(values) {
+    await preferencesFrame();
+    await evaluate(
+      'const editor=document.querySelector("iframe").contentWindow.swbPreferencesApp;' +
+        'for(const [key,value] of Object.entries(' +
+        JSON.stringify(values) +
+        ')){' +
+        'await editor.actions.swb_applySetting(key,value);}' +
+        'await editor.actions.swb_synchronize();'
+    );
+    await wait(
+      'document.querySelector("iframe").contentWindow.swbPreferencesApp.runtime.settings.pending().length===0'
+    );
+  }
+  async function closePreferences() {
+    await evaluate(
+      'await (window.solidLauncher || window.solidContacts).host.view.actions.muzeSolidUiCheckCapabilityClose();'
+    );
+    await wait(
+      '!document.querySelector(".muze-solid-ui-capability-dialog").open'
+    );
   }
   async function reload() {
     const loaded = page.once('Page.loadEventFired');
@@ -379,10 +392,7 @@ try {
       await wait('!document.querySelector(".swb-diagnostics").open');
     }
     if (toolState.inside && !toolState.open) {
-      await click('.account-button');
-      await click('[data-simply-command=preferences]');
-      await wait('document.querySelector(".preferences-dialog").open');
-      await click('[data-simply-command=swb_openDiagnostics]');
+      await evaluate('await solidLauncher.ui.actions.swb_openDiagnostics();');
       await wait('document.querySelector(".swb-diagnostics").open');
     }
 
@@ -868,21 +878,19 @@ try {
   );
   await click('[data-simply-command=closeConnect]');
   await account('preferences');
-  await wait('document.querySelector(".preferences-dialog [name=theme]")');
-  await submit('.preferences-dialog form', {
+  await changePreferences({
     theme: 'dark',
     textScale: '110',
     language: 'nl',
     contactsResource: base + '/contacts.ttl'
   });
-  await wait(
-    'document.querySelector(".preferences-dialog .muze-solid-design-toast").textContent.includes("saved")'
-  );
+
   assert.match(String(resources.get(base + '/prefs').body), /untouched/);
   assert.match(String(resources.get(base + '/prefs').body), /launcher\.ttl/);
   assert.match(String(resources.get(base + '/prefs').body), /storage\//);
+  await closePreferences();
   await evaluate(
-    'document.querySelector(".preferences-dialog [data-simply-command=close]").click();document.querySelector("[data-simply-command=sync]").click();'
+    'document.querySelector("[data-simply-command=sync]").click();'
   );
   await wait(
     'document.querySelector(".muze-solid-design-toast").textContent.includes("Contacts synchronized")'
@@ -1611,17 +1619,16 @@ try {
   page = launcherPage;
 
   await account('preferences');
+  await preferencesFrame();
   assert.equal(
     await evaluate(
-      'return document.querySelector(".preferences-dialog [name=launchTarget]").value;'
+      'return document.querySelector("iframe").contentWindow.swbPreferencesApp.data.launchTarget;'
     ),
     'tab'
   );
-  await submit('.preferences-dialog form', { launchTarget: 'window' });
-  await wait(
-    'document.querySelector(".preferences-dialog .muze-solid-design-toast").textContent.includes("saved")'
-  );
-  await click('.preferences-dialog [data-simply-command=close]');
+  await changePreferences({ launchTarget: 'window' });
+
+  await closePreferences();
   await reload();
   await wait(
     'window.solidLauncher?.host.session && ' +
@@ -1633,15 +1640,16 @@ try {
     targetId: contactsWindow.target.targetId
   });
   await account('preferences');
+  await preferencesFrame();
   assert.equal(
     await evaluate(
-      'return document.querySelector(".preferences-dialog [name=launchTarget]").value;'
+      'return document.querySelector("iframe").contentWindow.swbPreferencesApp.data.launchTarget;'
     ),
     'window'
   );
-  await submit('.preferences-dialog form', { launchTarget: 'tab' });
+  await changePreferences({ launchTarget: 'tab' });
   await wait('window.solidLauncher.host.preferences.launchTarget==="tab"');
-  await click('.preferences-dialog [data-simply-command=close]');
+  await closePreferences();
 
   const declaredLink =
     '[...document.querySelectorAll(".saved-apps a")]' +
@@ -2208,7 +2216,7 @@ try {
   await click('[data-simply-command=preferences]');
   assert.equal(
     await evaluate(`
-      return ['.account-button', '.preferences-dialog .muze-solid-design-dialog-close'].every(selector => {
+      return ['.account-button', '.muze-solid-ui-capability-dialog .muze-solid-design-dialog-close'].every(selector => {
         const button = document.querySelector(selector).getBoundingClientRect();
         const icon = document.querySelector(selector + ' svg').getBoundingClientRect();
         return Math.abs((icon.top + icon.bottom) / 2 - (button.top + button.bottom) / 2) < 1;
@@ -2236,17 +2244,20 @@ try {
   assert(
     await evaluate(
       'const dialog=document.querySelector(' +
-        '".preferences-dialog");return dialog.scrollWidth<=dialog.clientWidth;'
+        '".muze-solid-ui-capability-dialog");return dialog.scrollWidth<=dialog.clientWidth;'
     )
   );
+  await preferencesFrame();
   await evaluate(
-    'document.querySelector(' +
-      '".preferences-dialog [name=contactsResource]")' +
-      '.scrollIntoView({block:"center"});'
+    'const frame=document.querySelector("iframe").contentWindow;' +
+      'frame.swbPreferencesApp.actions.swb_selectSection("contacts-storage");' +
+      'frame.document.querySelector(".ds-panels-details").scrollIntoView({block:"nearest"});'
   );
   await capture('preferences-storage-mobile');
-  await click('.preferences-dialog [data-simply-command=close]');
-  await wait('!document.querySelector(".preferences-dialog").open');
+  await closePreferences();
+  await wait(
+    '!document.querySelector(".muze-solid-ui-capability-dialog").open'
+  );
   assert.equal(
     await evaluate(
       'const pane=document.querySelector(".contacts-list");const layout=document.querySelector(".split-view");return pane.clientWidth<=layout.clientWidth && [...pane.querySelectorAll(".contacts-toolbar button")].every(button=>button.getBoundingClientRect().right<=innerWidth);'
@@ -2268,10 +2279,12 @@ try {
     )
   );
   await account('preferences');
-  await submit('.preferences-dialog form', { theme: 'light' });
+  await changePreferences({ theme: 'light' });
   await wait('document.body.classList.contains("ds-lightmode")');
-  await click('.preferences-dialog [data-simply-command=close]');
-  await wait('!document.querySelector(".preferences-dialog").open');
+  await closePreferences();
+  await wait(
+    '!document.querySelector(".muze-solid-ui-capability-dialog").open'
+  );
   await capture('contacts-mobile-light');
   await page.send('Emulation.setDeviceMetricsOverride', {
     width: 1280,
@@ -2303,9 +2316,12 @@ try {
       return false;
     })
   );
-  const beforeLogout = calls.length;
   await account('connectDialog');
   await wait('!document.querySelector(".logout-section").hidden');
+  await evaluate(
+    'await solidContacts.host.view.actions.swb_refreshPreferences();'
+  );
+  const beforeLogout = calls.length;
   const reloaded = page.once('Page.loadEventFired');
   const otherReloaded = otherPage.once('Page.loadEventFired');
   await click('[data-simply-command=logout]');

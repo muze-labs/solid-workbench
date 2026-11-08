@@ -50,16 +50,6 @@ export async function composeTemplate(filename, { appName = '' } = {}) {
       )
     );
   }
-  if (source.includes('{{appPreferences}}')) {
-    const preferences =
-      appName && appName !== 'profile'
-        ? await readFile(
-            new URL(`../apps/${appName}/src/preferences.html`, import.meta.url),
-            'utf8'
-          )
-        : '';
-    source = source.replace('{{appPreferences}}', preferences);
-  }
   if (source.includes('{{appMenu}}')) {
     const menu =
       appName === 'launcher'

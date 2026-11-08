@@ -44,7 +44,13 @@ for (const output of bundles) {
     output.type === 'chunk' ? output.code : output.source
   );
 }
-for (const name of ['launcher', 'contacts', 'files', 'profile']) {
+for (const name of [
+  'launcher',
+  'contacts',
+  'files',
+  'profile',
+  'preferences'
+]) {
   const route = name === 'launcher' ? 'workbench' : name;
   const title = applicationTitle(name);
   const pageTitle = name === 'launcher' ? title : title + ' · Solid Workbench';
@@ -56,13 +62,7 @@ for (const name of ['launcher', 'contacts', 'files', 'profile']) {
     path.join(root, 'packages/solid-app-ui/src/shell.html'),
     { appName: name }
   );
-  const preferences = await composeTemplate(
-    path.join(root, 'packages/solid-preferences/src/dialog.html'),
-    { appName: name }
-  );
-  const body = shell
-    .replace('{{content}}', content)
-    .replace('{{preferences}}', preferences);
+  const body = shell.replace('{{content}}', content);
   await mkdir(path.join(root, `www/${route}`), { recursive: true });
   for (const asset of ['manifest.ttl', 'icon.svg']) {
     await copyFile(
@@ -85,7 +85,7 @@ await writeFile(
   path.join(root, 'www/index.html'),
   '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=workbench/"><a href="workbench/">Open Solid Workbench</a>'
 );
-console.log('Built all four apps in www/');
+console.log('Built all five apps in www/');
 const outputs = Object.fromEntries(
   bundles
     .filter((item) => item.type === 'chunk')
@@ -110,7 +110,13 @@ function importGraph(name, seen = new Set()) {
 }
 function appSizes(suffix) {
   const sizes = {};
-  for (const name of ['launcher', 'contacts', 'files', 'profile']) {
+  for (const name of [
+    'launcher',
+    'contacts',
+    'files',
+    'profile',
+    'preferences'
+  ]) {
     const files = importGraph(`www/assets/${name}/src/index${suffix}.js`);
     importGraph('www/assets/redirect' + suffix + '.js', files);
     const total = [...files].reduce(

@@ -33,7 +33,40 @@ export const account = {
     },
     preferences() {
       this.runtime.menu.hidePopover();
-      this.runtime.preferences.show();
+      if (this.runtime.host.onOpenPreferences) {
+        return this.runtime.host.onOpenPreferences();
+      }
+      return this.actions.run(async () => {
+        const host = this.runtime.host;
+        if (!(host.capabilityBroker || host.managed?.ready)) {
+          this.runtime.preferenceBroker ||= new this.api.WorkspaceBroker({
+            embeddedProviders: [
+              {
+                capability: this.api.editPreferencesCapability,
+                url: new URL('../preferences/', location.href).href
+              }
+            ]
+          });
+        }
+        const provider = this.api.launchUrl(
+          new URL('../preferences/', location.href).href,
+          { webId: host.selectedWebId }
+        );
+        const result = await this.actions.muzeSolidUiInvokeCapability(
+          this.api.editPreferencesCapability,
+          provider,
+          {
+            owner: host.selectedWebId,
+            app:
+              this.runtime.appName ||
+              location.pathname.split('/').filter(Boolean).at(-1) ||
+              'launcher',
+            workspace: host.workspaceContext?.id || ''
+          },
+          'Preferences'
+        );
+        await host.onPreferencesTaskComplete?.(result);
+      });
     },
     connectDialog() {
       this.runtime.menu.hidePopover();
@@ -152,6 +185,18 @@ export const account = {
       );
     },
     accountRemoved(event) {
+      if (event.key === 'solid-apps.preferences-change') {
+        if (
+          event.newValue?.startsWith(
+            (this.runtime.host.selectedWebId || '') + '\n'
+          )
+        ) {
+          this.runtime.preferences
+            .refresh()
+            .catch((error) => this.actions.message(error.message));
+        }
+        return;
+      }
       if (event.key === 'solid-apps.webId' && event.newValue === null) {
         this.runtime.session?.logout();
         window.location.reload();

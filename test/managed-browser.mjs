@@ -191,10 +191,10 @@ async function click(page, selector) {
     await wait(page, '!document.querySelector(".swb-diagnostics").open');
   }
   if (toolState.inside && !toolState.open) {
-    await click(page, '.account-button');
-    await click(page, '[data-simply-command=preferences]');
-    await wait(page, 'document.querySelector(".preferences-dialog").open');
-    await click(page, '[data-simply-command=swb_openDiagnostics]');
+    await evaluate(
+      page,
+      'await solidLauncher.ui.actions.swb_openDiagnostics();'
+    );
     await wait(page, 'document.querySelector(".swb-diagnostics").open');
   }
 

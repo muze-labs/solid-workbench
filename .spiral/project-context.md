@@ -1392,3 +1392,94 @@ theme/focus/background rules and shared/app boundaries, preserving the accepted
 UI and existing named editable SimplyFlow styles. This documentation addition
 starts no implementation cycle; Contacts enhancements and the temporary budget
 follow-up remain open. Unrelated user files are preserved.
+
+## Preferences cycle starts with design, 2026-11-08
+
+The maintainer confirms separate Preferences app/dialog, Ubuntu-like sections
+contributed by the calling app, reuse/extension of existing list-details rather
+than another CSS component, immediate changes and editing any workspace without
+activating it. CYC106 starts on its matching verified branch from main 0912f86;
+SRC107 retains decisions and DES108 is the proposed design for discussion.
+Current embedded editor/static composition and split save steps leave concrete
+gaps. No product implementation begins before design review. This continues
+stage-one Preferences UI/propagation while broader CSS review and Contacts
+remain separate. No commit, merge, push, publication or external-repo edit is
+requested; preserve unrelated user files. Earlier next-cycle-open notes are
+superseded by this selection. Causal links to uncommitted new artifacts will be
+added only after upstream Git versions exist, without inventing past commits.
+
+## Preferences implementation authorized, 2026-11-08
+
+Following DES108 review, the maintainer says “lets start”. This authorizes CYC106
+implementation on its verified dedicated branch. IMP109/EVD110 retain independent
+Preferences presentation, existing list-details reuse, app-owned section datasets,
+immediate native local edits and conflict-safe synchronization, open-app updates
+and inactive-workspace editing through Workbench's sole live writer. Existing
+private-port/capability and Metro/document APIs remain in use; no external
+library changes or new renderer. General app, managed, picker and session browser
+checks have passed during iteration. Final integrated evaluation is pending;
+no human acceptance, commit, merge, push or publication is requested. Broader CSS
+refactoring, Contacts enhancements and the temporary Workbench budget review stay
+future work. Preserve unrelated user files.
+
+## CYC106 ready for evaluation, 2026-11-08
+
+IMP109 implements the separate Preferences app with app-owned section datasets,
+existing list-details navigation, immediate native local edits and conditional
+synchronization, shared updates and inactive-workspace editing. Workbench keeps
+its live writer and diagnostics; the existing capability machinery presents the
+editor and hands diagnostics back after closing. No new Preferences CSS component.
+Final check passes 157 tests/builds; all six Chrome suites pass, exit 0. EVD110
+records screenshots, native keyboard/AX checks, 215215-byte readable Workbench and
+187311-byte readable Preferences graphs including callback, network task costs,
+uncached-asset limits and the retained intermittent managed-connection failure
+with unchanged passing retry. This does not certify every provider/browser or a
+manual screen-reader study. CYC106 remains Active awaiting human UI acceptance;
+no commit/integration/publication or next cycle is requested. Broader CSS and
+Contacts roadmap work and the temporary Workbench budget follow-up remain open.
+
+## CYC106 section keyboard review, 2026-11-08
+
+The maintainer requests the dropdown's Up/Down behavior in Preferences, Enter
+activation and Tab into section controls. This is a correction in Active CYC106.
+Extend existing list-details with an opt-in shortcut scope; roving focus/ARIA
+remain SimplyFlow-bound and row identity is retained. Arrow focus does not
+select, Enter keeps keyboard focus in the menu, Tab enters the displayed panel,
+and Shift-Tab returns to its selected section. Pointer/phone Back and native
+input/select keys remain intact. No CSS component or persistence change.
+Source/build and targeted desktop/phone Chrome checks pass; full regression
+evidence follows in EVD110. No acceptance, commit or integration is inferred.
+
+The final keyboard correction passes npm run check (157 tests/builds) and all
+six suites of npm run test:browser, exit 0. EVD110 records the native desktop/
+phone cases and the editable-source shorthand defect caught by full regression;
+explicit function notation matches the existing dropdown. Current readable
+Workbench/Preferences costs are 216224/189084 bytes, under unchanged caps.
+CYC106 remains Active awaiting renewed human review; no commit or integration.
+
+
+## CYC106 initial-focus and icon correction, 2026-11-08
+
+The maintainer reports non-working Preferences arrows and low workspace icons.
+Live server assets match disk with no-store; the observed gap is initial focus
+on outer Close while the provider is interactive. A guarded presentation focus
+request now focuses the selected section after iframe bindings remove inert,
+without moving focus after a user has already interacted. The shared suite
+foundation overrides installed DS bottom alignment with svg.ds-icon middle.
+Live initial Down and visual menu alignment pass, as do targeted Preferences
+and workspace suites and npm run check. EVD110 retains two complete-run timing
+failures and independent suite passes; no reliable complete regression pass is
+claimed for this final snapshot. Active pending renewed human review; no
+acceptance, commit, merge or publication. Refresh the loaded parent Workbench
+once to load this presenter and style, then reopen Preferences.
+
+
+## CYC106 accepted for integration, 2026-11-08
+
+The maintainer retests the latest correction and reports “It works, accepted.
+Commit, merge and push.” ACC111 accepts implementation 10f1535 and evaluation
+67748e3; the cycle is Accepted, superseding earlier pending notes. Direct normal
+merge into main and push of main/cycle branches are authorized. EVD110 retains
+full-run timing failures and independent passes without claiming a reliable
+complete run. Broader CSS, Contacts and Workbench budget follow-up remain open;
+no next cycle or package publication is selected. Unrelated user files excluded.

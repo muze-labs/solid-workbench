@@ -48,23 +48,28 @@ test('existing account listeners use current actions once and stop after cleanup
         templates: {},
         settings: {},
         host: { launch: {} },
+        preferenceBroker: {
+          dispose() {
+            destroyed += 1;
+          }
+        },
         acceptLaunch: true
       },
       api: {
-        preferencesDialog: () => ({
-          app: {
-            destroy() {
-              destroyed += 1;
-            }
-          }
+        preferenceConsumer: () => ({
+          refresh: async () => {}
         }),
         applyPreferences() {}
       }
     }
   );
   owner.events = accountLifecycle.events;
-  owner.container = { ownerDocument: { defaultView: target } };
-  owner.destroy = () => { owner.destroyed = true; };
+  const ownerDocument = new EventTarget();
+  ownerDocument.defaultView = target;
+  owner.container = { ownerDocument };
+  owner.destroy = () => {
+    owner.destroyed = true;
+  };
   exposeDefinition(owner, {}, {});
   installEvents(owner);
   owner.actions.initialize();

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   PortConnection,
+  ManagedApp,
   capabilityError,
   selectionUrl,
   serializable
@@ -445,4 +446,50 @@ test('interactive capability calls wait for a result or explicit cancellation', 
   assert.deepEqual(await caller.call('edit', {}, { timeout: null }), {
     saved: true
   });
+});
+
+test('presentation focus accepts only the ready task parent and current ticket', async () => {
+  const parent = {};
+  let focused = 0;
+  const app = {
+    parent,
+    task: true,
+    ready: true,
+    peer: { closed: false },
+    resume: {
+      id: 'task',
+      key: 'private-key',
+      origin: 'https://caller.example'
+    },
+    onFocus: async () => {
+      focused += 1;
+    }
+  };
+  const message = {
+    source: parent,
+    origin: 'https://caller.example',
+    data: {
+      type: 'solid-apps:presentation-focus',
+      id: 'task',
+      key: 'private-key'
+    }
+  };
+  await ManagedApp.prototype.offer.call(app, message);
+  assert.equal(focused, 1);
+  for (const event of [
+    { ...message, source: {} },
+    { ...message, origin: 'https://other.example' },
+    { ...message, data: { ...message.data, id: 'old-task' } },
+    { ...message, data: { ...message.data, key: 'wrong-key' } }
+  ]) {
+    await ManagedApp.prototype.offer.call(app, event);
+  }
+  for (const blocked of [
+    { ...app, ready: false },
+    { ...app, task: false },
+    { ...app, peer: { closed: true } }
+  ]) {
+    await ManagedApp.prototype.offer.call(blocked, message);
+  }
+  assert.equal(focused, 1);
 });

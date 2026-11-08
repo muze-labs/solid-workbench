@@ -3,7 +3,6 @@ import {
   muzeSolidDesignListDetails
 } from '@muze-labs/solid-design';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
-import preferencesTemplate from './preferences-view.html?template' with { type: 'text' };
 import { app } from '@muze-labs/simplyflow/app';
 import { model } from '@muze-labs/simplyflow/model';
 import { effect, destroy } from '@muze-labs/simplyflow/state';
@@ -35,7 +34,7 @@ import { contactList, contactEditing, contactSession } from './features.mjs';
 import sources from './features.mjs?entries';
 
 const host = shell({
-  templates: { account: accountTemplate, preferences: preferencesTemplate }
+  templates: { account: accountTemplate }
 });
 const definition = {
   container: host.main,
@@ -80,8 +79,7 @@ const ui = app(definition);
 exposeDefinition(ui, definition, { ...profileSources, ...sources });
 await ui.actions.initialize();
 ui.definition.instances = {
-  account: host.view,
-  preferences: host.preferenceView
+  account: host.view
 };
 window.solidContacts = {
   host,

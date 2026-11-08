@@ -1,0 +1,130 @@
+<div
+  class="split-view ds-panels muze-solid-design-list-details"
+  data-simply-shortcuts="muzeSolidDesignSections"
+>
+  <nav
+    class="ds-panels-pane ds-panels-list ds-navbar-side"
+    aria-label="Preferences sections"
+  >
+    <label
+      data-simply-field="swb_applicationChoice"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+      >Application<select
+        data-simply-field="swb_app"
+        data-simply-command="swb_chooseApp"
+        aria-label="Application settings"
+      >
+        <option value="workbench">Solid Workbench</option>
+        <option value="contacts">Contacts</option>
+        <option value="files">Files</option>
+        <option value="profile">Profile</option>
+      </select></label
+    >
+    <ul
+      class="ds-navbar-nav"
+      data-muze-solid-design-sections
+      data-simply-list="swb_sections"
+    >
+      <template
+        ><li>
+          <button
+            type="button"
+            data-simply-command="swb_chooseSection"
+            data-simply-value=":value.id"
+            data-simply-field="attributes"
+            data-simply-transform="attributes"
+            data-simply-attributes="aria-current class tabindex data-muze-solid-design-section"
+          >
+            <span
+              data-simply-field="label"
+              data-simply-transform="escape_html"
+            ></span>
+          </button></li
+      ></template>
+    </ul>
+  </nav>
+  <section class="ds-panels-pane ds-panels-details" aria-label="Settings">
+    <button
+      type="button"
+      class="ds-button muze-solid-design-list-back"
+      data-simply-command="muzeSolidDesignShowList"
+    >
+      Back to sections
+    </button>
+    <h2
+      tabindex="-1"
+      data-simply-field="swb_sectionTitle"
+      data-simply-transform="escape_html"
+    ></h2>
+    <p data-simply-field="swb_scope" data-simply-transform="escape_html"></p>
+    <p
+      id="swb-preferences-status"
+      role="status"
+      data-simply-field="swb_status"
+      data-simply-transform="escape_html"
+    ></p>
+    <div
+      data-simply-field="swb_workspaceVisibility"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+      hidden
+    >
+      <label
+        >Editing workspace<select
+          data-simply-field="swb_workspaceSelect"
+          data-simply-command="swb_chooseWorkspace"
+        ></select
+      ></label>
+      <button
+        type="button"
+        class="ds-button"
+        data-simply-command="swb_refreshWorkspace"
+      >
+        Refresh workspace settings
+      </button>
+      <p>Choosing here does not switch your active workspace.</p>
+    </div>
+    <a
+      href="../workbench/"
+      target="_blank"
+      rel="noopener"
+      hidden
+      data-simply-field="swb_openWorkbench"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+      >Open Workbench to manage workspaces</a
+    >
+    {{view:swb-preferences-sections:./sections.html}}
+    {{view:swb-workbench-settings:../../launcher/src/settings.html}}
+    {{view:swb-files-settings:../../files/src/settings.html}}
+    {{view:swb-contacts-settings:../../contacts/src/settings.html}}
+    {{view:swb-profile-settings:../../profile/src/settings.html}}
+    <ul data-simply-list="swb_conflicts">
+      <template
+        ><li>
+          <p data-simply-field="label" data-simply-transform="escape_html"></p>
+          <button
+            type="button"
+            class="ds-button"
+            data-simply-command="swb_keepLocal"
+            data-simply-value=":value.id"
+          >
+            Keep my choice
+          </button>
+          <button
+            type="button"
+            class="ds-button"
+            data-simply-command="swb_useRemote"
+            data-simply-value=":value.id"
+          >
+            Use Pod choice
+          </button>
+        </li></template
+      >
+    </ul>
+    <button type="button" class="ds-button" data-simply-command="swb_retrySync">
+      Retry synchronization
+    </button>
+  </section>
+</div>

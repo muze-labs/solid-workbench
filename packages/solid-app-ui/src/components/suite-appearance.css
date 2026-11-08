@@ -32,6 +32,10 @@ button:disabled {
   border-radius: 0;
   text-transform: none;
 }
+/* Inline SVGs align with their labels; the installed DS default is bottom. */
+svg.ds-icon {
+  vertical-align: middle;
+}
 .ds-icon-feather {
   width: 1.2em;
   height: 1.2em;

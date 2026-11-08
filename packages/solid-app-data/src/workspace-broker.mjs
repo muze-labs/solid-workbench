@@ -17,6 +17,9 @@ export class WorkspaceBroker {
     embeddedProviders = [],
     checkpointTimeout = 10000,
     getContext = () => null,
+    editPreferences = () => {
+      throw capabilityError('No workspace editor.');
+    },
     savePreferences = () => {
       throw capabilityError('No workspace settings.');
     }
@@ -29,7 +32,8 @@ export class WorkspaceBroker {
       checkpointTimeout,
       embeddedProviders,
       getContext,
-      savePreferences
+      savePreferences,
+      editPreferences
     });
     this.focusTarget = 'solid-apps-launcher-' + crypto.randomUUID();
     target.name = this.focusTarget;
@@ -212,6 +216,9 @@ export class WorkspaceBroker {
     }
     if (method === 'embed-can-close' && record.registered && !record.embedded) {
       return this.canCloseEmbedded(input.id, record.entry.id);
+    }
+    if (method === 'preferences-workspace' && record.registered) {
+      return this.editPreferences(record, input);
     }
     if (method === 'workspace-preferences' && record.registered) {
       return this.savePreferences(record, input);

@@ -259,6 +259,53 @@ async function wait(predicate) {
       (await page.evaluate(() => document.body.innerText))
   );
 }
+async function prefEvaluate(fn) {
+  const script = '(' + fn.toString() + ')()';
+  const result = await page.send('Runtime.evaluate', {
+    expression:
+      'document.querySelector("iframe").contentWindow.eval(' +
+      JSON.stringify(script) +
+      ')',
+    awaitPromise: true,
+    returnByValue: true
+  });
+  if (result.exceptionDetails) {
+    throw new Error(JSON.stringify(result.exceptionDetails));
+  }
+  return result.result.value;
+}
+async function waitPreferences(fn) {
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    if (await prefEvaluate(fn)) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 40));
+  }
+  throw new Error(
+    'session Preferences timeout: ' +
+      fn +
+      '\n' +
+      (await prefEvaluate(() => document.body.innerText))
+  );
+}
+async function openPreferences() {
+  await page.evaluate(() =>
+    document.querySelector('[data-simply-command=preferences]').click()
+  );
+  await wait(
+    () =>
+      document.querySelector('iframe').contentWindow.swbPreferencesApp?.runtime
+        .request
+  );
+}
+async function closePreferences() {
+  await page.evaluate(() =>
+    solidProfile.host.view.actions.muzeSolidUiCheckCapabilityClose()
+  );
+  await wait(
+    () => !document.querySelector('.muze-solid-ui-capability-dialog').open
+  );
+}
 async function expire(refreshValue) {
   await page.send('Runtime.evaluate', {
     expression: `(() => {
@@ -329,54 +376,48 @@ try {
     'Background restoration never opens authorization.'
   );
 
-  // Even an initial Preferences read failure can recover from Save, without
-  // requiring the user to discard the open form or reconnect the whole app.
-  await page.evaluate(() => {
-    document.querySelector('[data-simply-command="preferences"]').click();
-    document.querySelector('.preferences-dialog select[name="theme"]').value =
-      'dark';
-    document.querySelector('.preferences-dialog form').requestSubmit();
+  // Initial protected-read failure retains an immediate local change. Explicit
+  // Retry invokes the existing authentication recovery in the provider app.
+  await openPreferences();
+  await prefEvaluate(() =>
+    swbPreferencesApp.actions.swb_applySetting('theme', 'dark')
+  );
+  await prefEvaluate(() => {
+    swbPreferencesApp.actions.swb_synchronize({ interactive: true });
   });
-  await wait(
+  await waitPreferences(
     () => document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
-  await page.evaluate(() =>
+  await prefEvaluate(() =>
     document
-      .querySelector(
-        '.muze-solid-ui-recovery-dialog [data-simply-command="muzeSolidUiCancelSignIn"]'
-      )
+      .querySelector('[data-simply-command=muzeSolidUiCancelSignIn]')
       .click()
   );
-  await wait(
+  await waitPreferences(
     () => !document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
   assert.equal(
-    await page.evaluate(
-      () =>
-        document.querySelector('.preferences-dialog select[name="theme"]').value
-    ),
+    await prefEvaluate(() => document.querySelector('[name=theme]').value),
     'dark'
   );
-  await page.evaluate(() =>
-    document.querySelector('.preferences-dialog form').requestSubmit()
-  );
-  await wait(
+  await prefEvaluate(() => {
+    swbPreferencesApp.actions.swb_synchronize({ interactive: true });
+  });
+  await waitPreferences(
     () => document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
-  await page.evaluate(() =>
+  await prefEvaluate(() =>
     document
       .querySelector(
-        '.muze-solid-ui-recovery-dialog [data-simply-command="muzeSolidUiSignInAgain"]'
+        '.muze-solid-ui-recovery-dialog [data-simply-command=muzeSolidUiSignInAgain]'
       )
       .click()
   );
-  await wait(
+  await waitPreferences(
     () => !document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
-  await wait(
-    () =>
-      window.solidProfile.host.preferenceView.runtime.loaded?.document.etag ===
-      '"2"'
+  await waitPreferences(
+    () => swbPreferencesApp.runtime.settings.pending().length === 0
   );
   const preferenceWrite = calls.find(
     (call) => call.write && call.path === '/fixture/preferences'
@@ -385,12 +426,7 @@ try {
   assert.ok(preferenceWrite.body.includes('dark'));
   assert.equal(preferenceWrite.match, '"1"');
   assert.equal(preferenceVersion, 2);
-  await page.evaluate(() =>
-    document
-      .querySelector('.preferences-dialog [data-simply-command="close"]')
-      .click()
-  );
-  await wait(() => !document.querySelector('.preferences-dialog').open);
+  await closePreferences();
   await expire(null);
   await edit('Retained draft');
   await wait(
@@ -595,64 +631,49 @@ try {
       JSON.stringify({ value: 'cached', type: 'DPoP' })
     );
   });
-  // Recovery must not reload an already edited Preferences form.
-  await page.evaluate(() => {
-    document.querySelector('[data-simply-command="preferences"]').click();
-    const theme = document.querySelector(
-      '.preferences-dialog select[name="theme"]'
-    );
-    theme.value = 'dark';
-    theme.dispatchEvent(new Event('change', { bubbles: true }));
-  });
-  await expire(null);
-  await page.evaluate(() =>
-    document.querySelector('.preferences-dialog form').requestSubmit()
+  // Cancelling sign-in does not discard immediate choices; closing and
+  // reconnecting the caller uses the same durable native settings cache.
+  await openPreferences();
+  await prefEvaluate(() =>
+    swbPreferencesApp.actions.swb_applySetting('theme', 'system')
   );
-  await wait(
+  await expire(null);
+  await prefEvaluate(() => {
+    swbPreferencesApp.actions.swb_synchronize({ interactive: true });
+  });
+  await waitPreferences(
     () => document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
-  await page.evaluate(() =>
+  await prefEvaluate(() =>
     document
-      .querySelector(
-        '.muze-solid-ui-recovery-dialog [data-simply-command="muzeSolidUiCancelSignIn"]'
-      )
+      .querySelector('[data-simply-command=muzeSolidUiCancelSignIn]')
       .click()
   );
-  await wait(
+  await waitPreferences(
     () => !document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
   assert.equal(
-    await page.evaluate(
-      () =>
-        document.querySelector('.preferences-dialog select[name="theme"]').value
-    ),
-    'dark'
+    await prefEvaluate(() => document.querySelector('[name=theme]').value),
+    'system'
   );
+  await closePreferences();
   await page.evaluate(() =>
     document
-      .querySelector('.preferences-dialog [data-simply-command="close"]')
-      .click()
-  );
-  await wait(() => !document.querySelector('.preferences-dialog').open);
-  // Establish authorization again without reloading the cancelled draft.
-  await page.evaluate(() =>
-    document
-      .querySelector('[data-simply-command="muzeSolidUiSignInAgain"]')
+      .querySelector('[data-simply-command=muzeSolidUiSignInAgain]')
       .click()
   );
   await wait(
     () =>
       document.querySelector(
-        '[data-simply-field="muzeSolidUiRecoveryVisibility"]'
+        '[data-simply-field=muzeSolidUiRecoveryVisibility]'
       ).hidden
   );
+  await openPreferences();
   assert.equal(
-    await page.evaluate(
-      () =>
-        document.querySelector('.preferences-dialog select[name="theme"]').value
-    ),
-    'dark'
+    await prefEvaluate(() => document.querySelector('[name=theme]').value),
+    'system'
   );
+  await closePreferences();
   const beforeDenial = calls.filter(
     (call) => call.path === '/authorize'
   ).length;

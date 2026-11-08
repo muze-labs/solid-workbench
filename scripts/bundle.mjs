@@ -4,7 +4,7 @@ import { rollup } from 'rollup';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 
-const appNames = ['launcher', 'contacts', 'files', 'profile'];
+const appNames = ['launcher', 'contacts', 'files', 'profile', 'preferences'];
 
 function entryOwners(id, getModuleInfo) {
   const owners = new Set();
@@ -26,6 +26,14 @@ function entryOwners(id, getModuleInfo) {
 }
 
 function sharedChunk(id, { getModuleInfo }) {
+  // Only Workbench and Preferences need workspace image storage. Sharing this
+  // module must not pull it into every app's common UI chunk.
+  if (
+    !id.startsWith('\0') &&
+    id.endsWith('/apps/launcher/src/backgrounds.mjs')
+  ) {
+    return 'shared/backgrounds';
+  }
   // Profile editing is used by Contacts/Profile, not by the Launcher or Files.
   // Keep it out of the common UI download while retaining one shared copy.
   if (

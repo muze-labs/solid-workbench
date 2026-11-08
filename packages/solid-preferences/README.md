@@ -1,48 +1,45 @@
 # Shared Solid preferences
 
-Experimental `@muze-labs/solid-preferences`, used by all four apps.
+Experimental `@muze-labs/solid-preferences`. Editing lives in the separate
+Preferences app at `/preferences/`, normally embedded through the existing
+capability dialog. Hosts consume settings through `preferenceConsumer`; they
+load no editor template or form component.
 
-`loadPreferences(session)` returns `{ document, settings }` using
-`session.preferencesUrl`, discovered from `pim:preferencesFile` on the WebID.
-`savePreferences(session, document, settings)` returns the same shape after a
-conditional write. Retain the returned document/ETag for the next save. The session
-supplies a Metro client; unknown RDF survives edits. Missing links, missing ETags,
-validation errors and remote conflicts are explicit errors.
+`defaults`, `readPreferences`, `validatePreferences` and `applyPreferences`
+remain shared. `loadPreferences` and `savePreferences` retain their partial
+native-RDF document API for data clients. The profile's `pim:preferencesFile`
+remains authoritative; unknown RDF and omitted fields survive conditional saves.
 
-`settings` may contain only the keys being edited. Omitted settings retain their
-original RDF, including multiple values and literal metadata. Blank storage
-values clear that setting. The dialog submits common settings and only the
-current app's storage settings; app-specific HTML is composed at build time
-from `apps/*/src/preferences.html`. Profile has no storage section.
+`PreferenceState` uses Solid Workspace's native-Turtle IndexedDB source. The
+cache contains confirmed fields, pending choices, per-field native baselines and
+incomplete drafts. Valid edits apply after local persistence. Synchronization
+loads the current remote graph, compares edited-field baselines, preserves other
+terms and writes conditionally through the existing Metro document helpers.
+Conflicting fields require an explicit local/Pod choice. Interrupted or offline
+writes retain pending choices; an already-equal remote value can acknowledge a
+lost successful response. No whole-state JSON or JSON-in-Turtle cache is used.
 
-`defaults`, `readPreferences`, `validatePreferences` and `applyPreferences` are
-also exported. Appearance application is separate from persistence.
+`preferenceConsumer` loads cached choices before remote settings, applies shared
+appearance, and retains workspace-specific overrides supplied by Workbench.
+Same-origin change notices prompt other open hosts to reread their native cache;
+startup, visibility, online and existing authentication recovery refresh it too.
+The notice contains identity and a nonce, never credentials or settings data.
 
-`workspaceResource` is a named IRI on `apps:workspaceResource`, identifying the
-workspace Turtle document without a fragment. The default is
-`apps/solid-apps/workspace.ttl` below advertised storage. Unsupported structured,
-multiple or literal values fail before writing. The old `apps:brokerUrl` is no
-longer used or edited; existing values survive as unknown RDF.
+The Preferences app registers app-owned `settings-sections.mjs` descriptors and
+`settings.html` templates. Common sections stay first. Existing suite contributions
+are compiled with the established template pipeline, keeping View Source and
+editable SimplyFlow datasets useful. This is not a third-party code loader or
+provider registry. Register descriptors in Preferences’ sections component, export the named
+component through its features module, include it in the app composition and
+place its named view in the main details pane. No editor import is needed in the
+calling app.
 
-`launchTarget` is a plain literal, `"tab"` (the default) or `"window"`, on the
-suite's preferences subject using `apps:launchTarget`. The shared dialog offers
-**Open apps in**; Launcher uses it for app links and its Profile resource form.
-The choice is saved with the other Pod preferences. Unsupported structured,
-multiple or unknown values are rejected before writing rather than flattened.
+Workbench remains the live workspace writer. Preferences sends scoped operations
+with owner, workspace ID and expected revision over the existing private broker
+port. Selecting an inactive workspace edits its configuration without activating
+it. Incomplete workspace text is retained separately as native Turtle drafts.
+Workspace and binary background synchronization use Workbench's existing
+conditional workflow. Standalone Preferences offers opening Workbench when no
+workspace host is connected. Common/app defaults can be edited independently.
 
-Compose `src/dialog.html` into the page, then mount once:
-
-```js
-import { preferencesDialog } from '@muze-labs/solid-preferences/dialog.mjs';
-const preferences = preferencesDialog(dialogElement, {
-  getSession: () => session,
-  onChange: settings => { /* react to changed app settings */ }
-});
-await preferences.load(session);
-preferences.show();
-```
-
-`reset()` discards the loaded document and restores defaults; `destroy()` removes
-bindings and closes the native dialog. All content/field/button rendering uses
-SimplyFlow. The vocabulary and current English-only interface are documented in
-the root README.
+The old embedded dialog factory and per-host form templates have been retired.

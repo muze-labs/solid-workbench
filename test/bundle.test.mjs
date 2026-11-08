@@ -14,14 +14,18 @@ test('readable and minified apps preserve isolated module graphs', async () => {
         .filter((item) => item.fileName.endsWith('.min.js') === Boolean(suffix))
         .map((item) => [item.fileName, item])
     );
-    const apps = ['contacts', 'files', 'launcher', 'profile'];
+    const apps = ['contacts', 'files', 'launcher', 'profile', 'preferences'];
     assert.deepEqual(
       [...chunks.keys()].sort(),
       [
         ...apps.map((name) => filename(name + '/src/index')),
-        ...['redirect', 'shared/data', 'shared/ui', 'shared/profile'].map(
-          filename
-        )
+        ...[
+          'redirect',
+          'shared/data',
+          'shared/ui',
+          'shared/profile',
+          'shared/backgrounds'
+        ].map(filename)
       ].sort()
     );
     const data = chunks.get(filename('shared/data'));
@@ -56,7 +60,12 @@ test('readable and minified apps preserve isolated module graphs', async () => {
         assert(!/\/node_modules\/(?:n3|@muze-nl\/oldm-n3)\//.test(id));
         const app = /\/apps\/([^/]+)\//.exec(id)?.[1];
         if (app) {
-          assert.equal(name, filename(app + '/src/index'));
+          assert(
+            name === filename(app + '/src/index') ||
+              name === filename('preferences/src/index') ||
+              (app === 'launcher' && name === filename('shared/backgrounds')),
+            'App contributions belong only to their owner or Preferences: ' + id
+          );
         }
       }
       for (const dependency of [...chunk.imports, ...chunk.dynamicImports]) {
@@ -89,7 +98,7 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       moduleOwners.get(
         root + 'packages/solid-app-data/src/workspace-broker.mjs'
       ),
-      filename('launcher/src/index')
+      filename('shared/data')
     );
     assert.equal(
       moduleOwners.get(root + 'packages/solid-app-data/src/link-metadata.mjs'),
@@ -98,6 +107,9 @@ test('readable and minified apps preserve isolated module graphs', async () => {
     for (const name of apps) {
       const imports = chunks.get(filename(name + '/src/index')).imports;
       const required = [data.fileName, ui.fileName];
+      if (['launcher', 'preferences'].includes(name)) {
+        required.push(filename('shared/backgrounds'));
+      }
       if (['contacts', 'profile'].includes(name)) {
         required.push(filename('shared/profile'));
       }

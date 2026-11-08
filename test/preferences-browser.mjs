@@ -80,8 +80,7 @@ const server = createServer(async (request, response) => {
       'Content-Encoding': 'gzip'
     });
     response.end(gzipSync(content));
-  }
-  catch (error) {
+  } catch (error) {
     if (error.code === 'ENOENT') {
       response.writeHead(404).end();
       return;
@@ -96,64 +95,76 @@ body = `<${origin}/fixture/prefs#solid-apps> <${namespace}theme> "system".
   <#other> <https://example.org/unknown> "keep".`;
 let browser;
 let page;
-async function wait(predicate) {
+async function run(code, embedded = false) {
+  const expression = embedded
+    ? 'document.querySelector(".muze-solid-ui-capability-frame").contentWindow.eval(' +
+      JSON.stringify('(async()=>{' + code + '})()') +
+      ')'
+    : '(async()=>{' + code + '})()';
+  const result = await page.send('Runtime.evaluate', {
+    expression,
+    awaitPromise: true,
+    returnByValue: true
+  });
+  if (result.exceptionDetails) {
+    throw new Error(JSON.stringify(result.exceptionDetails));
+  }
+  return result.result.value;
+}
+async function wait(code, embedded = false) {
   for (let attempt = 0; attempt < 300; attempt += 1) {
-    if (await page.evaluate(predicate)) {
+    if (await run('return Boolean(' + code + ');', embedded)) {
       return;
     }
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 40));
   }
-  console.log(
-    'Focus diagnostics:',
-    await page.evaluate(() => ({
-      active:
-        document.activeElement.tagName +
-        ':' +
-        document.activeElement.getAttribute('data-simply-command'),
-      restore: document.querySelector(
-        '[data-simply-command="swb_preferences_restore"]'
-      ).outerHTML,
-      state:
-        window.solidContacts.host.preferenceView.data.swb_preferences_restore,
-      open: document.querySelector('.preferences-dialog').open,
-      changes:
-        window.solidContacts.host.preferenceView.runtime
-          .swb_preferences_changes,
-      error: String(
-        window.solidContacts.host.preferenceView.runtime.swb_preferences_error
-          ?.stack
-      ),
-      container: window.solidContacts.host.preferenceView.container.tagName
-    }))
-  );
   throw new Error(
     'preferences-browser: Timeout: ' +
-      predicate +
+      code +
       '\n' +
-      (await page.evaluate(() => document.body.innerText))
+      (await run('return document.body.innerText;', embedded))
   );
 }
-async function submit(theme) {
-  await page.send('Runtime.evaluate', {
-    expression: `(() => {
-    const form = document.querySelector('.preferences-dialog form');
-    form.elements.theme.value = ${JSON.stringify(theme)};
-    form.elements.theme.dispatchEvent(new Event('change', { bubbles: true }));
-    form.requestSubmit();
-  })()`
-  });
+async function change(key, value) {
+  await run(
+    'const input=document.querySelector("[name=' +
+      key +
+      ']");' +
+      'input.value=' +
+      JSON.stringify(value) +
+      ';' +
+      'input.dispatchEvent(new Event("change",{bubbles:true}));',
+    true
+  );
 }
-async function settled() {
+async function selectedSection(id) {
   await wait(
-    () =>
-      document
-        .querySelector('.preferences-dialog form')
-        .getAttribute('aria-busy') === 'false' &&
-      !document.querySelector('[data-simply-command="swb_preferences_review"]')
-        .disabled &&
-      !document.querySelector('.preferences-dialog footer .ds-button-primary')
-        .disabled
+    `(() => {
+    const list = document.querySelector('[data-muze-solid-design-sections]');
+    const tabStops = list.querySelectorAll('button[tabindex="0"]');
+    const selected = list.querySelectorAll('[aria-current="page"]');
+    const panel = document.querySelector(
+      '[data-simply-field="swb_panels.${id}"]'
+    );
+    return tabStops.length === 1 && selected.length === 1 &&
+      selected[0].dataset.muzeSolidDesignSection === ${JSON.stringify(id)} &&
+      !panel.hidden;
+  })()`,
+    true
   );
+}
+async function key(key, modifiers = 0) {
+  const codes = { ArrowDown: 40, ArrowUp: 38, Enter: 13, Tab: 9 };
+  for (const type of ['keyDown', 'keyUp']) {
+    await page.send('Input.dispatchKeyEvent', {
+      type,
+      key,
+      code: key,
+      windowsVirtualKeyCode: codes[key],
+      modifiers,
+      ...(key === 'Enter' && type === 'keyDown' ? { text: '\r' } : {})
+    });
+  }
 }
 function remoteChange(theme, density) {
   const graph = new StateGraph(body, origin + '/fixture/prefs');
@@ -163,10 +174,36 @@ function remoteChange(theme, density) {
   body = graph.write();
   version += 1;
 }
+async function openPreferences() {
+  await run(
+    'document.querySelector("[data-simply-command=preferences]").click();'
+  );
+  await wait(
+    'document.querySelector("iframe").contentWindow.swbPreferencesApp'
+  );
+  await wait(
+    'swbPreferencesApp.runtime.request && swbPreferencesApp.data.swb_sections.some(s=>s.id==="contacts-storage")',
+    true
+  );
+  await wait(
+    'document.querySelector("iframe").getAttribute("aria-busy")==="false"'
+  );
+}
 try {
   browser = await startChrome(origin + '/seed');
   page = await browser.page();
   await page.ready();
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 1280,
+    height: 900,
+    deviceScaleFactor: 1,
+    mobile: false
+  });
+  await run(
+    'localStorage.setItem("solid-apps.webId",location.origin+"/fixture/profile#me"); location.href="/contacts/";'
+  );
+  await wait('window.solidContacts?.host.session');
+  await run('await solidContacts.host.ready;');
   await page.send('Network.enable');
   await page.send('Network.emulateNetworkConditions', {
     offline: false,
@@ -174,34 +211,37 @@ try {
     downloadThroughput: 50 * 1024,
     uploadThroughput: 25 * 1024
   });
-  await page.evaluate(() => {
-    localStorage.setItem(
-      'solid-apps.webId',
-      location.origin + '/fixture/profile#me'
-    );
-    location.href = '/contacts/';
-  });
-  await wait(() =>
-    Boolean(window.solidContacts?.host.preferenceView.runtime.loaded)
+  const firstOpen = await run('return performance.now();');
+  await openPreferences();
+  await wait(
+    'document.activeElement.dataset.muzeSolidDesignSection==="appearance"',
+    true
   );
-  await page.evaluate(() =>
-    document.querySelector('[data-simply-command="preferences"]').click()
+  // No setup click/focus: arrows must work as soon as Preferences opens.
+  await key('ArrowDown');
+  await wait(
+    'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+    true
   );
-  await wait(() => document.querySelector('.preferences-dialog').open);
-  const cold = await page.evaluate(() => {
-    const navigation = performance.getEntriesByType('navigation')[0];
-    const resources = performance.getEntriesByType('resource');
-    return {
-      usableMilliseconds: Math.round(performance.now()),
-      transferBytes:
-        navigation.transferSize +
-        resources.reduce((sum, entry) => sum + entry.transferSize, 0),
-      requests: resources.length + 1
-    };
-  });
+  assert.equal(
+    await run('return swbPreferencesApp.runtime.section;', true),
+    'appearance'
+  );
+  await key('ArrowUp');
+  await wait(
+    'document.activeElement.dataset.muzeSolidDesignSection==="appearance"',
+    true
+  );
+  const firstOpenCost = await run(
+    `const n=performance.getEntriesByType('navigation')[0];const r=performance.getEntriesByType('resource');return {bytes:n.transferSize+r.reduce((sum,e)=>sum+e.transferSize,0),requests:r.length+1,zeroTransferResources:r.filter(e=>e.transferSize===0).length};`,
+    true
+  );
+  firstOpenCost.milliseconds = Math.round(
+    (await run('return performance.now();')) - firstOpen
+  );
   console.log(
-    'Cold Preferences interaction, gzip, 50 KiB/s down, 25 KiB/s up, 150ms latency:',
-    cold
+    'First usable Preferences from already-open Contacts, 50 KiB/s down, 25 KiB/s up, 150ms latency:',
+    firstOpenCost
   );
   await page.send('Network.emulateNetworkConditions', {
     offline: false,
@@ -209,301 +249,338 @@ try {
     downloadThroughput: -1,
     uploadThroughput: -1
   });
+  assert.deepEqual(
+    await run('return swbPreferencesApp.data.swb_sections.map(s=>s.id);', true),
+    ['appearance', 'language', 'opening', 'contacts-storage']
+  );
   assert.equal(
-    await page.evaluate(() =>
-      document
-        .querySelector('.preferences-dialog')
-        .textContent.includes('/fixture/prefs')
-    ),
+    await run('return !!document.querySelector(".preferences-dialog");'),
     false
   );
-  await submit('light');
   await wait(
-    () =>
-      window.solidContacts.host.preferenceView.runtime.loaded.settings.theme ===
-      'light'
+    'document.querySelector(".muze-solid-ui-capability-loading").hidden'
   );
-  await settled();
+  await writeFile(
+    '/tmp/cycle106-preferences-desktop.png',
+    Buffer.from(
+      (await page.send('Page.captureScreenshot', { format: 'png' })).data,
+      'base64'
+    )
+  );
+  await change('theme', 'light');
+  await wait(
+    'swbPreferencesApp.runtime.settings.settings().theme==="light" && !swbPreferencesApp.runtime.localSaving',
+    true
+  );
+  await wait(
+    'swbPreferencesApp.data.swb_status.includes("synchronized")',
+    true
+  );
+  await wait('document.body.classList.contains("ds-lightmode")');
+  await wait('swbPreferencesApp.runtime.settings.pending().length===0', true);
   assert.equal(writes.length, 1);
-  await submit('system');
+  await change('theme', 'dark');
   await wait(
-    () =>
-      window.solidContacts.host.preferenceView.runtime.loaded.settings.theme ===
-      'system'
+    'swbPreferencesApp.runtime.settings.settings().theme==="dark" && !swbPreferencesApp.runtime.localSaving',
+    true
   );
-  await settled();
+  await wait(
+    'swbPreferencesApp.data.swb_status.includes("synchronized")',
+    true
+  );
   assert.deepEqual(
-    writes.map((write) => write.etag),
+    writes.map((w) => w.etag),
     ['"1"', '"2"']
   );
-
+  assert(body.includes('keep'));
+  await page.send('Network.enable');
   await page.send('Network.emulateNetworkConditions', {
     offline: true,
     latency: 0,
     downloadThroughput: -1,
     uploadThroughput: -1
   });
-  await submit('light');
-  await wait(() =>
-    document
-      .querySelector('.preferences-dialog [data-simply-field="message"]')
-      .textContent.includes('still here')
+  await change('theme', 'light');
+  await wait(
+    'swbPreferencesApp.runtime.settings.settings().theme==="light"',
+    true
   );
-  await settled();
-  assert.equal(
-    await page.evaluate(
-      () => document.querySelector('.preferences-dialog [name="theme"]').value
-    ),
-    'light'
-  );
+  await wait('document.body.classList.contains("ds-lightmode")');
   assert.equal(writes.length, 2);
+  await run('swbPreferencesApp.actions.swb_selectSection("language");', true);
+  await run(
+    'const input=document.querySelector("[name=language]");input.value="unfinished!";input.dispatchEvent(new Event("input",{bubbles:true}));',
+    true
+  );
+  await wait(
+    'swbPreferencesApp.runtime.settings.drafts().language==="unfinished!"',
+    true
+  );
   await page.send('Network.emulateNetworkConditions', {
     offline: false,
     latency: 0,
     downloadThroughput: -1,
     uploadThroughput: -1
   });
-  await submit('light');
+  await run(
+    'await solidContacts.host.view.actions.muzeSolidUiCheckCapabilityClose();'
+  );
   await wait(
-    () =>
-      window.solidContacts.host.preferenceView.runtime.loaded.settings.theme ===
-      'light'
+    '!document.querySelector(".muze-solid-ui-capability-dialog").open'
   );
-  await settled();
-  assert.equal(writes.length, 3);
-
-  getValidator = false;
-  await submit('system');
-  await wait(() =>
-    document
-      .querySelector('.preferences-dialog [data-simply-field="message"]')
-      .textContent.includes('version information')
+  await openPreferences();
+  await wait(
+    'swbPreferencesApp.runtime.settings.settings().theme==="light"',
+    true
   );
-  await settled();
-  assert.equal(writes.length, 3);
   assert.equal(
-    await page.evaluate(
-      () => document.querySelector('.preferences-dialog [name="theme"]').value
-    ),
-    'system'
+    await run('return swbPreferencesApp.data.language;', true),
+    'unfinished!'
   );
-  getValidator = true;
-  await submit('system');
   await wait(
-    () =>
-      window.solidContacts.host.preferenceView.runtime.loaded.settings.theme ===
-      'system'
+    'swbPreferencesApp.data.swb_status.includes("synchronized")',
+    true
   );
-  await settled();
-
   remoteChange('dark', 'compact');
-  const beforeConflict = writes.length;
-  await submit('light');
-  await wait(() =>
-    document
-      .querySelector('.preferences-dialog [data-simply-field="message"]')
-      .textContent.includes('changed on your Pod')
-  );
-  await settled();
-  assert.equal(writes.length, beforeConflict);
-  assert.equal(
-    await page.evaluate(
-      () => document.querySelector('.preferences-dialog [name="theme"]').value
-    ),
-    'light'
-  );
-  const ax = await page.send('Accessibility.getFullAXTree');
-  assert.ok(
-    ax.nodes.some(
-      (node) =>
-        !node.ignored &&
-        node.role?.value === 'button' &&
-        node.name?.value === 'Review Pod settings'
-    )
-  );
-  assert.ok(
-    ax.nodes.some(
-      (node) =>
-        !node.ignored &&
-        node.role?.value === 'combobox' &&
-        node.name?.value === 'Theme'
-    )
-  );
-  assert.ok(
-    ax.nodes.some(
-      (node) =>
-        node.role?.value === 'status' &&
-        node.properties?.some(
-          (property) =>
-            property.name === 'live' && property.value?.value === 'polite'
-        )
-    )
-  );
-
   readStatus = 503;
-  await page.evaluate(() =>
-    document
-      .querySelector('[data-simply-command="swb_preferences_review"]')
-      .click()
-  );
-  await wait(() =>
-    document
-      .querySelector('.preferences-dialog [data-simply-field="message"]')
-      .textContent.includes('could not complete')
-  );
-  await settled();
-  assert.equal(
-    await page.evaluate(
-      () => document.querySelector('.preferences-dialog [name="theme"]').value
-    ),
-    'light'
-  );
+  await change('theme', 'system');
+  await wait('swbPreferencesApp.data.swb_status.includes("retained")', true);
   readStatus = 200;
-  await page.evaluate(() =>
-    document
-      .querySelector('[data-simply-command="swb_preferences_review"]')
-      .click()
-  );
-  await wait(
-    () =>
-      document.querySelector('.preferences-dialog [name="theme"]').value ===
-      'dark'
-  );
-  await settled();
-  await wait(() =>
-    document.activeElement.matches(
-      '[data-simply-command="swb_preferences_restore"]'
-    )
-  );
-  await page.evaluate(() =>
-    document
-      .querySelector('[data-simply-command="swb_preferences_restore"]')
-      .click()
-  );
-  await wait(
-    () =>
-      document.querySelector('.preferences-dialog [name="theme"]').value ===
-      'light'
-  );
+  await run('await swbPreferencesApp.actions.swb_synchronize();', true);
   assert.equal(
-    await page.evaluate(
-      () => document.querySelector('.preferences-dialog [name="density"]').value
-    ),
-    'compact',
-    'Restoring user changes preserves other reviewed Pod settings.'
+    await run('return swbPreferencesApp.data.swb_conflicts.length;', true),
+    1
   );
-  await submit('light');
+  assert.equal(writes.length, 3);
+  await run(
+    'await swbPreferencesApp.actions.swb_resolveConflict("theme",true);',
+    true
+  );
+  assert.equal(writes.length, 4);
+  assert(body.includes('compact') && body.includes('keep'));
+  getValidator = false;
+  await change('theme', 'light');
   await wait(
-    () =>
-      window.solidContacts.host.preferenceView.runtime.loaded.settings.theme ===
-      'light'
+    'swbPreferencesApp.data.swb_status.includes("version information")',
+    true
   );
-  await settled();
-  assert.equal(writes.length, beforeConflict + 1);
-  assert.ok(body.includes('keep'));
-
-  await page.send('Emulation.setDeviceMetricsOverride', {
-    width: 375,
-    height: 740,
-    deviceScaleFactor: 1,
-    mobile: true
-  });
-  remoteChange('dark', 'comfortable');
-  await submit('system');
-  await wait(() =>
-    document
-      .querySelector('.preferences-dialog [data-simply-field="message"]')
-      .textContent.includes('changed on your Pod')
-  );
-  await settled();
-  assert.equal(
-    await page.evaluate(() => {
-      const dialog = document.querySelector('.preferences-dialog');
-      const footer = dialog.querySelector('footer').getBoundingClientRect();
-      return (
-        footer.bottom <= innerHeight &&
-        footer.top >= 0 &&
-        dialog.getBoundingClientRect().width <= innerWidth &&
-        document.documentElement.scrollWidth <= innerWidth
-      );
-    }),
-    true,
-    'Phone recovery actions remain visible without scrolling.'
-  );
-  await page.evaluate(() =>
-    document
-      .querySelector('[data-simply-command="swb_preferences_review"]')
-      .focus()
-  );
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyDown',
-    key: 'Enter',
-    code: 'Enter',
-    windowsVirtualKeyCode: 13,
-    text: '\r',
-    unmodifiedText: '\r'
-  });
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyUp',
-    key: 'Enter',
-    code: 'Enter',
-    windowsVirtualKeyCode: 13
-  });
+  assert.equal(writes.length, 4);
+  getValidator = true;
+  await run('await swbPreferencesApp.actions.swb_synchronize();', true);
   await wait(
-    () =>
-      document.querySelector('.preferences-dialog [name="theme"]').value ===
-      'dark'
+    'swbPreferencesApp.data.swb_status.includes("synchronized")',
+    true
   );
-  await settled();
-  await wait(() =>
-    document.activeElement.matches(
-      '[data-simply-command="swb_preferences_restore"]'
-    )
-  );
-  await wait(
-    () =>
-      document.querySelector(
-        '.preferences-dialog [data-simply-field="muzeSolidDesignNotice.visibility"]'
-      ).hidden
-  );
-  assert.equal(
-    await page.evaluate(() => {
-      const footer = document.querySelector('.preferences-dialog footer');
-      return [
-        ...footer.querySelectorAll('button:not([hidden]), [role="status"]')
-      ].every((element) => {
-        const rect = element.getBoundingClientRect();
-        const visible = document.elementFromPoint(
-          rect.left + rect.width / 2,
-          rect.top + rect.height / 2
-        );
-        return (
-          rect.top >= 0 &&
-          rect.bottom <= innerHeight &&
-          (visible === element || element.contains(visible))
-        );
+  for (const viewport of [
+    { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false },
+    { width: 390, height: 844, deviceScaleFactor: 1, mobile: true }
+  ]) {
+    await page.send('Emulation.setDeviceMetricsOverride', viewport);
+    await run(
+      'swbPreferencesApp.actions.swb_selectSection("appearance");',
+      true
+    );
+    await wait(
+      'document.querySelector("[data-muze-solid-design-section=appearance]").getAttribute("aria-current")==="page"',
+      true
+    );
+    await run(
+      'document.querySelector("[data-muze-solid-design-section=appearance]").focus();',
+      true
+    );
+    await wait(
+      `document.querySelectorAll('[data-muze-solid-design-sections] button[tabindex="0"]').length===1 && document.querySelector('[data-muze-solid-design-section="appearance"]').tabIndex===0`,
+      true
+    );
+    assert.deepEqual(
+      await run(
+        'return [...document.querySelectorAll("[data-muze-solid-design-sections] button")].map(b=>b.tabIndex);',
+        true
+      ),
+      [0, -1, -1, -1]
+    );
+    await key('ArrowDown');
+    await wait(
+      'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+      true
+    );
+    assert.equal(
+      await run('return swbPreferencesApp.runtime.section;', true),
+      'appearance'
+    );
+    await key('ArrowDown');
+    await wait(
+      'document.activeElement.dataset.muzeSolidDesignSection==="opening"',
+      true
+    );
+    await key('ArrowUp');
+    await wait(
+      'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+      true
+    );
+    await run('window.swbFocusedSection=document.activeElement;', true);
+    await key('Enter');
+    await selectedSection('language');
+    assert.equal(
+      await run(
+        'return document.activeElement===window.swbFocusedSection;',
+        true
+      ),
+      true,
+      'Activation preserves the focused section button'
+    );
+    await key('ArrowDown');
+    await wait(
+      'document.activeElement.dataset.muzeSolidDesignSection==="opening"',
+      true
+    );
+    assert.equal(
+      await run('return swbPreferencesApp.runtime.section;', true),
+      'language'
+    );
+    await key('Tab');
+    await wait('document.activeElement.name==="language"', true);
+    assert.equal(
+      await run(
+        'const r=document.activeElement.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth;',
+        true
+      ),
+      true,
+      'Tab reveals the section controls on phones too'
+    );
+    await key('ArrowDown');
+    assert.equal(
+      await run('return document.activeElement.name;', true),
+      'language',
+      'Arrows inside controls keep their native behavior'
+    );
+    await key('Tab', 8);
+    await wait(
+      'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+      true
+    );
+    await key('ArrowUp');
+    await key('ArrowUp');
+    await wait(
+      'document.activeElement.dataset.muzeSolidDesignSection==="contacts-storage"',
+      true
+    );
+    await key('Enter');
+    await selectedSection('contacts-storage');
+    await key('Tab');
+    await wait('document.activeElement.name==="contactsResource"', true);
+    await key('Tab', 8);
+    await key('ArrowDown');
+    await wait(
+      'document.activeElement.dataset.muzeSolidDesignSection==="appearance"',
+      true
+    );
+    await key('Enter');
+    await selectedSection('appearance');
+    await key('Tab');
+    await wait('document.activeElement.name==="theme"', true);
+    await key('ArrowDown');
+    assert.equal(
+      await run('return document.activeElement.name;', true),
+      'theme',
+      'Select arrows do not navigate sections'
+    );
+    assert.equal(
+      await run('return swbPreferencesApp.runtime.section;', true),
+      'appearance'
+    );
+    const point = await run(
+      `const frame=document.querySelector('iframe');const button=frame.contentDocument.querySelector('[data-muze-solid-design-section="language"]');button.scrollIntoView({block:'nearest'});const r=button.getBoundingClientRect();const f=frame.getBoundingClientRect();return {x:f.x+r.x+r.width/2,y:f.y+r.y+r.height/2};`
+    );
+    for (const type of ['mousePressed', 'mouseReleased']) {
+      await page.send('Input.dispatchMouseEvent', {
+        type,
+        button: 'left',
+        clickCount: 1,
+        ...point
       });
-    }),
-    true,
-    'Recovery status and actions are visible and unobscured on phones.'
+    }
+    await wait('document.activeElement.tagName==="H2"', true);
+    await selectedSection('language');
+    if (viewport.mobile) {
+      await key('Tab', 8);
+      await wait(
+        'document.activeElement.dataset.simplyCommand==="muzeSolidDesignShowList"',
+        true
+      );
+      await key('Enter');
+      await wait(
+        'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+        true
+      );
+    } else {
+      await key('Tab', 8);
+      await wait(
+        'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+        true
+      );
+    }
+    await key('Tab');
+    await wait('document.activeElement.name==="language"', true);
+  }
+  await run(
+    'const input=document.querySelector("[name=language]");input.value="nl";input.dispatchEvent(new Event("input",{bubbles:true}));',
+    true
   );
-  const image = await page.send('Page.captureScreenshot', { format: 'png' });
+  await key('Enter');
+  await wait(
+    'swbPreferencesApp.runtime.settings.settings().language==="nl"',
+    true
+  );
+  const frameTree = await page.send('Page.getFrameTree');
+  const frameId = frameTree.frameTree.childFrames[0].frame.id;
+  const accessibility = await page.send('Accessibility.getFullAXTree', {
+    frameId
+  });
+  assert(
+    accessibility.nodes.some(
+      (node) =>
+        node.role?.value === 'button' && node.name?.value === 'Appearance'
+    )
+  );
   await writeFile(
-    '/tmp/cycle77-preferences-phone.png',
-    Buffer.from(image.data, 'base64')
+    '/tmp/cycle106-preferences-phone.png',
+    Buffer.from(
+      (await page.send('Page.captureScreenshot', { format: 'png' })).data,
+      'base64'
+    )
   );
-  await page.send('Emulation.clearDeviceMetricsOverride');
-  const desktop = await page.send('Page.captureScreenshot', { format: 'png' });
-  await writeFile(
-    '/tmp/cycle77-preferences-desktop.png',
-    Buffer.from(desktop.data, 'base64')
+  // The same app works independently and exposes the selected app's section.
+  await run(
+    'await solidContacts.host.view.actions.muzeSolidUiCheckCapabilityClose();'
   );
+  await wait(
+    '!document.querySelector(".muze-solid-ui-capability-dialog").open'
+  );
+  await run('location.href="/preferences/";');
+  await wait('window.swbPreferencesApp?.runtime.host.managed');
+  await run(
+    `const select=document.querySelector('[aria-label="Application settings"]');select.value="files";select.dispatchEvent(new Event("change",{bubbles:true}));`
+  );
+  await wait(
+    'swbPreferencesApp.data.swb_sections.some(section=>section.id==="files-storage")'
+  );
+  await run('swbPreferencesApp.actions.swb_selectSection("files-storage");');
+  await wait(
+    `!document.querySelector('[data-simply-field="swb_panels.files-storage"]').hidden`
+  );
+  await run(
+    'const input=[...document.querySelectorAll("[name=filesRoot]")].find(e=>e.getClientRects().length);input.value=location.origin+"/fixture/storage/";input.dispatchEvent(new Event("change",{bubbles:true}));'
+  );
+  await wait(
+    'swbPreferencesApp.runtime.settings.settings().filesRoot.endsWith("/fixture/storage/") && !swbPreferencesApp.runtime.localSaving'
+  );
+  await wait('swbPreferencesApp.runtime.settings.pending().length===0');
+  assert(body.includes('keep'));
   console.log(
-    'PASS: Preferences repeated saves, offline retry, validators, conflict review/restore, RDF preservation, phone and keyboard/AX checks.'
+    'PASS: independent embedded Preferences, app sections, immediate shared updates, repeated conditional saves, offline retention, draft reopen, conflicts, validator recovery phone focus, section arrows/activation, roving Tab stops, control handoff and native input keys.'
   );
-}
-finally {
-  page?.close();
+} finally {
   await browser?.close();
   await new Promise((resolve) => server.close(resolve));
 }

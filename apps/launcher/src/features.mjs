@@ -1,7 +1,4 @@
-export {
-  launcherBackground,
-  backgroundPreferences
-} from './components/background.mjs';
+export { launcherBackground } from './components/background.mjs';
 export { workspaceHome, workspaceMenu } from './components/workspace-home.mjs';
 export { workspaceControls } from './components/workspace-controls.mjs';
 export { resourceSelection } from './components/resource-selection.mjs';
@@ -13,3 +10,5 @@ export {
   muzeSolidDesignDropdown,
   muzeSolidDesignListDetails
 } from '../../../packages/solid-design/src/features.mjs';
+
+export { workspaceSettingsService } from './components/workspace-settings-service.mjs';

@@ -1,5 +1,10 @@
 export const lifecycle = {
   events: {
+    swbWorkspaceOnline: {
+      target: 'window',
+      type: 'online',
+      action: 'swb_queueSettingsSync'
+    },
     swbWorkspaceBeforeUnload: {
       target: 'window',
       type: 'beforeunload',
@@ -20,6 +25,11 @@ export const lifecycle = {
       this.runtime.persistence = undefined;
       this.runtime.workspaceBusy = false;
       this.runtime.container = this.runtime.host.main;
+      this.runtime.host.onPreferencesTaskComplete = (result) => {
+        if (result?.diagnostics) {
+          return this.actions.swb_openDiagnostics();
+        }
+      };
       this.runtime.host.onConnect = async () => {
         this.actions.renderLinks();
         if (this.runtime.store) {
@@ -90,6 +100,7 @@ export const lifecycle = {
     cleanup() {
       this.actions.swb_releaseBackground();
       clearTimeout(this.runtime.restoreTimer);
+      clearTimeout(this.runtime.settingsSyncTimer);
       this.runtime.selection?.abort();
       this.runtime.workspace?.dispose();
       this.api.destroy(this.runtime.shortcutEffect);
