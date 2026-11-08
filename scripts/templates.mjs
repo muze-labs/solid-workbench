@@ -39,6 +39,12 @@ export async function composeTemplate(filename, { appName = '' } = {}) {
   }
   if (appName) {
     source = source.replaceAll('{{title}}', applicationTitle(appName));
+    source = source.replaceAll('{{appName}}', appName);
+    const fillsContent = ['contacts', 'profile', 'preferences'].includes(appName);
+    source = source.replaceAll(
+      '{{appLayout}}',
+      fillsContent ? 'swb-fill-content' : ''
+    );
   }
   if (source.includes('{{profile}}')) {
     source = source.replace(

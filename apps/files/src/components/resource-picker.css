@@ -1,24 +1,52 @@
-body:has(.muze-solid-ui-embedded:not([hidden])) .file-controls {
-  padding-bottom: 8rem;
+/* DS adapter: request and action bar are separate component roots. */
+@layer theme {
+  .swb-picker-request,
+  .swb-picker-actions {
+    --swb-picker-space-small: var(--ds-space-d2);
+    --swb-picker-space-tiny: var(--ds-space-d4);
+    --swb-picker-surface: var(--ds-color-background);
+    --swb-picker-border: var(--ds-grey-low);
+  }
 }
-body:has(.muze-solid-ui-embedded:not([hidden])) .picker-request {
-  padding: var(--ds-space-d2);
-  border: 0;
-  background: none;
-}
-body:has(.muze-solid-ui-embedded:not([hidden])) .picker-request h2 {
-  display: none;
-}
-body:has(.muze-solid-ui-embedded:not([hidden])) .picker-request p {
-  font-size: 0.85rem;
-  margin-block: var(--ds-space-d4);
-}
-body:has(.muze-solid-ui-embedded:not([hidden])) .picker-request .actions {
-  position: fixed;
-  inset: auto 0 0;
-  margin: 0;
-  padding: var(--ds-space-d2);
-  background: var(--ds-color-background);
-  border-top: 1px solid var(--ds-grey-low);
-  z-index: 5;
+@layer page {
+  /* The Files page owns its embedded presentation, not shared header markup. */
+  .swb-files:has(.muze-solid-ui-embedded:not([hidden])) {
+    --swb-files-display: flex;
+    --swb-files-min-size: 100%;
+    --swb-picker-title-display: none;
+    --swb-picker-description-size: 0.85rem;
+  }
+  .swb-file-controls {
+    display: var(--swb-files-display, block);
+    flex-direction: column;
+    min-block-size: var(--swb-files-min-size, auto);
+  }
+  .swb-picker-request {
+    flex: none;
+    padding: var(--swb-picker-space-small);
+  }
+  .swb-picker-title {
+    display: var(--swb-picker-title-display, block);
+  }
+  .swb-picker-description {
+    font-size: var(--swb-picker-description-size, inherit);
+    margin-block: var(--swb-picker-space-tiny);
+  }
+  /* Normal flow reserves the bar's actual height when labels wrap or zoom.
+     Sticky positioning keeps it reachable in the existing scrolling pane. */
+  .swb-picker-actions {
+    position: sticky;
+    inset-block-end: 0;
+    flex: none;
+    margin-block: auto 0;
+    padding: var(--swb-picker-space-small);
+    background: var(--swb-picker-surface);
+    border-block-start: 1px solid var(--swb-picker-border);
+    z-index: 5;
+  }
+  .swb-picker-button {
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }

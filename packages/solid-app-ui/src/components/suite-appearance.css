@@ -1,171 +1,198 @@
-/* App palette from the original Contacts page. Keep this above DS defaults. */
-:root {
-  --ds-primary: oklch(0.4866 0.1142 255.31);
-  --ds-primary-contrast: white;
-  --ds-box-radius: 0;
-  --ds-dialog-radius: 0;
-  --ds-panels-list-width: 20em;
-}
-html,
-body {
-  min-height: 100%;
-}
-body {
-  margin: 0;
-  min-height: 100dvh;
-}
-#app {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-  overflow: hidden;
-}
-button,
-a[data-simply-command] {
-  cursor: pointer;
-}
-button:disabled {
-  cursor: wait;
-  opacity: 0.6;
-}
-.ds-button {
-  border-radius: 0;
-  text-transform: none;
-}
-/* Inline SVGs align with their labels; the installed DS default is bottom. */
-svg.ds-icon {
-  vertical-align: middle;
-}
-.ds-icon-feather {
-  width: 1.2em;
-  height: 1.2em;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-[hidden] {
-  display: none !important;
-}
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-.empty:empty {
-  display: none;
-}
-.suite-main {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  padding: var(--ds-space-d2) var(--ds-space) var(--ds-space-x2);
-}
-.app-content {
-  max-width: 80rem;
-}
-.app-toolbar,
-.toolbar,
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: var(--ds-space-d2);
-}
-.app-toolbar {
-  margin-block: var(--ds-space-d2) var(--ds-space);
-}
-.actions {
-  margin-block: var(--ds-space);
-}
-.toolbar {
-  margin: 0;
-}
-.toolbar > label {
-  flex: 1;
-  min-width: min(100%, 15rem);
-}
-label {
-  display: block;
-  margin-block: var(--ds-space-d2);
-}
-label input,
-label textarea,
-label select {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-}
-input,
-textarea,
-select {
-  padding: var(--ds-space-d4) var(--ds-space-d2);
-  font: inherit;
-}
-label input,
-label textarea,
-label select,
-.app-toolbar .ds-button {
-  margin-block: 0;
-}
-textarea {
-  min-height: 2.75rem;
-  resize: vertical;
-}
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: 0 var(--ds-space);
-}
-.form-grid > * {
-  min-width: 0;
-}
-.person-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.person-list li {
-  margin: 0;
-}
-.muted {
-  font-size: 0.85em;
-  opacity: 0.8;
-}
-.empty {
-  padding-block: var(--ds-space);
-  opacity: 0.8;
-}
-fieldset {
-  min-width: 0;
-  padding: var(--ds-space-d2);
-  border: 1px solid var(--ds-grey-medium);
-}
-@media (max-width: 720px) {
-  .suite-main {
-    padding-inline: var(--ds-space-d2);
+/* Suite/DS integration: palette and public primitive configuration. */
+@layer theme {
+  :root {
+    --ds-primary: oklch(0.4866 0.1142 255.31);
+    --ds-primary-contrast: white;
+    --ds-box-radius: 0;
+    --ds-dialog-radius: 0;
+    --ds-panels-list-width: 20em;
+  }
+  .swb-root {
+    --swb-ui-space: var(--ds-space);
+    --swb-ui-space-small: var(--ds-space-d2);
+    --swb-ui-space-tiny: var(--ds-space-d4);
+    --swb-ui-space-large: var(--ds-space-x2);
+    --swb-ui-border: var(--ds-grey-medium);
+  }
+  .swb-control {
+    --swb-control-space: var(--ds-space-d2);
+    --swb-control-inset: var(--ds-space-d4);
   }
 }
-.muze-solid-ui-embedded {
-  display: none;
-}
-body:has(.muze-solid-ui-embedded:not([hidden])) .suite-main {
-  display: flex;
-  overflow: hidden;
-  padding-bottom: var(--ds-space-d2);
-}
-body:has(.muze-solid-ui-embedded:not([hidden])) .app-content {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-}
+@layer base {
+  html,
+  body {
+    min-height: 100%;
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+  }
+  button,
+  a[data-simply-command] {
+    cursor: pointer;
+  }
+  /* Public DS primitives: intentional suite integration. */
+  .ds-button {
+    border-radius: 0;
+    text-transform: none;
+  }
+  svg.ds-icon {
+    vertical-align: middle;
+  }
 
-[data-density='compact'] .person-list button {
-  padding-block: var(--ds-space-d4);
+  label {
+    display: block;
+    margin-block: var(--swb-ui-space-small);
+  }
+  textarea {
+    min-height: 2.75rem;
+    resize: vertical;
+  }
+  fieldset {
+    min-width: 0;
+    padding: var(--swb-ui-space-small);
+    border: 1px solid var(--swb-ui-border);
+  }
+}
+@layer component {
+  /* DS primitives need a visible keyboard state in both suite themes. */
+  .ds-button:focus-visible,
+  .swb-control:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -3px;
+  }
+  /* DS button icon sizing belongs to base; this suite variant wins here. */
+  .ds-icon-feather {
+    width: 1.2em;
+    height: 1.2em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .swb-control {
+    padding: var(--swb-control-inset) var(--swb-control-space);
+    font: inherit;
+  }
+  .swb-labeled-control {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    margin-block: 0;
+  }
+  .swb-app-toolbar,
+  .swb-toolbar,
+  .swb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--swb-ui-space-small);
+  }
+  .swb-app-toolbar {
+    margin-block: var(--swb-ui-space-small) var(--swb-ui-space);
+  }
+  .swb-actions {
+    margin-block: var(--swb-ui-space);
+  }
+  .swb-toolbar {
+    margin: 0;
+  }
+  .swb-toolbar-label {
+    flex: 1;
+    min-width: min(100%, 15rem);
+  }
+  .swb-toolbar-button {
+    margin-block: 0;
+  }
+  .swb-person-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .swb-list-item {
+    margin: 0;
+  }
+  .swb-muted {
+    font-size: 0.85em;
+    opacity: 0.8;
+  }
+  .swb-empty {
+    padding-block: var(--swb-ui-space);
+    opacity: 0.8;
+  }
+}
+@layer page {
+  .swb-root {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+  }
+  .swb-suite-main {
+    flex: 1;
+    min-height: 0;
+    overflow: var(--swb-main-overflow, auto);
+    display: var(--swb-main-display, block);
+    padding: var(--swb-ui-space-small) var(--swb-ui-space)
+      var(--swb-main-bottom, var(--swb-ui-space-large));
+  }
+  .swb-app-content {
+    max-width: 80rem;
+    flex: var(--swb-content-flex, initial);
+    min-height: var(--swb-content-min-height, auto);
+    overflow: var(--swb-content-overflow, visible);
+  }
+  /* Whole-document presentation state belongs to the suite shell. */
+  .swb-root:has(.muze-solid-ui-embedded:not([hidden])) {
+    --swb-main-display: flex;
+    --swb-main-overflow: hidden;
+    --swb-main-bottom: var(--swb-ui-space-small);
+    --swb-content-flex: 1;
+    --swb-content-min-height: 0;
+    --swb-content-overflow: auto;
+  }
+  @media (max-width: 720px) {
+    .swb-suite-main {
+      padding-inline: var(--swb-ui-space-small);
+    }
+  }
+  @media (max-width: 359px) {
+    .swb-root {
+      --swb-main-bottom: var(--swb-ui-space-small);
+    }
+  }
+}
+@layer utility {
+  .swb-fill-content {
+    height: 100%;
+    min-height: 0;
+  }
+  /* SimplyFlow visibility must win over every component's display rule. */
+  [hidden] {
+    display: none !important;
+  }
+  .swb-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .swb-empty:empty,
+  .muze-solid-ui-embedded {
+    display: none;
+  }
+  /* Density affects explicit list actions, not dialogs nested in a list. */
+  [data-density='compact'] .swb-list-action {
+    padding-block: var(--swb-ui-space-tiny);
+  }
 }

@@ -1,23 +1,20 @@
-.app-content:has(.profile-controls) {
-  display: flex;
-  flex-direction: column;
-}
-.app-content:has(.profile-controls) {
-  height: 100%;
-  min-height: 0;
-}
-.profile-content {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-}
-.profile-controls {
-  flex: none;
-}
-body:has(.muze-solid-ui-embedded:not([hidden])) .profile-content {
-  height: 100%;
-}
-
-body:has(.muze-solid-ui-embedded:not([hidden])) .profile-controls {
-  display: none;
+@layer page {
+  .swb-profile-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  .swb-profile:has(.muze-solid-ui-embedded:not([hidden])) {
+    --swb-profile-content-size: 100%;
+    --swb-profile-controls-display: none;
+  }
+  .swb-profile-content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    block-size: var(--swb-profile-content-size, auto);
+  }
+  .swb-profile-controls {
+    flex: none;
+    display: var(--swb-profile-controls-display, flex);
+  }
 }

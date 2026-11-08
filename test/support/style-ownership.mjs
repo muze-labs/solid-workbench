@@ -1,14 +1,23 @@
 import assert from 'node:assert/strict';
+import { checkStyleContracts } from './style-contracts.mjs';
 
 // Simulate the future IDE: retain originals, store a source override and update
 // the existing named style element. No runtime updater is added to the apps.
 export async function checkStyleOwnership(page) {
+  await checkStyleContracts(page);
   const result = await page.evaluate(() => {
     const route = location.pathname.split('/').filter(Boolean).at(-1);
     const name = route === 'workbench' ? 'launcher' : route;
-    const owner =
-      globalThis['muzeSolid' + name[0].toUpperCase() + name.slice(1) + 'App'];
-    const views = [owner, ...Object.values(owner.definition.instances)];
+    let owner = globalThis.swbPreferencesApp;
+    if (name !== 'preferences') {
+      owner = globalThis[
+        'muzeSolid' + name[0].toUpperCase() + name.slice(1) + 'App'
+      ];
+    }
+    const instances = owner.definition.instances || {
+      account: owner.runtime.host.view
+    };
+    const views = [owner, ...Object.values(instances)];
     const control = [...document.querySelectorAll('button')].find(
       (button) => button.getClientRects().length
     );
@@ -109,6 +118,7 @@ export async function checkStyleOwnership(page) {
         'swb-workspace',
         'swb-resource-selection'
       ],
+      preferences: [],
       profile: [
         'swb-profile-details',
         'swb-profile-editing',
@@ -124,10 +134,15 @@ export async function checkStyleOwnership(page) {
     ]) {
       check(names.has(style), 'missing feature-owned style ' + style);
     }
-    return checked;
+    return { checked, name };
   });
+  // Preferences owns section datasets and reuses the shared layout styles.
+  let minimum = 7;
+  if (result.name === 'preferences') {
+    minimum = 4;
+  }
   assert.ok(
-    result >= 7,
+    result.checked >= minimum,
     'Named styles support live edits and restoration in each app'
   );
 }

@@ -2,7 +2,7 @@ export const lifecycle = {
   actions: {
     async initialize() {
       this.runtime.container =
-        this.runtime.host.main.querySelector('.profile-content');
+        this.runtime.host.main.querySelector('.swb-profile-content');
       this.runtime.widget = this.api.profileView(this.runtime.container, {
         app: this,
         emptyText: 'Enter a profile URL or connect to view your own profile.',

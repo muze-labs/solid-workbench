@@ -1,76 +1,44 @@
-.swb-launcher-background {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  pointer-events: none;
-}
-.saved-apps,
-[data-simply-command="swb_workspaceRecovery"] {
-  position: relative;
-  z-index: 1;
-}
-.swb-launcher-background[hidden],
-.swb-background-preview[hidden] {
-  display: none;
-}
-.swb-background-preview {
-  display: block;
-  width: 100%;
-  max-height: 10rem;
-  object-fit: cover;
-}
-
-/* The Launcher header lives outside app-content, above the same photo layer. */
-body:has(.swb-launcher-background) {
-  --swb-launcher-text: var(--ds-color);
-  --swb-launcher-text-shadow: none;
-  --swb-launcher-dark-text-shadow:
-    -1px -1px 0 black, 1px -1px 0 black,
-    -1px 1px 0 black, 1px 1px 0 black, 0 2px 4px black;
-}
-body.ds-darkmode:has(.swb-launcher-background) {
-  --swb-launcher-text-shadow: var(--swb-launcher-dark-text-shadow);
-}
-@media (prefers-color-scheme: dark) {
-  body.ds-darkmode-auto:has(.swb-launcher-background) {
-    --swb-launcher-text-shadow: var(--swb-launcher-dark-text-shadow);
+/* DS adapter for the Workbench page and its shared header. The header's
+   optional properties inherit; its own adapter initializes only defaults. */
+@layer theme {
+  .swb-launcher {
+    --swb-home-text: var(--ds-color);
+    --swb-home-text-shadow: none;
+    --swb-home-dark-shadow:
+      -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black,
+      0 2px 4px black;
+  }
+  .swb-launcher.ds-darkmode {
+    --swb-home-text-shadow: var(--swb-home-dark-shadow);
+  }
+  @media (prefers-color-scheme: dark) {
+    .swb-launcher.ds-darkmode-auto {
+      --swb-home-text-shadow: var(--swb-home-dark-shadow);
+    }
   }
 }
-body:has(.swb-launcher-background) .suite-header,
-body:has(.swb-launcher-background) .suite-header h1,
-body:has(.swb-launcher-background) .account-name:hover {
-  background: transparent;
-}
-body:has(.swb-launcher-background) .suite-header h1,
-body:has(.swb-launcher-background) .account-name,
-body:has(.swb-launcher-background) .suite-status,
-.swb-shortcut-list > li > a,
-.swb-shortcut-list > li > .swb-shortcut-settings,
-.swb-launcher-grid > .swb-add-shortcut,
-.saved-apps > .empty {
-  color: var(--swb-launcher-text);
-  text-shadow: var(--swb-launcher-text-shadow);
-}
-.saved-apps > .empty {
-  opacity: 1;
-}
-.swb-launcher-grid .swb-app-icon,
-.swb-launcher-grid img {
-  filter: drop-shadow(0 1px 1px black) drop-shadow(0 0 1px black);
-}
-.swb-shortcut-list > li > a:focus-visible,
-.swb-shortcut-list > li > .swb-shortcut-settings:focus-visible,
-.swb-launcher-grid > .swb-add-shortcut:focus-visible,
-body:has(.swb-launcher-background) .account-button:focus-visible,
-body:has(.swb-launcher-background) .account-name:focus-visible {
-  outline: 2px solid white;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px black;
-}
-body:has(.swb-launcher-background) .account-button:focus-visible {
-  outline-offset: -3px;
-  box-shadow: none;
+@layer page {
+  .swb-launcher {
+    --swb-header-background: transparent;
+    --swb-header-text: var(--swb-home-text);
+    --swb-header-text-shadow: var(--swb-home-text-shadow);
+    --swb-header-name-hover: transparent;
+    --swb-header-focus-color: white;
+    --swb-header-focus-offset: 2px;
+    --swb-header-focus-shadow: 0 0 0 4px black;
+    --swb-header-marker-outline: 2px solid white;
+  }
+  .swb-launcher-background {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .swb-saved-apps {
+    position: relative;
+    z-index: 1;
+  }
 }

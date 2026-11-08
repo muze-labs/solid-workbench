@@ -67,7 +67,7 @@ export function shell({
     preferenceOptions
   };
   const host = {
-    main: root.querySelector('.app-content'),
+    main: root.querySelector('.swb-app-content'),
     task,
     embedded: task && window.parent !== window,
     launch,
@@ -94,7 +94,7 @@ export function shell({
   };
   runtime.host = host;
   const definition = {
-    container: root.querySelector('.suite-account-owner'),
+    container: root.querySelector('.swb-suite-account-owner'),
     components: {
       muzeSolidDesignDialog,
       muzeSolidDesignDropdown,

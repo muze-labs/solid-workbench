@@ -6,12 +6,19 @@ export async function checkFeatureSources(page, appName) {
   const result = await page.evaluate(() => {
     const route = location.pathname.split('/').filter(Boolean).at(-1);
     const name = route === 'workbench' ? 'launcher' : route;
-    const owner =
-      globalThis['muzeSolid' + name[0].toUpperCase() + name.slice(1) + 'App'];
+    let owner = globalThis.swbPreferencesApp;
+    if (name !== 'preferences') {
+      owner = globalThis[
+        'muzeSolid' + name[0].toUpperCase() + name.slice(1) + 'App'
+      ];
+    }
     const entries = [];
+    const instances = owner.definition.instances || {
+      account: owner.runtime.host.view
+    };
     const definitions = [
       owner.definition,
-      ...Object.values(owner.definition.instances).map(
+      ...Object.values(instances).map(
         (view) => view.definition
       )
     ];
@@ -106,7 +113,7 @@ export async function checkFeatureSources(page, appName) {
           app.data.people.length === 1 &&
           app.data.people[0].id === 'sample:b' &&
           mount.querySelector('[aria-label="Find sample people"]') !== null &&
-          mount.querySelector('.person-list').textContent.includes('Beta') &&
+          mount.querySelector('.swb-person-list').textContent.includes('Beta') &&
           original.templates['contacts-list'].includes('Search contacts') &&
           !sample[0].search
         );

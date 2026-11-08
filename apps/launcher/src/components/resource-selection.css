@@ -1,3 +1,12 @@
-.launch-profile {
-  margin-block: var(--ds-space);
+/* DS adapter: resolve host values at this component boundary. */
+@layer theme {
+  .swb-launch-profile {
+    --swb-resource-selection-space: var(--ds-space);
+  }
+}
+
+@layer page {
+  .swb-launch-profile {
+    margin-block: var(--swb-resource-selection-space);
+  }
 }

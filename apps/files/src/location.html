@@ -1,13 +1,18 @@
 <div style="display: contents">
-  <form class="toolbar app-toolbar" data-simply-command="browse">
-    <label
+  <form class="swb-toolbar swb-app-toolbar" data-simply-command="browse">
+    <label class="swb-toolbar-label"
       >Folder URL<input
+        class="swb-control swb-labeled-control"
         name="url"
         type="url"
         required
         data-simply-field="url" /></label
-    ><button class="ds-button">Open folder</button
-    ><button type="button" class="ds-button" data-simply-command="up">
+    ><button class="ds-button swb-toolbar-button">Open folder</button
+    ><button
+      type="button"
+      class="ds-button swb-toolbar-button"
+      data-simply-command="up"
+    >
       Parent folder
     </button>
   </form>

@@ -1,0 +1,21 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261108-QG24H-115 a sd:Implementation ;
+    dcterms:identifier "IMP-20261108-QG24H-115" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261108-QG24H-115.md" ;
+    sd:status sd:Active ;
+    sd:implementationLocation "packages/solid-app-ui/src/components/suite-appearance.css" ;
+    sd:implementationLocation "packages/solid-app-ui/src/components/account.css" ;
+    sd:implementationLocation "packages/solid-design/src/dialog.css" ;
+    sd:implementationLocation "packages/solid-design/src/dropdown.css" ;
+    sd:implementationLocation "packages/solid-design/src/list-details.css" ;
+    sd:implementationLocation "apps/launcher/src/components/background.css" ;
+    sd:implementationLocation "apps/files/src/components/resource-picker.css" ;
+    sd:implementationLocation "scripts/build.mjs" ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261108-QG24H-114 ;
+        sd:gitCommit "5ffac743fb7428642d878ab8f596bb567b00b303" ] ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:CYC-20261108-QG24H-112 ;
+        sd:gitCommit "53dbd87240b434fb571f66ce8288e7268bb319f0" ] .

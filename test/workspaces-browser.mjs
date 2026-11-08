@@ -212,7 +212,7 @@ async function change(selector, value) {
   );
 }
 async function openPreferences() {
-  await click('.account-button');
+  await click('.swb-account-button');
   await click('[data-simply-command=preferences]');
   await wait(
     'document.querySelector("iframe").contentWindow.swbPreferencesApp?.runtime.directory'
@@ -312,7 +312,7 @@ try {
     'Inactive background does not change the current home'
   );
   await closePreferences();
-  await click('.account-button');
+  await click('.swb-account-button');
   assert.equal(
     await run(
       `return document.querySelector('[aria-label="Switch to workspace: Preferences"] use').getAttribute('href');`

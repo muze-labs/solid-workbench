@@ -216,10 +216,10 @@ export async function checkRetainedProfileDraft(page) {
       try {
         style.textContent =
           originalCSS +
-          '\n.profile-card textarea[name="notes"] {' +
+          '\n.swb-profile-card textarea[name="notes"] {' +
           'background-color: rgb(7, 77, 177) !important; }';
         const field = owner.container.querySelector(
-          '.profile-card [name="notes"]'
+          '.swb-profile-card [name="notes"]'
         );
         if (
           getComputedStyle(field).backgroundColor !== 'rgb(7, 77, 177)' ||

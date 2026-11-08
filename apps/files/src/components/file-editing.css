@@ -1,17 +1,26 @@
-.file-upload {
-  position: relative;
-  overflow: hidden;
-  margin: 0;
+/* DS adapter: resolve host values at this component boundary. */
+@layer theme {
+  .swb-file-upload {
+    --swb-upload-focus: var(--ds-color);
+  }
 }
-.file-upload input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-.file-upload:focus-within {
-  outline: 2px solid var(--ds-primary);
-  outline-offset: 2px;
+
+@layer page {
+  .swb-file-upload {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+  }
+  .swb-file-upload-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .swb-file-upload:focus-within {
+    outline: 2px solid var(--swb-upload-focus);
+    outline-offset: 2px;
+  }
 }

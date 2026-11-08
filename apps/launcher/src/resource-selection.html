@@ -1,22 +1,32 @@
 <div style="display: contents">
-  <details class="launch-profile">
+  <details class="swb-launch-profile">
     <summary>Open a profile resource</summary>
-    <form class="toolbar app-toolbar" data-simply-command="launchProfile">
-      <label
+    <form
+      class="swb-toolbar swb-app-toolbar"
+      data-simply-command="launchProfile"
+    >
+      <label class="swb-toolbar-label"
         >Profile resource URL (optional)<input
+          class="swb-control swb-labeled-control"
           name="resource"
           type="url"
           placeholder="https://example.org/contacts.ttl#alice"
           data-simply-field="resource"
           data-simply-command="workspaceChanged"
           data-simply-immediate="true" /></label
-      ><label
-        ><input type="checkbox" name="anonymous" /> Launch anonymously (omit
-        WebID)</label
-      ><button class="ds-button ds-button-primary">Open in Profile</button>
+      ><label class="swb-toolbar-label"
+        ><input
+          class="swb-control swb-labeled-control"
+          type="checkbox"
+          name="anonymous"
+        />
+        Launch anonymously (omit WebID)</label
+      ><button class="ds-button ds-button-primary swb-toolbar-button">
+        Open in Profile
+      </button>
       <button
         type="button"
-        class="ds-button"
+        class="ds-button swb-toolbar-button"
         data-simply-command="pickResource"
         data-simply-field="pickState"
         data-simply-transform="attributes"
@@ -26,7 +36,7 @@
       </button>
       <button
         type="button"
-        class="ds-button"
+        class="ds-button swb-toolbar-button"
         data-simply-command="cancelPick"
         data-simply-field="cancelState"
         data-simply-transform="attributes"
@@ -41,6 +51,8 @@
       data-simply-field="pickerMessage"
       data-simply-transform="escape_html"
     ></p>
-    <p class="muted">Uses your connected WebID unless anonymous is selected.</p>
+    <p class="swb-muted">
+      Uses your connected WebID unless anonymous is selected.
+    </p>
   </details>
 </div>

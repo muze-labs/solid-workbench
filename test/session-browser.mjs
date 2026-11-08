@@ -326,7 +326,7 @@ async function edit(name) {
     const input = document.querySelector('textarea[name="name"]');
     input.value = ${JSON.stringify(name)};
     input.dispatchEvent(new Event('input', { bubbles: true }));
-    document.querySelector('.profile-card form').requestSubmit();
+    document.querySelector('.swb-profile-card form').requestSubmit();
   })()`
   });
 }
@@ -363,7 +363,7 @@ try {
   await page.evaluate(() =>
     document.querySelector('[data-simply-command="mine"]').click()
   );
-  await wait(() => !document.querySelector('.profile-card').hidden);
+  await wait(() => !document.querySelector('.swb-profile-card').hidden);
   await wait(
     () =>
       !document.querySelector(
@@ -468,7 +468,7 @@ try {
   );
   await wait(() => !window.solidProfile.ui.runtime.profile.saving);
   await page.evaluate(() =>
-    document.querySelector('.profile-card form').requestSubmit()
+    document.querySelector('.swb-profile-card form').requestSubmit()
   );
   await wait(
     () => document.querySelector('.muze-solid-ui-recovery-dialog').open
@@ -513,7 +513,7 @@ try {
     'Retained draft'
   );
   await page.evaluate(() =>
-    document.querySelector('.profile-card form').requestSubmit()
+    document.querySelector('.swb-profile-card form').requestSubmit()
   );
   await wait(
     () => document.querySelector('.muze-solid-ui-recovery-dialog').open
@@ -528,7 +528,7 @@ try {
   await wait(
     () => !document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
-  await wait(() => document.querySelector('.profile-card form').hidden);
+  await wait(() => document.querySelector('.swb-profile-card form').hidden);
   assert.equal(
     calls.filter((call) => call.write && call.path === '/fixture/profile')
       .length,
@@ -587,7 +587,7 @@ try {
   await wait(
     () => !document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
-  await wait(() => document.querySelector('.profile-card form').hidden);
+  await wait(() => document.querySelector('.swb-profile-card form').hidden);
   assert.equal(
     calls.filter((call) => call.write && call.path === '/fixture/profile')
       .length,
@@ -680,7 +680,7 @@ try {
   denyWrites = true;
   await edit('Second draft');
   await wait(() =>
-    document.querySelector('.profile-card').textContent.includes('403')
+    document.querySelector('.swb-profile-card').textContent.includes('403')
   );
   assert.equal(
     await page.evaluate(
@@ -790,7 +790,7 @@ try {
     (call) => call.write && call.path === '/fixture/profile'
   ).length;
   await page.evaluate(() =>
-    document.querySelector('.profile-card form').requestSubmit()
+    document.querySelector('.swb-profile-card form').requestSubmit()
   );
   await wait(
     () => document.querySelector('.muze-solid-ui-recovery-dialog').open
@@ -821,7 +821,7 @@ try {
   await wait(
     () => !document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
-  await wait(() => document.querySelector('.profile-card form').hidden);
+  await wait(() => document.querySelector('.swb-profile-card form').hidden);
   assert.equal(
     calls.filter((call) => call.write && call.path === '/fixture/profile')
       .length,
@@ -845,7 +845,7 @@ try {
   );
   await wait(() =>
     document
-      .querySelector('.profile-card')
+      .querySelector('.swb-profile-card')
       .textContent.includes('changed elsewhere')
   );
   assert.equal(version, remoteVersion);

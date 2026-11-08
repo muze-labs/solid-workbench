@@ -1,9 +1,9 @@
 <div
-  class="split-view ds-panels muze-solid-design-list-details"
+  class="swb-split-view ds-panels muze-solid-design-list-details"
   data-simply-shortcuts="muzeSolidDesignSections"
 >
   <nav
-    class="ds-panels-pane ds-panels-list ds-navbar-side"
+    class="ds-panels-pane ds-panels-list ds-navbar-side swb-list-pane"
     aria-label="Preferences sections"
   >
     <label
@@ -11,6 +11,7 @@
       data-simply-transform="attributes"
       data-simply-attributes="hidden"
       >Application<select
+        class="swb-control swb-labeled-control"
         data-simply-field="swb_app"
         data-simply-command="swb_chooseApp"
         aria-label="Application settings"
@@ -44,7 +45,10 @@
       ></template>
     </ul>
   </nav>
-  <section class="ds-panels-pane ds-panels-details" aria-label="Settings">
+  <section
+    class="ds-panels-pane ds-panels-details swb-list-pane"
+    aria-label="Settings"
+  >
     <button
       type="button"
       class="ds-button muze-solid-design-list-back"
@@ -72,6 +76,7 @@
     >
       <label
         >Editing workspace<select
+          class="swb-control swb-labeled-control"
           data-simply-field="swb_workspaceSelect"
           data-simply-command="swb_chooseWorkspace"
         ></select

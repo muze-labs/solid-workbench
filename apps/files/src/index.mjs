@@ -32,7 +32,7 @@ const host = shell({
   templates: { account: accountTemplate }
 });
 const definition = {
-  container: host.main.querySelector('.file-controls'),
+  container: host.main.querySelector('.swb-file-controls'),
   components: {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,

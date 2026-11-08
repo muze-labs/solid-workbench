@@ -1,7 +1,6 @@
-.swb-workspace-management li {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ds-space);
-  align-items: end;
-  margin-block: var(--ds-space);
+@layer page {
+  .swb-workspace-recovery {
+    position: relative;
+    z-index: 1;
+  }
 }

@@ -1,29 +1,42 @@
-.muze-solid-design-dropdown .ds-dropdown-nav,
-.muze-solid-design-dropdown .ds-dropdown-list,
-.muze-solid-design-dropdown .ds-dropdown-item {
-  padding: 0;
-  margin: 0;
-  border: 0;
+/* DS adapter: resolve host values at this component boundary. */
+@layer theme {
+  .muze-solid-design-dropdown {
+    --swb-dropdown-space-small: var(--ds-space-d2);
+    --swb-dropdown-space: var(--ds-space);
+    --swb-dropdown-accent: var(--ds-primary);
+    --swb-dropdown-accent-text: var(--ds-primary-contrast);
+  }
 }
-.muze-solid-design-dropdown .ds-dropdown-link {
-  display: block;
-  width: 100%;
-  min-height: 2.75rem;
-  text-align: start;
-  padding: var(--ds-space-d2) var(--ds-space);
-  margin: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.muze-solid-design-dropdown .ds-dropdown-link:hover,
-.muze-solid-design-dropdown
-  .ds-dropdown-nav:not(:has(.ds-dropdown-link:hover))
-  .ds-dropdown-link:focus-visible,
-.muze-solid-design-dropdown
-  .ds-dropdown-nav:not(:has(.ds-dropdown-link:hover))
-  .ds-dropdown-link[aria-current]:not([aria-current='false']) {
-  background: var(--ds-primary);
-  color: var(--ds-primary-contrast);
-  outline-offset: -3px;
+
+@layer component {
+  .swb-dropdown-menu,
+  .swb-dropdown-list,
+  .swb-dropdown-item {
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  .swb-dropdown-link {
+    display: block;
+    width: 100%;
+    min-height: 2.75rem;
+    text-align: start;
+    padding: var(
+      --swb-dropdown-link-padding,
+      var(--swb-dropdown-space-small, 0.5rem) var(--swb-dropdown-space, 1rem)
+    );
+    margin: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .swb-dropdown-link:hover,
+  .swb-dropdown-menu:not(:has(.swb-dropdown-link:hover))
+    .swb-dropdown-link:focus-visible,
+  .swb-dropdown-menu:not(:has(.swb-dropdown-link:hover))
+    .swb-dropdown-link[aria-current]:not([aria-current='false']) {
+    background: var(--swb-dropdown-accent, Highlight);
+    color: var(--swb-dropdown-accent-text, HighlightText);
+    outline-offset: -3px;
+  }
 }
