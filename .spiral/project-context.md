@@ -1483,3 +1483,44 @@ merge into main and push of main/cycle branches are authorized. EVD110 retains
 full-run timing failures and independent passes without claiming a reliable
 complete run. Broader CSS, Contacts and Workbench budget follow-up remain open;
 no next cycle or package publication is selected. Unrelated user files excluded.
+
+## CSS refactor selected for next cycle, 2026-11-08
+
+CYC106 is integrated on main at 0ecae17. Following the Browser Styling Guide for
+AI source review, the maintainer requests a plan for use in the next cycle.
+[css-refactor-plan.md](css-refactor-plan.md) records the selected maintenance
+outcome: predictable layers, component-owned variables and DS adapters, flat
+namespaced selectors and clear feature ownership, preserving the accepted UI
+and named editable SimplyFlow styles. This continues the suite CSS roadmap item;
+it does not advance broker phases. Planning is documentation-only; cycle/branch
+allocation and implementation remain for the execution handoff. No product
+changes, human acceptance of a result, commit, merge or publication are inferred.
+Contacts enhancements and the existing Workbench budget follow-up remain separate.
+
+
+## CSS refactor cycle started, 2026-11-08
+
+The maintainer instructs “Please start this cycle”, confirming the retained CSS
+plan. CYC112 is Active on verified spiral/CYC-20261108-QG24H-112-css-refactor
+from accepted main 0ecae17. SRC113/DES114 record scope; IMP115 implements explicit
+layers, component-root DS adapters, direct namespaced parts, header variants,
+flow-sized picker actions and local-only DS stylesheet composition. EVD116
+retains baseline, intermediate failures, UI/source/download evidence and final
+verification as it completes. Preserve named editable styles, native RDF and
+recovery contracts. No acceptance, commit, merge, push or publication is inferred;
+unrelated user files and the earlier guide/AGENTS changes remain intact.
+
+
+## CYC112 ready for review, 2026-11-08
+
+IMP115 implements the selected CSS plan. EVD116 records passing source/build
+checks, all six Chrome suites and five-app readable/minified source/style/zoom
+contracts. It retains intermediate migration, fixture and Failed-to-fetch failures
+without claiming earlier network/timing concerns resolved. All CSS is layered;
+DS reads stay in adapters. Editable styles, native data and recovery owners stay
+intact. Narrow header/pane and wrapping picker corrections have explicit evidence.
+Readable Workbench is 218255 gzip bytes under the unchanged temporary 220000 cap;
+all other graphs retain 200000. Source CSS grows with explicit interfaces, and
+no speed improvement is claimed. The verified cycle branch remains Active,
+uncommitted, awaiting human review/acceptance. No merge, push, publication or next
+cycle is selected; manual AT/provider/real zoom limits remain documented.

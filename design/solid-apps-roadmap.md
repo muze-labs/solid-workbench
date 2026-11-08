@@ -808,8 +808,23 @@ app downloads, including readable CSS embedded in JavaScript, without expanding
 the temporary Workbench budget allowance. Keep restoring the original JavaScript
 budget visible as its own follow-up.
 
-Contacts multi-book/search/selection remains planned separately. Adding this
-review does not select the next cycle or reorder the governing broker phases.
+Contacts multi-book/search/selection remains planned separately. The original
+review request did not select a cycle or reorder the governing broker phases.
+
+Next-cycle selection, 2026-11-08: after the source review against the
+[Browser Styling Guide for AI](Browser-Styling-Guide-for-AI.md), the maintainer
+requests a refactor plan for use in the next cycle. The
+[CSS refactor plan](../.spiral/css-refactor-plan.md) records the selected outcome,
+ownership/layer map, ordered implementation slices, preservation contract and
+evaluation criteria. It continues this roadmap item after accepted/merged
+CYC106; broker progression remains deferred. Product implementation has not
+started. Keep named editable styles and the accepted interface; no budget
+expansion, dependency publication or unrelated feature work is selected.
+
+Execution starts on the maintainer's subsequent “Please start this cycle”
+instruction: CYC112 is Active on its matching CSS-refactor branch. The plan's
+pre-start notes are historical. Implementation/evaluation are recorded in
+IMP115/EVD116; no human acceptance or integration is inferred.
 
 ## MVP UI and reusable design components
 

@@ -65,6 +65,11 @@ Required reading before designing or changing an app:
 today so each app exposes editable feature datasets for the future in-app IDE.
 The IDE itself remains future roadmap work.
 
+Required reading before starting any work that needs CSS:
+[Browser Styling Guide for AI](design/Browser-Styling-Guide-for-AI.md).
+Apply its styling, component-boundary and browser-verification rules when
+creating or modifying HTML and CSS.
+
 Reuse SimplyFlow and the other Muze libraries wherever their public APIs
 reasonably meet the requirement. Inspect the installed APIs, documentation and
 existing suite composition before adding infrastructure. Prefer direct library
