@@ -166,8 +166,8 @@ app-owned editing boundary.
 
 ### Known limitation: build-time composition
 
-The current suite expands shared account/Preferences includes, app titles and
-app-specific Preferences markup at build time. The resulting templates are
+The current suite expands shared account includes, app titles and the
+Preferences application’s registered section templates at build time. The resulting templates are
 exposed in the running app; the original include relationships and placeholder
 expansion cannot be changed there without rebuilding. Retaining the expanded
 source does not make that composition editable at runtime.

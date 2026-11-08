@@ -5,6 +5,18 @@ export const accountLifecycle = {
       type: 'storage',
       action: 'accountRemoved'
     },
+    swbPreferencesOnline: {
+      target: 'window',
+      type: 'online',
+      action: 'swb_refreshPreferences'
+    },
+    swbPreferencesVisible: {
+      target() {
+        return this.container.ownerDocument;
+      },
+      type: 'visibilitychange',
+      action: 'swb_refreshPreferences'
+    },
     swbAccountLaunchChange: {
       target: 'window',
       type: 'hashchange',
@@ -16,22 +28,17 @@ export const accountLifecycle = {
   },
   actions: {
     initialize() {
-      this.runtime.preferences = this.api.preferencesDialog(
-        this.runtime.root.querySelector('.preferences-dialog'),
-        {
-          ...this.runtime.preferenceOptions,
-          getSession: () => this.runtime.session,
-          getWorkspace: () => this.runtime.workspaceContext,
-          template: this.runtime.templates.preferences,
-          onChange: (values) => {
-            this.runtime.settings = {
-              ...values,
-              ...this.runtime.workspaceContext?.settings
-            };
-            this.runtime.host.onPreferences?.(values);
-          }
+      this.runtime.preferences = this.api.preferenceConsumer({
+        getSession: () => this.runtime.session,
+        getOwner: () => this.runtime.host.selectedWebId,
+        onChange: (values) => {
+          this.runtime.settings = {
+            ...values,
+            ...this.runtime.workspaceContext?.settings
+          };
+          this.runtime.host.onPreferences?.(this.runtime.settings);
         }
-      );
+      });
       this.api.applyPreferences(this.runtime.settings);
       let remembered = '';
       try {
@@ -46,6 +53,10 @@ export const accountLifecycle = {
         launch.webId && remembered && launch.webId !== remembered;
       const webId = launch.webId || remembered;
       this.runtime.selectedWebId = remembered || launch.webId || '';
+      this.runtime.preferences
+        .refresh()
+        .catch((error) => this.actions.message(error.message));
+
       this.runtime.host.ready = Promise.resolve();
       if (different) {
         this.actions.message(
@@ -64,6 +75,23 @@ export const accountLifecycle = {
         });
       }
       this.eventBindings.start();
+    },
+    async swb_refreshPreferences() {
+      if (document.visibilityState !== 'hidden') {
+        try {
+          await this.runtime.preferences.refresh();
+          const session = this.runtime.session;
+          if (session && navigator.onLine) {
+            await session.perform(
+              () => this.runtime.preferences.load(session),
+              { interactive: false }
+            );
+          }
+        }
+        catch (error) {
+          this.actions.message(error.message);
+        }
+      }
     },
     launchChanged() {
       try {
@@ -87,7 +115,7 @@ export const accountLifecycle = {
     },
     cleanup() {
       this.actions.muzeSolidUiCleanupCapability();
-      this.runtime.preferences.app.destroy();
+      this.runtime.preferenceBroker?.dispose();
     }
   }
 };

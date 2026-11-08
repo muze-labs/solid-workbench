@@ -1,0 +1,5 @@
+@prefix schema: <https://schema.org/> .
+<> a schema:SoftwareApplication ;
+    schema:name "Preferences" ;
+    schema:url <./> ;
+    schema:image <../assets/feather-icons.svg#settings> .

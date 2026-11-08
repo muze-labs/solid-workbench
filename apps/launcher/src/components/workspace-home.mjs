@@ -181,29 +181,8 @@ export const workspaceHome = {
           }
         })
       );
-      const preferences = this.runtime.host.preferenceView;
-      preferences.runtime.workbench = this;
-      preferences.data.swb_workspaceRows = snapshot.directory.entries.map(
-        (item) => ({
-          id: item.id,
-          title: item.title,
-          status:
-            item.id === 'default'
-              ? 'Default workspace'
-              : item.id === entry.id
-                ? 'Active workspace'
-                : '',
-          deletion: {
-            disabled: item.id === 'default' || item.id === entry.id ? '' : null
-          }
-        })
-      );
-      preferences.data.swb_workspaceTitle = entry.title;
-      preferences.data.swb_workspaceStorage = entry.storage.join('\n');
-      for (const key of this.api.workspaceSettingKeys) {
-        preferences.data['swb_' + key] = entry.settings[key] || '';
-        preferences.data[key] = entry.settings[key] || '';
-      }
+      this.runtime.preferencesRevision =
+        (this.runtime.preferencesRevision || 0) + 1;
       this.actions.swb_renderBackground();
     },
     async swb_saveWorkspaceSettings(values, storage) {

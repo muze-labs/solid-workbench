@@ -5,7 +5,6 @@ import {
 import fileDataSource from './data.mjs' with { type: 'text' };
 import { listFolder, readDownload, uploadFiles } from './data.mjs';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
-import preferencesTemplate from './preferences-view.html?template' with { type: 'text' };
 import { model } from '@muze-labs/simplyflow/model';
 import { effect, destroy } from '@muze-labs/simplyflow/state';
 import { from } from '@muze-nl/jaqt';
@@ -30,7 +29,7 @@ import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import sources from './features.mjs?entries';
 const host = shell({
   acceptLaunch: true,
-  templates: { account: accountTemplate, preferences: preferencesTemplate }
+  templates: { account: accountTemplate }
 });
 const definition = {
   container: host.main.querySelector('.file-controls'),
@@ -84,8 +83,7 @@ ui.definition.modules = {
 };
 await ui.actions.initialize();
 ui.definition.instances = {
-  account: host.view,
-  preferences: host.preferenceView
+  account: host.view
 };
 window.solidFiles = { host, ui };
 globalThis.muzeSolidFilesApp = ui;

@@ -120,8 +120,7 @@ export async function checkStyleOwnership(page) {
       'swb-foundation',
       'swb-account',
       'swb-capability-dialog',
-      'swb-session-recovery',
-      'swb-preferences-form'
+      'swb-session-recovery'
     ]) {
       check(names.has(style), 'missing feature-owned style ' + style);
     }

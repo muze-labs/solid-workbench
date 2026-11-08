@@ -1,6 +1,7 @@
 import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   editProfileCapability,
+  editPreferencesCapability,
   capabilityError
 } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
@@ -9,7 +10,8 @@ import { app } from '@muze-labs/simplyflow/app';
 import { readProfile } from '@muze-labs/solid-profile';
 import { connectSession, httpUrl } from '@muze-labs/solid-app-data';
 import { defaults, applyPreferences } from '@muze-labs/solid-preferences';
-import { preferencesDialog } from '@muze-labs/solid-preferences/dialog.mjs';
+import { preferenceConsumer } from '@muze-labs/solid-preferences/consumer.mjs';
+import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
 import { parseLaunchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import { ManagedApp } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
@@ -137,13 +139,15 @@ export function shell({
     api: {
       readProfile,
       editProfileCapability,
+      editPreferencesCapability,
       capabilityError,
       launchUrl,
       loadDocument,
       connectSession,
       httpUrl,
       applyPreferences,
-      preferencesDialog,
+      preferenceConsumer,
+      WorkspaceBroker,
       parseLaunchUrl,
       ManagedApp
     },
@@ -179,6 +183,6 @@ export function shell({
   host.muzeSolidUiInvoke = (...args) =>
     view.actions.muzeSolidUiInvokeCapability(...args);
   view.actions.initialize();
-  host.preferenceView = runtime.preferences.app;
+
   return host;
 }

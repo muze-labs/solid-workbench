@@ -1,3 +1,5 @@
+export const editPreferencesCapability =
+  'https://vocab.muze.nl/capabilities/edit-preferences';
 export const editProfileCapability =
   'https://vocab.muze.nl/capabilities/edit-profile';
 export const browseCapability = 'https://vocab.muze.nl/capabilities/browse';
@@ -209,6 +211,8 @@ export class ManagedApp {
     onCancel,
     onState,
     onContext = () => {},
+    onPreferences = () => {},
+    onFocus = () => {},
     beforeCheckpoint = () => {},
     waitForPresentation = false,
     canClose = () => ({ allowed: true })
@@ -222,6 +226,8 @@ export class ManagedApp {
       onCancel,
       onState,
       onContext,
+      onPreferences,
+      onFocus,
       beforeCheckpoint,
       waitForPresentation,
       canClose
@@ -295,6 +301,21 @@ export class ManagedApp {
   }
   async offer(event) {
     const message = event.data;
+    if (message?.type === 'solid-apps:presentation-focus') {
+      if (
+        this.task &&
+        this.ready &&
+        this.peer &&
+        !this.peer.closed &&
+        event.source === this.parent &&
+        event.origin === this.resume?.origin &&
+        message.id === this.resume.id &&
+        message.key === this.resume.key
+      ) {
+        await this.onFocus();
+      }
+      return;
+    }
     if (
       !this.parent ||
       event.source !== this.parent ||
@@ -357,6 +378,12 @@ export class ManagedApp {
     }
   }
   async handle(method, input, { signal }) {
+    if (
+      method === 'preferences-update' &&
+      this.capabilities.includes(editPreferencesCapability)
+    ) {
+      return this.onPreferences(input);
+    }
     if (method === 'can-close') {
       return this.canClose();
     }

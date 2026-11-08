@@ -3,8 +3,6 @@ import backgroundSource from './backgrounds.mjs' with { type: 'text' };
 import manifestSource from './manifests.mjs' with { type: 'text' };
 import { readApplicationManifest } from './manifests.mjs';
 import * as directory from '@muze-labs/solid-app-data/workspace-directory.mjs';
-import { workspacePreferences } from './components/workspace-preferences.mjs';
-import workspacePreferenceSources from './components/workspace-preferences.mjs?entries';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   muzeSolidDesignDialog,
@@ -14,7 +12,6 @@ import {
 import pickerSource from './picker.mjs' with { type: 'text' };
 import shortcutSource from './shortcuts.mjs' with { type: 'text' };
 import accountTemplate from './account-view.html?template' with { type: 'text' };
-import preferencesTemplate from './preferences-view.html?template' with { type: 'text' };
 import { model } from '@muze-labs/simplyflow/model';
 import { effect, destroy } from '@muze-labs/simplyflow/state';
 import { from } from '@muze-nl/jaqt';
@@ -23,6 +20,7 @@ import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs'
 import { WorkspaceState } from '@muze-labs/solid-app-data/workspace-state.mjs';
 import {
   editProfileCapability,
+  editPreferencesCapability,
   browseCapability,
   selectionUrl
 } from '@muze-labs/solid-app-data/capabilities.mjs';
@@ -47,10 +45,10 @@ import {
 import { app } from '@muze-labs/simplyflow/app';
 import {
   workspaceControls,
+  workspaceSettingsService,
   workspaceHome,
   workspaceMenu,
   launcherBackground,
-  backgroundPreferences,
   resourceSelection,
   shortcuts,
   lifecycle
@@ -62,14 +60,7 @@ const host = shell({
     components: { workspaceMenu },
     sources: { workspaceMenu: sources.workspaceMenu }
   },
-  templates: { account: accountTemplate, preferences: preferencesTemplate },
-  preferenceOptions: {
-    components: { workspacePreferences, backgroundPreferences },
-    sources: {
-      ...workspacePreferenceSources,
-      backgroundPreferences: sources.backgroundPreferences
-    }
-  }
+  templates: { account: accountTemplate }
 });
 const definition = {
   container: host.main,
@@ -78,6 +69,7 @@ const definition = {
     muzeSolidDesignListDetails,
     muzeSolidDesignDropdown,
     workspaceControls,
+    workspaceSettingsService,
     workspaceHome,
     launcherBackground,
     resourceSelection,
@@ -119,6 +111,7 @@ const definition = {
     WorkspaceBroker,
     WorkspaceState,
     editProfileCapability,
+    editPreferencesCapability,
     browseCapability,
     selectionUrl,
     chooseFiles,
@@ -172,8 +165,7 @@ ui.definition.modules = {
 };
 await ui.actions.initialize();
 ui.definition.instances = {
-  account: host.view,
-  preferences: host.preferenceView
+  account: host.view
 };
 window.solidLauncher = {
   host,

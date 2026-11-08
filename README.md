@@ -345,3 +345,14 @@ not establish live Solid OIDC behavior across different top-level sites; verify
 that provider's sign-in/framing policy when deploying across origins. These task
 presentations do not implement the future moldable IDE or persisted runtime
 composition edits.
+
+## Preferences application
+
+Preferences opens as a separate application inside the shared dialog and is also
+available at `/preferences/`. Its section list uses the existing list-details
+component. Choices apply immediately after local persistence, then synchronize
+with the Pod; incomplete text and failed writes are retained. App-owned sections
+are registered in Preferences without including their editor in each host.
+Workbench settings can target an inactive workspace without switching apps.
+See [the Preferences package](packages/solid-preferences/README.md) for the
+contribution and persistence boundaries.

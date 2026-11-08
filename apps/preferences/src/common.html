@@ -1,0 +1,79 @@
+<section
+  hidden
+  data-simply-field="swb_panels.appearance"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+>
+  <label
+    >Theme<select
+      aria-describedby="swb-preferences-status"
+      name="theme"
+      data-simply-field="theme"
+      data-simply-command="swb_changeSetting"
+    >
+      <option value="system">Browser default</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select></label
+  >
+  <label
+    >Text size<select
+      aria-describedby="swb-preferences-status"
+      name="textScale"
+      data-simply-field="textScale"
+      data-simply-command="swb_changeSetting"
+    >
+      <option>90</option>
+      <option>100</option>
+      <option>110</option>
+      <option>120</option>
+    </select></label
+  >
+  <label
+    >Density<select
+      aria-describedby="swb-preferences-status"
+      name="density"
+      data-simply-field="density"
+      data-simply-command="swb_changeSetting"
+    >
+      <option value="comfortable">Comfortable</option>
+      <option value="compact">Compact</option>
+    </select></label
+  >
+</section>
+<section
+  hidden
+  data-simply-field="swb_panels.language"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+>
+  <label
+    >Preferred language<input
+      aria-describedby="swb-preferences-status"
+      name="language"
+      data-simply-field="language"
+      data-simply-command="swb_changeSetting"
+      placeholder="en"
+  /></label>
+  <p>
+    The interface currently uses English. This preference is shared across apps.
+  </p>
+</section>
+<section
+  hidden
+  data-simply-field="swb_panels.opening"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+>
+  <label
+    >Open applications in<select
+      aria-describedby="swb-preferences-status"
+      name="launchTarget"
+      data-simply-field="launchTarget"
+      data-simply-command="swb_changeSetting"
+    >
+      <option value="tab">New tabs</option>
+      <option value="window">New windows</option>
+    </select></label
+  >
+</section>

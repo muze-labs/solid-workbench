@@ -46,3 +46,15 @@
   height: 100%;
   min-height: 0;
 }
+
+/* Section navigation and previews reuse the list/details panes in dialogs. */
+.muze-solid-design-list-details .ds-navbar-nav .ds-nav {
+  width: 100%;
+  white-space: normal;
+}
+.muze-solid-design-list-preview {
+  display: block;
+  max-inline-size: 100%;
+  max-block-size: 12rem;
+  object-fit: contain;
+}

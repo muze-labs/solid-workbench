@@ -64,6 +64,41 @@ export const muzeSolidUiCapabilityDialog = {
       this.runtime.muzeSolidUiFrameLoad = (event) =>
         this.actions.muzeSolidUiCapabilityLoaded(event);
       frame.addEventListener('load', this.runtime.muzeSolidUiFrameLoad);
+      // SimplyFlow removes inert after its bound attributes render. Focus must
+      // wait for that native state, rather than race the visibility binding.
+      this.runtime.muzeSolidUiFocusObserver = new MutationObserver(() =>
+        this.actions.muzeSolidUiFocusPresentation()
+      );
+      this.runtime.muzeSolidUiFocusObserver.observe(frame, {
+        attributes: true,
+        attributeFilter: ['inert', 'hidden', 'aria-busy']
+      });
+    },
+    muzeSolidUiFocusPresentation() {
+      const call = this.runtime.muzeSolidUiCall;
+      const frame = this.runtime.muzeSolidUiFrame;
+      if (
+        !call?.presented ||
+        call.popup ||
+        call.close ||
+        call.focusRequested ||
+        call.capability !== this.api.editPreferencesCapability ||
+        call.controller.signal.aborted ||
+        !this.runtime.muzeSolidUiDialog.open ||
+        frame.inert ||
+        frame.hidden ||
+        frame.getAttribute('aria-busy') !== 'false'
+      ) {
+        return;
+      }
+      call.focusRequested = true;
+      call.window.postMessage(
+        {
+          type: 'solid-apps:presentation-focus',
+          ...call.ticket
+        },
+        new URL(call.url).origin
+      );
     },
     muzeSolidUiAttachCapability(event) {
       const call = this.runtime.muzeSolidUiCall;
@@ -163,6 +198,7 @@ export const muzeSolidUiCapabilityDialog = {
         'aria-busy': 'false',
         'data-muze-solid-ui-loading': null
       };
+      this.actions.muzeSolidUiFocusPresentation();
     },
     async muzeSolidUiInvokeCapability(
       capability,
@@ -175,7 +211,11 @@ export const muzeSolidUiCapabilityDialog = {
       }
       providerUrl = this.api.httpUrl(providerUrl);
       const call = {
-        broker: this.runtime.host.capabilityBroker || this.runtime.host.managed,
+        broker:
+          this.runtime.host.capabilityBroker ||
+          (this.runtime.host.managed?.ready
+            ? this.runtime.host.managed
+            : this.runtime.preferenceBroker),
         controller: new AbortController(),
         capability,
         attached: false
@@ -398,6 +438,7 @@ export const muzeSolidUiCapabilityDialog = {
       }
     },
     muzeSolidUiCleanupCapability() {
+      this.runtime.muzeSolidUiFocusObserver?.disconnect();
       const call = this.runtime.muzeSolidUiCall;
       call?.controller.abort();
       if (call?.failed) {

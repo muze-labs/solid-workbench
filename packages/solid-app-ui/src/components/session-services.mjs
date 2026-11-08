@@ -49,15 +49,6 @@ export const sessionServices = {
         name: document.title,
         ...options,
         beforeCheckpoint: async () => {
-          const preferences = this.runtime.preferences.app;
-          if (
-            preferences.container.open ||
-            preferences.data.buttons.disabled === ''
-          ) {
-            throw new Error(
-              'solid-app-ui: Finish or close Preferences before switching workspace. Your edits are still here.'
-            );
-          }
           await options.beforeCheckpoint?.();
         },
         onContext: async (context) => {
@@ -96,7 +87,7 @@ export const sessionServices = {
             }
           };
           Object.assign(this.runtime.settings, settings);
-          Object.assign(this.runtime.preferences.app.data, settings);
+
           await host.onContext?.(context);
         },
         getState: async () => {

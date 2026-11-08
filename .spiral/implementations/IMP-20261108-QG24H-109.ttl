@@ -1,0 +1,27 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261108-QG24H-109 a sd:Implementation ;
+    dcterms:identifier "IMP-20261108-QG24H-109" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261108-QG24H-109.md" ;
+    sd:status sd:Active  ;
+    sd:implementationLocation "apps/preferences/src/index.mjs" ;
+    sd:implementationLocation "apps/preferences/src/components/preferences.mjs" ;
+    sd:implementationLocation "apps/launcher/src/components/settings-editor.mjs" ;
+    sd:implementationLocation "apps/launcher/src/components/workspace-settings-service.mjs" ;
+    sd:implementationLocation "packages/solid-preferences/src/state.mjs" ;
+    sd:implementationLocation "packages/solid-preferences/src/drafts.mjs" ;
+    sd:implementationLocation "packages/solid-preferences/src/consumer.mjs" ;
+    sd:implementationLocation "packages/solid-design/src/list-details.css" ;
+    sd:implementationLocation "scripts/bundle.mjs"  ;
+    sd:implementationLocation "packages/solid-design/src/components/list-details.mjs" ;
+    sd:implementationLocation "apps/preferences/src/components/sections.mjs"  ;
+    sd:implementationLocation "packages/solid-app-ui/src/components/capability-dialog.mjs" ;
+    sd:implementationLocation "packages/solid-app-ui/src/components/suite-appearance.css" ;
+    sd:implementationLocation "packages/solid-app-data/src/capabilities.mjs"  ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261108-QG24H-108 ;
+        sd:gitCommit "b985b7b98428cda17ce5695e5b0a57b57fd7d903" ] ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:CYC-20261108-QG24H-106 ;
+        sd:gitCommit "75ea6d143ee66b0d8c9655c4b4101ae763a7ac95" ] .

@@ -35,38 +35,10 @@ export async function checkCurrentActions(page) {
       'original host action restored'
     );
 
-    const preferences = host.view.runtime.preferences;
-    const view = preferences.app;
-    const originalShow = view.components.preferencesForm.actions.show;
-    const loaded = view.runtime.loaded;
-    const originalShowDefinition =
-      view.definition.components.preferencesForm.actions.show;
-    const previousLanguage = view.data.language;
-    view.data.language = 'nl';
-    try {
-      view.actions.show = function () {
-        check(this === view, 'Preferences action context');
-        return this.data.language;
-      };
-      check(
-        preferences.show() === 'nl',
-        'existing Preferences widget follows override'
-      );
-      check(view.runtime.loaded === loaded, 'Preferences baseline retained');
-      check(
-        view.definition.components.preferencesForm.actions.show ===
-          originalShowDefinition,
-        'component original remains inspectable'
-      );
-    }
-    finally {
-      view.actions.show = originalShow;
-    }
-    preferences.show();
-    check(view.container.open, 'original Preferences opening restored');
-    check(view.data.language === 'nl', 'unsaved form choice retained');
-    await view.actions.muzeSolidDesignCloseDialog(view.container);
-    view.data.language = previousLanguage;
+    check(
+      !host.view.runtime.preferences.app,
+      'host consumes preferences without constructing the editor'
+    );
 
     const originalListener =
       host.view.components.account.actions.accountRemoved;

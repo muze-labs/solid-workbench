@@ -127,6 +127,8 @@ export const workspaceControls = {
       this.runtime.workspace?.dispose();
       this.runtime.workspace = new this.api.WorkspaceBroker({
         getContext: (record) => this.actions.swb_contextFor(record),
+        editPreferences: (record, input) =>
+          this.actions.swb_editPreferences(record, input),
         savePreferences: (record, input) =>
           this.actions.swb_saveAppPreferences(record, input),
         embeddedProviders: [
@@ -137,6 +139,10 @@ export const workspaceControls = {
           {
             url: new URL('../files/', location.href).href,
             capability: this.api.browseCapability
+          },
+          {
+            url: new URL('../preferences/', location.href).href,
+            capability: this.api.editPreferencesCapability
           }
         ],
         snapshot: this.runtime.persistence.snapshot,
