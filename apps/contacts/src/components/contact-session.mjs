@@ -1,6 +1,24 @@
 import styles from './contact-session.css' with { type: 'text' };
 export const contactSession = {
   styles: { 'swb-contact-layout': styles },
+  commands: {
+    swb_recoverContacts() {
+      return this.runtime.host.run(async () => {
+        await this.api.recoverCollection(
+          'contacts',
+          this.runtime.collectionKey
+        );
+        this.runtime.store = await this.api.openCollection('contacts', {
+          scalarPredicates: this.api.scalarPredicates,
+          localKey: this.runtime.collectionKey
+        });
+        this.actions.refreshPeople();
+        this.runtime.host.notify(
+          'Previous device contacts imported. Original data retained.'
+        );
+      });
+    }
+  },
   actions: {
     async initialize() {
       this.actions.initializeList();
@@ -12,12 +30,37 @@ export const contactSession = {
           onChange: (...args) => this.actions.publish(...args)
         }
       );
+      await this.runtime.host.ready;
       await this.runtime.host.run(async () => {
+        const owner = this.runtime.host.selectedWebId || 'anonymous';
+        const resource = this.runtime.host.session
+          ? this.runtime.host.resource('contacts')
+          : 'contacts';
+        this.runtime.collectionKey = owner + ':' + resource;
+        this.runtime.collectionOwner = this.runtime.host.selectedWebId || '';
+        this.runtime.contactsResource = resource;
         this.runtime.store = await this.api.openCollection('contacts', {
-          scalarPredicates: this.api.scalarPredicates
+          scalarPredicates: this.api.scalarPredicates,
+          localKey: this.runtime.collectionKey
         });
         this.actions.refreshPeople();
       });
+      this.runtime.host.onContext = async () => {
+        const owner = this.runtime.host.selectedWebId || 'anonymous';
+        const resource = this.runtime.host.resource('contacts');
+        const key = owner + ':' + resource;
+        if (this.runtime.collectionKey === key) {
+          return;
+        }
+        this.runtime.collectionKey = key;
+        this.runtime.collectionOwner = this.runtime.host.selectedWebId || '';
+        this.runtime.contactsResource = resource;
+        this.runtime.store = await this.api.openCollection('contacts', {
+          scalarPredicates: this.api.scalarPredicates,
+          localKey: key
+        });
+        this.actions.refreshPeople();
+      };
       this.runtime.host.onConnect = () =>
         this.runtime.host.message(
           'Connected. Choose Sync with Solid to attach your address book.'

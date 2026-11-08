@@ -1,0 +1,28 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261108-QG24H-103 a sd:Implementation ;
+    dcterms:identifier "IMP-20261108-QG24H-103" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261108-QG24H-103.md" ;
+    sd:status sd:Active ;
+    sd:implementationLocation "packages/solid-app-data/src/workspace-directory.mjs" ;
+    sd:implementationLocation "apps/launcher/src/components/workspace-home.mjs" ;
+    sd:implementationLocation "apps/launcher/src/components/workspace-preferences.mjs" ;
+    sd:implementationLocation "packages/solid-app-ui/src/components/session-services.mjs" ;
+    sd:implementationLocation "scripts/build.mjs" ;
+    sd:implementationLocation "apps/launcher/src/backgrounds.mjs" ;
+    sd:implementationLocation "apps/launcher/src/components/background.mjs" ;
+    sd:implementationLocation "packages/solid-app-ui/src/feather-icons.svg"  ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261108-QG24H-102 ;
+        sd:gitCommit "0c88d38f1011e3cc060fa810d546faeefebdf6fb" ] ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:CYC-20261108-QG24H-100 ;
+        sd:gitCommit "bfad70b1d7de072e9c08c10ca6e13681ec700cdc" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261108-QG24H-97 ;
+        sd:gitCommit "08c7eaf78c109dadccb31a1f9d1364ae7a070003" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261108-QG24H-102 ;
+        sd:gitCommit "0c88d38f1011e3cc060fa810d546faeefebdf6fb" ] ;
+    sd:implementationChangeKind sd:MixedChange .

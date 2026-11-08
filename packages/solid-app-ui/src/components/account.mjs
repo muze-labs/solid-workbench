@@ -103,6 +103,11 @@ export const account = {
               error.code === 'sign_in_required' ? '' : error.message;
           }
           await this.runtime.host.onConnect?.(session);
+          if (this.runtime.pendingWorkspaceOwner === session.webId) {
+            this.runtime.pendingWorkspaceOwner = null;
+            this.runtime.host.managed?.peer?.close();
+            this.runtime.host.managed?.announce();
+          }
         });
         this.data.message = preferenceError;
         this.actions.notify('Connected to Solid.');

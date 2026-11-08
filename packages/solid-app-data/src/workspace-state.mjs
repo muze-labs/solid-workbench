@@ -1,3 +1,7 @@
+import {
+  validateDirectory,
+  resetDefaultWorkspace
+} from './workspace-directory.mjs';
 import { from } from '@muze-nl/jaqt';
 import { local } from '@muze-labs/solid-workspace';
 import { httpUrl, requireOk } from './index.mjs';
@@ -8,7 +12,8 @@ import {
   writeWorkspace,
   readCache,
   writeCache,
-  sameWorkspace
+  sameWorkspace,
+  cacheRoot
 } from './workspace-rdf.mjs';
 
 function conflictError() {
@@ -30,7 +35,8 @@ export function validateWorkspace(value) {
   }
   if (
     Object.keys(value).some(
-      (key) => !['version', 'apps', 'launcher', 'owner'].includes(key)
+      (key) =>
+        !['version', 'apps', 'launcher', 'owner', 'directory'].includes(key)
     ) ||
     !value.launcher ||
     typeof value.launcher !== 'object' ||
@@ -39,6 +45,14 @@ export function validateWorkspace(value) {
       typeof value.launcher.resource !== 'string')
   ) {
     throw new Error('workspace-state: Unsupported workspace fields.');
+  }
+  if (value.directory) {
+    validateDirectory(value.directory);
+    for (const entry of value.directory.entries) {
+      if (entry.saved) {
+        validateWorkspace(entry.saved);
+      }
+    }
   }
   const ids = new Set();
   for (const entry of value.apps) {
@@ -168,6 +182,27 @@ export class WorkspaceState {
       headers: { Accept: 'text/turtle' }
     });
     const missing = response.status === 404;
+    if (
+      missing &&
+      !forWrite &&
+      !this.dirty &&
+      this.baseUrl === url &&
+      this.baseSnapshot?.directory &&
+      this.snapshot.directory
+    ) {
+      // Keep a native local recovery copy before rebuilding externally deleted
+      // default configuration. Failed reads never enter this branch.
+      const backup = cacheRoot + '/recovered/' + crypto.randomUUID();
+      writeWorkspace(this.localGraph, backup, this.snapshot);
+      this.localGraph.add(
+        named(cacheRoot),
+        apps + 'recoveredDefault',
+        named(backup)
+      );
+      this.snapshot = resetDefaultWorkspace(this.snapshot);
+      this.keys = {};
+      this.dirty = true;
+    }
     if (!missing) {
       requireOk(response);
     }

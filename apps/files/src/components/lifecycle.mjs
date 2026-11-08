@@ -22,6 +22,12 @@ export const lifecycle = {
           await this.actions.browse(url);
         }
       };
+      this.runtime.host.onContext = async () => {
+        const url = this.runtime.restoredFolder || this.actions.locationValue();
+        if (this.runtime.host.session && url && this.runtime.current !== url) {
+          await this.actions.browse(url);
+        }
+      };
       this.runtime.appState = new this.api.AppState();
       this.runtime.host.manage({
         ...this.runtime.managedOptions,

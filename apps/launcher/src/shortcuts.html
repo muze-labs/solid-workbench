@@ -1,13 +1,6 @@
 <div style="display: contents">
   <section class="saved-apps">
-    <h2>Your shortcuts</h2>
-    <button
-      type="button"
-      class="ds-button ds-button-primary"
-      data-simply-command="muzeSolidLauncherAddDialog"
-    >
-      Add shortcut
-    </button>
+    <h2 class="swb-visually-hidden">Your shortcuts</h2>
     <dialog
       data-simply-behavior="muzeSolidDesignDialog"
       class="ds-dialog muze-solid-design-dialog muze-solid-launcher-add-dialog"
@@ -22,13 +15,23 @@
             aria-label="Close add shortcut dialog"
           >
             <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-              <use href="../assets/icons.svg#x"></use>
+              <use href="../assets/feather-icons.svg#x"></use>
             </svg>
           </button>
         </header>
         <div class="muze-solid-design-dialog-content">
-          <label>Name<input name="name" required /></label>
-          <label>Application URL<input name="url" type="url" required /></label>
+          <label>Name<input name="name" /></label>
+          <label>Application URL<input name="url" type="url" /></label>
+          <label
+            >Application manifest URL (optional)<input
+              name="manifest"
+              type="url"
+          /></label>
+          <label>Icon URL (optional)<input name="icon" type="url" /></label>
+          <p>
+            Enter an application URL, or use its RDF manifest. You can change
+            the name and icon.
+          </p>
           <details>
             <summary>Launch options</summary>
             <label
@@ -60,65 +63,133 @@
         </footer>
       </form>
     </dialog>
-    <div class="app-toolbar">
-      <button class="ds-button" data-simply-command="sync">
-        Sync with Solid
-      </button>
-    </div>
-    <ul class="person-list" data-simply-list="shortcuts">
-      <template
-        ><li>
-          <a
-            data-simply-command="launchApp"
-            data-simply-field="link"
-            data-simply-transform="attributes"
-            data-simply-attributes="href target rel"
-            ><span
-              data-simply-field="label"
-              data-simply-transform="escape_html"
-            ></span
-          ></a>
-          <details class="muze-solid-launcher-shortcut-settings">
-            <summary>Shortcut settings</summary>
-            <label
-              >Launch mode<select
-                data-simply-field="mode"
-                data-simply-command="setLaunchMode"
-                data-simply-value=":value.id"
+    <div class="swb-launcher-grid">
+      <ul class="person-list swb-shortcut-list" data-simply-list="shortcuts">
+        <template
+          ><li>
+            <a
+              data-simply-command="launchApp"
+              data-simply-field="link"
+              data-simply-transform="attributes"
+              data-simply-attributes="href target rel"
+              ><svg
+                class="ds-icon ds-icon-feather swb-app-icon"
+                aria-hidden="true"
+                data-simply-field="spriteVisibility"
+                data-simply-transform="attributes"
+                data-simply-attributes="hidden"
               >
-                <option value="">Follow application</option>
-                <option value="fragment">URL fragment (#)</option>
-                <option value="query">URL query (?)</option>
-              </select></label
-            ><label
-              ><input
-                type="checkbox"
-                data-simply-field="anonymous"
-                data-simply-command="setAnonymous"
-                data-simply-value=":value.id"
-              />
-              Launch anonymously (omit WebID)</label
-            ><button
-              class="ds-button"
-              data-simply-command="remove"
-              data-simply-value=":value.id"
+                <use
+                  data-simply-field="spriteIcon"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="href"
+                ></use></svg
+              ><img
+                alt=""
+                width="64"
+                height="64"
+                data-simply-field="icon"
+                data-simply-transform="attributes"
+                data-simply-attributes="src hidden" /><span
+                data-simply-field="label"
+                data-simply-transform="escape_html"
+              ></span
+            ></a>
+            <button
+              type="button"
+              class="ds-button swb-shortcut-settings"
+              data-simply-command="swb_shortcutSettings"
             >
-              Remove shortcut
+              Shortcut settings
             </button>
+            <dialog
+              class="ds-dialog muze-solid-design-dialog muze-solid-launcher-shortcut-settings"
+              data-simply-behavior="muzeSolidDesignDialog"
+              aria-label="Shortcut settings"
+            >
+              <header class="muze-solid-design-dialog-header">
+                <h2>Shortcut settings</h2>
+                <button
+                  type="button"
+                  class="ds-button muze-solid-design-dialog-close"
+                  aria-label="Close shortcut settings"
+                  data-simply-command="muzeSolidDesignCloseDialog"
+                >
+                  <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                    <use href="../assets/feather-icons.svg#x"></use>
+                  </svg>
+                </button>
+              </header>
+              <div class="muze-solid-design-dialog-content">
+                <label
+                  >Name<input name="swb_shortcutName" data-simply-field="label"
+                /></label>
+                <label
+                  >Icon URL override<input
+                    name="swb_shortcutIcon"
+                    type="url"
+                    data-simply-field="iconUrl"
+                /></label>
+                <p>Leave blank to use the application's icon.</p>
+                <button
+                  type="button"
+                  class="ds-button"
+                  data-simply-command="swb_editShortcut"
+                  data-simply-value=":value.id"
+                >
+                  Save name and icon
+                </button>
+                <label
+                  >Launch mode<select
+                    data-simply-field="mode"
+                    data-simply-command="setLaunchMode"
+                    data-simply-value=":value.id"
+                  >
+                    <option value="">Follow application</option>
+                    <option value="fragment">URL fragment (#)</option>
+                    <option value="query">URL query (?)</option>
+                  </select></label
+                ><label
+                  ><input
+                    type="checkbox"
+                    data-simply-field="anonymous"
+                    data-simply-command="setAnonymous"
+                    data-simply-value=":value.id"
+                  />
+                  Launch anonymously (omit WebID)</label
+                ><button
+                  class="ds-button"
+                  data-simply-command="remove"
+                  data-simply-value=":value.id"
+                >
+                  Remove shortcut
+                </button>
+                <p
+                  class="muted"
+                  data-simply-field="modeNote"
+                  data-simply-transform="escape_html"
+                ></p>
+              </div>
+            </dialog>
             <p
               class="muted"
-              data-simply-field="modeNote"
+              role="status"
+              data-simply-field="problem"
               data-simply-transform="escape_html"
-            ></p>
-          </details>
-          <p
-            class="muted"
-            role="status"
-            data-simply-field="problem"
-            data-simply-transform="escape_html"
-          ></p></li
-      ></template>
-    </ul>
+            ></p></li
+        ></template>
+      </ul>
+      <button
+        type="button"
+        class="ds-button swb-add-shortcut"
+        data-simply-command="muzeSolidLauncherAddDialog"
+      >
+        <svg class="ds-icon ds-icon-feather swb-app-icon" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#plus"></use>
+        </svg>
+        <span>Add shortcut</span>
+      </button>
+    </div>
     <p
       class="empty"
       data-simply-field="empty"

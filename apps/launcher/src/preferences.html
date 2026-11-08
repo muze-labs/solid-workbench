@@ -9,15 +9,194 @@
     existing data.
   </p>
   <label
-    >Shortcuts Turtle resource<input
-      name="launcherResource"
-      type="url"
-      data-simply-field="launcherResource"
-  /></label>
-  <label
     >Workspace state Turtle resource<input
       name="workspaceResource"
       type="url"
       data-simply-field="workspaceResource"
   /></label>
+</fieldset>
+
+<fieldset
+  class="swb-workspace-management"
+  data-simply-field="buttons"
+  data-simply-transform="attributes"
+  data-simply-attributes="disabled"
+>
+  <legend>Workspaces</legend>
+  <label
+    >New workspace title<input name="swb_newWorkspace" maxlength="100"
+  /></label>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="swb_createWorkspace"
+  >
+    Create workspace
+  </button>
+  <ul data-simply-list="swb_workspaceRows">
+    <template
+      ><li>
+        <label
+          >Workspace title<input maxlength="100" data-simply-field="title"
+        /></label>
+        <span
+          data-simply-field="status"
+          data-simply-transform="escape_html"
+        ></span>
+        <button
+          type="button"
+          class="ds-button"
+          data-simply-command="swb_renameWorkspace"
+          data-simply-value=":value.id"
+        >
+          Rename
+        </button>
+        <button
+          type="button"
+          class="ds-button"
+          data-simply-command="swb_deleteWorkspace"
+          data-simply-value=":value.id"
+          data-simply-field="deletion"
+          data-simply-transform="attributes"
+          data-simply-attributes="disabled"
+        >
+          Delete workspace
+        </button>
+      </li></template
+    >
+  </ul>
+  <p>
+    The default and active workspaces cannot be deleted. Linked files and
+    address books are never deleted.
+  </p>
+  <details>
+    <summary>Device data recovery</summary>
+    <p>
+      Import shortcuts from an earlier version on this device into this
+      workspace. The previous copy is retained.
+    </p>
+    <button
+      type="button"
+      class="ds-button"
+      data-simply-command="swb_recoverShortcuts"
+    >
+      Import previous device shortcuts
+    </button>
+  </details>
+  <h3>
+    App settings for
+    <span
+      data-simply-field="swb_workspaceTitle"
+      data-simply-transform="escape_html"
+    ></span>
+  </h3>
+  <label
+    >Private storage endpoints (one URL per line)<textarea
+      name="swb_workspaceStorage"
+      data-simply-field="swb_workspaceStorage"
+    ></textarea>
+  </label>
+  <label
+    >Contacts address book URL<input
+      type="url"
+      name="swb_contactsResource"
+      data-simply-field="swb_contactsResource"
+  /></label>
+  <label
+    >Files starting folder<input
+      type="url"
+      name="swb_filesRoot"
+      data-simply-field="swb_filesRoot"
+  /></label>
+  <label
+    >Shortcut collection URL<input
+      type="url"
+      name="swb_launcherResource"
+      data-simply-field="swb_launcherResource"
+  /></label>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="swb_saveWorkspaceSettings"
+  >
+    Save workspace settings
+  </button>
+</fieldset>
+
+<fieldset>
+  <legend>Advanced</legend>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="swb_openDiagnostics"
+  >
+    Open diagnostics
+  </button>
+</fieldset>
+
+<fieldset
+  data-simply-field="buttons"
+  data-simply-transform="attributes"
+  data-simply-attributes="disabled"
+>
+  <legend>Launcher background</legend>
+  <p>
+    Choose a background for this workspace. Images are kept on this device; Save
+    to Pod uploads a chosen file for use on other devices.
+  </p>
+  <label
+    >Background<select
+      name="swb_backgroundChoice"
+      data-simply-field="swb_backgroundChoice"
+    >
+      <option value="none">None</option>
+      <option value="bg1">Photo 1</option>
+      <option value="bg2">Photo 2</option>
+      <option value="bg3">Photo 3</option>
+      <option value="bg4">Photo 4</option>
+      <option value="bg5">Photo 5</option>
+      <option value="bg6">Photo 6</option>
+      <option value="url">Custom URL</option>
+      <option value="uploaded">Uploaded file</option>
+    </select></label
+  >
+  <label
+    >Image URL<input
+      type="url"
+      name="swb_backgroundUrl"
+      data-simply-field="swb_backgroundUrl"
+  /></label>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="swb_saveBackground"
+  >
+    Apply background
+  </button>
+  <label
+    >Image file (JPEG, PNG or WebP, up to 5 MB)<input
+      type="file"
+      name="swb_backgroundFile"
+      accept="image/jpeg,image/png,image/webp"
+  /></label>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="swb_uploadBackground"
+  >
+    Use uploaded image
+  </button>
+  <img
+    class="swb-background-preview"
+    alt="Current Launcher background preview"
+    hidden
+    data-simply-field="swb_backgroundPreview"
+    data-simply-transform="attributes"
+    data-simply-attributes="src hidden"
+  />
+  <p
+    role="status"
+    data-simply-field="swb_backgroundMessage"
+    data-simply-transform="escape_html"
+  ></p>
 </fieldset>

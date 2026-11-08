@@ -1,0 +1,30 @@
+<li
+  class="ds-dropdown-item swb-workspace-menu"
+  hidden
+  data-simply-field="swb_workspaceMenuVisibility"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+>
+  <ul class="ds-dropdown-list" data-simply-list="swb_workspaceMenu">
+    <template
+      ><li class="ds-dropdown-item">
+        <button
+          type="button"
+          class="ds-button ds-button-naked ds-dropdown-link"
+          data-simply-command="swb_switchWorkspace"
+          data-simply-value=":value.id"
+          data-simply-field="attributes"
+          data-simply-transform="attributes"
+          data-simply-attributes="aria-current disabled aria-label"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#layers"></use>
+          </svg>
+          <span
+            data-simply-field="title"
+            data-simply-transform="escape_html"
+          ></span>
+        </button></li
+    ></template>
+  </ul>
+</li>

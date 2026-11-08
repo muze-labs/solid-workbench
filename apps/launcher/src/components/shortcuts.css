@@ -6,7 +6,7 @@
 .app-card {
   padding: var(--ds-space);
   border-block-start: 0.25rem solid var(--ds-primary);
-  background: var(--ds-grey-low);
+  background: var(--ds-color-background);
 }
 .app-card h2 {
   margin-block-start: 0;
@@ -29,9 +29,87 @@
 .muze-solid-launcher-suite-apps {
   margin-block: var(--ds-space);
 }
-.muze-solid-launcher-shortcut-settings {
-  margin-inline-start: auto;
+
+.swb-launcher-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: var(--ds-space);
+  padding: 0;
+  list-style: none;
 }
-.muze-solid-launcher-shortcut-settings[open] {
-  flex-basis: 100%;
+.saved-apps .swb-shortcut-list li {
+  display: block;
+  min-width: 0;
+  padding: 0.5rem;
+  background: transparent;
+}
+.saved-apps .swb-launcher-grid a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space);
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1rem;
+  min-height: 7rem;
+}
+.swb-launcher-grid img {
+  flex: 0 0 auto;
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+}
+.swb-shortcut-list {
+  display: contents;
+}
+.swb-add-shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  gap: var(--ds-space);
+  padding: 1rem;
+  margin: 0;
+  min-height: 7rem;
+  font-size: 1rem;
+  background: transparent;
+  box-shadow: none;
+}
+.swb-app-icon {
+  --ds-icon-height: 4rem;
+  width: 4rem;
+  height: 4rem;
+}
+.swb-launcher-grid .swb-app-icon,
+.swb-launcher-grid img {
+  box-sizing: content-box;
+  padding: 0.625rem;
+  background: var(--ds-primary);
+  color: var(--ds-primary-contrast);
+}
+.swb-shortcut-settings {
+  width: 100%;
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  background: transparent;
+  box-shadow: none;
+}
+.swb-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.swb-launcher-grid a:focus-visible {
+  outline: 2px solid var(--ds-primary);
+  outline-offset: 2px;
+}
+
+.swb-launcher-grid [hidden] {
+  display: none;
 }

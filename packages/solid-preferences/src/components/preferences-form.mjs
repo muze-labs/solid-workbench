@@ -125,7 +125,8 @@ export const preferencesForm = {
           this.runtime.loaded = await this.api.savePreferences(
             session,
             this.runtime.loaded.document,
-            settings
+            settings,
+            this.api.getWorkspace?.()
           );
         });
         this.api.applyPreferences(this.runtime.loaded.settings);
@@ -154,7 +155,7 @@ export const preferencesForm = {
       this.actions.swb_preferences_busy(true);
       try {
         const latest = await session.perform(() =>
-          this.api.loadPreferences(session)
+          this.api.loadPreferences(session, this.api.getWorkspace?.())
         );
         const previous = this.runtime.loaded?.settings || this.api.defaults;
         const changes = { ...(this.runtime.swb_preferences_changes || {}) };
@@ -197,7 +198,10 @@ export const preferencesForm = {
       if (this.runtime.loaded) {
         return;
       }
-      const loaded = await this.api.loadPreferences(session);
+      const loaded = await this.api.loadPreferences(
+        session,
+        this.api.getWorkspace?.()
+      );
       this.runtime.loaded = loaded;
       this.data.message = '';
       // An open form may contain edits even after its initial read failed.
@@ -208,7 +212,10 @@ export const preferencesForm = {
       }
     },
     async load(session) {
-      const loaded = await this.api.loadPreferences(session);
+      const loaded = await this.api.loadPreferences(
+        session,
+        this.api.getWorkspace?.()
+      );
       this.runtime.loaded = loaded;
       Object.assign(this.data, loaded.settings, { message: '' });
       this.api.applyPreferences(loaded.settings);
@@ -216,6 +223,9 @@ export const preferencesForm = {
       return loaded.settings;
     },
     show() {
+      const workspace = this.api.getWorkspace?.();
+      this.data.swb_preferences_workspace = { hidden: workspace ? null : '' };
+      this.data.swb_preferences_workspaceTitle = workspace?.title || '';
       this.actions.muzeSolidDesignOpenDialog(this.container);
       if (!this.runtime.loaded) {
         this.data.message = 'Connect to Solid to load your preferences.';

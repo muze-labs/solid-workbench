@@ -208,6 +208,8 @@ export class ManagedApp {
     onRequest,
     onCancel,
     onState,
+    onContext = () => {},
+    beforeCheckpoint = () => {},
     waitForPresentation = false,
     canClose = () => ({ allowed: true })
   } = {}) {
@@ -219,6 +221,8 @@ export class ManagedApp {
       onRequest,
       onCancel,
       onState,
+      onContext,
+      beforeCheckpoint,
       waitForPresentation,
       canClose
     });
@@ -317,12 +321,13 @@ export class ManagedApp {
     );
     this.peer = peer;
     try {
-      await peer.call('register', {
+      const registered = await peer.call('register', {
         name: this.name,
         restoring: true,
         generation: this.generation,
         capabilities: this.capabilities
       });
+      await this.onContext(registered?.context || null);
       const identity = JSON.stringify(this.resume);
       if (identity !== this.restorationIdentity) {
         this.restorationIdentity = identity;
@@ -363,6 +368,7 @@ export class ManagedApp {
           'restoring'
         );
       }
+      await this.beforeCheckpoint();
       return restorationState(await this.getState());
     }
     if (

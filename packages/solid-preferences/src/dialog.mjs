@@ -15,7 +15,15 @@ import sources from './features.mjs?entries';
 
 export function preferencesDialog(
   dialog,
-  { getSession, onChange, overrides = {}, template }
+  {
+    getSession,
+    onChange,
+    getWorkspace = () => null,
+    components = {},
+    sources: extraSources = {},
+    overrides = {},
+    template
+  }
 ) {
   const component = {
     ...preferencesForm,
@@ -26,10 +34,13 @@ export function preferencesDialog(
     components: {
       muzeSolidDesignDialog,
       muzeSolidDesignToast,
-      preferencesForm: component
+      preferencesForm: component,
+      ...components
     },
     data: {
       ...defaults,
+      swb_preferences_workspace: { hidden: '' },
+      swb_preferences_workspaceTitle: '',
       message: '',
       swb_preferences_form: { 'aria-busy': 'false' },
       swb_preferences_review: { hidden: '', disabled: null },
@@ -43,6 +54,7 @@ export function preferencesDialog(
       savePreferences,
       applyPreferences,
       getSession,
+      getWorkspace,
       onChange
     },
     runtime: { loaded: null },
@@ -51,6 +63,7 @@ export function preferencesDialog(
   const view = app(definition);
   exposeDefinition(view, definition, {
     ...sources,
+    ...extraSources,
     preferencesForm: {
       ...sources.preferencesForm,
       templates: {

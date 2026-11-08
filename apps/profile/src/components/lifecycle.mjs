@@ -24,13 +24,29 @@ export const lifecycle = {
         );
       }
       else if (this.runtime.contactId && !this.runtime.host.launchError) {
+        await this.runtime.host.ready;
         await this.runtime.host.run(async () => {
+          const owner = this.runtime.host.selectedWebId || 'anonymous';
+          const resource = this.runtime.host.session
+            ? this.runtime.host.resource('contacts')
+            : 'contacts';
           this.runtime.store = await this.api.openCollection('contacts', {
-            scalarPredicates: this.api.scalarPredicates
+            scalarPredicates: this.api.scalarPredicates,
+            localKey: owner + ':' + resource
           });
           this.actions.showLocalContact();
         });
       }
+      this.runtime.host.onContext = async () => {
+        if (this.runtime.contactId) {
+          const owner = this.runtime.host.selectedWebId || 'anonymous';
+          this.runtime.store = await this.api.openCollection('contacts', {
+            scalarPredicates: this.api.scalarPredicates,
+            localKey: owner + ':' + this.runtime.host.resource('contacts')
+          });
+          this.actions.showLocalContact();
+        }
+      };
       this.runtime.host.onConnect = async () => {
         await this.actions.openLaunch();
         await this.actions.muzeSolidProfileOpen();

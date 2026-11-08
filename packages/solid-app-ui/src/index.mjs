@@ -29,7 +29,9 @@ import sources from './features.mjs?entries';
 export function shell({
   acceptLaunch = false,
   overrides = {},
-  templates = {}
+  templates = {},
+  accountOptions = {},
+  preferenceOptions = {}
 } = {}) {
   const root = document.querySelector('#app');
   const task = new URL(location.href).searchParams.has('solid-apps-task');
@@ -59,7 +61,8 @@ export function shell({
     addressLaunch,
     session: null,
     settings: { ...defaults },
-    templates
+    templates,
+    preferenceOptions
   };
   const host = {
     main: root.querySelector('.app-content'),
@@ -73,8 +76,19 @@ export function shell({
     get preferences() {
       return runtime.settings;
     },
+    // Selection scopes local data; only session authorizes Pod requests.
+    get selectedWebId() {
+      return runtime.session?.webId || runtime.selectedWebId || '';
+    },
     onConnect: null,
-    onPreferences: null
+    onPreferences: null,
+    onContext: null,
+    get workspaceContext() {
+      return runtime.workspaceContext;
+    },
+    set workspaceContext(value) {
+      runtime.workspaceContext = value;
+    }
   };
   runtime.host = host;
   const definition = {
@@ -91,9 +105,12 @@ export function shell({
       sessionRecovery,
       accountLifecycle,
       muzeSolidUiCapabilityDialog,
-      suiteAppearance
+      suiteAppearance,
+      ...accountOptions.components
     },
     data: {
+      // The document title includes the suite name; the app heading does not.
+      muzeSolidUiTitle: document.title.replace(/ · Solid Workbench$/, ''),
       muzeSolidDesignNotice: { text: '', visibility: { hidden: '' } },
       muzeSolidUiEmbedded: { hidden: task ? null : '' },
       muzeSolidUiMenuVisibility: { hidden: task ? '' : null },
@@ -136,6 +153,7 @@ export function shell({
   const view = app(definition);
   exposeDefinition(view, definition, {
     ...sources,
+    ...accountOptions.sources,
     account: {
       ...sources.account,
       templates: {

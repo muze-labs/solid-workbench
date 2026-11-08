@@ -1,8 +1,13 @@
 import {
-  oldm, prefixes, valueAt, idOf, httpUrl
+  oldm,
+  prefixes,
+  valueAt,
+  idOf,
+  httpUrl
 } from '@muze-labs/solid-app-data';
 import {
-  launchUrl, readLaunchContext
+  launchUrl,
+  readLaunchContext
 } from '@muze-labs/solid-app-data/launch.mjs';
 
 export const locationPredicate = prefixes.apps + 'launchParameterLocation';
@@ -17,7 +22,9 @@ function readAnonymous(subject) {
   }
   if (Array.isArray(value)) {
     if (value.length !== 1) {
-      throw new Error('launcher/shortcuts: Anonymous launch has multiple values.');
+      throw new Error(
+        'launcher/shortcuts: Anonymous launch has multiple values.'
+      );
     }
     value = value[0];
   }
@@ -25,8 +32,10 @@ function readAnonymous(subject) {
     return value.valueOf();
   }
   if (
-    value instanceof String && String(value.type) === booleanType &&
-    !value.language && ['true', 'false', '1', '0'].includes(String(value))
+    value instanceof String &&
+    String(value.type) === booleanType &&
+    !value.language &&
+    ['true', 'false', '1', '0'].includes(String(value))
   ) {
     return ['true', '1'].includes(String(value));
   }
@@ -47,8 +56,8 @@ function readMode(subject, predicate) {
   if (
     !(typeof value === 'string' || value instanceof String) ||
     value.language ||
-    (value.type && String(value.type) !==
-      'http://www.w3.org/2001/XMLSchema#string')
+    (value.type &&
+      String(value.type) !== 'http://www.w3.org/2001/XMLSchema#string')
   ) {
     throw new Error('launcher/shortcuts: Launch mode must be a plain literal.');
   }
@@ -62,12 +71,19 @@ function readMode(subject, predicate) {
 export function shortcutLaunch(subject, webId) {
   const override = readMode(subject, overridePredicate);
   const anonymous = readAnonymous(subject);
-  const location = override || readMode(subject, locationPredicate) || 'fragment';
+  const location =
+    override || readMode(subject, locationPredicate) || 'fragment';
   const url = httpUrl(idOf(valueAt(subject, prefixes.schema + 'url')));
   const fragment = readLaunchContext(url);
   const query = readLaunchContext(url, { parameterLocation: 'query' });
-  if (fragment.resource && query.resource && fragment.resource !== query.resource) {
-    throw new Error('launcher/shortcuts: The URL names two different resources.');
+  if (
+    fragment.resource &&
+    query.resource &&
+    fragment.resource !== query.resource
+  ) {
+    throw new Error(
+      'launcher/shortcuts: The URL names two different resources.'
+    );
   }
   const resource = fragment.resource || query.resource;
   let href = url;
@@ -77,7 +93,9 @@ export function shortcutLaunch(subject, webId) {
       launchWebId = '';
     }
     href = launchUrl(url, {
-      webId: launchWebId, resource, parameterLocation: location
+      webId: launchWebId,
+      resource,
+      parameterLocation: location
     });
   }
   else if (resource || fragment.webId || query.webId) {
@@ -92,14 +110,19 @@ export function applyAnonymousLaunch(subject, anonymous) {
   }
   readAnonymous(subject);
   if (anonymous) {
-    subject.graph.set(subject.id, anonymousPredicate,
-      oldm.literal('true', { type: booleanType }));
+    subject.graph.set(
+      subject.id,
+      anonymousPredicate,
+      oldm.literal('true', { type: booleanType })
+    );
   }
   else {
     subject.graph.delete(subject.id, anonymousPredicate);
   }
   subject.graph.set(
-    subject.id, prefixes.dcterms + 'modified', new Date().toISOString()
+    subject.id,
+    prefixes.dcterms + 'modified',
+    new Date().toISOString()
   );
 }
 
@@ -119,6 +142,29 @@ export function applyLaunchOverride(subject, mode) {
     subject.graph.delete(subject.id, overridePredicate);
   }
   subject.graph.set(
-    subject.id, prefixes.dcterms + 'modified', new Date().toISOString()
+    subject.id,
+    prefixes.dcterms + 'modified',
+    new Date().toISOString()
   );
+}
+
+export function applyIconOverride(subject, value) {
+  const predicate = prefixes.apps + 'iconOverride';
+  const previous = valueAt(subject, predicate);
+  if (
+    Array.isArray(previous) ||
+    (previous && (!previous.id || String(previous.id).startsWith('_:')))
+  ) {
+    throw new Error('launcher/shortcuts: Icon override must be one image URL.');
+  }
+  if (value) {
+    subject.graph.set(
+      subject.id,
+      predicate,
+      subject.graph.addNamedNode(httpUrl(value))
+    );
+  }
+  else {
+    subject.graph.delete(subject.id, predicate);
+  }
 }

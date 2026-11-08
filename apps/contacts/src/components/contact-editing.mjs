@@ -33,10 +33,30 @@ export const contactEditing = {
       this.runtime.host.notify('Contact marked deleted.');
     },
     async synchronizeContacts() {
-      await this.runtime.store.connect(
-        this.runtime.host.requireSession(),
-        this.runtime.host.resource('contacts')
-      );
+      const session = this.runtime.host.requireSession();
+      if (
+        this.runtime.collectionOwner &&
+        this.runtime.collectionOwner !== session.webId
+      ) {
+        throw new Error(
+          'contacts: Reopen Contacts for the selected WebID. Previous data is retained.'
+        );
+      }
+      if (!this.runtime.collectionOwner) {
+        const resource = this.runtime.host.resource('contacts');
+        const key = session.webId + ':' + resource;
+        if (this.runtime.store.collection.list().length) {
+          await this.api.recoverCollection(this.runtime.collectionKey, key);
+        }
+        this.runtime.store = await this.api.openCollection('contacts', {
+          scalarPredicates: this.api.scalarPredicates,
+          localKey: key
+        });
+        this.runtime.collectionKey = key;
+        this.runtime.collectionOwner = session.webId;
+        this.runtime.contactsResource = resource;
+      }
+      await this.runtime.store.connect(session, this.runtime.contactsResource);
       this.actions.refreshPeople();
       if (this.runtime.selected) {
         this.actions.selectContact(this.runtime.selected);

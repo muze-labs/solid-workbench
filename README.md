@@ -19,6 +19,9 @@ npm run dev
 
 Open <http://127.0.0.1:4174/> or <http://127.0.0.1:4174/workbench/>.
 Solid Workbench links to Contacts, Files and Profile.
+The dev command builds once, then starts the server. Restart it after changing
+server code or response types; rebuilding `www/` alone does not reload the
+running server's configuration.
 Node 20.6 or newer is required for the build; the browser integration harness uses
 Node 22 or newer (native WebSocket) and `google-chrome` on PATH. Use localhost or
 HTTPS so browser storage, crypto and authentication work. Deploy `www/` as static

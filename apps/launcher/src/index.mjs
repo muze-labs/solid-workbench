@@ -1,7 +1,15 @@
+import * as backgrounds from './backgrounds.mjs';
+import backgroundSource from './backgrounds.mjs' with { type: 'text' };
+import manifestSource from './manifests.mjs' with { type: 'text' };
+import { readApplicationManifest } from './manifests.mjs';
+import * as directory from '@muze-labs/solid-app-data/workspace-directory.mjs';
+import { workspacePreferences } from './components/workspace-preferences.mjs';
+import workspacePreferenceSources from './components/workspace-preferences.mjs?entries';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   muzeSolidDesignDialog,
-  muzeSolidDesignListDetails
+  muzeSolidDesignListDetails,
+  muzeSolidDesignDropdown
 } from '@muze-labs/solid-design';
 import pickerSource from './picker.mjs' with { type: 'text' };
 import shortcutSource from './shortcuts.mjs' with { type: 'text' };
@@ -19,19 +27,30 @@ import {
   selectionUrl
 } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { chooseFiles } from './picker.mjs';
-import { openCollection } from '@muze-labs/solid-app-data/collection.mjs';
+import {
+  openCollection,
+  recoverCollection
+} from '@muze-labs/solid-app-data/collection.mjs';
 import { prefixes, valueAt, idOf, httpUrl } from '@muze-labs/solid-app-data';
-import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
+import {
+  launchUrl,
+  parseLaunchUrl
+} from '@muze-labs/solid-app-data/launch.mjs';
 import {
   shortcutLaunch,
   applyLaunchOverride,
   overridePredicate,
   applyAnonymousLaunch,
+  applyIconOverride,
   anonymousPredicate
 } from './shortcuts.mjs';
 import { app } from '@muze-labs/simplyflow/app';
 import {
   workspaceControls,
+  workspaceHome,
+  workspaceMenu,
+  launcherBackground,
+  backgroundPreferences,
   resourceSelection,
   shortcuts,
   lifecycle
@@ -39,19 +58,37 @@ import {
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import sources from './features.mjs?entries';
 const host = shell({
-  templates: { account: accountTemplate, preferences: preferencesTemplate }
+  accountOptions: {
+    components: { workspaceMenu },
+    sources: { workspaceMenu: sources.workspaceMenu }
+  },
+  templates: { account: accountTemplate, preferences: preferencesTemplate },
+  preferenceOptions: {
+    components: { workspacePreferences, backgroundPreferences },
+    sources: {
+      ...workspacePreferenceSources,
+      backgroundPreferences: sources.backgroundPreferences
+    }
+  }
 });
 const definition = {
   container: host.main,
   components: {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
+    muzeSolidDesignDropdown,
     workspaceControls,
+    workspaceHome,
+    launcherBackground,
     resourceSelection,
     shortcuts,
     lifecycle
   },
   data: {
+    swb_background: { src: null, hidden: '' },
+    swb_workspaceTitle: 'Solid Workbench',
+    swb_workspaceMenu: [],
+    swb_restoreApps: { hidden: '' },
     shortcuts: [],
     empty: '',
     resource: '',
@@ -70,6 +107,9 @@ const definition = {
     profileLink: { href: '../profile/' }
   },
   api: {
+    backgrounds,
+    ...directory,
+    readApplicationManifest,
     app,
     model,
     effect,
@@ -83,15 +123,18 @@ const definition = {
     selectionUrl,
     chooseFiles,
     openCollection,
+    recoverCollection,
     prefixes,
     valueAt,
     idOf,
     httpUrl,
     launchUrl,
+    parseLaunchUrl,
     shortcutLaunch,
     applyLaunchOverride,
     overridePredicate,
     applyAnonymousLaunch,
+    applyIconOverride,
     anonymousPredicate
   },
   runtime: { host }
@@ -100,6 +143,16 @@ const ui = app(definition);
 exposeDefinition(ui, definition, sources);
 installEvents(ui);
 ui.definition.modules = {
+  backgrounds: {
+    source: backgroundSource,
+    origin: 'apps/launcher/src/backgrounds.mjs',
+    dependencies: ['@muze-labs/solid-app-data']
+  },
+  manifests: {
+    source: manifestSource,
+    origin: 'apps/launcher/src/manifests.mjs',
+    dependencies: ['@muze-labs/solid-app-data']
+  },
   picker: {
     source: pickerSource,
     origin: 'apps/launcher/src/picker.mjs',

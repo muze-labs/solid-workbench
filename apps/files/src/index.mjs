@@ -29,6 +29,7 @@ import {
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import sources from './features.mjs?entries';
 const host = shell({
+  acceptLaunch: true,
   templates: { account: accountTemplate, preferences: preferencesTemplate }
 });
 const definition = {

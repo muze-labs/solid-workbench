@@ -12,6 +12,9 @@ export const muzeSolidDesignDropdown = {
   },
   actions: {
     muzeSolidDesignMoveDropdown(event, direction) {
+      if (!this.container.contains(event.target)) {
+        return true;
+      }
       const dropdown = event.target.closest('.muze-solid-design-dropdown');
       const menu = dropdown?.querySelector('[popover]');
       const trigger = dropdown?.querySelector('[popovertarget]');

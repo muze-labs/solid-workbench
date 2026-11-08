@@ -50,6 +50,7 @@ export const fileNavigation = {
   actions: {
     locationValue: function () {
       return (
+        this.runtime.host.launch?.resource ||
         this.runtime.host.preferences.filesRoot ||
         this.runtime.host.session?.storage[0] ||
         ''
