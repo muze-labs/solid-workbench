@@ -1,3 +1,4 @@
+import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   editProfileCapability,
   capabilityError
@@ -142,6 +143,7 @@ export function shell({
       }
     }
   });
+  installEvents(view);
   for (const name of [
     'manage',
     'message',

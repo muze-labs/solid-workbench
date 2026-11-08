@@ -1,0 +1,31 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261108-QG24H-97 a sd:Implementation ;
+    dcterms:identifier "IMP-20261108-QG24H-97" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261108-QG24H-97.md" ;
+    sd:status sd:Active ;
+    sd:implementationLocation "packages/simplyflow-events/src/index.mjs#installEvents" ;
+    sd:implementationLocation "apps/launcher/src/components/lifecycle.mjs" ;
+    sd:implementationLocation "packages/solid-app-ui/src/components/account-lifecycle.mjs" ;
+    sd:implementationLocation "packages/solid-app-data/src/definition.mjs" ;
+    sd:implementationLocation "scripts/templates.mjs#editableSources" ;
+    sd:shapedBy [ a sd:ArtifactReference ;
+        sd:artifact <https://muze.nl/ns/spiral-developer/culture/CUL-MUZE-LIB-001> ;
+        sd:gitCommit "fd7a6e6b943c1d862110107bb0353ba91bd3d3c6" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261108-QG24H-94 ;
+        sd:gitCommit "70af7b4057d1e9e3bf0eaab2a52f3ffc1805b9eb" ] ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:CYC-20261108-QG24H-92 ;
+        sd:gitCommit "70af7b4057d1e9e3bf0eaab2a52f3ffc1805b9eb" ] ;
+    sd:constrainedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261107-QG24H-83 ;
+        sd:gitCommit "d552d08253837fffb4f8e63462855df0eb0cdb18" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261107-QG24H-84 ;
+        sd:gitCommit "280632b2019b255acab46f0f0f06d605a479e7d8" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261108-QG24H-94 ;
+        sd:gitCommit "70af7b4057d1e9e3bf0eaab2a52f3ffc1805b9eb" ] ;
+    sd:implementationChangeKind sd:MixedChange .

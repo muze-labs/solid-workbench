@@ -183,6 +183,18 @@ export function editableSources() {
                   continue;
                 }
                 if (
+                  section.key.name === 'events' &&
+                  entry.value?.type === 'ObjectExpression'
+                ) {
+                  functions[entry.key.name || entry.key.value] = {
+                    kind: 'event',
+                    source: source.slice(entry.value.start, entry.value.end),
+                    origin: path.relative(process.cwd(), filename),
+                    line: source.slice(0, entry.start).split('\n').length
+                  };
+                  continue;
+                }
+                if (
                   !['FunctionExpression', 'ArrowFunctionExpression'].includes(
                     entry.value?.type
                   )

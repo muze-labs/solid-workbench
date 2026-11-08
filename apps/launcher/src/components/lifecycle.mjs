@@ -1,4 +1,16 @@
 export const lifecycle = {
+  events: {
+    swbWorkspaceBeforeUnload: {
+      target: 'window',
+      type: 'beforeunload',
+      action: 'attemptExit'
+    },
+    swbWorkspacePageHide: {
+      target: 'window',
+      type: 'pagehide',
+      action: 'attemptExit'
+    }
+  },
   actions: {
     async initialize() {
       this.actions.initializeShortcuts();
@@ -76,13 +88,9 @@ export const lifecycle = {
         }
       };
       this.runtime.exitAttempted = false;
-      this.runtime.exitListener = (event) => this.actions.attemptExit(event);
-      window.addEventListener('beforeunload', this.runtime.exitListener);
-      window.addEventListener('pagehide', this.runtime.exitListener);
+      this.eventBindings.start();
     },
     cleanup() {
-      window.removeEventListener('beforeunload', this.runtime.exitListener);
-      window.removeEventListener('pagehide', this.runtime.exitListener);
       clearTimeout(this.runtime.restoreTimer);
       this.runtime.selection?.abort();
       this.runtime.workspace?.dispose();

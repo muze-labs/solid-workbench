@@ -1,4 +1,19 @@
 export const accountLifecycle = {
+  events: {
+    swbAccountStorage: {
+      target: 'window',
+      type: 'storage',
+      action: 'accountRemoved'
+    },
+    swbAccountLaunchChange: {
+      target: 'window',
+      type: 'hashchange',
+      action: 'launchChanged',
+      when() {
+        return this.runtime.acceptLaunch;
+      }
+    }
+  },
   actions: {
     initialize() {
       this.runtime.preferences = this.api.preferencesDialog(
@@ -42,14 +57,7 @@ export const accountLifecycle = {
           );
         });
       }
-      this.runtime.accountListener = (event) =>
-        this.actions.accountRemoved(event);
-      this.runtime.launchListener = (event) =>
-        this.actions.launchChanged(event);
-      window.addEventListener('storage', this.runtime.accountListener);
-      if (this.runtime.acceptLaunch) {
-        window.addEventListener('hashchange', this.runtime.launchListener);
-      }
+      this.eventBindings.start();
     },
     launchChanged() {
       try {
@@ -73,8 +81,6 @@ export const accountLifecycle = {
     },
     cleanup() {
       this.actions.muzeSolidUiCleanupCapability();
-      window.removeEventListener('storage', this.runtime.accountListener);
-      window.removeEventListener('hashchange', this.runtime.launchListener);
       this.runtime.preferences.app.destroy();
     }
   }

@@ -1,3 +1,5 @@
+import { installEvents } from '@muze-labs/simplyflow-events';
+import { exposeDefinition } from '../packages/solid-app-data/src/definition.mjs';
 import { fileEditing } from '../apps/files/src/components/file-editing.mjs';
 import { uploadFiles } from '../apps/files/src/data.mjs';
 import test from 'node:test';
@@ -60,6 +62,11 @@ test('existing account listeners use current actions once and stop after cleanup
       }
     }
   );
+  owner.events = accountLifecycle.events;
+  owner.container = { ownerDocument: { defaultView: target } };
+  owner.destroy = () => { owner.destroyed = true; };
+  exposeDefinition(owner, {}, {});
+  installEvents(owner);
   owner.actions.initialize();
   const event = new Event('storage');
   target.dispatchEvent(event);
@@ -76,7 +83,7 @@ test('existing account listeners use current actions once and stop after cleanup
   );
   assert.ok(calls.every((call) => call[2] === owner));
   assert.ok(calls.slice(0, 3).every((call) => call[1] === event));
-  owner.actions.cleanup();
+  owner.destroy();
   target.dispatchEvent(event);
   target.dispatchEvent(new Event('hashchange'));
   assert.equal(calls.length, 4);

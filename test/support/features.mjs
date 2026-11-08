@@ -28,7 +28,8 @@ export async function checkFeatureSources(page, appName) {
               const reconstructed = Function(
                 'return (' + metadata.source + ')'
               )();
-              if (typeof reconstructed !== 'function') {
+              const expected = metadata.kind === 'event' ? 'object' : 'function';
+              if (typeof reconstructed !== expected) {
                 throw new Error(
                   'feature-test: Invalid ' + section + '.' + entry
                 );
