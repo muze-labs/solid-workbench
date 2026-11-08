@@ -19,10 +19,15 @@ export const accountLifecycle = {
       this.runtime.preferences = this.api.preferencesDialog(
         this.runtime.root.querySelector('.preferences-dialog'),
         {
+          ...this.runtime.preferenceOptions,
           getSession: () => this.runtime.session,
+          getWorkspace: () => this.runtime.workspaceContext,
           template: this.runtime.templates.preferences,
           onChange: (values) => {
-            this.runtime.settings = values;
+            this.runtime.settings = {
+              ...values,
+              ...this.runtime.workspaceContext?.settings
+            };
             this.runtime.host.onPreferences?.(values);
           }
         }
@@ -40,6 +45,7 @@ export const accountLifecycle = {
       const different =
         launch.webId && remembered && launch.webId !== remembered;
       const webId = launch.webId || remembered;
+      this.runtime.selectedWebId = remembered || launch.webId || '';
       this.runtime.host.ready = Promise.resolve();
       if (different) {
         this.actions.message(

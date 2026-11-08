@@ -1,3 +1,4 @@
+import { workspaceSettingKeys } from '@muze-labs/solid-app-data/workspace-settings.mjs';
 import {
   oldm,
   idOf,
@@ -123,7 +124,7 @@ export function validatePreferences(settings) {
   }
   return settings;
 }
-export async function loadPreferences(session) {
+export async function loadPreferences(session, workspace) {
   if (!session.preferencesUrl) {
     throw new Error(
       'solid-preferences: Your profile does not link to a preferences file (pim:preferencesFile).'
@@ -132,12 +133,30 @@ export async function loadPreferences(session) {
   const document = await loadDocument(session.client, session.preferencesUrl, {
     allowMissing: true
   });
-  return { document, settings: readPreferences(document) };
+  return {
+    document,
+    settings: {
+      ...readPreferences(document),
+      ...workspace?.settings
+    }
+  };
 }
-export async function savePreferences(session, document, settings) {
+export async function savePreferences(session, document, settings, workspace) {
   validatePreferences({ ...defaults, ...settings });
-  const keys = Object.keys(defaults).filter((key) =>
-    Object.hasOwn(settings, key)
+  if (workspace) {
+    const choices = Object.fromEntries(
+      Object.entries(settings).filter(([key]) =>
+        Object.hasOwn(workspace.settings, key)
+      )
+    );
+    if (Object.keys(choices).length) {
+      await workspace.save(choices);
+    }
+  }
+  const keys = Object.keys(defaults).filter(
+    (key) =>
+      Object.hasOwn(settings, key) &&
+      !(workspace && workspaceSettingKeys.includes(key))
   );
   const subject = document.graph.get(document.url + '#solid-apps');
   readLaunchTarget(subject);
@@ -170,7 +189,13 @@ export async function savePreferences(session, document, settings) {
       .context({ prefixes })
       .parse(saved.source, saved.url, 'text/turtle')
   };
-  return { document: result, settings: readPreferences(result) };
+  return {
+    document: result,
+    settings: {
+      ...readPreferences(result),
+      ...workspace?.settings
+    }
+  };
 }
 export function applyPreferences(settings, root = document.documentElement) {
   root.lang = settings.language;

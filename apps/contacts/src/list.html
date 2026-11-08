@@ -9,7 +9,7 @@
           <button data-simply-command="select" data-simply-value=":value.id">
             <span class="person-avatar" aria-hidden="true"
               ><svg class="ds-icon ds-icon-feather">
-                <use href="../assets/icons.svg#user"></use></svg></span
+                <use href="../assets/feather-icons.svg#user"></use></svg></span
             ><span
               data-simply-field="label"
               data-simply-transform="escape_html"
@@ -30,7 +30,7 @@
       <label class="contact-search"
         ><span class="visually-hidden">Search contacts</span
         ><svg class="ds-icon ds-icon-feather" aria-hidden="true">
-          <use href="../assets/icons.svg#search"></use></svg
+          <use href="../assets/feather-icons.svg#search"></use></svg
         ><input
           type="search"
           aria-label="Search contacts"
@@ -47,7 +47,7 @@
         title="Add contact"
       >
         <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-          <use href="../assets/icons.svg#plus"></use>
+          <use href="../assets/feather-icons.svg#plus"></use>
         </svg>
       </button>
       <button
@@ -58,10 +58,20 @@
         title="Sync with Solid"
       >
         <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-          <use href="../assets/icons.svg#refresh"></use>
+          <use href="../assets/feather-icons.svg#refresh-cw"></use>
         </svg>
       </button>
     </div>
+    <details class="swb-device-recovery">
+      <summary>Device data recovery</summary>
+      <p>
+        Import contacts saved by an earlier version on this device into this
+        address book. The previous copy is retained.
+      </p>
+      <button class="ds-button" data-simply-command="swb_recoverContacts">
+        Import previous device contacts
+      </button>
+    </details>
     <dialog
       data-simply-behavior="muzeSolidDesignDialog"
       class="ds-dialog new-contact-dialog muze-solid-design-dialog"
@@ -76,7 +86,7 @@
             aria-label="Close new contact dialog"
           >
             <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-              <use href="../assets/icons.svg#x"></use>
+              <use href="../assets/feather-icons.svg#x"></use>
             </svg>
           </button>
         </header>

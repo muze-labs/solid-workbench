@@ -15,7 +15,11 @@ export class WorkspaceBroker {
     authorize = () => false,
     target = window,
     embeddedProviders = [],
-    checkpointTimeout = 10000
+    checkpointTimeout = 10000,
+    getContext = () => null,
+    savePreferences = () => {
+      throw capabilityError('No workspace settings.');
+    }
   } = {}) {
     Object.assign(this, {
       onChange,
@@ -23,7 +27,9 @@ export class WorkspaceBroker {
       authorize,
       target,
       checkpointTimeout,
-      embeddedProviders
+      embeddedProviders,
+      getContext,
+      savePreferences
     });
     this.focusTarget = 'solid-apps-launcher-' + crypto.randomUUID();
     target.name = this.focusTarget;
@@ -207,6 +213,9 @@ export class WorkspaceBroker {
     if (method === 'embed-can-close' && record.registered && !record.embedded) {
       return this.canCloseEmbedded(input.id, record.entry.id);
     }
+    if (method === 'workspace-preferences' && record.registered) {
+      return this.savePreferences(record, input);
+    }
     if (method === 'register') {
       if (
         !Array.isArray(input.capabilities) ||
@@ -224,7 +233,7 @@ export class WorkspaceBroker {
       if (!record.embedded) {
         await this.changed();
       }
-      return { id: record.entry.id };
+      return { id: record.entry.id, context: this.getContext(record) };
     }
     if (method === 'ready' && record.registered) {
       record.ready = true;

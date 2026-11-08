@@ -22,7 +22,10 @@ export const sessionServices = {
       }
     },
     resource(name) {
-      const explicit = this.runtime.settings[name + 'Resource'];
+      const key = name + 'Resource';
+      const explicit =
+        this.runtime.workspaceContext?.settings[key] ??
+        this.runtime.settings[key];
       if (explicit) {
         return this.api.httpUrl(explicit);
       }
@@ -45,6 +48,57 @@ export const sessionServices = {
       host.managed = new this.api.ManagedApp({
         name: document.title,
         ...options,
+        beforeCheckpoint: async () => {
+          const preferences = this.runtime.preferences.app;
+          if (
+            preferences.container.open ||
+            preferences.data.buttons.disabled === ''
+          ) {
+            throw new Error(
+              'solid-app-ui: Finish or close Preferences before switching workspace. Your edits are still here.'
+            );
+          }
+          await options.beforeCheckpoint?.();
+        },
+        onContext: async (context) => {
+          await host.ready;
+          if (!context) {
+            return;
+          }
+          if (context.owner !== host.selectedWebId) {
+            this.runtime.pendingWorkspaceOwner = context.owner;
+            throw new Error(
+              'solid-app-ui: Connect to the workspace WebID, then retry restoring this app.'
+            );
+          }
+          const previous = this.runtime.workspaceContext;
+          if (previous) {
+            if (
+              previous.id !== context.id ||
+              previous.owner !== context.owner
+            ) {
+              throw new Error(
+                'solid-app-ui: Reopen this app in the selected workspace.'
+              );
+            }
+            return;
+          }
+          const settings = { ...context.settings };
+          this.runtime.workspaceContext = {
+            ...context,
+            settings,
+            save: async (values) => {
+              const result = await host.managed.peer.call(
+                'workspace-preferences',
+                { id: context.id, values }
+              );
+              Object.assign(settings, result);
+            }
+          };
+          Object.assign(this.runtime.settings, settings);
+          Object.assign(this.runtime.preferences.app.data, settings);
+          await host.onContext?.(context);
+        },
         getState: async () => {
           await host.ready;
           return options.getState();

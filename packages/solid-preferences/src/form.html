@@ -13,7 +13,7 @@
       aria-label="Close preferences"
     >
       <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-        <use href="../assets/icons.svg#x"></use>
+        <use href="../assets/feather-icons.svg#x"></use>
       </svg>
     </button>
   </header>
@@ -67,6 +67,19 @@
         for all apps.
       </p>
     </fieldset>
+    <p
+      hidden
+      data-simply-field="swb_preferences_workspace"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+    >
+      App settings belong to
+      <strong
+        data-simply-field="swb_preferences_workspaceTitle"
+        data-simply-transform="escape_html"
+      ></strong
+      >. Common settings apply across workspaces.
+    </p>
     {{appPreferences}}
   </div>
   <footer class="muze-solid-design-dialog-footer">

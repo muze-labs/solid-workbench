@@ -22,9 +22,20 @@ await copyFile(
   path.join(root, 'www/assets/theds.css')
 );
 await copyFile(
-  path.join(root, 'packages/solid-app-ui/src/icons.svg'),
-  path.join(root, 'www/assets/icons.svg')
+  path.join(root, 'packages/solid-app-ui/src/feather-icons.svg'),
+  path.join(root, 'www/assets/feather-icons.svg')
 );
+await copyFile(
+  path.join(root, 'packages/solid-app-ui/src/feather-icons.LICENSE.txt'),
+  path.join(root, 'www/assets/feather-icons.LICENSE.txt')
+);
+await mkdir(path.join(root, 'www/assets/backgrounds'), { recursive: true });
+for (let number = 1; number <= 6; number += 1) {
+  await copyFile(
+    path.join(root, 'apps/launcher/src/backgrounds/bg' + number + '.jpg'),
+    path.join(root, 'www/assets/backgrounds/bg' + number + '.jpg')
+  );
+}
 for (const output of bundles) {
   const destination = path.join(root, 'www/assets', output.fileName);
   await mkdir(path.dirname(destination), { recursive: true });
@@ -53,9 +64,15 @@ for (const name of ['launcher', 'contacts', 'files', 'profile']) {
     .replace('{{content}}', content)
     .replace('{{preferences}}', preferences);
   await mkdir(path.join(root, `www/${route}`), { recursive: true });
+  for (const asset of ['manifest.ttl', 'icon.svg']) {
+    await copyFile(
+      path.join(root, `apps/${name}/src/${asset}`),
+      path.join(root, `www/${route}/${asset}`)
+    );
+  }
   await writeFile(
     path.join(root, `www/${route}/index.html`),
-    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto"><div id="app">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
+    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title><link rel="describedby" type="text/turtle" href="manifest.ttl"><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto"><div id="app">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
   );
 }
 await writeFile(
@@ -101,12 +118,16 @@ function appSizes(suffix) {
       0
     );
     sizes[name] = { gzipBytes: total, scripts: [...files] };
-    if (total >= 200000) {
+    // CYC100: maintainer-approved temporary readable Workbench allowance.
+    const budget = name === 'launcher' && suffix === '' ? 220000 : 200000;
+    if (total >= budget) {
       throw new Error(
         'build: ' +
           name +
           suffix +
-          ' exceeds the 200 KB gzip JavaScript budget.'
+          ' exceeds its ' +
+          budget +
+          ' byte gzip JavaScript budget.'
       );
     }
   }

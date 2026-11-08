@@ -1,4 +1,30 @@
-{{view:launcher-navigation:./navigation.html}}
-{{view:launcher-resource-selection:./resource-selection.html}}
-{{view:launcher-workspace:./workspace.html}}
+{{view:swb-background:./background.html}}
+{{view:swb-workspace-home:./workspace-home.html}}
 {{view:launcher-shortcuts:./shortcuts.html}}
+<dialog
+  class="ds-dialog muze-solid-design-dialog swb-diagnostics"
+  data-simply-behavior="muzeSolidDesignDialog"
+  aria-labelledby="swb-diagnostics-title"
+>
+  <header class="muze-solid-design-dialog-header">
+    <h2 id="swb-diagnostics-title">Diagnostics</h2>
+    <button
+      type="button"
+      class="ds-button muze-solid-design-dialog-close"
+      data-simply-command="muzeSolidDesignCloseDialog"
+      aria-label="Close diagnostics"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#x"></use>
+      </svg>
+    </button>
+  </header>
+  <div class="muze-solid-design-dialog-content">
+    <button type="button" class="ds-button" data-simply-command="sync">
+      Synchronize shortcuts
+    </button>
+    {{view:launcher-navigation:./navigation.html}}
+    {{view:launcher-resource-selection:./resource-selection.html}}
+    {{view:launcher-workspace:./workspace.html}}
+  </div>
+</dialog>

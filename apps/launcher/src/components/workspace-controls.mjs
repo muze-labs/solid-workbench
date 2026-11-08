@@ -101,6 +101,9 @@ export const workspaceControls = {
       }
     },
     renderWorkspace: function () {
+      this.data.swb_restoreApps = {
+        hidden: this.runtime.workspace.instances.size ? null : ''
+      };
       this.data.workspaceEntries = this.api
         .from([...this.runtime.workspace.instances.values()])
         .where((record) => !record.embedded)
@@ -123,6 +126,9 @@ export const workspaceControls = {
     createWorkspace: function () {
       this.runtime.workspace?.dispose();
       this.runtime.workspace = new this.api.WorkspaceBroker({
+        getContext: (record) => this.actions.swb_contextFor(record),
+        savePreferences: (record, input) =>
+          this.actions.swb_saveAppPreferences(record, input),
         embeddedProviders: [
           {
             url: new URL('../profile/', location.href).href,
@@ -176,6 +182,18 @@ export const workspaceControls = {
       this.actions.workspaceMessage(
         'Saving workspace to your Pod… Complete sign-in if requested.'
       );
+      await this.actions.swb_syncBackgrounds(session, url);
+      for (const entry of this.runtime.persistence.snapshot.directory
+        ?.entries || []) {
+        const store =
+          entry.id === this.runtime.persistence.snapshot.directory.active
+            ? this.runtime.store
+            : await this.actions.swb_openShortcuts(entry);
+        if (store.resourceUrl) {
+          await store.connect(session, store.resourceUrl);
+        }
+      }
+      this.actions.render();
       if (!(await this.runtime.persistence.save(session, url))) {
         throw new Error(
           'launcher: State changed during saving. Save again before closing.'
@@ -340,7 +358,13 @@ export const workspaceControls = {
       if (this.runtime.workspace?.closing) {
         return;
       }
-      await this.runtime.persistence.stage(snapshot, keys);
+      await this.runtime.persistence.stage(
+        {
+          ...snapshot,
+          directory: this.runtime.persistence.snapshot.directory
+        },
+        keys
+      );
       this.actions.renderWorkspace();
     }
   }

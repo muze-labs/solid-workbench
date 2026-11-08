@@ -28,6 +28,7 @@ export const lifecycle = {
         if (this.runtime.persistence) {
           try {
             await this.actions.preparePod();
+            await this.actions.swb_initializeDirectory();
           }
           catch (error) {
             this.actions.workspaceFailure(error);
@@ -35,28 +36,21 @@ export const lifecycle = {
         }
       };
       this.actions.renderLinks();
-      await this.runtime.host.run(async () => {
-        this.runtime.store = await this.api.openCollection('launcher', {
-          scalarPredicates: [
-            this.api.prefixes.schema + 'name',
-            this.api.prefixes.schema + 'url',
-            this.api.overridePredicate,
-            this.api.anonymousPredicate
-          ]
-        });
-        this.actions.render();
-      });
       await this.runtime.host.ready;
       await this.runtime.host.run(async () => {
         this.runtime.persistence = new this.api.WorkspaceState({
-          owner: this.runtime.host.session?.webId || '',
+          owner: this.runtime.host.selectedWebId || '',
           onStatus: (message) =>
             this.actions.workspaceFailure(new Error(message))
         });
         await this.runtime.persistence.open();
+        this.api.initializeDirectory(
+          this.runtime.persistence.snapshot,
+          this.actions.swb_defaultSettings()
+        );
         this.actions.createWorkspace();
         this.actions.workspaceMessage(
-          'App state is saved locally. Pod saves happen at checkpoints and closure.'
+          'Saved on this device. Save to Pod to use your workspace elsewhere.'
         );
         try {
           const previous = JSON.parse(
@@ -77,6 +71,9 @@ export const lifecycle = {
             this.actions.workspaceFailure(error);
           }
         }
+        await this.actions.swb_initializeDirectory();
+        this.runtime.workspace.extra.directory =
+          this.runtime.persistence.snapshot.directory;
         this.runtime.restoreTimer = setTimeout(
           () => this.runtime.workspace.restore(),
           900
@@ -91,6 +88,7 @@ export const lifecycle = {
       this.eventBindings.start();
     },
     cleanup() {
+      this.actions.swb_releaseBackground();
       clearTimeout(this.runtime.restoreTimer);
       this.runtime.selection?.abort();
       this.runtime.workspace?.dispose();

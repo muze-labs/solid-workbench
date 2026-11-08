@@ -26,6 +26,14 @@ function entryOwners(id, getModuleInfo) {
 }
 
 function sharedChunk(id, { getModuleInfo }) {
+  // Profile editing is used by Contacts/Profile, not by the Launcher or Files.
+  // Keep it out of the common UI download while retaining one shared copy.
+  if (
+    id.includes('/packages/solid-profile/') &&
+    entryOwners(id, getModuleInfo).size === 2
+  ) {
+    return 'shared/profile';
+  }
   if (id.includes('/node_modules/')) {
     if (
       /\/@muze-labs\/(?:simplyflow(?:-[^/]+)?|simplysolid|oldm-shape)\//.test(

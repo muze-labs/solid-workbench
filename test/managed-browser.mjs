@@ -37,6 +37,12 @@ const pod = http.createServer(async (req, res) => {
       chunks.push(chunk);
     }
     const body = Buffer.concat(chunks).toString();
+    // These scenarios reject the workspace checkpoint, after shortcut sync.
+    if (path.startsWith('/storage/apps/solid-apps/launcher')) {
+      records.set(path, body);
+      res.writeHead(201, { ETag: '"shortcuts"' }).end();
+      return;
+    }
     if (rejectPut === 'offline') {
       req.socket.destroy();
       return;
@@ -172,6 +178,26 @@ async function wait(page, expression) {
   );
 }
 async function click(page, selector) {
+  const toolState = await evaluate(
+    page,
+    'const target=document.querySelector(' +
+      JSON.stringify(selector) +
+      ');' +
+      'const dialog=document.querySelector(".swb-diagnostics");' +
+      'return {inside:!!target?.closest(".swb-diagnostics"),open:!!dialog?.open};'
+  );
+  if (toolState.open && !toolState.inside) {
+    await click(page, '[aria-label="Close diagnostics"]');
+    await wait(page, '!document.querySelector(".swb-diagnostics").open');
+  }
+  if (toolState.inside && !toolState.open) {
+    await click(page, '.account-button');
+    await click(page, '[data-simply-command=preferences]');
+    await wait(page, 'document.querySelector(".preferences-dialog").open');
+    await click(page, '[data-simply-command=swb_openDiagnostics]');
+    await wait(page, 'document.querySelector(".swb-diagnostics").open');
+  }
+
   await evaluate(
     page,
     `
@@ -249,6 +275,7 @@ async function connect(page, app) {
   await click(page, '[data-simply-command=connectDialog]');
   await submit(page, '.connect-dialog form', { webId });
   await wait(page, 'window.solid' + app + '?.host.session');
+  await wait(page, '!document.querySelector(".connect-dialog").open');
 }
 async function authorizeWorkspace(page) {
   await evaluate(
@@ -686,9 +713,11 @@ try {
   assert.equal(readSnapshot().launcher.resource, base + '/newer-version');
   // Conflict data can arrive before the previous operation has finished.
   // Require both idle runtime state and an enabled user-facing action.
-  await wait(launcher,
+  await wait(
+    launcher,
     '!window.solidLauncher.ui.runtime.workspaceBusy && ' +
-    '!document.querySelector("[data-simply-command=reviewConflict]").disabled');
+      '!document.querySelector("[data-simply-command=reviewConflict]").disabled'
+  );
   await click(launcher, '[data-simply-command=reviewConflict]');
   await wait(launcher, 'window.solidLauncher.persistence.reviewedDocument');
   delayPut = 250;
@@ -775,6 +804,7 @@ try {
   pages.push(files);
   await files.ready();
   await connect(files, 'Files');
+  await wait(files, 'window.solidFiles.host.managed.ready');
   await wait(
     files,
     'document.querySelector("tbody").textContent.includes("notes") || ' +

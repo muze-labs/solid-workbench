@@ -14,6 +14,43 @@ export const shortcuts = {
         this.container.querySelector('.muze-solid-launcher-add-dialog')
       );
     },
+    swb_shortcutSettings(button) {
+      return this.actions.muzeSolidDesignOpenDialog(
+        button.closest('li').querySelector('dialog')
+      );
+    },
+    swb_editShortcut(button, id) {
+      const details = button.closest('dialog');
+      return this.runtime.host.run(async () => {
+        const node = this.runtime.store.collection.get(id);
+        const name = details
+          .querySelector('[name="swb_shortcutName"]')
+          .value.trim();
+        const icon = details
+          .querySelector('[name="swb_shortcutIcon"]')
+          .value.trim();
+        const previous = this.api.valueAt(
+          node,
+          this.api.prefixes.schema + 'name'
+        );
+        if (
+          Array.isArray(previous) ||
+          previous?.language ||
+          (previous &&
+            typeof previous !== 'string' &&
+            !(previous instanceof String))
+        ) {
+          throw new Error(
+            'launcher: This shortcut has a structured name and cannot be renamed here.'
+          );
+        }
+        this.api.applyIconOverride(node, icon);
+        node.schema$name = name;
+        await this.runtime.store.collection.save(node);
+        await this.actions.muzeSolidDesignCloseDialog(details);
+        this.actions.render();
+      });
+    },
     setAnonymous(element, id) {
       const value = element.checked;
       return this.runtime.host.run(() =>
@@ -32,9 +69,11 @@ export const shortcuts = {
           throw new Error('launcher: Connect to Solid to open this resource.');
         }
         const isFiles =
-          element.closest('.app-grid') &&
-          element ===
-            this.runtime.host.main.querySelector('.app-grid a[href*=files]');
+          new URL(element.href).pathname ===
+            new URL('../files/', location.href).pathname ||
+          (element.closest('.app-grid') &&
+            element ===
+              this.runtime.host.main.querySelector('.app-grid a[href*=files]'));
         this.actions.openApplication(element.href, {
           label: element.textContent.trim(),
           allowBrowse: Boolean(isFiles)
@@ -46,7 +85,9 @@ export const shortcuts = {
         url: form.elements.url.value,
         name: form.elements.name.value,
         mode: form.elements.launchMode.value,
-        anonymous: form.elements.anonymous.checked
+        anonymous: form.elements.anonymous.checked,
+        manifest: form.elements.manifest.value.trim(),
+        icon: form.elements.icon.value.trim()
       };
       return this.runtime.host.run(async () => {
         await this.actions.addShortcut(values);
@@ -63,6 +104,7 @@ export const shortcuts = {
   },
   actions: {
     openApplication: function (href, options) {
+      this.actions.swb_requireOwner();
       if (!this.runtime.workspace) {
         throw new Error('launcher: Workspace is still loading.');
       }
@@ -81,6 +123,9 @@ export const shortcuts = {
       }
     },
     render() {
+      if (!this.runtime.store) {
+        return;
+      }
       this.runtime.shortcuts.state.data = this.api
         .from(this.runtime.store.collection.list())
         .select(this.actions.shortcutRow)
@@ -94,11 +139,13 @@ export const shortcuts = {
       });
     },
     handleSync() {
+      this.actions.swb_requireOwner();
       this.runtime.host.run(
         async () => {
           await this.runtime.store.connect(
             this.runtime.host.requireSession(),
-            this.runtime.host.resource('launcher')
+            this.runtime.store.resourceUrl ||
+              this.runtime.host.resource('launcher')
           );
           this.actions.render();
           this.runtime.host.notify('Shortcuts synchronized with Solid.');
@@ -120,8 +167,30 @@ export const shortcuts = {
       this.actions.render();
       this.runtime.host.notify('Launch mode saved on this device.');
     },
-    async addShortcut({ url, name, mode, anonymous }) {
+    async addShortcut({
+      url,
+      name,
+      mode,
+      anonymous,
+      manifest = '',
+      icon = ''
+    }) {
+      this.actions.swb_requireOwner();
+      const override = icon;
+      let manifestIcon = '';
+      if (manifest) {
+        const description = await this.api.readApplicationManifest(
+          manifest,
+          this.runtime.host.session
+        );
+        url ||= description.url;
+        name ||= description.name;
+        manifestIcon = description.icon;
+      }
       url = this.api.httpUrl(url);
+      if (icon) {
+        icon = this.api.httpUrl(icon);
+      }
       if (!['', 'fragment', 'query'].includes(mode)) {
         throw new Error('launcher: Choose a supported launch mode.');
       }
@@ -130,15 +199,22 @@ export const shortcuts = {
         a: this.api.prefixes.schema + 'SoftwareApplication',
         schema$name: name,
         schema$url: { id: url },
+        ...(manifestIcon ? { schema$image: { id: manifestIcon } } : {}),
+        ...(manifest
+          ? { schema$subjectOf: { id: this.api.httpUrl(manifest) } }
+          : {}),
         dcterms$modified: new Date().toISOString()
       });
+      if (override) {
+        this.api.applyIconOverride(subject, override);
+      }
       if (mode) {
         this.api.applyLaunchOverride(subject, mode);
       }
       if (anonymous) {
         this.api.applyAnonymousLaunch(subject, true);
       }
-      if (mode || anonymous) {
+      if (mode || anonymous || override) {
         await this.runtime.store.collection.save(subject);
       }
       this.actions.render();
@@ -176,8 +252,40 @@ export const shortcuts = {
       else if (settings.location === 'fragment') {
         modeNote = 'Uses URL fragment (#).';
       }
+      let icon = '';
+      let override = '';
+      try {
+        const custom = this.api.idOf(
+          this.api.valueAt(node, this.api.prefixes.apps + 'iconOverride')
+        );
+        override = custom ? this.api.httpUrl(custom) : '';
+        const value = this.api.idOf(
+          this.api.valueAt(node, this.api.prefixes.schema + 'image')
+        );
+        icon = override || (value ? this.api.httpUrl(value) : '');
+      }
+      catch {}
+      const sprite = new URL('../assets/feather-icons.svg', location.href);
+      if (!override && icon) {
+        for (const [app, symbol] of Object.entries({
+          files: 'folder',
+          contacts: 'users',
+          profile: 'user',
+          workbench: 'grid'
+        })) {
+          if (icon === new URL('../' + app + '/icon.svg', location.href).href) {
+            icon = sprite.href + '#' + symbol;
+          }
+        }
+      }
+      icon ||= sprite.href + '#grid';
+      const usesSprite = icon.startsWith(sprite.href + '#');
       const view = {
         id: node.id,
+        iconUrl: override,
+        icon: { src: usesSprite ? null : icon, hidden: usesSprite ? '' : null },
+        spriteIcon: { href: usesSprite ? icon : null },
+        spriteVisibility: { hidden: usesSprite ? null : '' },
         label: String(
           this.api.valueAt(node, this.api.prefixes.schema + 'name') || url
         ),

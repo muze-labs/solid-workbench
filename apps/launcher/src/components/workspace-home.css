@@ -1,0 +1,7 @@
+.swb-workspace-management li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space);
+  align-items: end;
+  margin-block: var(--ds-space);
+}

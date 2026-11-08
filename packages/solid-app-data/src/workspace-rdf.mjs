@@ -1,4 +1,9 @@
 import {
+  readDirectory,
+  writeDirectory,
+  sameDirectory
+} from './workspace-directory.mjs';
+import {
   StateGraph,
   apps,
   rdf,
@@ -147,6 +152,7 @@ export function sameWorkspace(a, b) {
     return a === b;
   }
   return (
+    sameDirectory(a.directory, b.directory) &&
     a.version === b.version &&
     (a.owner || '') === (b.owner || '') &&
     (a.launcher.resource || '') === (b.launcher.resource || '') &&
@@ -212,10 +218,15 @@ export function readWorkspace(graph, root) {
   if (owner !== undefined) {
     result.owner = owner;
   }
+  const directory = readDirectory(graph, root);
+  if (directory) {
+    result.directory = directory;
+  }
   return result;
 }
 export function writeWorkspace(graph, root, snapshot) {
   const node = named(root);
+  writeDirectory(graph, root, snapshot.directory);
   const existing = readWorkspace(graph, root);
   const previous = existing
     ? graph.list(node, apps + 'instances')

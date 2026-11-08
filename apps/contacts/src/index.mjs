@@ -11,6 +11,7 @@ import { from } from '@muze-nl/jaqt';
 import { shell } from '@muze-labs/solid-app-ui';
 import {
   openCollection,
+  recoverCollection,
   isPerson
 } from '@muze-labs/solid-app-data/collection.mjs';
 import { prefixes } from '@muze-labs/solid-app-data';
@@ -60,6 +61,7 @@ const definition = {
     destroy,
     from,
     openCollection,
+    recoverCollection,
     isPerson,
     prefixes,
     AppState,

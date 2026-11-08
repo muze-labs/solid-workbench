@@ -38,10 +38,7 @@ export async function composeTemplate(filename, { appName = '' } = {}) {
     );
   }
   if (appName) {
-    source = source.replaceAll(
-      '{{title}}',
-      applicationTitle(appName)
-    );
+    source = source.replaceAll('{{title}}', applicationTitle(appName));
   }
   if (source.includes('{{profile}}')) {
     source = source.replace(
@@ -62,6 +59,17 @@ export async function composeTemplate(filename, { appName = '' } = {}) {
           )
         : '';
     source = source.replace('{{appPreferences}}', preferences);
+  }
+  if (source.includes('{{appMenu}}')) {
+    const menu =
+      appName === 'launcher'
+        ? await composeTemplate(
+            new URL('../apps/launcher/src/workspace-menu.html', import.meta.url)
+              .pathname,
+            { appName }
+          )
+        : '';
+    source = source.replace('{{appMenu}}', menu);
   }
   return source;
 }

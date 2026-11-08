@@ -325,7 +325,13 @@ try {
     }
     const storageFields = {
       contacts: ['contactsResource'],
-      launcher: ['launcherResource', 'workspaceResource'],
+      launcher: [
+        'workspaceResource',
+        'swb_contactsResource',
+        'swb_filesRoot',
+        'swb_launcherResource',
+        'swb_backgroundUrl'
+      ],
       files: ['filesRoot'],
       profile: []
     };
@@ -361,6 +367,25 @@ try {
     await page.ready();
   }
   async function click(selector) {
+    const toolState = await evaluate(
+      'const target=document.querySelector(' +
+        JSON.stringify(selector) +
+        ');' +
+        'const dialog=document.querySelector(".swb-diagnostics");' +
+        'return {inside:!!target?.closest(".swb-diagnostics"),open:!!dialog?.open};'
+    );
+    if (toolState.open && !toolState.inside) {
+      await click('[aria-label="Close diagnostics"]');
+      await wait('!document.querySelector(".swb-diagnostics").open');
+    }
+    if (toolState.inside && !toolState.open) {
+      await click('.account-button');
+      await click('[data-simply-command=preferences]');
+      await wait('document.querySelector(".preferences-dialog").open');
+      await click('[data-simply-command=swb_openDiagnostics]');
+      await wait('document.querySelector(".swb-diagnostics").open');
+    }
+
     await page.send('Page.bringToFront');
     await evaluate(`
       for (const dialog of document.querySelectorAll('dialog[open]')) {
@@ -963,10 +988,15 @@ try {
   );
   await visit('workbench/');
   await page.send('Page.navigate', { url: appBase });
-  await wait('location.pathname === "/workbench/" && Boolean(window.solidLauncher)');
+  await wait(
+    'location.pathname === "/workbench/" && Boolean(window.solidLauncher)'
+  );
   await page.ready();
-  assert.equal((await fetch(appBase + 'launcher/')).status, 404,
-    'The retired Launcher route has no compatibility entry');
+  assert.equal(
+    (await fetch(appBase + 'launcher/')).status,
+    404,
+    'The retired Launcher route has no compatibility entry'
+  );
   await wait(
     'window.solidLauncher?.store && document.body.classList.contains("ds-darkmode")'
   );
@@ -1487,10 +1517,10 @@ try {
     url: savedLaunchUrl
   });
   await wait(
-    '[...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent==="Profile launch example")'
+    '[...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent.trim()==="Profile launch example")'
   );
   const currentLaunch = await evaluate(
-    'return [...document.querySelectorAll(".saved-apps a")].find(a=>a.textContent==="Profile launch example").href;'
+    'return [...document.querySelectorAll(".saved-apps a")].find(a=>a.textContent.trim()==="Profile launch example").href;'
   );
   const savedFragment = new URL(currentLaunch).hash;
   assert(savedFragment.startsWith('#foo?'));
@@ -1615,7 +1645,7 @@ try {
 
   const declaredLink =
     '[...document.querySelectorAll(".saved-apps a")]' +
-    '.find(a=>a.textContent==="Declared server app")';
+    '.find(a=>a.textContent.trim()==="Declared server app")';
   await wait(declaredLink);
   assert.equal(
     await evaluate(
@@ -1649,7 +1679,7 @@ try {
     ),
     'query'
   );
-  await click('.saved-apps [data-simply-command=sync]');
+  await click('.swb-diagnostics [data-simply-command=sync]');
   await wait(
     'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
   );
@@ -1681,7 +1711,7 @@ try {
         ')]===undefined;'
     )
   );
-  await click('.saved-apps [data-simply-command=sync]');
+  await click('.swb-diagnostics [data-simply-command=sync]');
   await wait(
     'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
   );
@@ -1707,11 +1737,11 @@ try {
     launchMode: 'query'
   });
   await wait(
-    '[...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent==="User query app")'
+    '[...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent.trim()==="User query app")'
   );
   const userUrl = new URL(
     await evaluate(
-      'return [...document.querySelectorAll(".saved-apps a")].find(a=>a.textContent==="User query app").href;'
+      'return [...document.querySelectorAll(".saved-apps a")].find(a=>a.textContent.trim()==="User query app").href;'
     )
   );
   assert.equal(userUrl.searchParams.get('webid'), webId);
@@ -1747,8 +1777,11 @@ try {
   });
   const anonymousLink =
     '[...document.querySelectorAll(".saved-apps a")]' +
-    '.find(a=>a.textContent==="Anonymous query app")';
-  await wait(anonymousLink + '?.closest("li").querySelector("input").checked');
+    '.find(a=>a.textContent.trim()==="Anonymous query app")';
+  await wait(
+    anonymousLink +
+      '?.closest("li").querySelector("input[type=checkbox]").checked'
+  );
   assert.equal(
     new URL(
       await evaluate('return ' + anonymousLink + '.href;')
@@ -1759,11 +1792,11 @@ try {
   await evaluate(
     'const input=' +
       anonymousLink +
-      '.closest("li").querySelector("input");input.checked=false;' +
+      '.closest("li").querySelector("input[type=checkbox]");input.checked=false;' +
       'input.dispatchEvent(new Event("change",{bubbles:true}));'
   );
   await wait('new URL(' + anonymousLink + '.href).searchParams.has("webid")');
-  await click('.saved-apps [data-simply-command=sync]');
+  await click('.swb-diagnostics [data-simply-command=sync]');
   await wait(
     'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
   );
@@ -1773,18 +1806,18 @@ try {
       anonymousLink +
       ' && !' +
       anonymousLink +
-      '.closest("li").querySelector("input").checked'
+      '.closest("li").querySelector("input[type=checkbox]").checked'
   );
   await evaluate(
     'const input=' +
       anonymousLink +
-      '.closest("li").querySelector("input");input.checked=true;' +
+      '.closest("li").querySelector("input[type=checkbox]");input.checked=true;' +
       'input.dispatchEvent(new Event("change",{bubbles:true}));'
   );
   await wait(
     '!' + 'new URL(' + anonymousLink + '.href).searchParams.has("webid")'
   );
-  await click('.saved-apps [data-simply-command=sync]');
+  await click('.swb-diagnostics [data-simply-command=sync]');
   await wait(
     'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
   );
@@ -1792,11 +1825,11 @@ try {
   await wait(
     'window.solidLauncher?.host.session && ' +
       anonymousLink +
-      '?.closest("li").querySelector("input").checked'
+      '?.closest("li").querySelector("input[type=checkbox]").checked'
   );
   const identifiedLink =
     '[...document.querySelectorAll(".saved-apps a")]' +
-    '.find(a=>a.textContent==="User query app")';
+    '.find(a=>a.textContent.trim()==="User query app")';
   assert.equal(
     new URL(
       await evaluate('return ' + identifiedLink + '.href;')
@@ -1952,7 +1985,9 @@ try {
     Buffer.from(desktop.data, 'base64')
   );
   await wait('!document.querySelector("dialog:modal")');
-  await evaluate(`window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`);
+  await evaluate(
+    `window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`
+  );
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   await evaluate(`
     document.querySelector('.contact-search input').focus();
@@ -1962,13 +1997,17 @@ try {
   await wait(
     'document.querySelector(".muze-solid-design-toast").hidden===false'
   );
-  assert.equal(await evaluate(`
+  assert.equal(
+    await evaluate(`
     const toast = document.querySelector('.muze-solid-design-toast');
     const style = getComputedStyle(toast);
     return parseFloat(style.opacity) < 1 &&
       new DOMMatrixReadOnly(style.transform).m42 > 0 &&
       toast.getAnimations().some(animation => animation.playState === 'running');
-  `), true, 'Toast enters from below with a fade');
+  `),
+    true,
+    'Toast enters from below with a fade'
+  );
   assert.equal(
     await evaluate(`
       const region = document.querySelector('.muze-solid-design-toasts');
@@ -1993,13 +2032,19 @@ try {
     'A focused toast does not disappear on its timer'
   );
   await click('.muze-solid-design-toast button');
-  await wait('document.querySelector(".muze-solid-design-toast").hasAttribute("data-muze-solid-design-toast-closing")');
-  assert.equal(await evaluate(`
+  await wait(
+    'document.querySelector(".muze-solid-design-toast").hasAttribute("data-muze-solid-design-toast-closing")'
+  );
+  assert.equal(
+    await evaluate(`
     const toast = document.querySelector('.muze-solid-design-toast');
     return !toast.hidden && toast.inert &&
       toast.textContent.includes('Contact changes saved.') &&
       toast.getAnimations().some(animation => animation.playState === 'running');
-  `), true, 'Dismissal animates before removing the notification');
+  `),
+    true,
+    'Dismissal animates before removing the notification'
+  );
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   assert.equal(
     await evaluate(
@@ -2023,26 +2068,46 @@ try {
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   await evaluate(`window.solidContacts.host.notify('First notification');`);
   await wait('!document.querySelector(".muze-solid-design-toast").hidden');
-  await evaluate(`window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`);
-  await wait('document.querySelector(".muze-solid-design-toast").hasAttribute("data-muze-solid-design-toast-closing")');
-  await evaluate(`window.solidContacts.host.notify('Replacement notification');`);
-  await new Promise(resolve => setTimeout(resolve, 400));
-  assert.equal(await evaluate(`
+  await evaluate(
+    `window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`
+  );
+  await wait(
+    'document.querySelector(".muze-solid-design-toast").hasAttribute("data-muze-solid-design-toast-closing")'
+  );
+  await evaluate(
+    `window.solidContacts.host.notify('Replacement notification');`
+  );
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  assert.equal(
+    await evaluate(`
     const toast = document.querySelector('.muze-solid-design-toast');
     return !toast.hidden && !toast.inert &&
       toast.textContent.includes('Replacement notification');
-  `), true, 'A replacement survives an earlier notification exit');
+  `),
+    true,
+    'A replacement survives an earlier notification exit'
+  );
   await page.send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }]
   });
-  await evaluate(`window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`);
+  await evaluate(
+    `window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`
+  );
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
-  await evaluate(`window.solidContacts.host.notify('Reduced motion notification');`);
+  await evaluate(
+    `window.solidContacts.host.notify('Reduced motion notification');`
+  );
   await wait('!document.querySelector(".muze-solid-design-toast").hidden');
-  assert.equal(await evaluate(`
+  assert.equal(
+    await evaluate(`
     return document.querySelector('.muze-solid-design-toast').getAnimations().length;
-  `), 0, 'Reduced motion skips toast animation');
-  await evaluate(`window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`);
+  `),
+    0,
+    'Reduced motion skips toast animation'
+  );
+  await evaluate(
+    `window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`
+  );
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   await page.send('Emulation.setEmulatedMedia', { features: [] });
   await evaluate(`window.solidContacts.host.message('');`);
@@ -2260,8 +2325,12 @@ try {
     ),
     ''
   );
-  await wait(
-    'document.querySelector(".person-list").textContent.includes("Robin de Vries")'
+  assert.equal(
+    await evaluate(
+      'return document.querySelector(".person-list").textContent.includes("Robin de Vries");'
+    ),
+    false,
+    'Signing out opens anonymous local data, retaining owner data separately.'
   );
   await account('connectDialog');
   assert.equal(
@@ -2281,26 +2350,14 @@ try {
   );
   assert.equal(calls.length, beforeLogout);
   await visit('workbench/');
-  await wait(
-    'window.solidLauncher?.store && [...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent==="Profile launch example")'
-  );
+  await wait('window.solidLauncher?.store');
+  assert.equal(await evaluate('return solidLauncher.persistence.owner;'), '');
   assert.equal(
     await evaluate(
-      'return [...document.querySelectorAll(".saved-apps a")].find(a=>a.textContent==="Profile launch example").hasAttribute("href");'
+      'return [...document.querySelectorAll(".saved-apps a")].some(a=>a.textContent.trim()==="Profile launch example");'
     ),
-    false
-  );
-  assert.equal(
-    await evaluate(
-      'return [...document.querySelectorAll(".saved-apps a")].find(a=>a.textContent==="Example app").href;'
-    ),
-    'https://example.org/app'
-  );
-  assert.equal(
-    new URL(
-      await evaluate('return ' + anonymousLink + '.href;')
-    ).searchParams.has('webid'),
-    false
+    false,
+    'Owner shortcuts stay scoped to the signed-out workspace.'
   );
   await evaluate(
     'const form=document.querySelector(".launch-profile form");' +
