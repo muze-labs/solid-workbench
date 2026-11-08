@@ -1524,3 +1524,15 @@ all other graphs retain 200000. Source CSS grows with explicit interfaces, and
 no speed improvement is claimed. The verified cycle branch remains Active,
 uncommitted, awaiting human review/acceptance. No merge, push, publication or next
 cycle is selected; manual AT/provider/real zoom limits remain documented.
+
+
+## CYC112 accepted for integration, 2026-11-08
+
+The maintainer says “accepted, commit, merge and push please”. ACC117 accepts
+implementation a0bafd9f4340728f30553c47d6f7af1e53359eb4 and evaluation
+bb299d739ccedcce1a0088a68f201f0f0e1fc7a3. CYC112 is Accepted, superseding
+pending review/no-integration notes. Delivery commits record exact prior versions
+without changing product files or inventing past approvals. Normal direct merge
+into current main and push of both branches are authorized after exact-candidate
+validation. Evidence/review limits and the temporary Workbench budget follow-up
+remain; no next cycle or package publication is selected. Unrelated files excluded.

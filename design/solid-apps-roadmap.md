@@ -1202,3 +1202,16 @@ final light theme uses dark home text without shadow; dark theme retains its
 shadow. Contacts multi-book/search/selection, widgets and app store remain future
 work. Earlier proposed/unimplemented wording records design history; the cycle's
 source, design, implementation and evidence define the delivered boundary.
+
+
+## CSS refactor accepted, 2026-11-08
+
+CYC112 is Accepted (ACC117). The suite now has layered, feature-owned styling,
+component-root DS adapters and explicit part/variant interfaces. It preserves
+named editable styles and core workflows, with evidenced wrapping picker and
+narrow/short-viewport corrections. IMP115/EVD116 retain implementation, passing
+checks, source/download costs and review limits. The maintainer authorizes
+commit, normal merge and push; exact-candidate validation precedes integration.
+Contacts/broker work and the original Workbench budget target remain separate
+follow-ups. Earlier CSS proposal/Active wording is historical; no next cycle or
+package publication is selected here.

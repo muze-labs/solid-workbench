@@ -1,9 +1,11 @@
 # Next cycle: predictable, feature-owned browser styling
 
-Status: **Active as CYC-20261108-QG24H-112**, started 2026-11-08 after the
+Status: **Accepted as CYC-20261108-QG24H-112** (ACC117). Started 2026-11-08 after the
 maintainer's “Please start this cycle” instruction. The original plan and
 pre-execution handoff below are retained as planning history; implementation
-and evaluation are recorded in IMP115/EVD116. No acceptance is inferred.
+and evaluation are recorded in IMP115/EVD116. The maintainer subsequently
+accepts the result and requests commit, merge and push; prior pre-start and
+pending-acceptance notes below are historical.
 
 ## Intent and current position
 
