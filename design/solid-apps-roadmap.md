@@ -18,6 +18,12 @@ English. Earlier refinements come from
 follow the maintainer's 2026-11-07 request and the linked design; no new
 implementation cycle or delivery order within either stage is selected.
 
+Design additions, 2026-11-08: the second stage now includes the linked
+documents/versioning, provenance/attestation and user-selected signing
+proposals. Their implementation slices and dependencies are recorded below;
+the designs' internal phases do not replace the suite's two stages or the
+governing broker phases.
+
 This records suite-wide direction alongside the
 [capability-broker roadmap](solid-capability-broker-roadmap.md), which continues
 to govern broker implementation. The broker phases do not schedule every app
@@ -727,7 +733,15 @@ The initial capability list includes:
 
 - **Project management.**
 - **CRM (customer relationship management).**
-- **Documentation / knowledge base.**
+- **Document management, versioning and knowledge base.** See the
+  [documents, annotations and versioned knowledge-base proposal](solid-documents-knowledge-base-versioning.md)
+  as a second-stage option, detailed below.
+- **Verifiable provenance, signed changes and timestamp attestation.**
+  Trace published changes, sources and approvals through independently
+  inspectable evidence.
+- **User-selected signing capability.** Request signatures from a replaceable
+  provider that owns key access and approval, without giving requesting apps
+  private keys.
 - **Forms.**
 - **Chat.**
 - **Live collaboration through data updates.** Changes to shared data made by
@@ -743,6 +757,115 @@ cycle, delivery date or technical architecture.
 Carry forward the suite's Solid interoperability, native RDF preservation and
 moldable design requirements, including readable code that people without a
 professional programming background can understand and alter.
+
+### Documents, annotations and a versioned knowledge base
+
+Added at the maintainer's request on 2026-11-08 as one of the second-stage
+options. The
+[design proposal](solid-documents-knowledge-base-versioning.md) covers document
+viewing/editing and annotations, resource and root history, durable local drafts,
+and linked knowledge-base pages with related changes published atomically.
+Ordinary document saves and explicitly committed knowledge-base working copies
+have distinct publication workflows; automatic sync must not publish unapproved
+working-copy drafts.
+
+Keep Files responsible for resource management, Documents for reading/editing
+and annotations, and the knowledge base for linked content and changes review,
+connected through capabilities and shared versioning integration. Investigate
+SVN as the first backend while keeping clients independent of it. The proposed
+Solid extension, contracts, editor choices and implementation sequence remain
+design work to evaluate, not implemented capabilities or an adopted standard.
+
+When selecting this option, follow the proposal's contract, storage, document,
+annotation and knowledge-base slices and their recovery/acceptance scenarios.
+Reconcile its advanced-editor budget and specialist-rendering requirements with
+the standing guardrails and current build enforcement before implementation;
+this roadmap addition changes neither. This records an option without selecting
+a cycle, priority among second-stage options or delivery date.
+
+### Verifiable provenance and timestamp attestation
+
+Add the [provenance, signatures and attestation proposal](solid-provenance-signatures-and-attestation.md)
+to the second-stage document and knowledge-base direction. Keep three distinct
+records: the actor's signed change statement, the Pod's signed receipt of the
+accepted outcome, and a timestamp attestation binding the signed evidence.
+Preserve source revisions, historical key bindings and explicit delegation or
+human-approval evidence. A valid signature does not establish content truth or
+personal review; a server receipt records the server's acknowledgement.
+
+Start with explicit Turtle commits and payload digests, then add retrievable
+receipts, Attest integration and portable historical verification. Direct
+signed PUTs, bounded agent delegation and independent witnesses are later
+slices. Reuse established provenance and proof standards through a tested
+Turtle mapping; settle exact coverage, identity trust, key lifecycle and the
+actual Attest contract before implementation.
+
+Keep publication, receipt verification, content matching and timestamp status
+separate and persistently visible. Lost responses require durable request
+lookup and safe retries; a stale base requires reconciliation and a new
+signature. Attestor failure leaves an accepted commit published with timestamp
+evidence pending. Private drafts remain local, and evidence access must respect
+document privacy. Retain evidence independently of deletable resource metadata.
+
+Evaluate tampering, replay, permission failures, interrupted publication,
+missing historical keys and provider outages. Verify an exported package with
+an independent verifier or established independent test vectors; a same-code
+round trip alone is insufficient. Later delegated work must distinguish agent
+authorship, authority and a human's approval of an exact artifact, including
+when used by the separately deferred optional AI capabilities.
+
+### User-selected signing provider
+
+Add the [sign-change capability proposal](solid-signing-capability.md) as the
+signing boundary for these second-stage workflows. Reuse the general provider
+registry and the profile's `pim:preferencesFile` discovery, with explicit
+provider selection. The registry remains future broker work; existing mapped
+Files/Profile providers do not establish that it already exists. Keep provider
+selection, key enrolment, approval and Pod write permission distinct.
+
+The initial web signer uses a separate origin and a top-level approval window
+or tab. It renders readable operations from the exact immutable manifest it
+will sign, with verified caller context and honest content-review scope.
+Existing embedded capability dialogs do not establish the signing security
+boundary. Settle trusted-broker versus direct caller verification and supported
+proof profiles; evaluate WebAuthn as a first provider option rather than a
+mandatory backend. Requesting apps retain their own Solid transport and verify
+returned proofs; the Pod independently verifies proof and authority.
+
+Start with explicit approval per commit. Add interrupted-request recovery,
+provider/key migration and historical verification before expanding to bounded
+signing sessions or additional backends. Keep private keys, live grants and
+invocation secrets outside portable workspace state. Preserve drafts through
+cancellation, unavailable providers and offline use; signing availability may
+still be required for publication. Plan standalone invocation without requiring
+a running Workbench.
+
+Evaluate two requesting app origins and a separate signer origin, using the
+same selected provider without sharing keys or hardcoding its address. Include
+forged caller context, provider navigation, changed manifests, unsupported
+proofs, cancellation and key transitions, plus keyboard and phone review.
+
+### Shared preparation and dependency order
+
+Before these options enter implementation, follow the designs' dated
+[research and reuse checklist](solid-provenance-signatures-and-attestation.md#161-standards-alignment-and-implementation-time-research-refresh).
+Refresh specifications and implementations, record exact versions, licences
+and adopt/adapt/defer decisions, and test interoperability before freezing the
+proof profile. External coordination can follow a working slice; it is not a
+prerequisite.
+
+Versioned-root, working-copy, upload and retry contracts support atomic document
+publication. General provider selection and the isolated approval contract
+support signing. The signed-change profile connects both to Pod verification,
+receipts and timestamp evidence. Plan coherent slices across those boundaries
+rather than treating the three designs as unrelated implementations. Their
+first integrated evidence should cover a knowledge-base page and staged binary
+attachment, recoverable publication and independently verifiable export.
+
+These dependencies guide future cycle planning without pulling the second
+stage into the current suite scope or selecting a delivery date. Apply the
+standing feature guardrails to each slice, including accessible approval and
+verification states, offline draft recovery and measured download costs.
 
 ### Collaboration through live data and views
 

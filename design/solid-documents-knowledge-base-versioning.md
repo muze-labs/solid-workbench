@@ -618,6 +618,37 @@ client protocol. A browser working copy remains application-owned local data.
 
 ## 16. Implementation sequence and acceptance evidence
 
+### Existing work and research refresh
+
+**Research snapshot: 2026-11-08. Update the research when implementation starts.**
+The [provenance design](solid-provenance-signatures-and-attestation.md#161-standards-alignment-and-implementation-time-research-refresh)
+records the shared standards/reuse matrix and kickoff checklist; the
+[signing capability design](solid-signing-capability.md) defines the isolated
+provider and human-friendly approval boundary. Consult both when adding signed
+publication rather than defining another signature format in Documents or the
+knowledge base.
+
+For this design, revisit [Dokieli](https://dokie.li/docs) for document,
+annotation and signing patterns; [SAI](https://solidproject.org/TR/sai) for
+application/authorization-agent conventions; and
+[nanopublications](https://nanopub.net/docs/guidelines/) for signed knowledge
+claims with provenance. Nanopublications use named graphs, normally expressed
+in TriG, and are an optional publishing direction rather than the mandatory
+storage model for pages or document commits. Evaluate the KIT signed-resource
+demo and solid-pod-rs history implementation linked in the provenance design
+without assuming their trust model or guarantees match ours. The SVN backend
+direction and lightweight mobile viewing requirement remain unchanged.
+
+Before finalising implementation contracts, refresh specifications, errata and
+repository status, record versions/licences and reuse decisions, and exercise
+an interoperability fixture. Prefer PROV-O for provenance semantics and an
+existing Data Integrity suite for proofs, with a tested Turtle mapping. Keep
+durable evidence independently retained: Solid auxiliary description resources
+alone do not preserve it when the subject resource is deleted.
+
+Build first, talk later. External coordination is optional and may follow a
+working implementation; it is not a prerequisite for starting the first slice.
+
 Each implementation phase should follow the repository's Spiral workflow and
 record scope, evidence, evaluation and human acceptance. This design does not
 start or accept an implementation cycle.
