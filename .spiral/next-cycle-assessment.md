@@ -1,5 +1,101 @@
 # Roadmap and next-cycle assessment
 
+Current disposition: **CYC92 is Accepted** (ACC99). The maintainer requests
+commit, normal direct main merge and push. Implementation/evidence are
+08c7eaf78c109dadccb31a1f9d1364ae7a070003 and
+8988e5f753461c23fb9bfdc8062d2dd672057a04. Earlier selection/pending statements
+below remain history. No next cycle or package publication is selected.
+
+## Selection and evaluation before acceptance
+
+Current selection, 2026-11-08: the maintainer agrees to lifecycle ownership and
+explicitly requests design and discussion before implementation, within the same
+cycle. CYC-20261108-QG24H-92 is Active on its matching branch; SRC93 retains the
+instruction and DES94 is a draft for discussion. No product changes, external
+library work, release, commit or integration are authorized by the design phase.
+Earlier no-cycle-selected statements below describe the preceding assessment.
+
+CYC92 evaluation update: implementation was subsequently authorized by “Ok, lets
+try this design” (SRC96), including custom EventTarget/subscription sources.
+IMP97/EVD98 are ready for human evaluation with final passing checks and all five
+browser suites. The cycle remains Active; no next cycle is selected.
+
+## Reassessment after feature-owned styles, 2026-11-08
+
+Disposition: **Analyze/Plan; no next cycle selected.** CYC87 is Accepted and
+merged. Current main also contains the documents/versioning and signing design
+additions. Those additions explicitly belong to stage two; they do not change
+the current stage or select an implementation priority. The unrelated untracked
+design/Moldable-Solid-Apps(3).md remains untouched.
+
+**Recommend continuing stage-one moldability with lifecycle binding ownership.**
+This follows the review/roadmap order after accepted current-action dispatch
+(CYC82) and feature-owned styles (CYC87). It deliberately defers broker Phase 2
+progression again; it does not revise the broker phase order. Shared Preferences
+propagation remains the strongest immediate user-facing alternative.
+
+### Current behavior and evidenced gap
+
+Read-only inspection finds Workbench lifecycle still registers/removes
+beforeunload and pagehide listeners, and shared account lifecycle registers/
+removes storage and conditional hashchange listeners. Their forwarding callbacks
+already resolve current actions at invocation. Cleanup is present. Therefore
+the remaining gap is library ownership of registration/cleanup, not a reproduced
+stale-action or duplicate-delivery defect.
+
+Installed simplyflow-app 0.10.3 supports DOM behaviors whose setup returns a
+cleanup function, invoked on removal/destruction. Its inspected constructor and
+behavior implementation do not provide declarative window-event-to-action
+bindings. Moving addEventListener into an app-defined behavior alone would not
+establish the roadmap's lower-library registration boundary. Latest published
+support and the appropriate API still need checking when this work is selected;
+no new release requirement is asserted from this local inspection alone.
+
+### Proposed goal and boundary
+
+Components declare lifecycle events and handling actions; the appropriate
+library owns registration and disposal, existing bindings invoke the current
+effective action, and destruction leaves no listeners behind. Start with the
+Workbench/account events above and inventory shared dialog/capability bridges
+before settling the migration boundary. Preserve origin/source validation,
+native dialog lifecycle and transport ownership rather than treating every
+listener as equivalent UI binding.
+
+First resolve whether supported published APIs meet that contract. If a library
+extension/release is needed, agree its repository/release scope before doing
+external work; this assessment does not authorize it. Do not add a generic
+app-owned event framework to bypass that choice. This cycle would exclude the
+IDE, persistence of overrides, live templates, account/logout policy changes,
+Preferences propagation and unrelated workspace timing repairs.
+
+Verify one delivery per event, action replacement/restoration in an existing
+instance, conditional registration, isolation between instances and cleanup,
+plus retained drafts, native RDF and close/checkpoint behavior. Retain the known
+intermittent workspace-readiness concern from EVD90 as unresolved evidence.
+Run required checks/browser suites for implementation. Existing phone/keyboard
+tasks and offline recovery remain the guardrail baseline; no new app/data task
+is introduced. Measure actual complete graphs and cold-task costs: EVD90 leaves
+readable Workbench only 2997 gzip bytes below the 200000-byte ceiling.
+
+### Alternatives and dependencies
+
+- **Shared Preferences propagation:** saved common settings reach other open
+  apps/dialogs, retaining dirty choices and recovering after reconnection.
+  Current save applies preferences and invokes the local onChange callback;
+  broader notification/identity scope remains to design. Settle same-/cross-origin
+  support and account/preferences identity before promising all-open-app updates.
+- **Account/local-data ownership and logout:** remains the correctness priority
+  before named workspaces, multiple-account use or automatic sync. No new
+  wrong-account write/disclosure is established by this assessment.
+- **Forms/readability or provider registry:** remain valid stage-one directions.
+  Lifecycle ownership is next in the agreed moldability sequence; the general
+  preferred-provider registry remains incomplete broker Phase 2 work.
+
+This planning update changes no product behavior, cycle status or branch and
+authorizes no commit, integration, publication or external repository edits.
+
+## Previous disposition at CYC87 acceptance
+
 Current disposition: **CYC-20261107-QG24H-87 is Accepted** (ACC91).
 The maintainer requests commit, normal direct main merge and push. IMP89/EVD90
 retain exact implementation/verification. The explicit style-ID clarification
@@ -482,3 +578,14 @@ approval is invented by this note.
 
 Checks use repository fixtures and do not access the maintainer's Pod. No product
 source, dependency or build configuration is changed by this assessment.
+
+
+## CYC92 design clarification: separate event package, 2026-11-08
+
+The maintainer selects an events section supported by a separate experimental
+package injected into Workbench's SimplyFlow composition. Integrating it into
+SimplyFlow core is deferred until it proves useful. SRC95 retains the decision;
+DES94 now proposes a private workspace package with explicit installation and
+package-owned activation/disposal. This supersedes the upstream-first design
+option. API details remain in discussion; no implementation, publication or
+external repository changes have started.
