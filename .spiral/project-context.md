@@ -1609,3 +1609,15 @@ and account switching. The suite roadmap retains both outcomes, state/ownership
 and draft-preservation constraints, and verification scenarios. These are future
 work, not CYC118 scope expansion, human acceptance, implementation or authority
 to commit/integrate. Existing work and unrelated files remain intact.
+
+## CYC118 accepted for integration, 2026-11-09
+
+The maintainer says “accepted the cycle, commit, merge and push please”. ACC123
+accepts implementation 11157eb577c6a6c93a88bc4e041ac4cc16b3d47f and evaluation
+e642d3a25bf05b12febdddef6f408553bb268db8. CYC118 is Accepted, superseding pending
+review/Active notes. Exact prior versions are recorded during delivery without
+product changes or invented approvals. Direct normal merge into current main
+and push of main/cycle branches are authorized after exact-candidate validation.
+The recorded session/managed regression limits remain; no authentication fix or
+new cycle is selected. The requested status/recovery roadmap additions remain
+future work. Unrelated user files stay excluded; no publication is requested.
