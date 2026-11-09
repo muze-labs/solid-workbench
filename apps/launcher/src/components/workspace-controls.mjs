@@ -40,6 +40,12 @@ export const workspaceControls = {
     }
   },
   actions: {
+    swb_preferredProvider(capability) {
+      if (capability === this.api.browseCapability &&
+          this.runtime.host.selectedWebId) {
+        return this.runtime.host.preferences.browseProvider?.url;
+      }
+    },
     workspaceMessage: function (message, remember = false) {
       this.data.workspaceMessage = message;
       this.data.conflictAction = {
@@ -131,6 +137,8 @@ export const workspaceControls = {
           this.actions.swb_editPreferences(record, input),
         savePreferences: (record, input) =>
           this.actions.swb_saveAppPreferences(record, input),
+        resolveProvider: (capability) =>
+          this.actions.swb_preferredProvider(capability),
         embeddedProviders: [
           {
             url: new URL('../profile/', location.href).href,

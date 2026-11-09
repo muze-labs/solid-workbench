@@ -1536,3 +1536,88 @@ without changing product files or inventing past approvals. Normal direct merge
 into current main and push of both branches are authorized after exact-candidate
 validation. Evidence/review limits and the temporary Workbench budget follow-up
 remain; no next cycle or package publication is selected. Unrelated files excluded.
+
+## Provider-preferences planning, 2026-11-09
+
+CYC112 is integrated on main at 7e731a9. The maintainer agrees with continuing
+broker Phase 2, but explicitly requests planning before implementation. They
+confirm one picker-provider choice shared across workspaces under the selected
+WebID, with both capable installed-app selection and custom app URL entry.
+[provider-preferences-plan.md](provider-preferences-plan.md) records the source
+inspection, proposed native registry, current presenter/broker reuse, recovery,
+authority boundaries and evaluation. The exact meaning of installed apps and
+registry representation remain proposals for review. No implementation cycle
+or branch is allocated, and no product change, commit, integration or publication
+is authorized. Contacts Phase 3 and original Workbench budget restoration remain
+separate. Preserve unrelated user files.
+
+## Provider-preferences cycle authorized, 2026-11-09
+
+The maintainer says “Agreed, lets start” after the plan review. CYC118 is Active
+on verified spiral/CYC-20261109-QG24H-118-provider-preferences from main 7e731a9.
+SRC119/DES120 retain authorization and design; IMP121/EVD122 retain implementation
+and evidence. Use the current-workspace known-app list and co-located registry
+as agreed. The early download checkpoint may require replanning; no cap expansion
+is inferred. No commit, merge, push or publication requested. Preserve user files.
+
+## CYC118 early budget checkpoint, 2026-11-09
+
+Native provider binding/cache/conflict support, current-broker resolution and
+saved-app handoff are prototyped. Final 23 test files pass, but npm run check
+fails at readable Workbench 220033 bytes against the unchanged 220000 cap.
+The provider Preferences UI and manifest capability support are not implemented.
+Per the agreed plan, return to a budget replan before feature expansion; do not
+infer an increased allowance. EVD122 retains failed attempts and isolated picker
+Chrome passes. CYC118 stays Active and uncommitted, without acceptance or
+integration authorization. Preserve user files and existing public picker API.
+
+## Explicit checkpoint allowance, 2026-11-09
+
+The maintainer says “I'll allow the extra 33 bytes :)”. Readable Workbench may
+now measure at most 220033 gzip bytes; the existing strict less-than-200000
+limits for other graphs stay unchanged. This resolves the early checkpoint and
+authorizes continuation of CYC118, not a general budget waiver or acceptance.
+
+## CYC118 implementation ready for review, 2026-11-09
+
+IMP121 implements shared Default apps preferences, capable current-Launcher app
+selection/custom URL/reset, native provider bindings with whole-choice conflicts,
+current-broker resolution and existing iframe/tab fallback. Fields/drafts survive
+local recovery; unknown RDF and other capabilities remain intact. Files declares
+browse support. A feature-local wrapping rule addresses 200% text cropping.
+
+npm run check passes 23 test files/both builds. Final readable Workbench is
+219996 bytes, Preferences 197545, within the explicit 220033/200000 limits.
+EVD122 retains an earlier full seven-suite pass, final passing observations for
+six suites, final full-run session/managed timing failures and a session attempt
+terminated after more than three minutes. Reliable final full-run completion
+remains unresolved; no authentication fix is claimed. The provider scenario has
+readable/minified parity checks with native caller activation for browser-controlled
+tab focus. CYC118 is Active awaiting human evaluation, not Accepted. No commit,
+merge, push or publication requested. User files preserved; Contacts/Phase 3 and
+broad budget restoration remain future work.
+
+## Cross-app recovery and shared account status requested, 2026-11-09
+
+The maintainer requests roadmap additions after observing sign-in recovery in
+Preferences clear its own message/button while Launcher's sign-in message stays
+until reload. Investigate successful-sign-in notification delivery and handling
+across open apps; do not assume a missing message is the established cause.
+They also request an icon or bare status button beside the shared header's
+user name, opening a connection/account dialog for connect, disconnect, logout
+and account switching. The suite roadmap retains both outcomes, state/ownership
+and draft-preservation constraints, and verification scenarios. These are future
+work, not CYC118 scope expansion, human acceptance, implementation or authority
+to commit/integrate. Existing work and unrelated files remain intact.
+
+## CYC118 accepted for integration, 2026-11-09
+
+The maintainer says “accepted the cycle, commit, merge and push please”. ACC123
+accepts implementation 11157eb577c6a6c93a88bc4e041ac4cc16b3d47f and evaluation
+e642d3a25bf05b12febdddef6f408553bb268db8. CYC118 is Accepted, superseding pending
+review/Active notes. Exact prior versions are recorded during delivery without
+product changes or invented approvals. Direct normal merge into current main
+and push of main/cycle branches are authorized after exact-candidate validation.
+The recorded session/managed regression limits remain; no authentication fix or
+new cycle is selected. The requested status/recovery roadmap additions remain
+future work. Unrelated user files stay excluded; no publication is requested.

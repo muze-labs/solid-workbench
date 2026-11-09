@@ -52,3 +52,27 @@ again before invocation, and ambiguity is visible. Selection/cancellation asks
 for focus back to Launcher, with manual-switch guidance when browser policy
 refuses. The isolated protocol/browser proof avoids workspace persistence while
 DEF18's native RDF correction remains open.
+
+
+## Preferred provider, CYC118
+
+CYC118 adds identity-wide resource-picker choice in shared Preferences, with a
+capable saved-app list and custom app URL entry. See
+[the native preference contract](../packages/solid-preferences/README.md#preferred-resource-picker).
+This continues broker Phase 2; recipient selection and independently implemented
+broker replaceability remain separate Phase 3 work. Selection grants no Pod
+permission. The current UI uses the existing transient embedded task with tab
+fallback; the older top-level activation helper remains available.
+
+Saved app declarations are optional and explicit. The current Launcher supplies
+its saved-app metadata and verified live declarations through the existing
+private Preferences operation; the editor reads linked manifests through Metro.
+There is no app catalog, guessed manifest discovery or automatic startup merely
+to inspect support. Failed provider startup keeps the chosen provider and caller
+draft. Provider changes affect subsequent calls; exact ticket-time checks reject
+a stale choice, and workspace teardown prevents a late result entering a new
+workspace. URL identity and executable location remain distinct native terms.
+
+The schema and vocabulary remain experimental. These are implementation
+contracts for review, not a claim of third-party certification or human cycle
+acceptance.

@@ -1,3 +1,5 @@
+import { httpUrl, documentUrl } from './url.mjs';
+export { httpUrl, documentUrl } from './url.mjs';
 import oldm from './oldm.mjs';
 import { sameGraph } from './state-rdf.mjs';
 import { oidcStore } from '@muze-nl/metro-oidc';
@@ -26,24 +28,6 @@ export const many = (value) =>
 export const valueAt = (subject, iri) =>
   subject?.[subject.graph?.propertyName(iri) ?? iri];
 export const idOf = (value) => value?.id ?? String(value ?? '');
-export function httpUrl(input, base) {
-  const url = new URL(input, base);
-  if (
-    !['http:', 'https:'].includes(url.protocol) ||
-    url.username ||
-    url.password
-  ) {
-    throw new Error(
-      'solid-app-data: Use an HTTP or HTTPS URL without credentials.'
-    );
-  }
-  return url.href;
-}
-export function documentUrl(input) {
-  const url = new URL(httpUrl(input));
-  url.hash = '';
-  return url.href;
-}
 export function requireOk(response) {
   if (response.status < 200 || response.status >= 300) {
     const error = new Error(

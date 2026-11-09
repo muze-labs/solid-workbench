@@ -53,6 +53,7 @@ export const preferences = {
       return this.commands.call(command, input, input.value, event);
     },
     cleanup() {
+      this.actions.swb_cleanupProviders();
       clearTimeout(this.runtime.syncTimer);
       if (this.runtime.previewUrl) {
         URL.revokeObjectURL(this.runtime.previewUrl);
@@ -71,6 +72,7 @@ export const preferences = {
       host.onConnect = () => this.actions.swb_loadSettings();
       host.onPreferences = () => this.actions.swb_receiveSharedSettings();
       await host.ready;
+      this.actions.swb_initializeProviders();
       await this.actions.swb_loadSettings();
       host.manage({
         capabilities: [this.api.editPreferencesCapability],
@@ -106,6 +108,7 @@ export const preferences = {
           }
         }
         this.api.applyPreferences(values);
+        this.actions.swb_renderProvider();
       }
       catch (error) {
         this.data.swb_status = error.message;
@@ -156,6 +159,7 @@ export const preferences = {
       );
       this.api.applyPreferences(this.runtime.settings.settings());
       await this.actions.swb_synchronize();
+      this.actions.swb_renderProvider();
     },
     async swb_preserveDraft(event) {
       const input = event.target;
@@ -253,6 +257,7 @@ export const preferences = {
           this.runtime.settings.drafts()
         );
         this.api.applyPreferences(this.runtime.settings.settings());
+        this.actions.swb_renderProvider();
         this.api.announcePreferences(session.webId);
         this.data.swb_status = 'Preferences synchronized with your Pod.';
         this.data.swb_conflicts = [];
@@ -265,13 +270,17 @@ export const preferences = {
             label:
               id +
               ': your choice “' +
-              this.runtime.settings.settings()[id] +
+              this.actions.swb_preferenceLabel(id, this.runtime.settings.settings()[id]) +
               '”; Pod choice “' +
-              this.runtime.settings.confirmed(id) +
+              this.actions.swb_preferenceLabel(id, this.runtime.settings.confirmed(id)) +
               '”.'
           })
         );
       }
+    },
+    swb_preferenceLabel(id, value) {
+      return id === 'browseProvider'
+        ? this.actions.swb_providerLabel(value) : String(value);
     },
     async swb_resolveConflict(id, keepLocal) {
       try {
@@ -282,6 +291,7 @@ export const preferences = {
           this.runtime.settings.drafts()
         );
         this.api.applyPreferences(this.runtime.settings.settings());
+        this.actions.swb_renderProvider();
         this.api.announcePreferences(this.runtime.host.selectedWebId || '');
       }
       catch (error) {

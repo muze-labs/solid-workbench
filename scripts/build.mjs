@@ -130,16 +130,17 @@ function appSizes(suffix) {
       0
     );
     sizes[name] = { gzipBytes: total, scripts: [...files] };
-    // CYC100: maintainer-approved temporary readable Workbench allowance.
-    const budget = name === 'launcher' && suffix === '' ? 220000 : 200000;
-    if (total >= budget) {
+    // CYC118: the maintainer allows exactly 33 more readable Workbench bytes.
+    const readableWorkbench = name === 'launcher' && suffix === '';
+    const budget = readableWorkbench ? 220033 : 200000;
+    if (readableWorkbench ? total > budget : total >= budget) {
       throw new Error(
         'build: ' +
           name +
           suffix +
           ' exceeds its ' +
           budget +
-          ' byte gzip JavaScript budget.'
+          ' byte gzip JavaScript budget: measured ' + total + ' bytes.'
       );
     }
   }

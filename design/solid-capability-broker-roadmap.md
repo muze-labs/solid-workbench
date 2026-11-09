@@ -262,6 +262,16 @@ The former Launcher-closed exit applies only to the superseded server proof.
 
 ### Phase 2 — Persistent provider registration and on-demand start
 
+CYC118 is Accepted on 2026-11-09 ([ACC123](../.spiral/acceptance/ACC-20261109-QG24H-123.md)).
+The browse pilot now has identity-wide Default apps preferences, selection from
+capable saved Launcher apps or a custom URL, a native provider registry in the
+linked preferences document, and on-demand transient iframe/tab invocation.
+Fresh-browser and cross-origin fixture evidence is retained in EVD122, alongside
+regression/review limits. Registry fragments are co-located; external registry
+editing and a public stable vocabulary are not claimed. The original first-step
+notes below remain history. Contacts and independent broker replaceability stay
+Phase 3 work; acceptance does not automatically select that next cycle.
+
 The maintainer explicitly keeps a bounded first step in CYC2: Choose in Files
 opens the built-in Files app when needed, focuses it, and returns focus after
 selection/cancellation. This avoids manual pre-opening for the built-in picker.

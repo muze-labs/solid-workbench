@@ -8,6 +8,8 @@ import {
   literal
 } from '../packages/solid-app-data/src/state-rdf.mjs';
 
+import { writeProvider } from '../packages/solid-preferences/src/providers.mjs';
+
 const url = 'https://pod.example/preferences.ttl';
 const owner = 'https://pod.example/profile#me';
 function fixture() {
@@ -18,6 +20,7 @@ function fixture() {
   let version = 1;
   let failure = false;
   let writeFailure = false;
+  let lostReply = false;
   let release;
   let delay;
   const writes = [];
@@ -60,6 +63,10 @@ function fixture() {
         remote = request.body;
         version += 1;
         writes.push(request);
+        if (lostReply) {
+          lostReply = false;
+          throw new Error('response lost after commit');
+        }
         return new Response(null, { status: 205 });
       }
     }
@@ -79,6 +86,13 @@ function fixture() {
     },
     diskFull(value) {
       writeFailure = value;
+    },
+    loseNextReply() { lostReply = true; },
+    remoteProvider(choice) {
+      const graph = new StateGraph(remote, url);
+      writeProvider(graph, url, choice);
+      remote = graph.write();
+      version += 1;
     },
     remoteChange(theme) {
       const graph = new StateGraph(remote, url);
@@ -206,4 +220,96 @@ test('choosing a fallback explicitly writes its native term when the Pod omits i
   await editor.synchronize(f.session);
   assert.equal(f.writes.length, 1);
   assert(f.remote.includes('system'));
+});
+
+const pickerA = { application: 'https://apps.example/#first',
+  url: 'https://apps.example/picker/?mode=one#route' };
+const pickerB = { application: 'https://apps.example/#second',
+  url: 'https://apps.example/picker/?mode=two#route' };
+
+test('native provider choice survives offline reload and conflicts as a whole binding', async () => {
+  const f = fixture();
+  f.remoteProvider(pickerA);
+  const editor = state(f);
+  await editor.refresh(f.session);
+  f.offline(true);
+  await editor.draft('browseProvider', 'unfinished');
+  await editor.change('browseProvider', pickerB);
+  const reopened = state(f);
+  await reopened.open();
+  assert.deepEqual(reopened.settings().browseProvider, pickerB);
+  assert.equal(reopened.drafts().browseProvider, 'unfinished');
+  assert(f.cached.includes(pickerB.application));
+  assert(!f.cached.includes('application\"'));
+  f.offline(false);
+  const competing = { ...pickerA, url: 'https://other.example/picker/' };
+  f.remoteProvider(competing);
+  await assert.rejects(reopened.synchronize(f.session), /Changed elsewhere/);
+  assert.deepEqual(reopened.confirmed('browseProvider'), competing);
+  assert.deepEqual(reopened.settings().browseProvider, pickerB);
+  assert.equal(f.writes.length, 0);
+  await reopened.resolve('browseProvider', true);
+  await reopened.synchronize(f.session);
+  assert.deepEqual(reopened.settings().browseProvider, pickerB);
+  assert.equal(reopened.pending().length, 0);
+  assert(f.remote.includes('preserve'));
+});
+
+test('explicit built-in reset does not fall back to the cached custom provider', async () => {
+  const f = fixture();
+  f.remoteProvider(pickerA);
+  const editor = state(f);
+  await editor.refresh(f.session);
+  await editor.change('browseProvider', null);
+  const reopened = state(f);
+  await reopened.open();
+  assert.equal(reopened.settings().browseProvider, null);
+  await reopened.synchronize(f.session);
+  assert.equal(reopened.confirmed('browseProvider'), null);
+  assert.equal(reopened.pending().length, 0);
+  await assert.rejects(reopened.synchronize({ ...f.session,
+    webId: 'https://different.example/#me' }), /owner/);
+});
+
+test('an uncached provider edit cannot overwrite a competing remote binding', async () => {
+  const f = fixture();
+  f.remoteProvider(pickerA);
+  const editor = state(f);
+  await editor.open();
+  await editor.change('browseProvider', pickerB);
+  await assert.rejects(editor.synchronize(f.session), /Changed elsewhere/);
+  await editor.resolve('browseProvider', false);
+  assert.deepEqual(editor.settings().browseProvider, pickerA);
+  assert.equal(f.writes.length, 0);
+});
+
+
+test('saving a provider clears its matching draft but preserves a newer incomplete draft', async () => {
+  const f = fixture();
+  const editor = state(f);
+  await editor.refresh(f.session);
+  await editor.draft('browseProvider', pickerA.url);
+  await editor.change('browseProvider', pickerA);
+  assert.equal(editor.drafts().browseProvider, undefined);
+  await editor.draft('browseProvider', 'a newer unfinished input');
+  await editor.change('browseProvider', pickerA);
+  assert.equal(editor.drafts().browseProvider, 'a newer unfinished input');
+});
+
+
+test('an uncertain provider write is acknowledged from the native remote binding without replay', async () => {
+  const f = fixture();
+  const editor = state(f);
+  await editor.refresh(f.session);
+  await editor.change('browseProvider', pickerA);
+  f.loseNextReply();
+  await assert.rejects(editor.synchronize(f.session), { code: 'save_unconfirmed' });
+  assert.deepEqual(editor.pending(), ['browseProvider']);
+  const reopened = state(f);
+  await reopened.open();
+  await reopened.synchronize(f.session);
+  assert.deepEqual(reopened.pending(), []);
+  assert.deepEqual(reopened.confirmed('browseProvider'), pickerA);
+  assert.equal(f.writes.length, 1);
+  assert(f.remote.includes('preserve'));
 });

@@ -118,6 +118,18 @@ export const workspaceSettingsService = {
       return {
         owner: this.runtime.persistence.owner,
         revision: this.runtime.preferencesRevision,
+        applications: this.runtime.store.collection.list().map((node) => {
+          const view = this.actions.shortcutRow(node).view;
+          return {
+            name: view.label,
+            url: view.link.href,
+            manifest: this.api.idOf(this.api.valueAt(node,
+              this.api.prefixes.schema + 'subjectOf')),
+            live: [...this.runtime.workspace.instances.values()].some((record) =>
+              record.registered && record.entry.url === view.link.href &&
+              record.capabilities.includes(this.api.browseCapability))
+          };
+        }),
         active: directory.active,
         entries: directory.entries.map(
           ({ id, title, settings, storage, background }) => ({

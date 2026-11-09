@@ -1,0 +1,5 @@
+@layer component {
+  .swb-provider-current {
+    overflow-wrap: anywhere;
+  }
+}

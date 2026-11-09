@@ -1,3 +1,4 @@
+import { launchUrl } from './launch.mjs';
 import { from } from '@muze-nl/jaqt';
 import {
   PortConnection,
@@ -15,6 +16,7 @@ export class WorkspaceBroker {
     authorize = () => false,
     target = window,
     embeddedProviders = [],
+    resolveProvider = () => undefined,
     checkpointTimeout = 10000,
     getContext = () => null,
     editPreferences = () => {
@@ -31,6 +33,7 @@ export class WorkspaceBroker {
       target,
       checkpointTimeout,
       embeddedProviders,
+      resolveProvider,
       getContext,
       savePreferences,
       editPreferences
@@ -282,12 +285,16 @@ export class WorkspaceBroker {
     throw capabilityError('Unsupported workspace operation.', 'denied');
   }
   embeddedProvider(capability) {
+    const selected = this.resolveProvider(capability);
+    if (selected) {
+      return selected;
+    }
     const providers = from(this.embeddedProviders)
       .where({ capability })
       .toArray();
     if (providers.length !== 1) {
       throw capabilityError(
-        'No embedded provider is configured for this capability.',
+        'This embedded provider is not configured for this capability.',
         'denied'
       );
     }
@@ -304,14 +311,12 @@ export class WorkspaceBroker {
       );
     }
     const target = new URL(url);
-    const allowed = this.embeddedProviders.some((provider) => {
-      const expected = new URL(provider.url);
-      return (
-        provider.capability === capability &&
-        target.origin === expected.origin &&
-        target.pathname === expected.pathname
-      );
-    });
+    // Recheck the provider before issuing a ticket.
+    const expected = new URL(launchUrl(this.embeddedProvider(capability)));
+    const candidate = new URL(launchUrl(target.href));
+    expected.searchParams.delete('solid-apps-task');
+    candidate.searchParams.delete('solid-apps-task');
+    const allowed = candidate.href === expected.href;
     if (
       !allowed ||
       !['http:', 'https:'].includes(target.protocol) ||
