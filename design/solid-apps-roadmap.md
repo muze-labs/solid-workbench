@@ -385,6 +385,24 @@ future work; the capability caller refreshes its own account display.
 A future verification should open several apps, change the name in Profile,
 and observe each header update without rewriting unrelated profile data.
 
+### Shared account-status control and connection dialog
+
+Requested by the maintainer on 2026-11-09. Add a compact status icon or bare
+button beside the user name in the shared top bar. It shows the current account/
+connection status and opens a shared dialog for connecting, disconnecting,
+logging out or switching accounts. Keep the existing name/profile interaction
+and Launcher-only app navigation. Use an accessible button with a meaningful
+status label; status must not depend on colour or an icon alone.
+
+Design the displayed states and the distinctions between disconnect, logout and
+account switching before implementation. Distinguish an expired authorization
+from offline connectivity or denied access, and derive state from the existing
+Metro/session APIs. Reuse the shared dialog and account machinery. Preserve
+drafts, account ownership and the established workspace save/close rules when
+leaving an account; switching must not adopt another identity's cached work.
+Verify phone/desktop layout, keyboard operation, focus restoration and updates
+after sign-in succeeds or fails, including recovery initiated in another app.
+
 ## Authentication and avoidable 401 challenges
 
 Reduce avoidable challenge-first requests while the user is signed in. Current
@@ -465,6 +483,34 @@ Distinguish connectivity, server and denied-access failures from expired
 credentials; a preferences failure must not imply that the public profile failed
 to open. After recovery, update affected same-origin app/dialog status without
 requiring a reload or overwriting drafts.
+
+#### Cross-app recovery status after successful sign-in
+
+Reported by the maintainer on 2026-11-09: when the session is no longer valid,
+Launcher shows a sign-in-again message, and Preferences shows the same message
+with a button. Signing in through Preferences correctly removes its own message
+and button, but Launcher's message remains until Launcher is reloaded.
+
+Investigate whether successful sign-in is announced to all open apps and whether
+each recipient refreshes its session state and the notices it owns. A missing
+message is a hypothesis, not an established cause: delivery, receipt and handling
+may each need checking. Inspect existing Metro notifications, same-origin app
+coordination and managed cross-origin channels before adding infrastructure.
+Announcements must be scoped to the correct identity/session and must not carry
+OAuth credentials or imply that every protected resource is now accessible.
+
+After confirmed recovery, all affected apps and embedded dialogs should
+re-evaluate their status and remove obsolete sign-in messages/actions without
+reload. Retain unrelated errors, genuine access denials and pending drafts;
+do not replay writes merely because a sign-in notification arrived. Preserve
+the existing explicit resume and conditional-save/conflict contracts. This
+should also update the proposed shared account-status control above.
+
+Future verification: expire a session with Launcher, Preferences and another
+app open; sign in through Preferences and check that every affected surface
+updates. Repeat with another app initiating recovery, background tabs,
+embedded dialogs, cancelled/failed sign-in and a different selected account.
+This is future roadmap work, not an authentication fix or acceptance of CYC118.
 
 As a later optional fallback, evaluate one bounded hidden-iframe authorization
 attempt with OIDC `prompt=none`, after credential reuse/refresh and before asking
@@ -1215,3 +1261,22 @@ commit, normal merge and push; exact-candidate validation precedes integration.
 Contacts/broker work and the original Workbench budget target remain separate
 follow-ups. Earlier CSS proposal/Active wording is historical; no next cycle or
 package publication is selected here.
+
+
+## Preferred resource-picker applications accepted, 2026-11-09
+
+CYC118 is Accepted (ACC123). Preferences' shared Default apps section now offers
+capable current-Launcher app selection, custom app URLs and reset to built-in
+Files. One native provider choice applies across workspaces under the selected
+WebID; conflicts and local drafts retain their existing preservation contracts.
+The current broker/presenter resolves the choice and opens its transient task
+with iframe/tab fallback. IMP121/EVD122 retain exact implementation and evidence,
+including readable/minified provider checks and unresolved final complete-run
+session/managed timing limits. Readable Workbench is 219996 gzip bytes; its
+explicit allowed maximum is 220033, while other graphs remain below 200000.
+Original budget restoration remains open.
+
+This continues broker Phase 2. Contacts/Phase 3, cross-app recovery-status
+propagation and the shared header status-control/dialog requested above remain
+future work. No authentication fix, next cycle, deployment or publication is
+selected by acceptance.
