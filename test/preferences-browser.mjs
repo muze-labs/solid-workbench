@@ -251,7 +251,7 @@ try {
   });
   assert.deepEqual(
     await run('return swbPreferencesApp.data.swb_sections.map(s=>s.id);', true),
-    ['appearance', 'language', 'opening', 'contacts-storage']
+    ['appearance', 'language', 'opening', 'providers', 'contacts-storage']
   );
   assert.equal(
     await run('return !!document.querySelector(".preferences-dialog");'),
@@ -397,7 +397,7 @@ try {
         'return [...document.querySelectorAll("[data-muze-solid-design-sections] button")].map(b=>b.tabIndex);',
         true
       ),
-      [0, -1, -1, -1]
+      [0, -1, -1, -1, -1]
     );
     await key('ArrowDown');
     await wait(

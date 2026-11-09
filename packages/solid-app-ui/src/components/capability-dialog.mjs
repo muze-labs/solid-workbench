@@ -248,7 +248,14 @@ export const muzeSolidUiCapabilityDialog = {
         if (call.controller.signal.aborted) {
           throw this.api.capabilityError('Task cancelled.', 'cancelled');
         }
-        configured.hash = new URL(providerUrl).hash;
+        // Preserve routes when transferring launch context.
+        const source = this.api.parseLaunchUrl(providerUrl).context;
+        const selected = this.api.launchUrl(configured.href, {
+          ...source,
+          resource: source.resource ||
+            this.api.parseLaunchUrl(configured.href).context.resource
+        });
+        configured.href = selected;
         call.fallback = configured.href;
         configured.searchParams.set('solid-apps-task', '');
         call.url = configured.href;

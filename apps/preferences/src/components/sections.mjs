@@ -7,7 +7,8 @@ import { settingsSections as profile } from '../../../profile/src/settings-secti
 const common = [
   { id: 'appearance', label: 'Appearance' },
   { id: 'language', label: 'Language' },
-  { id: 'opening', label: 'Opening applications' }
+  { id: 'opening', label: 'Opening applications' },
+  { id: 'providers', label: 'Default apps' }
 ];
 const contributions = { workbench, contacts, files, profile };
 export const sections = {
@@ -61,6 +62,9 @@ export const sections = {
     },
     swb_selectSection(id) {
       this.runtime.section = id;
+      if (id === 'providers') {
+        this.actions.swb_loadProviders();
+      }
       const entries = [
         ...this.api.common,
         ...this.api.contributions[this.data.swb_app]

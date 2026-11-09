@@ -6,3 +6,5 @@ export { swbWorkbenchSettings } from '../../launcher/src/settings-sections.mjs';
 export { swbContactsSettings } from '../../contacts/src/settings-sections.mjs';
 export { swbFilesSettings } from '../../files/src/settings-sections.mjs';
 export { swbProfileSettings } from '../../profile/src/settings-sections.mjs';
+
+export { swbProviderPreferences } from './components/providers.mjs';

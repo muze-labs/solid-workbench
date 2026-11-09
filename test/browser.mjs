@@ -832,7 +832,8 @@ try {
   });
   await wait(
     'document.querySelector(".swb-profile-card h2")?.textContent==="Edited contact" && ' +
-      'document.querySelector(".swb-profile-card form").hidden'
+      'document.querySelector(".swb-profile-card form").hidden && ' +
+      'document.querySelector(".swb-contact-profile").innerText.includes("second@example.org")'
   );
   assert.match(
     await evaluate(

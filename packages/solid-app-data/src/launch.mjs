@@ -1,4 +1,4 @@
-import { httpUrl } from './index.mjs';
+import { httpUrl } from './url.mjs';
 
 function launchValue(value, name) {
   if (typeof value !== 'string' || !value.trim()) {

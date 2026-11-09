@@ -1,3 +1,15 @@
+import { model } from '@muze-labs/simplyflow/model';
+import { effect, destroy } from '@muze-labs/simplyflow/state';
+import { from } from '@muze-nl/jaqt';
+import {
+  loadDocument,
+  createSolidMetroClient,
+  prefixes,
+  idOf,
+  valueAt,
+  httpUrl
+} from '@muze-labs/solid-app-data';
+import { browseCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { app } from '@muze-labs/simplyflow/app';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import { shell } from '@muze-labs/solid-app-ui';
@@ -12,6 +24,7 @@ import * as backgrounds from '../../launcher/src/backgrounds.mjs';
 import { preferences } from './components/preferences.mjs';
 import { sections } from './components/sections.mjs';
 import {
+  swbProviderPreferences,
   swbWorkbenchSettings,
   swbContactsSettings,
   swbFilesSettings,
@@ -29,6 +42,7 @@ const definition = {
   components: {
     muzeSolidDesignListDetails,
     preferences,
+    swbProviderPreferences,
     sections,
     swbWorkbenchSettings,
     swbContactsSettings,
@@ -51,6 +65,11 @@ const definition = {
     swb_status: '',
     swb_conflicts: [],
     swb_newWorkspace: '',
+    swb_providerCurrent: 'Built-in Files',
+    swb_providerUrl: '',
+    swb_providerSelect: { options: [], selected: 'builtin' },
+    swb_providerCustom: { hidden: '' },
+    swb_providerDiscovery: '',
     swb_backgroundChoice: 'none',
     swb_backgroundUrl: '',
     swb_preview: { hidden: '', src: null },
@@ -58,6 +77,17 @@ const definition = {
     ...defaults
   },
   api: {
+    model,
+    effect,
+    destroy,
+    from,
+    loadDocument,
+    createSolidMetroClient,
+    prefixes,
+    idOf,
+    valueAt,
+    httpUrl,
+    browseCapability,
     PreferenceState,
     PreferenceDrafts,
     announcePreferences,

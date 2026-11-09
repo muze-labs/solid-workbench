@@ -1,0 +1,72 @@
+<section
+  hidden
+  data-simply-field="swb_panels.providers"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+>
+  <p>
+    Choose the app that selects files and folders. This choice applies across
+    your workspaces under the selected WebID.
+  </p>
+  <p>
+    Current resource picker:
+    <strong
+      class="swb-provider-current"
+      data-simply-field="swb_providerCurrent"
+      data-simply-transform="escape_html"
+    ></strong>
+  </p>
+  <label
+    >Resource picker
+    <select
+      class="swb-control swb-labeled-control"
+      data-simply-field="swb_providerSelect"
+      data-simply-command="swb_chooseProvider"
+      aria-describedby="swb-provider-help swb-preferences-status"
+    ></select>
+  </label>
+  <div
+    hidden
+    data-simply-field="swb_providerCustom"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
+    <label
+      >Custom app URL
+      <input
+        type="url"
+        name="swb_providerUrl"
+        class="swb-control swb-labeled-control"
+        data-simply-field="swb_providerUrl"
+        data-simply-command="swb_customProvider"
+        aria-describedby="swb-provider-help swb-preferences-status"
+        placeholder="https://example.org/picker/"
+      />
+    </label>
+  </div>
+  <p id="swb-provider-help">
+    Saved apps appear when their manifest or live connection declares resource
+    selection. A custom app must implement the Workbench resource-picker
+    protocol. An unavailable app will show an error; your choice stays
+    unchanged.
+  </p>
+  <p
+    role="status"
+    data-simply-field="swb_providerDiscovery"
+    data-simply-transform="escape_html"
+  ></p>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="swb_refreshProviders"
+  >
+    Refresh available apps
+  </button>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="swb_resetProvider"
+  >
+    Use built-in Files
+  </button>
+</section>

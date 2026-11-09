@@ -8,6 +8,12 @@ import {
   sameTerm
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { defaults, readPreferences, validatePreferences } from './index.mjs';
+import {
+  providerChoice,
+  setProviderChoice,
+  sameProvider,
+  writeProvider
+} from './providers.mjs';
 
 const root = 'urn:muze:preferences:';
 const resources = [
@@ -26,7 +32,30 @@ function value(graph, scope, key) {
     throw new Error('preferences-state: Multiple cached values for ' + key);
   }
   const entry = values[0];
+  if (key === 'browseProvider' && scope !== 'draft' && entry) {
+    return entry.termType === 'NamedNode' ? providerChoice(graph, entry) : null;
+  }
   return entry?.termType === 'NamedNode' ? entry.id : entry?.value;
+}
+function put(graph, scope, key, text) {
+  if (key === 'browseProvider' && scope !== 'draft') {
+    const node = named(root + scope + ':provider');
+    setProviderChoice(graph, node, text);
+    graph.set(
+      subject(scope),
+      apps + key,
+      text === undefined ? undefined : text === null ? literal('') : node
+    );
+    return;
+  }
+  graph.set(
+    subject(scope),
+    apps + key,
+    text === undefined ? undefined : term(key, text)
+  );
+}
+function equal(key, left, right) {
+  return key === 'browseProvider' ? sameProvider(left, right) : left === right;
 }
 function lock(name, operation) {
   if (globalThis.navigator?.locks) {
@@ -35,8 +64,7 @@ function lock(name, operation) {
   return operation();
 }
 
-// The native cache records interpreted fields, pending choices and their field
-// baselines. Remote unknown RDF stays in the freshly loaded authoritative graph.
+// Cache native fields and baselines; remote graphs retain unknown RDF.
 export class PreferenceState {
   constructor({ owner, url = '', source, onChange = () => {} }) {
     this.owner = owner || '';
@@ -56,12 +84,12 @@ export class PreferenceState {
   }
   settings() {
     return Object.fromEntries(
-      Object.entries(defaults).map(([key, fallback]) => [
-        key,
-        value(this.graph, 'pending', key) ??
-          value(this.graph, 'confirmed', key) ??
-          fallback
-      ])
+      Object.entries(defaults).map(([key, fallback]) => {
+        const pending = value(this.graph, 'pending', key);
+        const confirmed = value(this.graph, 'confirmed', key);
+        const effective = pending === undefined ? confirmed : pending;
+        return [key, effective === undefined ? fallback : effective];
+      })
     );
   }
   drafts() {
@@ -112,14 +140,12 @@ export class PreferenceState {
       if (value(this.graph, 'pending', key) === undefined) {
         const baseline = value(this.graph, 'confirmed', key);
         // No confirmed baseline means this field was not available offline.
-        this.graph.set(
-          subject('baseline'),
-          apps + key,
-          baseline === undefined ? undefined : term(key, baseline)
-        );
+        put(this.graph, 'baseline', key, baseline);
       }
-      this.graph.set(subject('pending'), apps + key, term(key, text));
-      if (value(this.graph, 'draft', key) === text) {
+      put(this.graph, 'pending', key, text);
+      const draft = value(this.graph, 'draft', key);
+      if (draft === text || (key === 'browseProvider' &&
+          (text === null || draft === text.url))) {
         this.graph.set(subject('draft'), apps + key, undefined);
       }
     });
@@ -132,7 +158,7 @@ export class PreferenceState {
     const settings = readPreferences(document);
     await this.update(() => {
       for (const [key, text] of Object.entries(settings)) {
-        this.graph.set(subject('confirmed'), apps + key, term(key, text));
+        put(this.graph, 'confirmed', key, text);
       }
     });
     return document;
@@ -166,15 +192,15 @@ export class PreferenceState {
           const baseline = value(this.graph, 'baseline', key);
           const unchanged =
             baseline === undefined
-              ? remote.missing || current[key] === defaults[key]
-              : current[key] === baseline;
-          if (!unchanged && current[key] !== desired) {
+              ? remote.missing || equal(key, current[key], defaults[key])
+              : equal(key, current[key], baseline);
+          if (!unchanged && !equal(key, current[key], desired)) {
             this.conflicts.push(key);
           }
           patch[key] = desired;
         }
         for (const [key, text] of Object.entries(current)) {
-          this.graph.set(subject('confirmed'), apps + key, term(key, text));
+          put(this.graph, 'confirmed', key, text);
         }
       });
       if (this.conflicts.length) {
@@ -186,18 +212,24 @@ export class PreferenceState {
         error.code = 'document_conflict';
         throw error;
       }
-      const graph = new StateGraph(remote.source || '', this.url);
+      const remoteGraph = new StateGraph(remote.source || '', this.url);
+      const graph = remoteGraph.clone();
       for (const [key, text] of Object.entries(patch)) {
+        if (key === 'browseProvider') {
+          writeProvider(graph, this.url, text);
+          continue;
+        }
         graph.set(
           named(this.url + '#solid-apps'),
           apps + key,
           resources.includes(key) && !text ? undefined : term(key, text)
         );
       }
-      // Only matching native terms acknowledge an earlier write. An omitted
-      // field's fallback does not mean an explicit choice reached the Pod.
-      const remoteGraph = new StateGraph(remote.source || '', this.url);
+      // A fallback is not evidence of an acknowledged native write.
       const reachedPod = (key) => {
+        if (key === 'browseProvider') {
+          return sameProvider(current.browseProvider, patch[key]);
+        }
         const terms = remoteGraph.values(
           named(this.url + '#solid-apps'),
           apps + key
@@ -212,13 +244,13 @@ export class PreferenceState {
       }
       await this.update(() => {
         for (const [key, text] of Object.entries(patch)) {
-          this.graph.set(subject('confirmed'), apps + key, term(key, text));
-          if (value(this.graph, 'pending', key) === text) {
-            this.graph.set(subject('pending'), apps + key, undefined);
-            this.graph.set(subject('baseline'), apps + key, undefined);
+          put(this.graph, 'confirmed', key, text);
+          if (equal(key, value(this.graph, 'pending', key), text)) {
+            put(this.graph, 'pending', key, undefined);
+            put(this.graph, 'baseline', key, undefined);
           }
           else {
-            this.graph.set(subject('baseline'), apps + key, term(key, text));
+            put(this.graph, 'baseline', key, text);
           }
         }
       });
@@ -229,23 +261,19 @@ export class PreferenceState {
     const shownRemote = value(this.graph, 'confirmed', key);
     return this.update(() => {
       if (
-        shownPending !== value(this.graph, 'pending', key) ||
-        shownRemote !== value(this.graph, 'confirmed', key)
+        !equal(key, shownPending, value(this.graph, 'pending', key)) ||
+        !equal(key, shownRemote, value(this.graph, 'confirmed', key))
       ) {
         throw new Error(
           'preferences-state: These choices changed. Review them again.'
         );
       }
       if (keepLocal) {
-        this.graph.set(
-          subject('baseline'),
-          apps + key,
-          term(key, value(this.graph, 'confirmed', key) ?? defaults[key])
-        );
+        put(this.graph, 'baseline', key, this.confirmed(key));
       }
       else {
         for (const scope of ['pending', 'baseline', 'draft']) {
-          this.graph.set(subject(scope), apps + key, undefined);
+          put(this.graph, scope, key, undefined);
         }
       }
     });

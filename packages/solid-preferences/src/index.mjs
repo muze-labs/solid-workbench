@@ -13,8 +13,10 @@ import {
   named,
   literal
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
+import { readProvider, writeProvider, validateProvider } from './providers.mjs';
 export const defaults = Object.freeze({
   theme: 'system',
+  browseProvider: null,
   textScale: '100',
   density: 'comfortable',
   language: 'en',
@@ -74,7 +76,15 @@ export function readPreferences(document) {
   return Object.fromEntries(
     Object.entries(defaults).map(([key, fallback]) => {
       let value;
-      if (key === 'workspaceResource') {
+      if (key === 'browseProvider') {
+        value = readProvider(
+          new StateGraph(
+            document.source ?? document.graph.originalSource ?? '', document.url
+          ),
+          document.url
+        );
+      }
+      else if (key === 'workspaceResource') {
         value = readWorkspaceResource(subject);
       }
       else if (key === 'launchTarget') {
@@ -88,6 +98,7 @@ export function readPreferences(document) {
   );
 }
 export function validatePreferences(settings) {
+  validateProvider(settings.browseProvider ?? null);
   if (!['tab', 'window'].includes(settings.launchTarget)) {
     throw new Error('solid-preferences: Choose new tabs or new windows.');
   }
@@ -174,6 +185,10 @@ export async function savePreferences(session, document, settings, workspace) {
     'filesRoot'
   ];
   for (const key of keys) {
+    if (key === 'browseProvider') {
+      writeProvider(graph, document.url, settings[key]);
+      continue;
+    }
     let value;
     if (settings[key]) {
       value = resourceKeys.includes(key)

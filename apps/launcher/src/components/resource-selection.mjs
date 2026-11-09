@@ -28,7 +28,8 @@ export const resourceSelection = {
         this.runtime.selection = new AbortController();
         this.data.pickState = { disabled: '' };
         this.data.cancelState = { hidden: null };
-        this.data.pickerMessage = 'Opening Files…';
+        this.data.pickerMessage = 'Opening resource picker…';
+        const workspace = this.runtime.workspace;
         try {
           const target = new URL('../files/', location.href).href;
           const filesUrl = this.runtime.host.session
@@ -42,9 +43,12 @@ export const resourceSelection = {
             {},
             'Select a resource'
           );
+          if (workspace !== this.runtime.workspace) {
+            return;
+          }
           this.data.resource = this.api.selectionUrl(result);
-          this.runtime.workspace.launcherState.resource = this.data.resource;
-          await this.runtime.workspace.changed();
+          workspace.launcherState.resource = this.data.resource;
+          await workspace.changed();
           this.data.pickerMessage =
             'Resource selected. Review the URL before opening.';
         }

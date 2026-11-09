@@ -24,6 +24,7 @@ function fixture(t) {
   const runtime = {
     host,
     preferencesRevision: 3,
+    store: { collection: { list: () => [] } },
     workspace: { extra: {} },
     persistence: {
       owner,
@@ -135,4 +136,27 @@ test('a failed local stage rolls back before acknowledging or synchronizing', as
   );
   assert.deepEqual(f.runtime.persistence.snapshot, original);
   assert.equal(f.runtime.workspaceBusy, false);
+});
+
+
+test('Preferences receives saved app metadata and verified live support for a nonempty Launcher', (t) => {
+  const f = fixture(t);
+  const saved = { id: 'urn:saved-app' };
+  f.runtime.store.collection.list = () => [saved];
+  f.context.actions.shortcutRow = (node) => {
+    assert.equal(node, saved);
+    return { view: { label: 'Picker', link: { href: 'https://apps.example/picker/' } } };
+  };
+  f.context.api.prefixes = { schema: 'https://schema.org/' };
+  f.context.api.valueAt = () => 'https://apps.example/manifest.ttl';
+  f.context.api.idOf = (value) => value;
+  f.context.api.browseCapability = 'https://vocab.muze.nl/capabilities/browse';
+  f.runtime.workspace.instances = new Map([['live', {
+    registered: true, entry: { url: 'https://apps.example/picker/' },
+    capabilities: [f.context.api.browseCapability]
+  }]]);
+  const snapshot = f.context.actions.swb_preferencesSnapshot();
+  assert.deepEqual(snapshot.applications, [{ name: 'Picker',
+    url: 'https://apps.example/picker/', manifest: 'https://apps.example/manifest.ttl',
+    live: true }]);
 });
