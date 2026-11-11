@@ -63,13 +63,14 @@ not optional polish or proof that current apps already meet them.
   Use appropriate automated checks and manual review; passing tests or a good
   screenshot alone does not establish accessible task completion.
 - **Small meaningful first use:** keep the existing complete-app JavaScript
-  limit below 200000 gzip bytes, including shared dependencies and the auth
-  callback, as a ceiling rather than a target. Also measure the cold-cache
+  advisory target below 200000 gzip bytes, including shared dependencies and
+  the auth callback. Size excesses may warn but must never fail builds or dev
+  startup (maintainer instruction, 2026-11-09). Also measure the cold-cache
   transfer and required requests across HTML, CSS, JavaScript, fonts, images
   and data needed for the core task, plus time until that task is usable on a
   representative slow connection. Define the task for each app/feature; a
   loading shell is not success. Optional functionality may load later, while
-  the existing complete-graph budget remains enforced. Do not rely on a warm
+  the complete graph remains measured. Do not rely on a warm
   cache to disguise first-use cost. No additional numeric transfer/time limit
   or specific network profile is selected by this agreement.
 
@@ -972,11 +973,14 @@ suite's existing visual language and supporting larger screens as well.
 
 Target: **less than 200 KB of gzipped JavaScript per app**. Measure the app and
 its required shared dependencies together, including the auth callback. The
-merged build now enforces a strict 200000-byte limit on the complete graph;
-[EVD30](../.spiral/evidence/EVD-20261101-QG24H-30.md) records the current passing
-sizes and verification limits. Preserve that enforcement as features are added;
-a small entry file alone does not establish compliance. This ceiling is not a
-target to fill, and JavaScript size alone does not establish useful first-load
+maintainer's 2026-11-09 instruction supersedes earlier build enforcement:
+budgets are advisory, with warnings allowed but no failing builds or blocked
+dev startup. The readable Workbench warning threshold remains 220033 bytes;
+all other graphs warn at 200000 bytes.
+[EVD30](../.spiral/evidence/EVD-20261101-QG24H-30.md) retains historical
+measurements and verification limits. Continue measuring the complete graph;
+a small entry file alone does not establish affordability. JavaScript size
+alone does not establish useful first-load
 performance. Also evaluate the complete cold first-use path and the actual core
 task, as specified in the standing guardrails.
 

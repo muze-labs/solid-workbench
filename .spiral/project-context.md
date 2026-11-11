@@ -1,5 +1,16 @@
 # Solid Workbench project context
 
+## Current build-budget policy, 2026-11-09
+
+The maintainer explicitly requests that budget checks never fail builds or
+prevent npm run dev startup; warnings are allowed. CYC129/SRC130 record this
+prospective change, superseding mandatory build enforcement in earlier entries
+and cycle-specific allowances. Complete app graphs including auth callback
+remain measured and reported; numerical thresholds are advisory. The dedicated
+branch is spiral/CYC-20261109-QG24H-129-budget-warnings. Existing uncommitted
+CYC124 account-status work is preserved outside this change. No human acceptance,
+commit, merge or publication is inferred.
+
 Intake status: **Complete**
 
 Started: 2026-11-01, at the maintainer's request to read `.spiral-core`

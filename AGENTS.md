@@ -36,10 +36,12 @@ Apply these maintainer-confirmed constraints to every new feature:
   feedback and equivalent gesture alternatives with the feature. Redesign or
   defer a feature whose core interaction cannot be made accessible.
 - Keep useful interaction affordable on slow connections. Retain the existing
-  strict limit of less than 200000 bytes of gzipped JavaScript per complete app
-  graph, including required shared dependencies and the auth callback. This is
-  a ceiling, not a target. Also assess cold first-load HTML, CSS, fonts, images
-  and required requests, and time to a real core task. A loading shell is not
+  advisory target of less than 200000 bytes of gzipped JavaScript per complete
+  app graph, including required shared dependencies and the auth callback. This is
+  a download goal, not a build gate. Size excesses may emit warnings but must
+  never fail builds or prevent `npm run dev` from starting. Also assess cold
+  first-load HTML, CSS, fonts, images and required requests, and time to a real
+  core task. A loading shell is not
   meaningful interaction. Optional features may load later; do not hide the core
   task's cost behind a small entry bundle or an assumed warm cache.
 
