@@ -1621,3 +1621,174 @@ and push of main/cycle branches are authorized after exact-candidate validation.
 The recorded session/managed regression limits remain; no authentication fix or
 new cycle is selected. The requested status/recovery roadmap additions remain
 future work. Unrelated user files stay excluded; no publication is requested.
+
+## Account-status cycle selected, 2026-11-09
+
+The maintainer agrees to shared account status and sign-in recovery next. CYC124
+is Active on verified spiral/CYC-20261109-QG24H-124-account-status from integrated
+main 0b42eb7. This deliberately pauses broker Phase 3 for reported recovery and
+shared account UI. SRC125/DES126/EVD127 retain intent, proposed design and source
+inspection. Existing shared token/storage notifications already exist; a missing
+broadcast is not established. Disconnect and managed switching semantics remain
+under clarification, with investigation/design before product changes. Only
+37 readable Workbench bytes remain under the current allowance; no expansion is
+inferred. No product change, acceptance, commit or integration requested. Preserve
+pending icon roadmap edits and unrelated user files.
+
+## CYC124 scope answers and recovery reproduction, 2026-11-09
+
+The maintainer chooses Disconnect for all apps of the selected account and
+Workbench coordination for managed switching. DES126 retains these choices and
+proposes the remaining distinction: Disconnect pauses connections while retaining
+WebID/drafts/credentials; Logout also clears this browser's credentials and
+remembered selection. That last distinction awaits confirmation.
+
+EVD127 reproduces the stale Launcher message in unchanged built code with a
+local issuer/Preferences iframe. One successful login yields a usable parent
+token and 21 storage events; the dedicated recovery notice clears while general
+and workspace messages remain stale. Existing notifications reach Launcher;
+typed message ownership/reconciliation is the evidenced gap. Initial fixture
+ordering failures are retained, not claimed as resolved production auth bugs.
+CYC124 stays Active in investigation/design; no product code or new commits.
+
+## CYC124 completion and CYC129 evaluation handoff, 2026-11-09
+
+The maintainer requests finishing both open cycles in order. CYC124 product
+implementation is completed on its verified branch: typed auth feedback,
+shared account status/dialog, persistent account-scoped Disconnect/Connect,
+credential Logout preserving open sibling/local owner data, and Workbench-
+coordinated managed switching with checkpoints before and after candidate
+sign-in. Late startup results are invalidated after logout. The connection form
+scrolls as a whole so 200% phone text retains reachable identity fields/actions.
+Existing SimplyFlow/Metro/native RDF contracts remain; no new dependency.
+
+EVD127 retains the fixed actual Launcher/Preferences reproduction, focused
+preservation/security tests, native keyboard/AX/phone screenshots, passing
+source/build and a complete seven-suite run, plus intermediate layout failures
+and one later session cancellation failure. The fixture now uses one shared
+token-release barrier and waits for sign-in cleanup before retry. This is not a
+claim that all prior provider/network timing failures share that cause. Final
+combined regression follows during CYC129 evaluation. CYC124 remains Active
+pending human acceptance; no commit, merge, push or publication is inferred.
+
+CYC129's existing warning-only build policy remains in the working tree as an
+explicit dependency for CYC124 checks, as authorized before this continuation.
+The next work is its separate branch/evaluation: full check, synthetic excesses,
+both reports and npm run dev startup. No Active cycle is merged. Preserve all
+unrelated supplied design/icon files and pending roadmap documentation.
+
+
+## Both selected cycles ready for acceptance, 2026-11-09
+
+CYC124 implementation/evaluation is complete, followed by CYC129's final
+verification on its matching branch. EVD127's final section and both cycle
+records supersede earlier investigation/pending-verification notes. Final
+npm run check passes all 24 test files/both builds; the sequential full seven-
+suite Chrome command passes, exit 0. CYC124's 28 product/test file hashes remain
+unchanged through CYC129 evaluation. The warning-only build returns both graph
+reports even for excesses; dev startup and readable Workbench HTTP 200 are
+verified and its disposable probe server is stopped. Current readable Workbench
+is 224208 gzip bytes, Preferences 201159; warnings remain advisory.
+
+CYC124 includes scoped account mode/credential controls, typed cross-app recovery
+feedback, native status/dialog, Workbench-coordinated managed switching, native
+Contacts cache identity on disconnected reload, request-owned sign-in completion
+and provider-ready focus. EVD127 retains intermediate failures and corrections,
+including development-server no-store cache equivalence, native control readiness
+and bounded headless Preferences focus emulation. Native picker/tab activation
+checks stay separate; real-provider/manual-AT review is not invented.
+
+Both canonical cycle statuses remain Active pending explicit human acceptance.
+No commit, merge, push, publication or next cycle is requested. CYC129's existing
+build-policy edits and CYC124's uncommitted feature changes remain preserved in
+the working tree without merging Active cycles. User design/icon files and
+pending roadmap additions remain untouched. The governing broker/Contacts/icon
+follow-ups remain future work until the maintainer selects the next direction.
+
+## Account app scope revision, 2026-11-11
+
+The maintainer requests the recommended separate Account dialog app and explicitly
+keeps it in Active CYC124, correcting the proposed new-cycle handoff. The actual
+branch is reverified as spiral/CYC-20261109-QG24H-124-account-status. This revises
+the earlier no-new-app boundary; earlier verification remains historical.
+Account owns its form/feedback while the host keeps live sessions/recovery and
+Workbench keeps managed switching/checkpoints. A dedicated modal preserves an
+active Preferences task; the shipped same-origin frame receives a scoped port,
+not a general provider account grant. CYC124/DES126/IMP128/EVD127 record scope,
+implementation and evaluation. CYC129 and unrelated user files stay preserved.
+No new cycle, human acceptance, commit, integration or publication is inferred.
+
+Account app revision is implemented and evaluated within CYC124. Final source/
+build checks pass; Account issuer, offline, nested-editor preservation and native
+phone/keyboard/AX checks pass. One earlier complete seven-suite pass precedes the
+last reopen guard; the final full command passes six suites then hits retained
+provider Tab-focus flakiness, and the provider follow-up passes independently.
+EVD127 preserves this qualification and complete download costs rather than
+claiming reliable final all-suite completion. CYC124 stays Active for renewed
+human review. No commit, merge, push, publication or new cycle is inferred.
+
+## Account review corrections, 2026-11-11
+
+The maintainer reports the first Connect popup closing before authorization,
+and then confirms a separate stale Launcher disconnected icon after actual
+Contacts sign-in, with the same WebID selected in both. CYC124 remains the active
+cycle on its verified branch. The shared account dataset now explicitly awaits
+fresh sign-in, then sends a non-credential completed-Connect notice on the
+existing storage mechanism. Sessionless peers restore only the selected owner,
+noninteractively and with attempt/intent/coalescing guards. Raw token hints must
+not start a parallel session during authorization. No other production module
+changes in this correction; local workspace/draft ownership stays intact.
+
+Both exact issuer regressions, focused failure/preservation contracts and full
+source/build checks pass. The complete Chrome command passes six suites, then
+hits a provider fixture focus/ARIA-readiness setup failure; the corrected setup
+passes independently without removing keyboard assertions. EVD127 retains the
+failure and bounded passing evidence. Readable files are rebuilt for the running
+4174 development server; refresh callers once. CYC124 stays Active pending human
+acceptance. No commit, integration, publication or new cycle is inferred.
+
+## OAuth launch URL classification, 2026-11-11
+
+The maintainer confirms cross-app Connect/Disconnect works, then requests the
+minimal OAuth URL detection correction: #webid links without iss must not be
+handled as authorization redirects. Metro 0.9.3 consumes any hash and produces
+the reported missing-iss error. The local Metro source fix lives on
+fix/oauth2-redirect-iss with focused tests; no app workaround or validation
+suppression is added. App CYC124 remains Active. Its installed OAuth dependency
+is locally patched for evaluation; npm latest is still 0.9.3, so a library release
+and subsequent lockfile update remain required for reproducible fresh installs.
+No commit or publication is authorized/inferred; other user work is preserved.
+
+The minimal iss classification change passes Metro's OAuth2 210/210 and OIDC
+89/89 checks, app source/build checks and a complete seven-suite Chrome run.
+The issuer browser scenario uses #webid and verifies the prior account fixes.
+Readable assets are restored on port 4174. This is a locally patched dependency
+for evaluation, not a registry release; new installs still require a published
+version/lockfile update. CYC124 remains Active; no commit/publication inferred.
+
+
+## Compact connection feedback, 2026-11-11
+
+The maintainer requests toolbar-only passive connection status, removing notices
+that push dialog content down, with an optional toast for unexpected loss. This
+local review correction stays in Active CYC124 on its verified branch. Shared
+recovery banners, persistent signed-out text and passive Preferences connection
+guidance are removed; newly required authorization uses the existing toast once.
+Toolbar labels/native request sign-in dialogs remain accessible, and non-auth
+errors/conflicts stay visible. Disconnected Preferences stay local and empty
+status text collapses using the existing utility. No storage/schema/dependency
+change, acceptance, commit, merge or publication is inferred. EVD127 retains
+source/build and bounded Chrome regression results, including provider focus
+flakiness. Existing user work/CYC129 changes and the local Metro release
+limitation remain preserved.
+
+
+## CYC124 accepted for integration, 2026-11-11
+
+The maintainer says “accepted, commit, merge and push”, then confirms “Accept
+both cycles”. ACC131 accepts account implementation 3dec2cd112cf83a86b338e8c60f2518f29384328
+and evaluation 56fe3931852df674512a79b65ffebd1b5f1c4398. CYC124 is Accepted, superseding
+pending review notes. Normal merge and push of main/cycle branches are
+authorized after exact validation. EVD127 retains browser focus qualifications
+and the local Metro patch/release limitation. CYC129 is accepted separately;
+unrelated design/icon files remain excluded. No package publication is requested.

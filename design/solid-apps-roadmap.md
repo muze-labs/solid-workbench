@@ -394,7 +394,7 @@ Account has a dedicated presentation slot so opening it from Preferences does
 not discard that editor. Only the shipped same-origin Account frame receives
 its control port; this is not replaceable-provider account authority. No
 Launcher tile, application icon or token service is introduced. Implementation
-and evaluation remain in Active CYC124, pending human acceptance.
+and evaluation are accepted in CYC124 under ACC131 on 2026-11-11.
 
 Requested by the maintainer on 2026-11-09. Add a compact status icon or bare
 button beside the user name in the shared top bar. It shows the current account/
