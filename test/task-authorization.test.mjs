@@ -55,8 +55,9 @@ test('task context survives consumption without becoming an OAuth response', asy
     assert.equal(req.headers.get('Authorization'), 'Bearer fixture-token');
     return new Response('authorized');
   };
-  // Reproduce the installed middleware's misclassification of a launch hash.
-  await assert.rejects(middleware(request, next), /missing iss/);
+  // Launch context is not an OAuth redirect and remains in the app URL.
+  assert.equal(await (await middleware(request, next)).text(), 'authorized');
+  assert.equal(window.location.href, taskUrl);
   const parsed = parseLaunchUrl(taskUrl);
   window.location = new URL(launchUrl(parsed.url));
   assert.deepEqual(parsed.context, context);
@@ -64,13 +65,19 @@ test('task context survives consumption without becoming an OAuth response', asy
   assert.equal(window.location.searchParams.has('solid-apps-task'), true);
   assert.equal(await (await middleware(request, next)).text(), 'authorized');
 
-  // Real authorization responses still require the issuer; never bypass checks.
+  // Missing iss means this URL is not handled as an authorization redirect.
   window.location = new URL(
     'https://apps.example/redirect.html?code=x&state=fixture-state'
   );
-  await assert.rejects(middleware(request, next), /missing iss/);
+  const withoutIssuer = window.location.href;
+  assert.equal(await (await middleware(request, next)).text(), 'authorized');
+  assert.equal(window.location.href, withoutIssuer);
   window.location = new URL(
     'https://apps.example/redirect.html?code=x&state=fixture-state&iss=https://wrong.example/'
   );
   await assert.rejects(middleware(request, next), /from issuer/);
+  window.location = new URL(
+    'https://apps.example/redirect.html?code=x&state=wrong&iss=https://issuer.example/'
+  );
+  await assert.rejects(middleware(request, next), /state mismatch/);
 });

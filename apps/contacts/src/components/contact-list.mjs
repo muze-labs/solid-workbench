@@ -59,7 +59,7 @@ export const contactList = {
     publish() {
       return this.runtime.host.managed
         ?.publish()
-        .catch((error) => this.runtime.host.message(error.message));
+        .catch((error) => this.runtime.host.message(error));
     },
     matchesPerson(row, search) {
       return row.search.includes(search.toLowerCase());

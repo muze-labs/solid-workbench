@@ -307,6 +307,16 @@ try {
   );
   await wait('document.body.classList.contains("ds-lightmode")');
   assert.equal(writes.length, 2);
+  await wait('swbPreferencesApp.data.swb_status === ""', true);
+  assert.equal(await run(
+    'return document.querySelector("#swb-preferences-status")' +
+      '.getBoundingClientRect().height;',
+    true
+  ), 0, 'An empty notice takes no dialog space.');
+  assert.equal(await run(
+    'return document.querySelector(".muze-solid-ui-recovery-notice");',
+    true
+  ), null, 'Offline preferences retain edits without a connection banner.');
   await run('swbPreferencesApp.actions.swb_selectSection("language");', true);
   await run(
     'const input=document.querySelector("[name=language]");input.value="unfinished!";input.dispatchEvent(new Event("input",{bubbles:true}));',
@@ -322,6 +332,7 @@ try {
     downloadThroughput: -1,
     uploadThroughput: -1
   });
+  await wait('!swbPreferencesApp.runtime.localWrites', true);
   await run(
     'await solidContacts.host.view.actions.muzeSolidUiCheckCapabilityClose();'
   );
@@ -551,6 +562,7 @@ try {
     )
   );
   // The same app works independently and exposes the selected app's section.
+  await wait('!swbPreferencesApp.runtime.localWrites', true);
   await run(
     'await solidContacts.host.view.actions.muzeSolidUiCheckCapabilityClose();'
   );

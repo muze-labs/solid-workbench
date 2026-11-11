@@ -99,7 +99,7 @@ export const fileNavigation = {
       );
       this.runtime.host.managed
         ?.publish()
-        .catch((error) => this.runtime.host.message(error.message));
+        .catch((error) => this.runtime.host.message(error));
     },
     decodeName: function (url) {
       try {

@@ -1,3 +1,4 @@
+import { PortConnection } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   editProfileCapability,
@@ -8,7 +9,7 @@ import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import { loadDocument } from '@muze-labs/solid-app-data';
 import { app } from '@muze-labs/simplyflow/app';
 import { readProfile } from '@muze-labs/solid-profile';
-import { connectSession, httpUrl } from '@muze-labs/solid-app-data';
+import { connectSession, logoutAccount, httpUrl } from '@muze-labs/solid-app-data';
 import { defaults, applyPreferences } from '@muze-labs/solid-preferences';
 import { preferenceConsumer } from '@muze-labs/solid-preferences/consumer.mjs';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
@@ -24,6 +25,7 @@ import {
   sessionServices,
   sessionRecovery,
   accountLifecycle,
+  muzeSolidUiAccountPresenter,
   suiteAppearance
 } from './features.mjs';
 import sources from './features.mjs?entries';
@@ -106,6 +108,7 @@ export function shell({
       sessionServices,
       sessionRecovery,
       accountLifecycle,
+      muzeSolidUiAccountPresenter,
       muzeSolidUiCapabilityDialog,
       suiteAppearance,
       ...accountOptions.components
@@ -129,6 +132,9 @@ export function shell({
       muzeSolidUiRecoveryVisibility: { hidden: '' },
       muzeSolidUiRecoveryButton: { disabled: null },
       muzeSolidUiRecoveryError: '',
+      muzeSolidUiAccountLoading: '',
+      muzeSolidUiAccountRetry: { hidden: '' },
+      muzeSolidUiAccountFrame: { src: 'about:blank', hidden: '' },
       accountName: '',
       muzeSolidUiProfileButton: { 'aria-label': 'View and edit your profile' },
       webId: launch.webId,
@@ -137,6 +143,7 @@ export function shell({
       connectButton: { disabled: null }
     },
     api: {
+      PortConnection,
       readProfile,
       editProfileCapability,
       editPreferencesCapability,
@@ -144,6 +151,7 @@ export function shell({
       launchUrl,
       loadDocument,
       connectSession,
+      logoutAccount,
       httpUrl,
       applyPreferences,
       preferenceConsumer,
@@ -179,6 +187,7 @@ export function shell({
   host.view = view;
   runtime.dialog = root.querySelector('.connect-dialog');
   runtime.menu = root.querySelector('#muze-solid-ui-account-menu');
+  view.actions.muzeSolidUiInitializeAccount();
   view.actions.muzeSolidUiInitializeCapability();
   host.muzeSolidUiInvoke = (...args) =>
     view.actions.muzeSolidUiInvokeCapability(...args);

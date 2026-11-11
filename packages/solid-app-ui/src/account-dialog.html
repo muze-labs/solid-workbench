@@ -1,0 +1,32 @@
+  <dialog
+    class="ds-dialog connect-dialog muze-solid-design-dialog muze-solid-ui-account-dialog"
+    data-simply-behavior="muzeSolidUiConnectionDialog"
+    aria-labelledby="muze-solid-ui-connection-title"
+  >
+    <header class="muze-solid-design-dialog-header">
+      <h2 class="swb-dialog-title" id="muze-solid-ui-connection-title">
+        WebID / connection
+      </h2>
+      <button type="button" class="ds-button muze-solid-design-dialog-close"
+        data-simply-command="closeConnect" aria-label="Close connection dialog">
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#x"></use>
+        </svg>
+      </button>
+    </header>
+    <div class="muze-solid-design-dialog-content swb-account-stage">
+      <p class="swb-account-loading" role="status"
+        data-simply-field="muzeSolidUiAccountLoading"
+        data-simply-transform="escape_html"></p>
+      <button type="button" class="ds-button"
+        data-simply-command="connectDialog"
+        data-simply-field="muzeSolidUiAccountRetry"
+        data-simply-transform="attributes" data-simply-attributes="hidden"
+        hidden>Retry loading Account</button>
+      <iframe class="muze-solid-ui-account-frame" title="Account controls"
+        data-simply-behavior="muzeSolidUiAccountFrame"
+        data-simply-field="muzeSolidUiAccountFrame"
+        data-simply-transform="attributes"
+        data-simply-attributes="src hidden" src="about:blank" hidden></iframe>
+    </div>
+  </dialog>

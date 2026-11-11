@@ -13,3 +13,5 @@ export {
 } from '../../solid-design/src/features.mjs';
 
 export { sessionRecovery } from './components/session-recovery.mjs';
+
+export { muzeSolidUiAccountPresenter } from './components/account-presenter.mjs';

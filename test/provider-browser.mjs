@@ -131,12 +131,45 @@ async function wait(code, embedded = false, attempts = 300) {
     await new Promise((resolve) => setTimeout(resolve, 40));
   }
   throw new Error('provider-browser: Timeout: ' + code + '\n' +
-    await run('return document.body.innerText;', embedded));
+    await run('return document.body.innerText;', embedded) +
+    '\nFocus diagnostic: ' + JSON.stringify(await run(`return {
+      active: document.activeElement?.tagName,
+      activeSection: document.activeElement?.dataset.muzeSolidDesignSection,
+      focused: document.hasFocus(),
+      selected: document.querySelector('[data-muze-solid-design-sections] [aria-current="page"]')?.dataset.muzeSolidDesignSection,
+      section: window.swbPreferencesApp?.runtime.section
+    };`, embedded)) + '\nPresenter diagnostic: ' + JSON.stringify(await run(`return {
+      active: document.activeElement?.tagName,
+      focused: document.hasFocus(),
+      inert: document.querySelector('iframe')?.inert,
+      requested: solidLauncher.host.view.runtime.muzeSolidUiCall?.focusRequested,
+      presented: solidLauncher.host.view.runtime.muzeSolidUiCall?.presented
+    };`)) + '\nPage targets: ' + JSON.stringify(
+      (await page.send('Target.getTargets')).targetInfos
+        .filter(target => target.type === 'page')
+        .map(target => ({ url: target.url, attached: target.attached }))));
+}
+async function clickCaller(selector) {
+  const point = await run('const element=document.querySelector(' +
+    JSON.stringify(selector) + ');element.scrollIntoView({block:"nearest"});' +
+    'const bounds=element.getBoundingClientRect();' +
+    'return {x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2};');
+  for (const type of ['mousePressed', 'mouseReleased']) {
+    await page.send('Input.dispatchMouseEvent', {
+      type, ...point, button: 'left', clickCount: 1
+    });
+  }
 }
 async function openPreferences() {
+  // Keep this isolated headless page active while checking in-dialog keyboard
+  // behavior. Restore real activation before any picker/tab interaction.
+  await page.send('Emulation.setFocusEmulationEnabled', { enabled: true });
   // Simulate the user's return to the caller after browser-controlled tab focus.
   await page.send('Page.bringToFront');
-  await run('document.querySelector("[data-simply-command=preferences]").click();');
+  await wait('document.hasFocus()');
+  await clickCaller('.swb-account-button');
+  await wait('document.querySelector("#muze-solid-ui-account-menu").matches(":popover-open")');
+  await clickCaller('[data-simply-command=preferences]');
   await wait('document.querySelector("iframe").contentWindow.swbPreferencesApp');
   await wait('swbPreferencesApp.runtime.request', true);
   await wait('document.querySelector("iframe").getAttribute("aria-busy")==="false"');
@@ -149,10 +182,17 @@ async function openPreferences() {
       y:frame.y+section.y,button:'left',clickCount:1});
   }
   await wait('!swbPreferencesApp.data.swb_providerDiscovery.startsWith("Checking")', true);
+  await wait('!document.querySelector("[data-simply-command=swb_chooseProvider]").disabled', true);
 }
 async function closePreferences() {
-  await run('solidLauncher.host.view.commands.call("muzeSolidUiCloseCapability");');
+  await run('await solidLauncher.host.view.commands.call("muzeSolidUiCloseCapability");');
   await wait('!document.querySelector("dialog.muze-solid-ui-capability-dialog").open');
+  // Native close precedes task release and the bound iframe navigation. A new
+  // request must not reuse the departing provider's document/focus state.
+  await wait('!solidLauncher.host.view.runtime.muzeSolidUiCall && ' +
+    'document.querySelector("iframe").getAttribute("src")==="about:blank" && ' +
+    'document.querySelector("iframe").contentWindow.location.href==="about:blank"');
+  await page.send('Emulation.setFocusEmulationEnabled', { enabled: false });
 }
 async function pickAndRespond(cancel = false, measure = false) {
   const started = await run("return performance.now();");
@@ -217,7 +257,11 @@ try {
     }
     return Object.keys(entries).length;`, true);
   assert(editable > 5);
+  // Focus uses the bound current section. Wait for its ARIA projection before
+  // setting up native keyboard input, rather than focusing the departing row.
+  await wait('document.querySelector("[data-muze-solid-design-section=providers]").getAttribute("aria-current")==="page"', true);
   await run('swbPreferencesApp.actions.swb_focusSelectedSection();', true);
+  await wait('document.activeElement.dataset.muzeSolidDesignSection==="providers"', true);
   for (const key of ['Tab', 'ArrowDown']) {
     for (const type of ['keyDown', 'keyUp']) {
       await page.send('Input.dispatchKeyEvent', {type, key, code:key,

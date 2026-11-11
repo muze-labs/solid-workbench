@@ -493,3 +493,14 @@ test('presentation focus accepts only the ready task parent and current ticket',
   }
   assert.equal(focused, 1);
 });
+
+test('registered providers do not gain account-control authority by declaring a capability', async (t) => {
+  const target = new EventTarget();
+  const broker = new WorkspaceBroker({ target });
+  t.after(() => broker.dispose());
+  const record = broker.add({ id: 'external', url: 'https://external.example/files/' });
+  record.registered = true;
+  record.capabilities = ['https://vocab.muze.nl/solid-apps#account-controls'];
+  await assert.rejects(broker.handle(record, 'account-controls', {}, {}),
+    (error) => error.code === 'denied');
+});

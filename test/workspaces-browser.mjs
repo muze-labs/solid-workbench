@@ -202,6 +202,11 @@ async function section(id) {
   );
 }
 async function change(selector, value) {
+  await wait(
+    '[...document.querySelectorAll(' + JSON.stringify(selector) +
+      ')].some(element=>element.getClientRects().length && !element.disabled)',
+    true
+  );
   await run(
     'const e=[...document.querySelectorAll(' +
       JSON.stringify(selector) +

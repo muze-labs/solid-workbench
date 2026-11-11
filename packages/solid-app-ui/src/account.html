@@ -39,6 +39,23 @@
     </button>
     <button
       type="button"
+      class="ds-button ds-button-naked muze-solid-ui-account-status"
+      data-simply-command="connectDialog"
+      data-simply-field="muzeSolidUiStatusButton"
+      data-simply-transform="attributes"
+      data-simply-attributes="aria-label title"
+      aria-haspopup="dialog"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use
+          data-simply-field="muzeSolidUiStatusIcon"
+          data-simply-transform="attributes"
+          data-simply-attributes="href"
+        ></use>
+      </svg>
+    </button>
+    <button
+      type="button"
       class="ds-button ds-button-naked swb-account-button"
       popovertarget="muze-solid-ui-account-menu"
       aria-label="Account and preferences"
@@ -94,31 +111,6 @@
     data-simply-field="message"
     data-simply-transform="escape_html"
   ></p>
-  <section
-    class="muze-solid-ui-recovery-notice"
-    role="status"
-    hidden
-    data-simply-field="muzeSolidUiRecoveryVisibility"
-    data-simply-transform="attributes"
-    data-simply-attributes="hidden"
-  >
-    <p>Sign in again to continue with Solid. Your edits are retained.</p>
-    <button
-      type="button"
-      class="ds-button ds-button-primary"
-      data-simply-command="muzeSolidUiSignInAgain"
-      data-simply-field="muzeSolidUiRecoveryButton"
-      data-simply-transform="attributes"
-      data-simply-attributes="disabled"
-    >
-      Sign in again
-    </button>
-    <p
-      role="status"
-      data-simply-field="muzeSolidUiRecoveryError"
-      data-simply-transform="escape_html"
-    ></p>
-  </section>
   <dialog
     class="ds-dialog muze-solid-design-dialog muze-solid-ui-recovery-dialog"
     data-simply-behavior="muzeSolidUiRecoveryDialog"
@@ -170,78 +162,5 @@
         Cancel
       </button>
     </footer>
-  </dialog>
-  <dialog
-    data-simply-behavior="muzeSolidDesignDialog"
-    class="ds-dialog connect-dialog muze-solid-design-dialog"
-  >
-    <form class="swb-dialog-form" data-simply-command="connect">
-      <header class="muze-solid-design-dialog-header">
-        <h2 class="swb-dialog-title">WebID / connection</h2>
-        <button
-          type="button"
-          class="ds-button muze-solid-design-dialog-close"
-          data-simply-command="closeConnect"
-          aria-label="Close connection dialog"
-        >
-          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-            <use href="../assets/feather-icons.svg#x"></use>
-          </svg>
-        </button>
-      </header>
-      <div class="muze-solid-design-dialog-content">
-        <label
-          >WebID<input
-            class="swb-control swb-labeled-control"
-            type="url"
-            name="webId"
-            data-simply-field="webId"
-            required
-            placeholder="https://example.org/profile/card#me"
-            autocomplete="url"
-        /></label>
-        <p>Your profile supplies your storage and preferences locations.</p>
-        <section
-          class="swb-logout-section"
-          hidden
-          data-simply-field="logoutVisibility"
-          data-simply-transform="attributes"
-          data-simply-attributes="hidden"
-        >
-          <p>
-            Log out of Solid Apps on this browser. Your local contacts and
-            shortcuts stay on this device.
-          </p>
-        </section>
-      </div>
-      <footer class="muze-solid-design-dialog-footer">
-        <button
-          class="ds-button ds-button-primary"
-          data-simply-field="connectButton"
-          data-simply-transform="attributes"
-          data-simply-attributes="disabled"
-        >
-          Connect
-        </button>
-        <button
-          type="button"
-          class="ds-button"
-          data-simply-command="closeConnect"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          class="ds-button"
-          data-simply-command="logout"
-          hidden
-          data-simply-field="logoutVisibility"
-          data-simply-transform="attributes"
-          data-simply-attributes="hidden"
-        >
-          Log out
-        </button>
-      </footer>
-    </form>
   </dialog>
 </header>

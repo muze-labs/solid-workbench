@@ -22,6 +22,9 @@ export class WorkspaceBroker {
     editPreferences = () => {
       throw capabilityError('No workspace editor.');
     },
+    openAccountControls = () => {
+      throw capabilityError('Account controls are not granted.', 'denied');
+    },
     savePreferences = () => {
       throw capabilityError('No workspace settings.');
     }
@@ -36,7 +39,8 @@ export class WorkspaceBroker {
       resolveProvider,
       getContext,
       savePreferences,
-      editPreferences
+      editPreferences,
+      openAccountControls
     });
     this.focusTarget = 'solid-apps-launcher-' + crypto.randomUUID();
     target.name = this.focusTarget;
@@ -201,6 +205,9 @@ export class WorkspaceBroker {
   async handle(record, method, input, options) {
     if (this.instances.get(record.entry.id) !== record || this.closing) {
       throw capabilityError('Workspace instance is no longer active.');
+    }
+    if (method === 'account-controls' && record.registered) {
+      return this.openAccountControls(record);
     }
     if (method === 'embed-provider' && record.registered && !record.embedded) {
       return this.embeddedProvider(input.capability);

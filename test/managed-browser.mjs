@@ -1,3 +1,4 @@
+import { waitForAccount, clickAccount, submitAccount } from './support/account-browser.mjs';
 import { spawn } from 'node:child_process';
 import * as http from 'node:http';
 import * as fs from 'node:fs/promises';
@@ -273,7 +274,7 @@ async function changePodWorkspace(resource) {
 async function connect(page, app) {
   await click(page, '.swb-account-button');
   await click(page, '[data-simply-command=connectDialog]');
-  await submit(page, '.connect-dialog form', { webId });
+  await submitAccount(page, { webId });
   await wait(page, 'window.solid' + app + '?.host.session');
   await wait(page, '!document.querySelector(".connect-dialog").open');
 }

@@ -1,7 +1,12 @@
+import { checkNestedAccount, checkAccountOffline } from './support/account-interaction.mjs';
+import { waitForAccount, clickAccount, submitAccount } from './support/account-browser.mjs';
 import { checkEventBindings } from './support/events.mjs';
 import { checkStyleOwnership } from './support/style-ownership.mjs';
 import { recordVisualStyles } from './support/visual-styles.mjs';
-import { checkPickerReflow, checkZoomLayout } from './support/style-contracts.mjs';
+import {
+  checkPickerReflow,
+  checkZoomLayout
+} from './support/style-contracts.mjs';
 import {
   checkCurrentActions,
   checkRetainedProfileDraft
@@ -171,8 +176,10 @@ const server = http.createServer(async (req, res) => {
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 base = `http://127.0.0.1:${server.address().port}`;
 const webId = base + '/profile#me';
+// This general UI fixture has a public Pod and no issuer. Real authorization
+// (including first Connect) is covered by session-browser.mjs.
 resources.set(base + '/profile', {
-  body: `@prefix pim: <http://www.w3.org/ns/pim/space#>. @prefix foaf: <http://xmlns.com/foaf/0.1/>. <#me> a foaf:Person; foaf:name "Remote Person"; pim:storage <${base}/storage/>; pim:preferencesFile <${base}/prefs>; <http://www.w3.org/2006/vcard/ns#hasEmail> <#work-email>, <#unresolved-email>; <http://www.w3.org/ns/solid/terms#oidcIssuer> <${base}/issuer/>. <#work-email> <http://www.w3.org/2006/vcard/ns#value> <mailto:owner@example.org>; <https://example.org/emailMetadata> "keep email metadata". <#other> foaf:name "Keep me".`,
+  body: `@prefix pim: <http://www.w3.org/ns/pim/space#>. @prefix foaf: <http://xmlns.com/foaf/0.1/>. <#me> a foaf:Person; foaf:name "Remote Person"; pim:storage <${base}/storage/>; pim:preferencesFile <${base}/prefs>; <http://www.w3.org/2006/vcard/ns#hasEmail> <#work-email>, <#unresolved-email>. <#work-email> <http://www.w3.org/2006/vcard/ns#value> <mailto:owner@example.org>; <https://example.org/emailMetadata> "keep email metadata". <#other> foaf:name "Keep me".`,
   type: 'text/turtle',
   etag: '"1"'
 });
@@ -382,6 +389,10 @@ try {
     await page.ready();
   }
   async function click(selector) {
+    if (['[data-simply-command=swb_accountLogout]',
+      '[data-simply-command=swb_accountDisconnect]'].includes(selector)) {
+      return clickAccount(page, selector);
+    }
     const toolState = await evaluate(
       'const target=document.querySelector(' +
         JSON.stringify(selector) +
@@ -435,6 +446,9 @@ try {
       'document.querySelector("#muze-solid-ui-account-menu").matches(":popover-open")'
     );
     await click(`[data-simply-command=${command}]`);
+    if (command === 'connectDialog') {
+      await waitForAccount(page);
+    }
     await wait(
       '!document.querySelector("#muze-solid-ui-account-menu").matches(":popover-open")'
     );
@@ -449,6 +463,9 @@ try {
     );
   }
   async function submit(selector, values) {
+    if (selector === '.connect-dialog form') {
+      return submitAccount(page, values);
+    }
     await evaluate(
       `const form=document.querySelector(${JSON.stringify(selector)});
       for (const [key,value] of Object.entries(${JSON.stringify(values)})) {
@@ -655,7 +672,7 @@ try {
   await account('connectDialog');
   assert.equal(
     await evaluate(
-      'return document.querySelector(".connect-dialog [name=webId]").value;'
+      'return document.querySelector(".muze-solid-ui-account-frame").contentDocument.querySelector("[name=webId]").value;'
     ),
     webId
   );
@@ -855,7 +872,9 @@ try {
   await wait('window.solidContacts?.store');
   await account('connectDialog');
   assert.equal(
-    await evaluate('return document.querySelector(".swb-logout-section").hidden;'),
+    await evaluate(
+      'return document.querySelector(".muze-solid-ui-account-frame").contentDocument.querySelector(".swb-logout-section").hidden;'
+    ),
     true
   );
   await submit('.connect-dialog form', { webId });
@@ -872,15 +891,18 @@ try {
     false
   );
   await account('connectDialog');
-  await wait('!document.querySelector(".swb-logout-section").hidden');
+  await wait('!document.querySelector(".muze-solid-ui-account-frame").contentDocument.querySelector(".swb-logout-section").hidden');
   assert.equal(
     await evaluate(
-      'return document.querySelector(".connect-dialog [name=webId]").value;'
+      'return document.querySelector(".muze-solid-ui-account-frame").contentDocument.querySelector("[name=webId]").value;'
     ),
     webId
   );
   await click('[data-simply-command=closeConnect]');
+  await checkAccountOffline(page);
   await account('preferences');
+  await preferencesFrame();
+  await checkNestedAccount(page);
   await changePreferences({
     theme: 'dark',
     textScale: '110',
@@ -993,7 +1015,9 @@ try {
     'Normal capability cancellation does not produce an error notice'
   );
   assert.equal(
-    await evaluate('return document.activeElement.matches(".swb-account-name");'),
+    await evaluate(
+      'return document.activeElement.matches(".swb-account-name");'
+    ),
     true,
     'Closing the profile dialog returns keyboard focus to its name button'
   );
@@ -1027,7 +1051,8 @@ try {
   await wait('document.querySelector(".muze-solid-ui-capability-dialog").open');
   await wait(profileFrame + '.solidProfile?.host.managed?.ready');
   await wait(
-    profileFrame + '.document.querySelector(".swb-profile-card")?.hidden===false'
+    profileFrame +
+      '.document.querySelector(".swb-profile-card")?.hidden===false'
   );
   await wait('window.presentationMessages.length > 0');
   await wait(
@@ -1184,7 +1209,8 @@ try {
   await click('.swb-account-name');
   await wait(profileFrame + '.solidProfile?.host.managed?.ready');
   await wait(
-    profileFrame + '.document.querySelector(".swb-profile-card")?.hidden===false'
+    profileFrame +
+      '.document.querySelector(".swb-profile-card")?.hidden===false'
   );
   await evaluate(
     profileFrame +
@@ -1259,7 +1285,8 @@ try {
   );
   await wait(profileFrame + '.solidFiles?.host.managed?.ready');
   await wait(
-    profileFrame + '.document.querySelector(".swb-picker-request")?.hidden===false'
+    profileFrame +
+      '.document.querySelector(".swb-picker-request")?.hidden===false'
   );
   await wait(profileFrame + '.solidFiles.ui.runtime.current');
   await checkPickerReflow(page);
@@ -1638,7 +1665,10 @@ try {
     'window.solidLauncher?.host.session && ' +
       'window.solidLauncher.host.preferences.launchTarget==="window"'
   );
-  const contactsWindow = await openApp('.swb-app-grid a[href*=contacts]', 'window');
+  const contactsWindow = await openApp(
+    '.swb-app-grid a[href*=contacts]',
+    'window'
+  );
   contactsWindow.page.close();
   await page.send('Target.closeTarget', {
     targetId: contactsWindow.target.targetId
@@ -2275,6 +2305,35 @@ try {
     'The account name must not overlap the mobile app title'
   );
   await capture('contacts-mobile');
+  const accountTextSize = await evaluate(
+    'return document.documentElement.style.fontSize;'
+  );
+  await click('.muze-solid-ui-account-status');
+  await waitForAccount(page);
+  assert.equal(await evaluate(`
+    document.documentElement.style.fontSize = '200%';
+    const dialog = document.querySelector('.connect-dialog');
+    const frame = dialog.querySelector('iframe');
+    const editor = frame.contentDocument;
+    editor.documentElement.style.fontSize = '200%';
+    const input = editor.querySelector('[name=webId]');
+    input.focus();
+    const bounds = input.getBoundingClientRect();
+    const content = editor.querySelector('form');
+    return content.clientHeight > 0 && bounds.height > 0 &&
+      bounds.top >= 0 && bounds.bottom <= frame.clientHeight &&
+      editor.documentElement.scrollWidth <= frame.clientWidth;
+  `), true, 'Phone WebID controls remain reachable at 200% text.');
+  await capture('account-phone-200');
+  await evaluate('document.documentElement.style.fontSize=' +
+    JSON.stringify(accountTextSize) + ';');
+  for (const type of ['keyDown', 'keyUp']) {
+    await page.send('Input.dispatchKeyEvent', {
+      type, key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27
+    });
+  }
+  await wait('!document.querySelector(".connect-dialog").open');
+
   assert(
     await evaluate(
       'return document.documentElement.scrollWidth<=document.documentElement.clientWidth;'
@@ -2299,6 +2358,32 @@ try {
     'return await window.solidContacts.store.service.workspace.graph("contacts").write();'
   );
   assert.match(tombstone, /deleted/);
+  const contactsBeforeDisconnect = await evaluate(
+    'return solidContacts.ui.runtime.collectionKey;'
+  );
+  await account('connectDialog');
+  await click('[data-simply-command=swb_accountDisconnect]');
+  await wait('solidContacts.host.session.disconnected');
+  const beforeDisconnectedReload = calls.length;
+  await visit('contacts/');
+  await wait('window.solidContacts?.store');
+  assert.equal(await evaluate('return solidContacts.ui.runtime.collectionKey;'),
+    contactsBeforeDisconnect, 'Disconnected reload reopens the same native local collection.');
+  assert.equal(await evaluate('return solidContacts.host.session;'), null);
+  assert.equal(await evaluate('return solidContacts.host.view.data.muzeSolidUiAccountStatus;'),
+    'Disconnected');
+  const reloadedContacts = await evaluate(`
+    return solidContacts.store.collection.list().map(node =>
+      solidContacts.ui.api.readProfile(node).name);
+  `);
+  assert(reloadedContacts.includes('Robin de Vries'),
+    'Disconnected native collection: ' + JSON.stringify(reloadedContacts));
+  await wait('document.querySelector(".swb-person-list").textContent.includes("Robin de Vries")');
+  assert.equal(calls.length, beforeDisconnectedReload,
+    'Disconnected reload performs no Pod discovery or reads.');
+  await account('connectDialog');
+  await submit('.connect-dialog form', { webId });
+  await wait('solidContacts.host.session && !document.querySelector(".connect-dialog").open');
   const otherTarget = await page.send('Target.createTarget', {
     url: appBase + 'workbench/'
   });
@@ -2319,17 +2404,25 @@ try {
     })
   );
   await account('connectDialog');
-  await wait('!document.querySelector(".swb-logout-section").hidden');
+  await wait('!document.querySelector(".muze-solid-ui-account-frame").contentDocument.querySelector(".swb-logout-section").hidden');
   await evaluate(
     'await solidContacts.host.view.actions.swb_refreshPreferences();'
   );
   const beforeLogout = calls.length;
-  const reloaded = page.once('Page.loadEventFired');
-  const otherReloaded = otherPage.once('Page.loadEventFired');
-  await click('[data-simply-command=logout]');
-  await Promise.all([reloaded, otherReloaded]);
-  await page.ready();
-  await otherPage.ready();
+  await click('[data-simply-command=swb_accountLogout]');
+  assert.equal(
+    await otherPage.evaluate(async () => {
+      for (let attempt = 0; attempt < 150; attempt++) {
+        if (window.solidLauncher && !window.solidLauncher.host.session) {
+          return true;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 40));
+      }
+      return false;
+    }),
+    true,
+    'Other open apps clear authorization without reloading.'
+  );
   await wait(
     'window.solidContacts?.store && !window.solidContacts.host.session'
   );
@@ -2347,17 +2440,19 @@ try {
     await evaluate(
       'return document.querySelector(".swb-person-list").textContent.includes("Robin de Vries");'
     ),
-    false,
-    'Signing out opens anonymous local data, retaining owner data separately.'
+    true,
+    'Signing out retains the open owner-labelled local data without a reload.'
   );
   await account('connectDialog');
   assert.equal(
-    await evaluate('return document.querySelector(".swb-logout-section").hidden;'),
+    await evaluate(
+      'return document.querySelector(".muze-solid-ui-account-frame").contentDocument.querySelector(".swb-logout-section").hidden;'
+    ),
     true
   );
   assert.equal(
     await evaluate(
-      'return document.querySelector(".connect-dialog [name=webId]").value;'
+      'return document.querySelector(".muze-solid-ui-account-frame").contentDocument.querySelector("[name=webId]").value;'
     ),
     ''
   );
@@ -2413,6 +2508,8 @@ catch (error) {
     'Current app:',
     await page.evaluate(() => ({
       errors: window.__fixtureErrors,
+      accountFrame: document.querySelector('.muze-solid-ui-account-frame')?.contentDocument?.body?.innerText,
+      accountState: JSON.stringify(document.querySelector('.muze-solid-ui-account-frame')?.contentWindow?.swbAccountApp?.data),
       frame: document.querySelector('iframe')?.contentDocument?.body?.innerText,
       frameErrors:
         document.querySelector('iframe')?.contentWindow?.__fixtureErrors,

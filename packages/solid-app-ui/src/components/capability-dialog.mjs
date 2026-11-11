@@ -82,6 +82,8 @@ export const muzeSolidUiCapabilityDialog = {
         call.popup ||
         call.close ||
         call.focusRequested ||
+        (call.waitForPresentation && !call.presentationReady) ||
+        this.container.ownerDocument.activeElement === frame ||
         call.capability !== this.api.editPreferencesCapability ||
         call.controller.signal.aborted ||
         !this.runtime.muzeSolidUiDialog.open ||
@@ -111,7 +113,9 @@ export const muzeSolidUiCapabilityDialog = {
       }
       if (event.data?.type === 'solid-apps:presentation-ready') {
         if (call.attached && event.data.id === call.ticket.id) {
+          call.presentationReady = true;
           this.actions.muzeSolidUiRevealCapability(call);
+          this.actions.muzeSolidUiFocusPresentation();
         }
         return;
       }

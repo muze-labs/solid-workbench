@@ -1,0 +1,28 @@
+/* DS adapter; controls use the same suite primitives as other dialog apps. */
+@layer theme {
+  .swb-account-controls {
+    --swb-account-space: var(--ds-space);
+    --swb-account-space-small: var(--ds-space-d2);
+    --swb-account-surface: var(--ds-color-background);
+    --swb-account-text: var(--ds-color-contrast);
+  }
+}
+@layer component {
+  .swb-account-controls {
+    box-sizing: border-box;
+    min-height: 100dvh;
+    background: var(--swb-account-surface, Canvas);
+    color: var(--swb-account-text, CanvasText);
+    padding: var(--swb-account-space, 1rem);
+    overflow-wrap: anywhere;
+  }
+  .swb-account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--swb-account-space-small, 0.5rem);
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-inline-size: 0;
+  }
+}
