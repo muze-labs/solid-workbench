@@ -20,6 +20,21 @@ export const contactSession = {
     }
   },
   actions: {
+    swb_contactsResource() {
+      const host = this.runtime.host;
+      const owner = host.selectedWebId || 'anonymous';
+      const workspace = host.workspaceContext?.id || 'standalone';
+      const cacheKey = 'solid-apps.contacts-resource:' + owner + ':' + workspace;
+      const configured = host.workspaceContext?.settings.contactsResource ??
+        host.preferences.contactsResource;
+      let resource = localStorage.getItem(cacheKey) || 'contacts';
+      if (host.session || configured) {
+        resource = host.resource('contacts');
+      }
+      // Remember the local dataset's address, not a copy of its native RDF.
+      localStorage.setItem(cacheKey, resource);
+      return resource;
+    },
     async initialize() {
       this.actions.initializeList();
       this.runtime.widget = this.api.profileView(
@@ -33,9 +48,7 @@ export const contactSession = {
       await this.runtime.host.ready;
       await this.runtime.host.run(async () => {
         const owner = this.runtime.host.selectedWebId || 'anonymous';
-        const resource = this.runtime.host.session
-          ? this.runtime.host.resource('contacts')
-          : 'contacts';
+        const resource = this.actions.swb_contactsResource();
         this.runtime.collectionKey = owner + ':' + resource;
         this.runtime.collectionOwner = this.runtime.host.selectedWebId || '';
         this.runtime.contactsResource = resource;
@@ -47,7 +60,7 @@ export const contactSession = {
       });
       this.runtime.host.onContext = async () => {
         const owner = this.runtime.host.selectedWebId || 'anonymous';
-        const resource = this.runtime.host.resource('contacts');
+        const resource = this.actions.swb_contactsResource();
         const key = owner + ':' + resource;
         if (this.runtime.collectionKey === key) {
           return;

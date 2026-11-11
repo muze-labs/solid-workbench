@@ -141,6 +141,32 @@ export async function saveDocument(client, document) {
     etag: response.headers.get('ETag')
   };
 }
+// Clear credentials through the public stores even after a disconnected reload.
+// The remembered issuer is discovery metadata, never an authorization token.
+export function logoutAccount(webId, issuer) {
+  if (!issuer) {
+    issuer = localStorage.getItem('solid-apps.issuer:' + webId);
+  }
+  if (!issuer) {
+    return;
+  }
+  const account = issuer + '|' + webId;
+  const oauth = tokenStore(account);
+  for (const name of [
+    'access_token',
+    'refresh_token',
+    'authorization_code',
+    'code_verifier'
+  ]) {
+    oauth.tokens.delete(name);
+  }
+  oauth.state.delete();
+  const identity = oidcStore(account);
+  for (const name of ['id_token', 'id_token_claims', 'pending_nonce']) {
+    identity.set(name, null);
+  }
+}
+
 export async function connectSession(
   webId,
   popup,
@@ -151,8 +177,22 @@ export async function connectSession(
   } = {}
 ) {
   webId = httpUrl(webId);
+  const disconnectKey = 'solid-apps.disconnected:' + webId;
+  const logoutKey = 'solid-apps.logout:' + webId;
+  const logoutGeneration = localStorage.getItem(logoutKey);
+  function requireConnected() {
+    if (localStorage.getItem(disconnectKey) === 'true') {
+      const error = new Error(
+        'solid-app-data: Disconnected. Connect to resume Pod access.'
+      );
+      error.code = 'disconnected';
+      throw error;
+    }
+  }
+  requireConnected();
   const discovery = solidApi(webId);
   const profile = await discovery.discoverWebId(webId);
+  localStorage.setItem('solid-apps.issuer:' + webId, profile.issuer || '');
   let authPopup = popup;
   let active = true;
   let operations = 0;
@@ -171,7 +211,8 @@ export async function connectSession(
     return error;
   }
   function requireActive() {
-    if (!active) {
+    requireConnected();
+    if (!active || localStorage.getItem(logoutKey) !== logoutGeneration) {
       throw new Error(
         'solid-app-data: This Solid session has been logged out.'
       );
@@ -189,7 +230,7 @@ export async function connectSession(
       client_name: 'Muze Solid Apps',
       redirect_uris: [new URL('../redirect.html', location.href).href]
     },
-    authorize_callback: async (url) => {
+    authorize_callback: async (url, completion) => {
       requireActive();
       if (interactiveOperations === 0 && (operations > 0 || !interactive)) {
         onAuthenticationRequired?.({ pending: false });
@@ -197,7 +238,7 @@ export async function connectSession(
       }
       if ((!authPopup || authPopup.closed) && recoveryEnabled) {
         authPopup = await new Promise((resolve, reject) => {
-          pendingAuthorization = { resolve, reject };
+          pendingAuthorization = { resolve, reject, completion };
           onAuthenticationRequired({ pending: true });
         });
         pendingAuthorization = null;
@@ -254,12 +295,31 @@ export async function connectSession(
         }
         return response;
       });
+      let completeAuthorization;
+      let failAuthorization;
+      const completion = new Promise((resolve, reject) => {
+        completeAuthorization = resolve;
+        failAuthorization = reject;
+      });
+      // Most requests have no waiting sign-in UI. Keep their failures owned by
+      // the request, while allowing a pending sign-in command to join it.
+      completion.catch(() => {});
       const authorized = createSolidMetroClient(base, {
         ...options,
         client: transport,
+        authorize_callback: (url) => options.authorize_callback(url, completion),
         force_authorization: forceAuthorization
       });
-      return recoverRequest(request, (retry) => authorized.fetch(retry));
+      try {
+        const response = await recoverRequest(request, (retry) =>
+          authorized.fetch(retry));
+        completeAuthorization();
+        return response;
+      }
+      catch (error) {
+        failAuthorization(error);
+        throw error;
+      }
     });
   }
   const client = sessionClient();
@@ -293,12 +353,30 @@ export async function connectSession(
     preferencesUrl: idOf(
       many(valueAt(profile.profile, prefixes.pim + 'preferencesFile'))[0]
     ),
+    get hasStoredAuthorization() {
+      return Boolean(oauth.tokens.get('access_token') ||
+        oauth.tokens.get('refresh_token'));
+    },
     get hasUsableAccessToken() {
       const token = oauth.tokens.get('access_token');
       return Boolean(token && !isExpired(token));
     },
+    get disconnected() {
+      return localStorage.getItem(disconnectKey) === 'true';
+    },
+    disconnect() {
+      localStorage.setItem(disconnectKey, 'true');
+      session.cancelSignIn();
+    },
+    reconnect() {
+      localStorage.removeItem(disconnectKey);
+    },
     useSharedAuthorization() {
-      if (!session.hasUsableAccessToken || !pendingAuthorization) {
+      if (
+        session.disconnected ||
+        !session.hasUsableAccessToken ||
+        !pendingAuthorization
+      ) {
         return false;
       }
       const error = new Error(
@@ -319,7 +397,17 @@ export async function connectSession(
     async signIn(popup) {
       requireActive();
       authPopup = popup;
-      pendingAuthorization?.resolve(popup);
+      if (pendingAuthorization) {
+        const pending = pendingAuthorization;
+        pending.resolve(popup);
+        // The queued request already owns authorization and this popup. A
+        // parallel probe can start a second OAuth flow in the same window.
+        await pending.completion;
+        if (!session.hasUsableAccessToken) {
+          throw signInRequired();
+        }
+        return;
+      }
       // A forced authorized GET validates renewal even for a public profile.
       // It does not reload app state or replay any application operation.
       return session.perform(async () => {
@@ -335,24 +423,7 @@ export async function connectSession(
       if (!profile.issuer) {
         return;
       }
-      // Match Metro-OIDC's issuer + WebID account scope. Use the libraries'
-      // public stores rather than depending on their localStorage key layout.
-      const account = profile.issuer + '|' + webId;
-      const oauth = tokenStore(account);
-      for (const name of [
-        'access_token',
-        'refresh_token',
-        'authorization_code',
-        'code_verifier'
-      ]) {
-        oauth.tokens.delete(name);
-      }
-      oauth.state.delete();
-      const identity = oidcStore(account);
-      // The OIDC store exposes get/set/has; null clears the cached values.
-      for (const name of ['id_token', 'id_token_claims', 'pending_nonce']) {
-        identity.set(name, null);
-      }
+      logoutAccount(webId, profile.issuer);
     },
     async perform(operation, { interactive = true } = {}) {
       requireActive();

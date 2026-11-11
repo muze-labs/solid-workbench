@@ -9,7 +9,7 @@ export const lifecycle = {
         onChange: () =>
           this.runtime.host.managed
             ?.publish()
-            .catch((error) => this.runtime.host.message(error.message))
+            .catch((error) => this.runtime.host.message(error))
       });
       this.runtime.launchPending =
         Boolean(this.runtime.host.launch.resource) && !this.runtime.host.task;

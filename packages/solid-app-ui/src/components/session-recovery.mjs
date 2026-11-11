@@ -25,7 +25,7 @@ export const sessionRecovery = {
       // Reserve the window in the click handler, before any asynchronous work.
       const popup = window.open(
         '',
-        'solid-apps-auth',
+        '_blank',
         'popup,width=520,height=720'
       );
       this.data.muzeSolidUiRecoveryButton = { disabled: '' };
@@ -37,7 +37,7 @@ export const sessionRecovery = {
           );
         }
         await this.runtime.session.signIn(popup);
-        this.data.muzeSolidUiRecoveryVisibility = { hidden: '' };
+        this.actions.muzeSolidUiAuthenticationRestored();
         await this.actions.muzeSolidDesignCloseDialog(
           this.runtime.root.querySelector('.muze-solid-ui-recovery-dialog')
         );
@@ -46,7 +46,7 @@ export const sessionRecovery = {
           await this.runtime.preferences.recover(this.runtime.session);
         }
         catch (error) {
-          this.actions.message(error.message);
+          this.actions.message(error);
         }
       }
       catch (error) {
@@ -69,6 +69,13 @@ export const sessionRecovery = {
   actions: {
     muzeSolidUiAuthenticationRestored() {
       this.data.muzeSolidUiRecoveryVisibility = { hidden: '' };
+      const error = this.runtime.messageError;
+      if (error?.code === 'sign_in_required' &&
+          this.data.message === error.message) {
+        this.actions.message('');
+      }
+      this.actions.muzeSolidUiAccountStatus();
+      this.runtime.host.onAuthenticationRestored?.();
     },
     muzeSolidUiSharedAuthorization() {
       const session = this.runtime.session;
@@ -90,7 +97,14 @@ export const sessionRecovery = {
       }
     },
     muzeSolidUiAuthenticationRequired({ pending }) {
+      const wasRequired =
+        this.data.muzeSolidUiRecoveryVisibility.hidden === null;
       this.data.muzeSolidUiRecoveryVisibility = { hidden: null };
+      this.actions.muzeSolidUiAccountStatus();
+      if (!wasRequired) {
+        this.actions.notify('Sign in again to continue with Solid. ' +
+          'Your edits are retained.');
+      }
       if (pending) {
         this.data.muzeSolidUiRecoveryError = '';
         this.actions.muzeSolidDesignOpenDialog(

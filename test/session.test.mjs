@@ -69,6 +69,33 @@ test('logout clears only this account, closes its popup and rejects retained cli
   oidcStore(otherAccount).set('id_token', 'other ID token');
   oidcStore(issuer).set('client_info', { client_id: 'registered client' });
 
+  const beforeDisconnect = requests;
+  session.disconnect();
+  assert.equal(session.disconnected, true);
+  assert.equal(oauth.tokens.get('refresh_token').value, 'credential');
+  await assert.rejects(
+    session.perform(() => assert.fail('No Pod operation')),
+    { code: 'disconnected' }
+  );
+  await assert.rejects(session.client.get('https://pod.example/storage/'), {
+    code: 'disconnected'
+  });
+  await assert.rejects(connectSession(webId, null, { interactive: false }), {
+    code: 'disconnected'
+  });
+  assert.equal(requests, beforeDisconnect, 'Disconnect also blocks discovery.');
+  session.reconnect();
+  assert.equal(session.disconnected, false);
+  assert.equal(await session.perform(() => 'local result'), 'local result');
+  const sibling = await connectSession(webId, null, { interactive: false });
+  localStorage.setItem('solid-apps.logout:' + webId, 'new logout generation');
+  const beforeSharedLogout = requests;
+  await assert.rejects(sibling.perform(() => assert.fail('No retained operation')),
+    /logged out/);
+  await assert.rejects(sibling.client.get('https://pod.example/storage/'),
+    /logged out/);
+  assert.equal(requests, beforeSharedLogout,
+    'Account logout gates retained clients before storage event delivery.');
   session.logout();
   session.logout();
   assert.equal(popup.closed, true);

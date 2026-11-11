@@ -30,6 +30,28 @@ export const lifecycle = {
           return this.actions.swb_openDiagnostics();
         }
       };
+      this.runtime.host.onAuthenticationRestored = () => {
+        const error = this.runtime.workspaceError;
+        if (
+          error?.code === 'sign_in_required' &&
+          this.data.workspaceMessage === error.message
+        ) {
+          this.actions.workspaceMessage('');
+          sessionStorage.removeItem('solid-apps.workspace-message');
+        }
+      };
+      this.runtime.host.beforeAccountLeave = async () => {
+        await this.runtime.workspace?.checkpoint();
+        await this.runtime.persistence?.work;
+        await this.runtime.persistence?.persist();
+      };
+      this.runtime.host.accountChanged = async (session) => {
+        // Other app windows can acquire edits while the sign-in popup is open.
+        await this.runtime.host.beforeAccountLeave();
+        this.runtime.workspace?.closeApps();
+        localStorage.setItem('solid-apps.webId', session.webId);
+        window.location.reload();
+      };
       this.runtime.host.onConnect = async () => {
         this.actions.renderLinks();
         if (this.runtime.store) {

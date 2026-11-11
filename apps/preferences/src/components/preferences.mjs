@@ -69,6 +69,13 @@ export const preferences = {
     },
     async swb_initializePreferences() {
       const host = this.runtime.host;
+      host.onAuthenticationRestored = () => {
+        if (this.runtime.syncError?.code === 'sign_in_required' &&
+            this.data.swb_status === this.runtime.syncErrorMessage) {
+          this.data.swb_status =
+            'Signed in. Your choices are retained; retry synchronization.';
+        }
+      };
       host.onConnect = () => this.actions.swb_loadSettings();
       host.onPreferences = () => this.actions.swb_receiveSharedSettings();
       await host.ready;
@@ -240,10 +247,9 @@ export const preferences = {
         return;
       }
       const session = this.runtime.host.session;
-      if (!session?.preferencesUrl || !navigator.onLine) {
-        this.data.swb_status =
-          'Saved choices stay on this device. ' +
-          'Connect to synchronize with your Pod.';
+      if (!session?.preferencesUrl || session.disconnected ||
+          !navigator.onLine) {
+        this.data.swb_status = '';
         return;
       }
       try {
@@ -263,7 +269,12 @@ export const preferences = {
         this.data.swb_conflicts = [];
       }
       catch (error) {
-        this.data.swb_status = 'Your choices are retained. ' + error.message;
+        const connectionRequired =
+          ['sign_in_required', 'disconnected'].includes(error.code);
+        this.data.swb_status = connectionRequired
+          ? '' : 'Your choices are retained. ' + error.message;
+        this.runtime.syncError = error;
+        this.runtime.syncErrorMessage = this.data.swb_status;
         this.data.swb_conflicts = (this.runtime.settings.conflicts || []).map(
           (id) => ({
             id,

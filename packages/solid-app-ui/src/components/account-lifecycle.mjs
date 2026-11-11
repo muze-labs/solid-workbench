@@ -1,5 +1,10 @@
 export const accountLifecycle = {
   events: {
+    muzeSolidUiOffline: {
+      target: 'window',
+      type: 'offline',
+      action: 'muzeSolidUiAccountStatus'
+    },
     swbAccountStorage: {
       target: 'window',
       type: 'storage',
@@ -37,9 +42,11 @@ export const accountLifecycle = {
             ...this.runtime.workspaceContext?.settings
           };
           this.runtime.host.onPreferences?.(this.runtime.settings);
+          this.actions.muzeSolidUiPublishAccount?.();
         }
       });
       this.api.applyPreferences(this.runtime.settings);
+      this.actions.muzeSolidUiAccountStatus();
       let remembered = '';
       try {
         remembered = localStorage.getItem('solid-apps.webId') || '';
@@ -55,7 +62,7 @@ export const accountLifecycle = {
       this.runtime.selectedWebId = remembered || launch.webId || '';
       this.runtime.preferences
         .refresh()
-        .catch((error) => this.actions.message(error.message));
+        .catch((error) => this.actions.message(error));
 
       this.runtime.host.ready = Promise.resolve();
       if (different) {
@@ -77,6 +84,7 @@ export const accountLifecycle = {
       this.eventBindings.start();
     },
     async swb_refreshPreferences() {
+      this.actions.muzeSolidUiAccountStatus();
       if (document.visibilityState !== 'hidden') {
         try {
           await this.runtime.preferences.refresh();
@@ -89,7 +97,7 @@ export const accountLifecycle = {
           }
         }
         catch (error) {
-          this.actions.message(error.message);
+          this.actions.message(error);
         }
       }
     },
@@ -114,6 +122,7 @@ export const accountLifecycle = {
       window.location.reload();
     },
     cleanup() {
+      this.actions.muzeSolidUiCleanupAccount();
       this.actions.muzeSolidUiCleanupCapability();
       this.runtime.preferenceBroker?.dispose();
     }

@@ -52,7 +52,7 @@ export const profileResource = {
       });
       this.runtime.host.managed
         ?.publish()
-        .catch((error) => this.runtime.host.message(error.message));
+        .catch((error) => this.runtime.host.message(error));
     },
     openLaunch: async function () {
       if (!this.runtime.launchPending || this.runtime.host.launchError) {
