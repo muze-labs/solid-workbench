@@ -1,5 +1,16 @@
 # Solid Workbench project context
 
+## Current build-budget policy, 2026-11-09
+
+The maintainer explicitly requests that budget checks never fail builds or
+prevent npm run dev startup; warnings are allowed. CYC129/SRC130 record this
+prospective change, superseding mandatory build enforcement in earlier entries
+and cycle-specific allowances. Complete app graphs including auth callback
+remain measured and reported; numerical thresholds are advisory. The dedicated
+branch is spiral/CYC-20261109-QG24H-129-budget-warnings. Existing uncommitted
+CYC124 account-status work is preserved outside this change. No human acceptance,
+commit, merge or publication is inferred.
+
 Intake status: **Complete**
 
 Started: 2026-11-01, at the maintainer's request to read `.spiral-core`
@@ -1792,3 +1803,14 @@ pending review notes. Normal merge and push of main/cycle branches are
 authorized after exact validation. EVD127 retains browser focus qualifications
 and the local Metro patch/release limitation. CYC129 is accepted separately;
 unrelated design/icon files remain excluded. No package publication is requested.
+
+
+## CYC129 accepted for integration, 2026-11-11
+
+The maintainer explicitly confirms “Accept both cycles” after requesting commit,
+merge and push. ACC132 accepts budget snapshot 8fe2123bb30b013bf1e0cda4bb0def4a56649114.
+CYC129 is Accepted, superseding earlier pending review notes. Normal merge and
+push of main/cycle branches are authorized after exact validation. This adds no
+app bytes/dependencies and preserves non-budget errors. CYC124 remains a separate
+accepted cycle; no package publication or unrelated design-file commit is
+requested.

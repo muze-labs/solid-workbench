@@ -217,8 +217,10 @@ the earlier workspace failure. Checks use isolated fixtures, not real OIDC.
 
 The build measures each app's JavaScript import graph plus the authentication
 callback, counting shared chunks once per app. It writes `www/size-report.json`
-and rejects totals of 200,000 gzip bytes or more for either output variant
-(gzip level 6; source maps are excluded). The report's `apps` entries describe
+and warns about totals of 200,000 gzip bytes or more for either output variant
+(readable Workbench warns above 220,033 bytes). Budgets are advisory and never
+fail a build or prevent `npm run dev` from starting. Measurements use gzip
+level 6; source maps are excluded. The report's `apps` entries describe
 minified production graphs; `readableApps` contains readable totals, and
 `servedVariant` identifies which entry scripts the generated pages load. This
 budget measures compressed JavaScript, not offline/PWA support.
