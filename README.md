@@ -25,11 +25,11 @@ running server's configuration.
 Node 20.6 or newer is required for the build; the browser integration harness uses
 Node 22 or newer (native WebSocket) and `google-chrome` on PATH. Use localhost or
 HTTPS so browser storage, crypto and authentication work. Deploy `www/` as static
-files, preserving all four app paths and `/redirect.html`. External dependencies
+files, preserving all six app paths and `/redirect.html`. External dependencies
 come from npm; workspace links only connect packages inside this repository.
 
 Contacts and shortcuts work locally in IndexedDB before connecting. Enter a WebID
-through **Connect Solid**, then choose **Sync with Solid** in Contacts or Launcher.
+through **WebID / connection**, then choose **Sync with Solid** in Contacts or Launcher.
 The connected WebID is remembered on this origin. Background restoration does not
 open a login popup; a user gesture is required when sign-in is needed.
 
@@ -43,8 +43,8 @@ Shortcut collection sync is separate.
 
 When connected, **WebID / connection** also offers **Log out**. It clears the
 current account's cached access, refresh and ID tokens and the remembered WebID.
-The app reloads to discard connected clients; other open suite tabs on the same
-origin disconnect too. Local contacts and shortcuts remain in IndexedDB. This is
+Open suite apps on the same origin discard authorization without reloading
+local editors. Launcher also checkpoints and closes its managed apps. Local contacts and shortcuts remain in IndexedDB. This is
 logout from these apps; the identity provider may retain its own login session.
 
 ## Applications
@@ -55,6 +55,8 @@ logout from these apps; the identity provider may retain its own login session.
 | Contacts | Add sparse contacts, search, view/edit profiles, delete with tombstones, local persistence and explicit Solid sync. |
 | Profile | Read a WebID profile, edit your connected profile, or edit a local contact using the same component as Contacts. |
 | Files | Browse folders, create folders, upload/download binary files, and mark resources deleted through link metadata. |
+| Preferences | Dialog app for shared appearance, app settings and default providers. |
+| Account | Dialog app for WebID, connection status, connect/disconnect and browser logout; Workbench coordinates managed switching. |
 
 Contact fields include name, emails, phone numbers, websites, public-profile link
 and notes. Names and WebIDs are optional. Editing a private contact does not edit

@@ -88,7 +88,7 @@ export const resourcePicker = {
         };
       }
       if (error) {
-        this.runtime.host.message(error.message);
+        this.runtime.host.message(error);
         this.runtime.host.run(() =>
           this.runtime.host.managed.respond(event.id, { error })
         );

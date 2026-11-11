@@ -42,6 +42,32 @@
     inset: 0 0 auto auto;
     z-index: 100;
   }
+  .muze-solid-ui-account-dialog[open] {
+    --swb-dialog-content-padding: 0;
+    width: min(36rem, calc(100vw - 2rem));
+    height: min(38rem, calc(100dvh - 2rem));
+  }
+  .swb-account-stage {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .swb-account-loading:empty {
+    display: none;
+  }
+  .muze-solid-ui-account-frame {
+    border: 0;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+  }
+  .muze-solid-ui-account-status {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    margin: 0;
+    color: var(--swb-header-text, inherit);
+  }
   .swb-account-button {
     clip-path: polygon(0 0, 17px 100%, 100% 100%, 100% 0);
     display: inline-flex;
@@ -82,6 +108,10 @@
     display: none;
   }
   @media (max-width: 720px) {
+    .muze-solid-ui-account-dialog[open] {
+      width: 100%;
+      height: 100dvh;
+    }
     .swb-suite-header {
       padding-inline: var(--swb-header-space-small, 0.5rem);
     }
@@ -112,11 +142,6 @@
     min-height: 2.75rem;
     cursor: pointer;
   }
-  .swb-logout-section {
-    margin-top: var(--swb-header-space, 1rem);
-    padding-top: var(--swb-header-space-small, 0.5rem);
-    border-top: 1px solid var(--swb-header-border, GrayText);
-  }
   .swb-suite-header:has(.muze-solid-ui-embedded:not([hidden])) {
     --swb-header-title-display: none;
     --swb-header-name-display: none;
@@ -141,6 +166,11 @@
   .swb-account-button:focus-visible {
     outline: var(--swb-header-marker-outline, revert);
     outline-offset: -3px;
+  }
+  @media (max-width: 720px) {
+    .swb-account-name {
+      max-width: 25vw;
+    }
   }
   @media (max-width: 359px) {
     /* Narrow/zoomed widths give fixed account controls their own row. */

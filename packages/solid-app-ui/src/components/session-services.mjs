@@ -4,7 +4,17 @@ export const sessionServices = {
       this.actions.muzeSolidDesignNotify(text);
     },
     message(text) {
-      this.data.message = text;
+      // Account state is already exposed by the toolbar. Keep unrelated errors.
+      if (text?.code === 'sign_in_required' ||
+          (text?.code === 'disconnected' &&
+            this.runtime.session?.disconnected)) {
+        return;
+      }
+      this.runtime.messageError = text instanceof Error ? text : null;
+      this.data.message = this.runtime.messageError
+        ? text.message
+        : text;
+      this.actions.muzeSolidUiPublishAccount?.();
     },
     async run(operation, { network = false } = {}) {
       try {
@@ -17,7 +27,7 @@ export const sessionServices = {
         if (['cancelled', 'sign_in_required'].includes(error.code)) {
           return undefined;
         }
-        this.data.message = error.message || String(error);
+        this.actions.message(error);
         return undefined;
       }
     },

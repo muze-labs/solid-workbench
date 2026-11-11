@@ -1,0 +1,37 @@
+  <form class="swb-account-controls" data-simply-command="swb_accountConnect">
+    <p role="status" data-simply-field="swb_accountStatus"
+      data-simply-transform="escape_html"></p>
+    <label>WebID<input class="swb-control swb-labeled-control" type="url"
+      name="webId" data-simply-field="webId" required
+      placeholder="https://example.org/profile/card#me" autocomplete="url"
+    /></label>
+    <p>Your profile supplies your storage and preferences locations.</p>
+    <p>Disconnect pauses Pod access in open suite apps. Connect resumes it.
+      Local edits stay on this device.</p>
+    <section class="swb-logout-section" hidden
+      data-simply-field="swb_accountControls"
+      data-simply-transform="attributes" data-simply-attributes="hidden">
+      <p>Log out of Solid Apps on this browser. Your local contacts and
+        shortcuts stay on this device.</p>
+    </section>
+    <p role="status" data-simply-field="swb_accountMessage"
+      data-simply-transform="escape_html"></p>
+    <fieldset class="swb-account-actions"
+      data-simply-field="swb_accountDisabled"
+      data-simply-transform="attributes" data-simply-attributes="disabled"
+      disabled>
+      <button class="ds-button ds-button-primary">Connect</button>
+      <button type="button" class="ds-button"
+        data-simply-command="swb_accountDisconnect"
+        data-simply-field="swb_accountControls"
+        data-simply-transform="attributes" data-simply-attributes="hidden"
+        hidden>Disconnect</button>
+      <button type="button" class="ds-button" data-simply-command="swb_accountLogout"
+        data-simply-field="swb_accountControls"
+        data-simply-transform="attributes" data-simply-attributes="hidden"
+        hidden>Log out</button>
+    </fieldset>
+    <button type="button" class="ds-button" data-simply-command="swb_accountClose">
+      Cancel
+    </button>
+  </form>

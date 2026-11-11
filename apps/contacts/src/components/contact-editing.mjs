@@ -42,8 +42,9 @@ export const contactEditing = {
           'contacts: Reopen Contacts for the selected WebID. Previous data is retained.'
         );
       }
-      if (!this.runtime.collectionOwner) {
-        const resource = this.runtime.host.resource('contacts');
+      if (!this.runtime.collectionOwner ||
+          this.runtime.contactsResource === 'contacts') {
+        const resource = this.actions.swb_contactsResource();
         const key = session.webId + ':' + resource;
         if (this.runtime.store.collection.list().length) {
           await this.api.recoverCollection(this.runtime.collectionKey, key);

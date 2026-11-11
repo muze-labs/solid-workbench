@@ -388,6 +388,15 @@ and observe each header update without rewriting unrelated profile data.
 
 ### Shared account-status control and connection dialog
 
+CYC124 scope revised by the maintainer on 2026-11-11: present account controls
+in a separate dialog-only Account app. The shell retains its live session,
+status and recovery; Workbench retains managed switching and checkpoints.
+Account has a dedicated presentation slot so opening it from Preferences does
+not discard that editor. Only the shipped same-origin Account frame receives
+its control port; this is not replaceable-provider account authority. No
+Launcher tile, application icon or token service is introduced. Implementation
+and evaluation are accepted in CYC124 under ACC131 on 2026-11-11.
+
 Requested by the maintainer on 2026-11-09. Add a compact status icon or bare
 button beside the user name in the shared top bar. It shows the current account/
 connection status and opens a shared dialog for connecting, disconnecting,

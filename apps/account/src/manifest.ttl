@@ -1,0 +1,4 @@
+@prefix schema: <https://schema.org/> .
+<> a schema:SoftwareApplication ;
+    schema:name "Account" ;
+    schema:url <./> .

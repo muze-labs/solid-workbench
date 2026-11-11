@@ -1,3 +1,4 @@
+import { waitForAccount, clickAccount, submitAccount } from './support/account-browser.mjs';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -25,7 +26,11 @@ let preferenceVersion = 1;
 let tokenFailure = '';
 let holdToken = false;
 let releaseToken;
+let tokenBarrier;
 let denyWrites = false;
+let publicPreferences = false;
+let holdAuthorization = false;
+let releaseAuthorization;
 let profileName = 'Recovery fixture';
 function json(response, data, status = 200) {
   response.writeHead(status, { 'Content-Type': 'application/json' });
@@ -74,6 +79,8 @@ function validProof(request) {
   }
 }
 const server = createServer(async (request, response) => {
+  // Match the development server and keep OAuth responses/callback loads fresh.
+  response.setHeader('Cache-Control', 'no-store');
   try {
     const url = new URL(request.url, origin);
     const path = url.pathname;
@@ -83,6 +90,9 @@ const server = createServer(async (request, response) => {
         scope: url.searchParams.get('scope'),
         prompt: url.searchParams.get('prompt')
       });
+      if (holdAuthorization) {
+        await new Promise(resolve => { releaseAuthorization = resolve; });
+      }
       const code = 'code-' + codes.size;
       codes.set(code, Object.fromEntries(url.searchParams));
       const redirect = new URL(url.searchParams.get('redirect_uri'));
@@ -114,9 +124,12 @@ const server = createServer(async (request, response) => {
       const grant = form.get('grant_type');
       calls.push({ path, grant });
       if (holdToken) {
-        await new Promise((resolve) => {
+        // Concurrent exchanges must share one release barrier. Overwriting a
+        // single resolver can leave an earlier cancelled request held forever.
+        tokenBarrier ||= new Promise((resolve) => {
           releaseToken = resolve;
         });
+        await tokenBarrier;
       }
       assert.ok(validProof(request), 'Token exchange has a valid DPoP proof.');
       if (tokenFailure) {
@@ -160,7 +173,8 @@ const server = createServer(async (request, response) => {
         validProof(request);
       calls.push({ path, method: request.method, authorized });
       if (path !== '/fixture/profile' || request.method !== 'GET') {
-        if (!authorized) {
+        if (!authorized && !(publicPreferences &&
+            path === '/fixture/preferences' && request.method === 'GET')) {
           response.writeHead(401, { 'WWW-Authenticate': 'DPoP' }).end();
           return;
         }
@@ -256,7 +270,10 @@ async function wait(predicate) {
     'session-browser: Timeout: ' +
       predicate +
       '\n' +
-      (await page.evaluate(() => document.body.innerText))
+      (await page.evaluate(() => document.body.innerText)) +
+      '\nFixture request trace: ' + JSON.stringify(calls.map(
+        ({ path, grant, write, authorized }) => ({ path, grant, write, authorized })
+      ))
   );
 }
 async function prefEvaluate(fn) {
@@ -334,6 +351,22 @@ try {
   browser = await startChrome(origin + '/seed', { allowPopups: true });
   page = await browser.page();
   await page.ready();
+  await page.send('Page.addScriptToEvaluateOnNewDocument', { source: `
+    window.muzeSolidUiSessionFixtureMessages = [];
+    const openWindow = window.open.bind(window);
+    window.open = (...args) => {
+      const popup = openWindow(...args);
+      window.muzeSolidUiSessionFixturePopup = popup;
+      return popup;
+    };
+    addEventListener('message', event => {
+      window.muzeSolidUiSessionFixtureMessages.push({
+        keys: Object.keys(event.data || {}),
+        samePopup: event.source === window.muzeSolidUiSessionFixturePopup,
+        origin: event.origin
+      });
+    });
+  ` });
   await page.evaluate(() => {
     const issuer = location.origin + '/';
     const webId = location.origin + '/fixture/profile#me';
@@ -357,7 +390,7 @@ try {
         token_endpoint_auth_method: 'none'
       })
     );
-    location.href = '/profile/';
+    location.href = '/profile/#' + new URLSearchParams({ webid: webId });
   });
   await wait(() => Boolean(window.solidProfile?.ui));
   await page.evaluate(() =>
@@ -367,8 +400,8 @@ try {
   await wait(
     () =>
       !document.querySelector(
-        '[data-simply-field="muzeSolidUiRecoveryVisibility"]'
-      ).hidden
+        '[data-simply-field="muzeSolidUiStatusButton"]'
+      ).matches(':not([title="Sign in again"])')
   );
   assert.equal(
     calls.filter((call) => call.path === '/authorize').length,
@@ -496,7 +529,11 @@ try {
   holdToken = false;
   releaseToken();
   releaseToken = null;
+  tokenBarrier = null;
   await wait(() => !window.solidProfile.ui.runtime.profile.saving);
+  await wait(() => !document.querySelector(
+    '.muze-solid-ui-recovery-dialog [data-simply-command="muzeSolidUiSignInAgain"]'
+  ).disabled);
   await wait(
     () => !document.querySelector('.muze-solid-ui-recovery-dialog').open
   );
@@ -665,8 +702,8 @@ try {
   await wait(
     () =>
       document.querySelector(
-        '[data-simply-field=muzeSolidUiRecoveryVisibility]'
-      ).hidden
+        '[data-simply-field=muzeSolidUiStatusButton]'
+      ).matches(':not([title="Sign in again"])')
   );
   await openPreferences();
   assert.equal(
@@ -713,8 +750,8 @@ try {
   await wait(
     () =>
       !document.querySelector(
-        '[data-simply-field="muzeSolidUiRecoveryVisibility"]'
-      ).hidden
+        '[data-simply-field="muzeSolidUiStatusButton"]'
+      ).matches(':not([title="Sign in again"])')
   );
   await page.evaluate(() => {
     const frame = document.createElement('iframe');
@@ -733,18 +770,15 @@ try {
       !document
         .querySelector('#session-fixture-frame')
         .contentDocument.querySelector(
-          '[data-simply-field="muzeSolidUiRecoveryVisibility"]'
-        ).hidden
+          '[data-simply-field="muzeSolidUiStatusButton"]'
+        ).matches(':not([title="Sign in again"])')
   );
-  assert.ok(
-    await page.evaluate(
-      () =>
-        document
-          .querySelector('#session-fixture-frame')
-          .contentDocument.querySelector('.muze-solid-ui-recovery-notice')
-          .getBoundingClientRect().height > 0
-    ),
-    'The embedded app header must expose its recovery notice.'
+  assert.equal(
+    await page.evaluate(() => document
+      .querySelector('#session-fixture-frame')
+      .contentDocument.querySelector('.muze-solid-ui-recovery-notice')),
+    null,
+    'Connection state uses the toolbar without a second banner in the dialog.'
   );
   await page.evaluate(() =>
     document
@@ -759,14 +793,14 @@ try {
       document
         .querySelector('#session-fixture-frame')
         .contentDocument.querySelector(
-          '[data-simply-field="muzeSolidUiRecoveryVisibility"]'
-        ).hidden
+          '[data-simply-field="muzeSolidUiStatusButton"]'
+        ).matches(':not([title="Sign in again"])')
   );
   await wait(
     () =>
       document.querySelector(
-        '[data-simply-field="muzeSolidUiRecoveryVisibility"]'
-      ).hidden
+        '[data-simply-field="muzeSolidUiStatusButton"]'
+      ).matches(':not([title="Sign in again"])')
   );
   assert.equal(
     await page.evaluate(
@@ -855,11 +889,155 @@ try {
     ),
     'Second draft'
   );
+  // Disconnect keeps credentials/drafts but gates both the current and sibling
+  // transports before a request can reach the fixture Pod.
+  await page.evaluate(() => solidProfile.host.view.commands.call('connectDialog'));
+  await waitForAccount(page);
+  await clickAccount(page, '[data-simply-command=swb_accountDisconnect]');
+  await wait(
+    () =>
+      document.querySelector('#session-fixture-frame').contentWindow
+        .solidProfile.host.view.data.muzeSolidUiAccountStatus === 'Disconnected'
+  );
+  await page.evaluate(() => {
+    const frame = document.createElement('iframe');
+    frame.id = 'disconnected-workbench-frame';
+    frame.hidden = true;
+    frame.src = '/workbench/';
+    document.body.append(frame);
+  });
+  await wait(() => document.querySelector('#disconnected-workbench-frame')
+    .contentWindow.solidLauncher?.ui.runtime.persistence);
+  assert.equal(await page.evaluate(() => document.querySelector(
+    '#disconnected-workbench-frame'
+  ).contentWindow.solidLauncher.host.session), null,
+  'Disconnected Workbench starts without a live session for its selected WebID.');
+  const beforeDisconnect = calls.length;
+  const disconnected = await page.evaluate(async () => {
+    const sibling = document.querySelector('#session-fixture-frame')
+      .contentWindow.solidProfile.host;
+    const codes = [];
+    for (const host of [solidProfile.host, sibling]) {
+      try {
+        await host.session.client.get(location.origin + '/fixture/profile');
+      }
+      catch (error) {
+        codes.push(error.code);
+      }
+    }
+    return {
+      codes,
+      token: solidProfile.host.session.hasUsableAccessToken,
+      draft: document.querySelector('textarea[name="name"]').value
+    };
+  });
+  assert.deepEqual(disconnected.codes, ['disconnected', 'disconnected']);
+  assert.equal(disconnected.token, true);
+  assert.equal(disconnected.draft, 'Second draft');
+  assert.equal(calls.length, beforeDisconnect);
+  const beforeAccountSignIn = calls.filter(call => call.path === '/authorize').length;
+  const beforeAccountWrites = calls.filter(call => call.write).length;
+  await expire(null);
+  await submitAccount(page, { webId: origin + '/fixture/profile#me' });
+  await wait(() => !document.querySelector('.connect-dialog').open &&
+    solidProfile.host.session.hasUsableAccessToken);
+  await wait(() => document.querySelector('#disconnected-workbench-frame')
+    .contentWindow.solidLauncher.host.view.data.muzeSolidUiAccountStatus ===
+      'Signed in');
+  assert.equal(await page.evaluate(() => document.querySelector(
+    '#disconnected-workbench-frame'
+  ).contentWindow.solidLauncher.host.selectedWebId),
+  origin + '/fixture/profile#me');
+  assert.equal(calls.filter(call => call.path === '/authorize').length,
+    beforeAccountSignIn + 1,
+    'Account Connect uses one issuer flow through the caller’s live session.');
+  assert.equal(calls.filter(call => call.write).length, beforeAccountWrites,
+    'Account sign-in does not replay a conflicting profile write.');
+  assert.equal(await page.evaluate(() => document.querySelector(
+    'textarea[name="name"]'
+  ).value), 'Second draft', 'Account Connect retains the open profile draft.');
+  // A fresh app with public startup reads still owns an explicit sign-in.
+  publicPreferences = true;
+  holdAuthorization = true;
+  await page.evaluate(() => {
+    document.querySelector('#disconnected-workbench-frame').remove();
+    document.querySelector('#session-fixture-frame').remove();
+    localStorage.removeItem('solid-apps.webId');
+    location.href = '/profile/';
+  });
+  await wait(() => globalThis.solidProfile && !solidProfile.host.session);
+  await expire(null);
+  const beforeFreshAuthorization = calls.filter(call => call.path === '/authorize').length;
+  await page.evaluate(() => solidProfile.host.view.commands.call('connectDialog'));
+  await submitAccount(page, { webId: origin + '/fixture/profile#me' });
+  await wait(() => window.muzeSolidUiSessionFixturePopup &&
+    !window.muzeSolidUiSessionFixturePopup.closed);
+  for (let attempt = 0; attempt < 150 && !releaseAuthorization; attempt += 1) {
+    await new Promise(resolve => setTimeout(resolve, 40));
+  }
+  assert(releaseAuthorization, 'First Connect reaches the issuer even with public initial reads.');
+  assert.equal(await page.evaluate(() => Boolean(
+    solidProfile.host.session
+  )), false, 'Fresh candidate is not published while authorization is pending.');
+  assert.equal(await page.evaluate(() =>
+    window.muzeSolidUiSessionFixturePopup.closed
+  ), false, 'The first authorization popup remains open until the issuer responds.');
+  holdAuthorization = false;
+  releaseAuthorization();
+  await wait(() => solidProfile.host.session?.hasUsableAccessToken &&
+    !document.querySelector('.connect-dialog').open);
+  assert.equal(calls.filter(call => call.path === '/authorize').length,
+    beforeFreshAuthorization + 1);
   console.log(
-    'Session browser: refresh, recovery, cancel, conditional writes, preservation and failures passed.'
+    'Session browser: refresh, recovery, cancel, conditional writes, preservation, first Connect and disconnected Workbench restoration passed.'
   );
 }
+
+catch (error) {
+  const targets = (await page.send('Target.getTargets')).targetInfos
+    .filter(target => target.type === 'page');
+  const diagnostic = [];
+  for (const target of targets) {
+    const targetPage = await browser.page(target.targetId);
+    const logEntry = targetPage.once('Log.entryAdded');
+    await targetPage.send('Log.enable');
+    const log = await Promise.race([logEntry,
+      new Promise(resolve => setTimeout(() => resolve(null), 200))]);
+    if (log) {
+      console.error('Session browser resource error:', log.entry?.text);
+    }
+    diagnostic.push(await targetPage.evaluate(async () => ({
+      path: location.pathname,
+      ready: document.readyState,
+      codePresent: new URL(location.href).searchParams.has('code'),
+      moduleResult: location.pathname === '/redirect.html'
+        ? await Promise.race([
+          import('/assets/redirect.min.js').then(() => 'loaded', error => String(error)),
+          new Promise(resolve => setTimeout(() => resolve('pending'), 500))
+        ]) : undefined,
+      messages: window.muzeSolidUiSessionFixtureMessages,
+      resources: performance.getEntriesByType('resource').map(entry => ({
+        path: new URL(entry.name).pathname,
+        bytes: entry.transferSize,
+        decoded: entry.decodedBodySize,
+        status: entry.responseStatus,
+        duration: entry.duration
+      })),
+      text: document.body?.innerText,
+      openerPath: (() => {
+        try { return window.opener?.location.pathname || ''; }
+        catch { return 'different origin'; }
+      })()
+    })).catch(failure => ({ error: failure.message })));
+    if (target.targetId !== targets.find(item => item.url.endsWith('/profile/'))?.targetId) {
+      targetPage.close();
+    }
+  }
+  console.error('Session target diagnostics:', JSON.stringify(diagnostic));
+  throw error;
+}
 finally {
+  releaseAuthorization?.();
   releaseToken?.();
   page?.close();
   await browser?.close();

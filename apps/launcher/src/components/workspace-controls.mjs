@@ -41,12 +41,15 @@ export const workspaceControls = {
   },
   actions: {
     swb_preferredProvider(capability) {
-      if (capability === this.api.browseCapability &&
-          this.runtime.host.selectedWebId) {
+      if (
+        capability === this.api.browseCapability &&
+        this.runtime.host.selectedWebId
+      ) {
         return this.runtime.host.preferences.browseProvider?.url;
       }
     },
     workspaceMessage: function (message, remember = false) {
+      this.runtime.workspaceError = null;
       this.data.workspaceMessage = message;
       this.data.conflictAction = {
         hidden: this.runtime.persistence?.conflict ? null : ''
@@ -69,7 +72,8 @@ export const workspaceControls = {
         this.data.conflictReview = { hidden: '' };
       }
       this.actions.workspaceMessage(error.message || String(error), true);
-      this.runtime.host.message(error.message || String(error));
+      this.runtime.workspaceError = error;
+      this.runtime.host.message(error);
     },
     workspaceOperation: async function (
       operation,
@@ -132,6 +136,20 @@ export const workspaceControls = {
     createWorkspace: function () {
       this.runtime.workspace?.dispose();
       this.runtime.workspace = new this.api.WorkspaceBroker({
+        openAccountControls: (record) => {
+          const app = new URL(record.entry.url);
+          const suiteApps = ['contacts', 'files', 'profile', 'preferences'];
+          const allowed = suiteApps.some((name) => {
+            const trusted = new URL('../' + name + '/', location.href);
+            return app.origin === trusted.origin &&
+              app.pathname === trusted.pathname;
+          });
+          if (!allowed) {
+            throw new Error('launcher: Account controls are not granted.');
+          }
+          window.focus();
+          return this.runtime.host.view.commands.call('connectDialog');
+        },
         getContext: (record) => this.actions.swb_contextFor(record),
         editPreferences: (record, input) =>
           this.actions.swb_editPreferences(record, input),

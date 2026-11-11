@@ -40,6 +40,8 @@ test('existing account listeners use current actions once and stop after cleanup
     {
       ...accountLifecycle.actions,
       ...originals,
+      muzeSolidUiAccountStatus() {},
+      muzeSolidUiCleanupAccount() {},
       muzeSolidUiCleanupCapability() {}
     },
     {

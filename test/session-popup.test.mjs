@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { rollup } from 'rollup';
+import { tokenStore } from '@muze-nl/metro-oauth2/tokenstore';
 import { oidcStore } from '@muze-nl/metro-oidc';
 
 // Replace only client construction so authorization can be triggered without
@@ -27,7 +28,12 @@ const bundle = await rollup({
             from ${JSON.stringify(import.meta.resolve('@muze-labs/jsfs-solid'))};
           export function createSolidMetroClient(_url, options) {
             globalThis.sessionPopupOptions = options;
-            return metro.client(_url);
+            return metro.client(_url).with((request, next) => {
+              if (globalThis.sessionPopupRequest) {
+                return globalThis.sessionPopupRequest(options, request, next);
+              }
+              return next(request);
+            });
           }
         `;
       }
@@ -44,7 +50,8 @@ const { connectSession } = await import(
 test('authorization UI is owned even with a cached identity token', async t => {
   const originals = new Map();
   const keys = ['window', 'location', 'localStorage', 'fetch',
-    'addEventListener', 'removeEventListener', 'sessionPopupOptions'];
+    'addEventListener', 'removeEventListener', 'sessionPopupOptions',
+    'sessionPopupRequest'];
   for (const key of keys) {
     originals.set(key, Object.getOwnPropertyDescriptor(globalThis, key));
   }
@@ -81,7 +88,7 @@ test('authorization UI is owned even with a cached identity token', async t => {
   const url = issuer + 'authorize?state=fixture-state&redirect_uri=' +
     encodeURIComponent('https://apps.example/redirect.html');
   for (const outcome of ['success', 'fresh', 'public', 'denied', 'wrong-state',
-    'blocked', 'closed', 'background']) {
+    'blocked', 'closed', 'background', 'pending']) {
     await t.test(outcome, async () => {
       values.clear();
       if (outcome !== 'fresh') {
@@ -120,9 +127,38 @@ test('authorization UI is owned even with a cached identity token', async t => {
           return popup;
         }
       };
-      const session = await connectSession(webId);
+      let requestSignIn;
+      const waiting = new Promise((resolve) => { requestSignIn = resolve; });
+      const session = await connectSession(webId, null, {
+        onAuthenticationRequired: outcome === 'pending' ? requestSignIn : undefined
+      });
       // Session clients configure Metro lazily with a request-scoped cancel gate.
       await session.client.get(webId);
+      if (outcome === 'pending') {
+        const requests = [];
+        globalThis.sessionPopupRequest = async (options, request) => {
+          requests.push(request.method);
+          await options.authorize_callback(url);
+          tokenStore(issuer + '|' + webId).tokens.set('access_token', {
+            value: 'fixture-access', expires: '2099-01-01', type: 'DPoP'
+          });
+          return new Response('', { status: 200 });
+        };
+        const write = session.perform(() => session.client.put(webId, {
+          body: 'retained conditional body', headers: { 'If-Match': '"one"' }
+        }));
+        await waiting;
+        assert.equal(opened.length, 0);
+        const login = session.signIn(window.open(''));
+        await Promise.all([write, login]);
+        assert.deepEqual(requests, ['PUT'],
+          'Sign-in joins the pending request instead of starting another GET.');
+        assert.equal(opened.length, 1);
+        assert.equal(opened[0].closed, true);
+        globalThis.sessionPopupRequest = undefined;
+        session.logout();
+        return;
+      }
       if (outcome === 'public') {
         assert.equal(await session.perform(() => 'public data'), 'public data');
         assert.equal(opened.length, 0, 'Public reads need no sign-in window.');
