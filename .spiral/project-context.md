@@ -1632,3 +1632,14 @@ and push of main/cycle branches are authorized after exact-candidate validation.
 The recorded session/managed regression limits remain; no authentication fix or
 new cycle is selected. The requested status/recovery roadmap additions remain
 future work. Unrelated user files stay excluded; no publication is requested.
+
+
+## CYC129 accepted for integration, 2026-11-11
+
+The maintainer explicitly confirms “Accept both cycles” after requesting commit,
+merge and push. ACC132 accepts budget snapshot 8fe2123bb30b013bf1e0cda4bb0def4a56649114.
+CYC129 is Accepted, superseding earlier pending review notes. Normal merge and
+push of main/cycle branches are authorized after exact validation. This adds no
+app bytes/dependencies and preserves non-budget errors. CYC124 remains a separate
+accepted cycle; no package publication or unrelated design-file commit is
+requested.
