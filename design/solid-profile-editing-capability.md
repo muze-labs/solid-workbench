@@ -100,7 +100,7 @@ in over 0.3 seconds. Reduced-motion preference reveals immediately. Duplicate
 ready signals do not restart the transition; closing cleans up its timer.
 
 
-## Iframe Escape cooperation (CYC157, awaiting acceptance)
+## Iframe Escape cooperation (accepted CYC157)
 
 Suite providers use an editable window keydown action in the shared capability
 component. An unconsumed Escape outside composition requests the same guarded

@@ -1015,6 +1015,12 @@ a selected cycle, a new delivery order or an implementation change.
 
 ### Escape closes dialogs while focus is inside an iframe
 
+Accepted [CYC157](../.spiral/cycles/CYC-20261112-QG24H-157.md)
+after CYC151 delivery. Implemented and verified with native Chrome keyboard
+checks, existing save/discard guards and scoped cross-origin cooperation; see
+[EVD161](../.spiral/evidence/EVD-20261112-QG24H-161.md) and
+[ACC162](../.spiral/acceptance/ACC-20261112-QG24H-162.md).
+
 Requested by the maintainer on 2026-11-12 and explicitly retained for later,
 without moving it ahead of Contacts. Fix modal dialogs that do not respond to
 Escape when focus is inside their embedded app. Escape should request the same
@@ -1044,8 +1050,8 @@ verify the intended modal closes or presents its existing save/discard guard,
 the caller regains focus, and pending edits survive. Repeat for nested modal
 precedence, a consumed Escape, cross-origin providers, repeated open/close and
 iframe reload. Retain Account's existing regression check and test cancellation
-results and active-task cleanup. This is future keyboard/accessibility repair,
-not an implementation cycle or a change to provider authority.
+results and active-task cleanup. These scenarios are covered by accepted CYC157
+without changing provider authority.
 
 ### Short suite prefixes
 

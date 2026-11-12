@@ -4,7 +4,7 @@
 project:CYC-20261112-QG24H-157 a sd:Cycle ;
     dcterms:identifier "CYC-20261112-QG24H-157" ;
     sd:repositoryPath ".spiral/cycles/CYC-20261112-QG24H-157.md" ;
-    sd:status sd:Active ;
+    sd:status sd:Accepted ;
     sd:derivedFrom [ a sd:ArtifactReference ;
         sd:artifact project:SRC-20261112-QG24H-158 ;
         sd:gitCommit "b991615bd3fc42ba86b7a9263627ab4c1057413c" ] .
