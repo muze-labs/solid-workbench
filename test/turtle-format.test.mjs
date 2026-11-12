@@ -35,7 +35,6 @@ test('workspace output uses its base, vocabulary prefixes and grouped properties
         id: 'one',
         label: 'Files',
         url: 'https://apps.example/files/',
-        allowBrowse: true,
         state: null
       }
     ]

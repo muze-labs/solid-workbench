@@ -111,7 +111,7 @@ test('workspace drafts cannot mutate a clean persistence snapshot by alias', (t)
     'https://pod.example/latest'
   );
 });
-test('workspace routing requires an explicit grant and binds state to one instance', async (t) => {
+test('workspace state is bound to one instance and rejects stale owners', async (t) => {
   const peers = [];
   let focused = 0;
   const target = {
@@ -140,11 +140,7 @@ test('workspace routing requires an explicit grant and binds state to one instan
   };
   const broker = new WorkspaceBroker({
     target,
-    onChange: async () => {},
-    authorize: (caller, entry, capability) =>
-      caller === 'launcher' &&
-      entry.allowBrowse &&
-      capability === 'https://example.org/select'
+    onChange: async () => {}
   });
   t.after(() => {
     broker.dispose();
@@ -154,34 +150,6 @@ test('workspace routing requires an explicit grant and binds state to one instan
   broker.offer(record);
   const peer = peers[0];
   await peer.call('register', { capabilities: ['https://example.org/select'] });
-  await assert.rejects(
-    broker.request('https://example.org/select', {}),
-    /allow/
-  );
-  assert.equal(focused, 0);
-  await broker.allow(record.entry.id, true);
-  assert.deepEqual(await broker.request('https://example.org/select', {}), {
-    '@id': 'https://pod.example/resource'
-  });
-  assert.equal(focused, 1);
-  await assert.rejects(
-    broker.request(
-      'https://example.org/select',
-      {},
-      {
-        providerId: ''
-      }
-    ),
-    /allow/
-  );
-  assert.equal(focused, 1);
-  await assert.rejects(
-    peer.call('request', {
-      capability: 'https://example.org/select',
-      input: {}
-    }),
-    /allow/
-  );
   await peer.call('state', restoration('unknown-42'));
   assert.deepEqual(broker.snapshot().apps[0].state, restoration('unknown-42'));
   assert(!JSON.stringify(broker.snapshot()).includes(record.key));
@@ -504,3 +472,90 @@ test('registered providers do not gain account-control authority by declaring a 
   await assert.rejects(broker.handle(record, 'account-controls', {}, {}),
     (error) => error.code === 'denied');
 });
+
+
+test('cooperative remote close settles unbounded calls and aborts active work',
+  { timeout: 1000 }, async (t) => {
+    let started;
+    const ready = new Promise((resolve) => { started = resolve; });
+    let activeSignal;
+    const { caller, provider } = pair(t, (_method, _input, { signal }) => {
+      activeSignal = signal;
+      started();
+      return new Promise(() => {});
+    });
+    const pending = caller.call('edit', {}, { timeout: null });
+    await ready;
+    provider.close();
+    await assert.rejects(pending, (error) => error.code === 'disconnected');
+    assert.equal(caller.pending.size, 0);
+    assert.equal(provider.active.size, 0);
+    assert.equal(activeSignal.aborted, true);
+  });
+
+test('independent peers send large structured values without a global byte cap',
+  async (t) => {
+    const channel = new MessageChannel();
+    const connection = new PortConnection(channel.port1, () => {});
+    t.after(() => { connection.close(); channel.port2.close(); });
+    channel.port2.onmessage = ({ data }) => {
+      if (data.type === 'call') {
+        channel.port2.postMessage({ type: 'reply', id: data.id,
+          result: new Map([['text', data.input.text]]) });
+      }
+    };
+    const value = serializable({ text: 'é'.repeat(40000) });
+    const response = await connection.call('inspect', value);
+    assert.equal(response.get('text'), value.text);
+  });
+
+test('malformed frames settle pending calls without invoking a handler',
+  { timeout: 1000 }, async (t) => {
+    for (const invalid of [null, [], { type: 'call', id: 'x' },
+      { type: 'reply', id: 'x', error: { message: {} } }]) {
+      const channel = new MessageChannel();
+      let handled = false;
+      const connection = new PortConnection(channel.port1, () => { handled = true; });
+      t.after(() => { connection.close(); channel.port2.close(); });
+      const pending = connection.call('wait', null, { timeout: null });
+      channel.port2.postMessage(invalid);
+      await assert.rejects(pending, /Invalid capability frame/);
+      assert.equal(handled, false);
+      assert.equal(connection.pending.size, 0);
+    }
+  });
+
+test('disconnected embedded calls release their owner slot without replay',
+  { timeout: 1000 }, async (t) => {
+    const target = { location: { origin: 'https://caller.example' },
+      addEventListener() {}, removeEventListener() {} };
+    const capability = 'https://example.org/edit';
+    const url = 'https://provider.example/';
+    const broker = new WorkspaceBroker({ target,
+      embeddedProviders: [{ url, capability }] });
+    t.after(() => broker.dispose());
+    const ticket = broker.beginEmbedded(url, capability);
+    const channel = new MessageChannel();
+    broker.attachEmbedded({ source: target, origin: target.location.origin,
+      data: ticket, ports: [channel.port1] });
+    let started;
+    const ready = new Promise((resolve) => { started = resolve; });
+    let invocations = 0;
+    const provider = new PortConnection(channel.port2, () => {
+      invocations++;
+      started();
+      return new Promise(() => {});
+    });
+    t.after(() => provider.close());
+    await provider.call('register', { capabilities: [capability] });
+    const pending = broker.requestEmbedded(ticket.id, {});
+    await ready;
+    provider.close();
+    await assert.rejects(pending, (error) => error.code === 'disconnected');
+    assert.equal(invocations, 1);
+    assert.equal(broker.instances.has(ticket.id), false);
+    const next = broker.beginEmbedded(url, capability);
+    assert.notEqual(next.id, ticket.id);
+    assert.equal(invocations, 1);
+    broker.endEmbedded(next.id);
+  });

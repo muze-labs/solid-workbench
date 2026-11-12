@@ -164,32 +164,29 @@ export async function checkCurrentActions(page) {
     else if (owner.runtime.workspace) {
       const broker = owner.runtime.workspace;
       const original =
-        owner.components.workspaceControls.actions.authorizeRoute;
-      const record = { allowBrowse: true };
+        owner.components.workspaceControls.actions.swb_preferredProvider;
       const capability = owner.api.browseCapability;
-      const baseline = broker.authorize('launcher', record, capability);
+      const baseline = broker.resolveProvider(capability);
       try {
-        owner.actions.authorizeRoute = function (requester, entry, requested) {
+        owner.actions.swb_preferredProvider = function (requested) {
           check(
             this === owner &&
-              requester === 'launcher' &&
-              entry === record &&
               requested === capability,
             'existing broker arguments/context'
           );
           return 'replacement';
         };
         check(
-          broker.authorize('launcher', record, capability) === 'replacement',
+          broker.resolveProvider(capability) === 'replacement',
           'existing broker follows current action'
         );
       }
       finally {
-        owner.actions.authorizeRoute = original;
+        owner.actions.swb_preferredProvider = original;
       }
       check(
-        broker.authorize('launcher', record, capability) === baseline,
-        'original broker authority decision restored'
+        broker.resolveProvider(capability) === baseline,
+        'original broker provider choice restored'
       );
     }
     return name;

@@ -14,9 +14,6 @@ export const workspaceControls = {
     restoreInstance(_element, id) {
       return this.actions.handleRestoreInstance(id);
     },
-    allowBrowse(element, id) {
-      return this.actions.setBrowsePermission(id, element.checked);
-    },
     closeInstance(_element, id) {
       return this.actions.handleCloseInstance(id);
     },
@@ -122,7 +119,6 @@ export const workspaceControls = {
         .select((record) => ({
           id: record.entry.id,
           label: record.entry.label || record.entry.url,
-          allowBrowse: record.entry.allowBrowse,
           status: record.restoreError
             ? 'Needs attention: ' + record.restoreError
             : record.registered
@@ -179,7 +175,6 @@ export const workspaceControls = {
         ],
         snapshot: this.runtime.persistence.snapshot,
         keys: this.runtime.persistence.keys,
-        authorize: (...args) => this.actions.authorizeRoute(...args),
         onMessage: (...args) => this.actions.workspaceNotice(...args),
         onChange: (...args) => this.actions.stageWorkspace(...args)
       });
@@ -376,18 +371,6 @@ export const workspaceControls = {
         this.runtime.workspace.launcherState.resource = value;
         return this.runtime.host.run(() => this.runtime.workspace.changed());
       }
-    },
-    setBrowsePermission(id, allowed) {
-      return this.runtime.host.run(() =>
-        this.runtime.workspace.allow(id, allowed)
-      );
-    },
-    authorizeRoute(requester, entry, capability) {
-      return (
-        requester === 'launcher' &&
-        entry.allowBrowse &&
-        capability === this.api.browseCapability
-      );
     },
     workspaceNotice(message) {
       return this.actions.workspaceMessage(message);

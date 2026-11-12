@@ -62,7 +62,6 @@ test('native directory roundtrip preserves inactive drafts, private roots and un
   snapshot.apps.push({
     id: 'private-editor',
     url: 'https://app.test/',
-    allowBrowse: false,
     state: {
       turtle: '<' + stateRoot + '> <' + apps + 'draft> "Unsaved private text".'
     }
@@ -74,7 +73,6 @@ test('native directory roundtrip preserves inactive drafts, private roots and un
   snapshot.apps.push({
     id: 'work-editor',
     url: 'https://app.test/',
-    allowBrowse: false,
     state: null
   });
   snapshot.directory.entries[0].background =

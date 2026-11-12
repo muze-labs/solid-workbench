@@ -11,6 +11,7 @@ let body = '';
 let version = 1;
 let calls = 0;
 let blockEmbedding = false;
+let cooperative = true;
 const namespace = 'https://vocab.muze.nl/solid-apps#';
 const protocol = await readFile(new URL(
   '../packages/solid-app-data/src/capabilities.mjs', import.meta.url));
@@ -25,6 +26,28 @@ const provider = createServer((request, response) => {
     response.setHeader('X-Frame-Options', 'DENY');
   }
   response.setHeader('Content-Type', 'text/html');
+  if (!cooperative) {
+    // Independent provider deliberately sends no disconnect on navigation.
+    response.end(`<!doctype html><title>Independent picker</title>
+      <h1>Independent picker</h1><script>
+      addEventListener('message', event => {
+        if (event.source !== parent || event.data?.type !== 'solid-apps:offer' ||
+            !event.ports[0]) return;
+        const port = event.ports[0];
+        window.protocolPort = port;
+        port.onmessage = ({data}) => {
+          if (data.type === 'call' && data.method === 'capability') {
+            window.pending = data;
+          }
+        };
+        port.start();
+        port.postMessage({type:'call',id:'register',method:'register',
+          input:{capabilities:['https://vocab.muze.nl/capabilities/browse']}});
+      });
+      parent.postMessage({type:'solid-apps:embedded-ready'}, '*');
+      </script>`);
+    return;
+  }
   response.end(`<!doctype html><title>Other picker</title>
     <h1>Other picker</h1><button id="select">Select resource</button>
     <button id="cancel">Cancel</button><script type="module">
@@ -318,6 +341,28 @@ try {
   assert.equal(await run('return solidLauncher.ui.data.resource;'),
     'https://pod.example/previous');
   assert.equal(await run('return solidLauncher.workspace.snapshot().apps.length;'), 0);
+  // The same host detects navigation even without SDK disconnect cooperation.
+  for (const useSdk of [true, false]) {
+    cooperative = useSdk;
+    await run('solidLauncher.ui.actions.handlePickResource();');
+    await wait('solidLauncher.host.view.runtime.muzeSolidUiCall?.frameLoaded && [...solidLauncher.workspace.instances.values()].some(r=>r.embedded && r.peer?.pending.size)');
+    const tree = await page.send('Page.getFrameTree');
+    const frame = tree.frameTree.childFrames.find(item => item.frame.url.startsWith(providerOrigin));
+    const ticket = await run('return solidLauncher.host.view.runtime.muzeSolidUiCall.ticket.id;');
+    await page.send('Page.navigate', { frameId: frame.frame.id,
+      url: useSdk ? frame.frame.url : origin + '/seed' });
+    await wait('!solidLauncher.ui.runtime.selection && solidLauncher.host.view.runtime.muzeSolidUiCall?.failed');
+    assert.equal(await run('return solidLauncher.ui.data.resource;'), 'https://pod.example/previous');
+    assert.equal(await run('return solidLauncher.workspace.instances.has(' + JSON.stringify(ticket) + ');'), false);
+    assert.match(await run('return solidLauncher.host.view.data.muzeSolidUiDialog.message;'), /not been restarted/);
+    await clickCaller('[data-simply-command=muzeSolidUiCloseCapability]');
+    await wait('!solidLauncher.host.view.runtime.muzeSolidUiCall');
+    await wait('document.querySelector("iframe").contentWindow.location.href==="about:blank"');
+  }
+  cooperative = true;
+  await pickAndRespond(true);
+  assert.equal(await run('return solidLauncher.ui.data.resource;'), 'https://pod.example/previous');
+  console.log('PASS: cross-origin SDK reload and independent-provider navigation settle without replay; previous resource retained and a fresh invocation works.');
   // Local cache reload and a second workspace preserve the identity-wide choice.
   await run('location.reload();');
   await wait('window.solidLauncher?.store && solidLauncher.host.preferences.browseProvider');

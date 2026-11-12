@@ -11,12 +11,6 @@ const dataDirectory = new URL(
   '../packages/solid-app-data/src/',
   import.meta.url
 );
-const pickerBundle = await rollup({
-  input: new URL('../apps/launcher/src/picker.mjs', import.meta.url).pathname,
-  plugins: [nodeResolve({ browser: true })]
-});
-const picker = await pickerBundle.generate({ format: 'es' });
-await pickerBundle.close();
 const brokerBundle = await rollup({
   input: new URL(
     '../packages/solid-app-data/src/workspace-broker.mjs',
@@ -37,11 +31,6 @@ const server = http.createServer(async (req, res) => {
   if (path === '/capabilities.mjs') {
     res.writeHead(200, { 'Content-Type': 'text/javascript' });
     res.end(await readFile(new URL(path.slice(1), dataDirectory)));
-    return;
-  }
-  if (path === '/picker.mjs') {
-    res.writeHead(200, { 'Content-Type': 'text/javascript' });
-    res.end(picker.output[0].code);
     return;
   }
   res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -70,16 +59,15 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   res.end(`<!doctype html><title>Launcher protocol fixture</title>
-    <h1>Launcher</h1><button id="pick">Choose in Files</button>
+    <h1>Launcher</h1>
     <button id="embedded-pick">Embedded selection</button>
     <dialog id="embedded-dialog"><iframe title="Cross-origin provider"></iframe>
       <button id="embedded-cancel">Cancel embedded selection</button></dialog>
     <script type="module">
       import { WorkspaceBroker } from '/workspace-broker.mjs';
-      import { chooseFiles } from '/picker.mjs';
       import { browseCapability } from '/capabilities.mjs';
       window.broker = new WorkspaceBroker({
-        onChange: async () => {}, authorize: (_caller, entry) => entry.allowBrowse,
+        onChange: async () => {},
         embeddedProviders: [{ url: 'http://localhost:${port}/files/', capability: browseCapability }]
       });
       const dialog = document.querySelector('#embedded-dialog');
@@ -112,18 +100,6 @@ const server = http.createServer(async (req, res) => {
           broker.endEmbedded(embedTicket.id);
           frame.src = 'about:blank';
           dialog.close();
-        }
-      };
-      document.querySelector('#pick').onclick = async () => {
-        window.result = null;
-        window.failure = null;
-        try {
-          window.result = await chooseFiles(broker, 'http://localhost:${port}/files/', {
-            onWait: message => { window.progress = message; }
-          });
-        }
-        catch (error) {
-          window.failure = { code: error.code, message: error.message };
         }
       };
     </script>`);
@@ -182,79 +158,6 @@ try {
   pages.push(launcher);
   await launcher.ready();
   await until(launcher, 'Boolean(window.broker)');
-  await click(launcher, '#pick');
-  let child;
-  const fileTargets = async () =>
-    (await control.send('Target.getTargets')).targetInfos.filter(
-      (target) => target.url === 'http://localhost:' + port + '/files/'
-    );
-  for (let attempt = 0; attempt < 100; attempt++) {
-    [child] = await fileTargets();
-    if (child) {
-      break;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 40));
-  }
-  assert(child, 'Choose in Files must open Files without manual pre-opening.');
-  const files = await chrome.page(child.targetId);
-  pages.push(files);
-  await files.ready();
-  await until(
-    files,
-    'Boolean(window.pending) && document.visibilityState === "visible"'
-  );
-  assert.equal(await value(launcher, 'document.visibilityState'), 'hidden');
-  const firstRequest = await value(files, 'window.pending.id');
-  await click(files, '#select');
-  await until(launcher, 'Boolean(window.result)');
-  const returnedAfterSelection = await value(
-    launcher,
-    'document.visibilityState === "visible"'
-  );
-  assert.equal(
-    returnedAfterSelection,
-    true,
-    'Selection activates the existing Launcher tab.'
-  );
-  assert.equal(
-    (await control.send('Target.getTargets')).targetInfos.filter(
-      (target) => target.type === 'page'
-    ).length,
-    3,
-    'Returning must not create another Launcher or blank tab.'
-  );
-  assert.equal(
-    await value(launcher, 'window.result["@id"]'),
-    'https://pod.example/file.ttl#subject'
-  );
-  // Verify reuse after the provider's earlier transient activation has expired.
-  await new Promise((resolve) => setTimeout(resolve, 6100));
-  await click(launcher, '#pick');
-  await until(
-    files,
-    'window.pending?.id !== ' +
-      JSON.stringify(firstRequest) +
-      ' && document.visibilityState === "visible"'
-  );
-  assert.equal(
-    (await fileTargets()).length,
-    1,
-    'Reuse the already-open Files app.'
-  );
-  assert.equal((await fileTargets())[0].targetId, child.targetId);
-  await click(files, '#cancel');
-  await until(launcher, 'window.failure?.code === "cancelled"');
-  const returnedAfterCancellation = await value(
-    launcher,
-    'document.visibilityState === "visible"'
-  );
-  assert.equal(
-    returnedAfterCancellation,
-    true,
-    'Cancellation activates the existing Launcher tab.'
-  );
-  assert.equal(await value(launcher, 'window.result'), null);
-  assert.equal((await fileTargets()).length, 1);
   await click(launcher, '#embedded-pick');
   await until(launcher, 'Boolean(window.embedResult)');
   assert.equal(
@@ -280,18 +183,7 @@ try {
   console.log(
     'PASS: cross-origin iframe startup, private-port result, cancellation and transient workspace exclusion.'
   );
-  console.log(
-    'PASS: one-click cross-origin Files startup, warm-instance reuse, ' +
-      'provider tab activation and selection/cancellation results; ' +
-      'no workspace persistence invoked.'
-  );
-  console.log(
-    'Verified return activation:',
-    JSON.stringify({
-      returnedAfterSelection,
-      returnedAfterCancellation
-    })
-  );
+
 }
 catch (error) {
   for (const page of pages) {

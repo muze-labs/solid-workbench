@@ -355,7 +355,6 @@ try {
     files,
     'document.querySelector("tbody").textContent.includes("notes")'
   );
-  await click(launcher, '.swb-managed-workspace input[type=checkbox]');
   await submit(files, '.swb-file-controls form[data-simply-command=browse]', {
     url: base + '/storage/notes/'
   });

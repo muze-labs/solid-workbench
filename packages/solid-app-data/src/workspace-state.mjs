@@ -61,10 +61,9 @@ export function validateWorkspace(value) {
       typeof entry.id !== 'string' ||
       ids.has(entry.id) ||
       typeof entry.url !== 'string' ||
-      typeof entry.allowBrowse !== 'boolean' ||
       (entry.label !== undefined && typeof entry.label !== 'string') ||
       Object.keys(entry).some(
-        (key) => !['id', 'url', 'label', 'allowBrowse', 'state'].includes(key)
+        (key) => !['id', 'url', 'label', 'state'].includes(key)
       )
     ) {
       throw new Error('workspace-state: Invalid or duplicate app instance.');

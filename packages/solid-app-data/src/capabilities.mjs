@@ -68,9 +68,6 @@ export function serializable(value) {
   }
   visit(value, 0);
   const text = JSON.stringify(value);
-  if (new TextEncoder().encode(text).byteLength > 65536) {
-    throw capabilityError('State exceeds 64 KB.');
-  }
   return JSON.parse(text);
 }
 
@@ -107,7 +104,27 @@ export class PortConnection {
     port.start?.();
   }
   async receive(message) {
-    if (this.closed || !message || typeof message.id !== 'string') {
+    if (this.closed) {
+      return;
+    }
+    if (!message || typeof message !== 'object' || Array.isArray(message)) {
+      this.close('Invalid capability frame.');
+      return;
+    }
+    if (message.type === 'disconnect') {
+      this.close('Application disconnected.', false);
+      return;
+    }
+    const validId = typeof message.id === 'string' && message.id.length > 0;
+    const validType = ['call', 'reply', 'cancel'].includes(message.type);
+    const validMethod = message.type !== 'call' ||
+      (typeof message.method === 'string' && message.method.length > 0);
+    const validError = message.type !== 'reply' ||
+      message.error === undefined ||
+      (message.error && typeof message.error.code === 'string' &&
+        typeof message.error.message === 'string');
+    if (!validId || !validType || !validMethod || !validError) {
+      this.close('Invalid capability frame.');
       return;
     }
     if (message.type === 'reply') {
@@ -145,12 +162,12 @@ export class PortConnection {
       const result = await this.handle(message.method, message.input, {
         signal: controller.signal
       });
-      if (!this.closed) {
+      if (!this.closed && !controller.signal.aborted) {
         this.port.postMessage({ type: 'reply', id: message.id, result });
       }
     }
     catch (error) {
-      if (!this.closed) {
+      if (!this.closed && !controller.signal.aborted) {
         this.port.postMessage({
           type: 'reply',
           id: message.id,
@@ -201,17 +218,26 @@ export class PortConnection {
       }
     });
   }
-  close(message = 'Application disconnected.') {
+  close(message = 'Application disconnected.', notify = true) {
     if (this.closed) {
       return;
     }
     this.closed = true;
+    if (notify) {
+      try {
+        this.port.postMessage({ type: 'disconnect' });
+      }
+      catch {
+        // Local settlement must still complete if the port is already gone.
+      }
+    }
     for (const call of this.pending.values()) {
       call.reject(capabilityError(message, 'disconnected'));
     }
     for (const controller of this.active.values()) {
       controller.abort();
     }
+    this.active.clear();
     this.port.close();
   }
 }
@@ -271,6 +297,7 @@ export class ManagedApp {
         this.parent.postMessage(
           {
             type: 'solid-apps:embedded-ready',
+            generation: this.generation,
             presentation: this.waitForPresentation ? 'explicit' : 'load'
           },
           '*'
@@ -499,11 +526,5 @@ export class ManagedApp {
   }
   endEmbedded(id) {
     return this.peer.call('embed-close', { id });
-  }
-  request(capability, input, options) {
-    if (!this.peer) {
-      return Promise.reject(capabilityError('Open this app through Launcher.'));
-    }
-    return this.peer.call('request', { capability, input }, options);
   }
 }

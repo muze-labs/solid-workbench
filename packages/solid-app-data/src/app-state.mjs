@@ -26,11 +26,6 @@ export function validateAppState(state) {
       'App state must contain Turtle and an optional opaque string.'
     );
   }
-  if (
-    new TextEncoder().encode(state.turtle + (state.opaque || '')).length > 65536
-  ) {
-    throw rdfError('App state exceeds 64 KB.');
-  }
   const graph = new StateGraph(state.turtle);
   graph.assertWritable();
   for (const quad of graph.quads) {

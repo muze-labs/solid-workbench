@@ -67,14 +67,17 @@ test('named structured contact values survive without exporting another person',
 });
 
 
-test('oversized and shared-anonymous exports fail without changing source data', async () => {
+test('large native descriptions work while shared-anonymous exports remain refused', async () => {
   const shared = `<${id}> <urn:a> _:shared; <urn:b> _:shared .
     _:shared <urn:value> "preserve sharing" .`;
   const graph = oldm.context({ prefixes }).parse(shared, url, 'text/turtle');
   await assert.rejects(describeRecipient(graph.get(id), url), /Shared or cyclic/);
   const large = oldm.context({ prefixes }).parse(
-    `<${id}> <http://www.w3.org/2006/vcard/ns#note> "${'x'.repeat(61000)}" .`,
+    `<${id}> <http://www.w3.org/2006/vcard/ns#note> "${'é'.repeat(40000)}" .`,
     url, 'text/turtle');
-  await assert.rejects(describeRecipient(large.get(id), url), /too large|exceeds 64 KB/);
-  assert.equal(String(large.get(id).vcard$note).length, 61000);
+  const result = await describeRecipient(large.get(id), url);
+  assert(new TextEncoder().encode(result.description.turtle).length > 65536);
+  const selected = await readRecipient(result, null);
+  assert.equal(String(selected.node.vcard$note), 'é'.repeat(40000));
+  assert.equal(String(large.get(id).vcard$note), 'é'.repeat(40000));
 });

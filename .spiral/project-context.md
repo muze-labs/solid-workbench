@@ -2159,3 +2159,50 @@ cycle is delivered through immutable causal commits and a normal merge into
 latest main after validation; main and the cycle branch are authorized for push.
 No product changes accompany delivery, and no next implementation cycle is
 selected. Reconcile both governing roadmaps before proposing the follow-up.
+
+
+## Shared capability reliability cycle selected, 2026-11-12
+
+After CYC145 delivery the maintainer asks whether the proposed work touches the
+shared capabilities system or only a picker. The clarified shared invocation/
+presentation, obsolete live-browse removal and size-policy scope is confirmed:
+“Than lets do this”. CYC151 continues the accepted Phase 4 direction on verified
+spiral/CYC-20261112-QG24H-151-capability-reliability from main 4b66720.
+SRC152/DES153/IMP154/EVD155 retain intent, design, changes and evaluation.
+
+Recovery uses private-port disconnect signaling and observed iframe navigation/
+provider generation changes without automatic replay or an inactivity deadline.
+Preserve still-visible disconnected editor drafts and discard guards. Obsolete
+live routing/grants are removed; stored RDF remains unowned and preserved.
+The unjustified state/contact byte caps are removed while shape/native-RDF and
+count/depth validation remain. The separate HTTP keepalive background-save
+safeguard is retained; large states remain locally recoverable and explicitly
+saveable. No broader discovery, iframe Escape or new product capability is added.
+The cycle is Active, awaiting final evaluation and human review. No commit,
+merge or push is authorized. Preserve the unrelated changed icon archive.
+
+
+## CYC151 evaluated for review, 2026-11-12
+
+IMP154/EVD155 record the completed shared capability reliability/simplification
+work. Final npm run check passes 26 files/both builds; the full eight-suite
+Chrome command passes, including real Files/Contacts reload recovery, independent
+provider navigation, explicit retry and retained still-visible Profile drafts.
+Native state above the retired cap remains locally recoverable and explicitly
+saveable; retired grant RDF remains preserved. Workbench graph shrinks by about
+1.1 KB gzip; other graphs add about 0.4 KB. Warnings remain advisory and cold
+Contacts selection remains approximately 13 seconds in the bounded fixture.
+Readable assets are restored. CYC151 is Active in Evaluate awaiting human review;
+no manual AT or arbitrary process-loss certification, commit or integration.
+
+
+## CYC151 accepted for integration, 2026-11-12
+
+The maintainer says “accepted, commit, merge and push please.” ACC156 accepts
+implementation 935a765b474092c234c1e25f7cd115250df83b7d and evaluation
+ee98778f4c2c89bb8d731dcef02ea0350766c468. CYC151 is Accepted, superseding earlier
+Active/review notes. Shared recovery, draft/RDF preservation, obsolete route
+removal and evidence-based payload policy are included. The maintainer authorizes
+normal merge into latest main and push of main/cycle branches after exact
+validation. Unrelated icon archive changes remain excluded and preserved.
+No next cycle is selected; iframe Escape and other roadmap work remain deferred.
