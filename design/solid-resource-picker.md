@@ -29,10 +29,17 @@ allowed providers receive selection requests. Files uses its own Solid session;
 a WebID in a launch URL establishes neither routing nor Pod authorization.
 
 `PortConnection` frames calls, replies and cancellation with unique request IDs.
-Pending/outstanding work is bounded, requests expire, and disconnect rejects
-pending work. A busy Files UI refuses another request instead of replacing the
-selection the user is considering. Capability invocations are not replayed on
-reconnect. Multiple allowed live providers produce an ambiguity error.
+Pending and active call counts are bounded. Finite-deadline calls expire;
+interactive embedded calls deliberately use no deadline. Explicit local close
+rejects pending work. CYC145's [evaluation](../.spiral/evidence/EVD-20261112-QG24H-147.md)
+finds that raw frames do not yet enforce the JSON/64 KiB helper's limits, and
+remote port closure alone does not settle a call without a timeout. Parent/tab
+monitoring and explicit cancellation cover some composed loss paths; universal
+automatic disconnect recovery is not established. These gaps are retained in
+[RSK149](../.spiral/risks/RSK-20261112-QG24H-149.md) for a proposed follow-up.
+A busy Files UI refuses another request instead of replacing the selection the
+user is considering. Invocations are not replayed on reconnect. Multiple allowed
+live providers produce an ambiguity error.
 
 Launcher validates a returned HTTP(S) URL before changing its resource draft.
 Cancellation preserves the previous field. Files owns picker UI, selection and
