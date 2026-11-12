@@ -65,13 +65,15 @@ test('task context survives consumption without becoming an OAuth response', asy
   assert.equal(window.location.searchParams.has('solid-apps-task'), true);
   assert.equal(await (await middleware(request, next)).text(), 'authorized');
 
-  // Missing iss means this URL is not handled as an authorization redirect.
+  // A callback missing advertised issuer identification must still reject.
   window.location = new URL(
     'https://apps.example/redirect.html?code=x&state=fixture-state'
   );
-  const withoutIssuer = window.location.href;
-  assert.equal(await (await middleware(request, next)).text(), 'authorized');
-  assert.equal(window.location.href, withoutIssuer);
+  await assert.rejects(middleware(request, next), /missing iss/);
+  window.location = new URL(
+    'https://apps.example/redirect.html?code=x&state=fixture-state&iss='
+  );
+  await assert.rejects(middleware(request, next), /from issuer/);
   window.location = new URL(
     'https://apps.example/redirect.html?code=x&state=fixture-state&iss=https://wrong.example/'
   );
