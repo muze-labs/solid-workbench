@@ -363,6 +363,15 @@ The suite roadmap records additional proposals for future planning:
   invocation does not grant Pod management authority; provider setup, verified
   recipient identity, service authentication and policy-write recovery have
   separate contracts.
+- [Shared embedded app views](solid-workbench-embedded-app-views-design.md):
+  reuse registration, explicit provider choices and scoped presentation for
+  persistent Files details and Presenter regions, with widgets/document embeds
+  later. Prove independent provider replacement, appearance updates, draft-safe
+  transitions and failure isolation. Keep immediate-parent authority, protocol
+  independence and size negotiation distinct from host layout. CYC151 recovery
+  and accepted CYC157 iframe Escape are foundations, not proof of this broader
+  lifetime contract. Proposed view/edit names and protocol extensions remain
+  open; no second broker or indefinite invocation-as-lifetime is prescribed.
 - [Optional AI and interface composition](solid-workbench-ai-composition-design.md):
   inventory capability/component contracts, extend inspectable discovery, then
   evaluate a bounded SimplyFlow adapter, an ordinary optional Assistant, mixed

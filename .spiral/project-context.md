@@ -2247,3 +2247,20 @@ latest main and push after exact integration validation. Existing evidence
 limits and advisory download warnings remain. Preserve the unrelated icon
 archive. The later request to add the supplied embedded-view proposal to the
 roadmap is documentation-only and does not authorize its implementation.
+
+
+## Embedded app views design intake, 2026-11-12
+
+During CYC157 delivery the maintainer asks to add the new design document to the
+roadmap. Read the complete supplied shared-embedded-app-views proposal and retain
+its Files proof → Presenter proof → resilience → later widgets/document embeds
+sequence, appearance hints, native RDF, draft-safe transitions and Weblets
+independence/recursive-authority gates in the suite roadmap. Cross-reference the
+existing widget direction and broker proposals. A separate Presenter owns layout;
+providers own viewing/editing. No SimplyEdit or remote presenting in its proposed
+first MVP. Reuse accepted CYC151/CYC157 foundations without claiming persistent
+multi-region support already exists. API names, tokens and concrete providers
+remain open. This documentation-only intake selects no implementation cycle or
+priority; external references are retained research leads, not freshly verified
+standards/library claims. Include the source and roadmap updates in the ongoing
+authorized delivery; preserve the unrelated icon archive.
