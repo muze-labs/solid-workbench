@@ -24,6 +24,14 @@ proposals. Their implementation slices and dependencies are recorded below;
 the designs' internal phases do not replace the suite's two stages or the
 governing broker phases.
 
+Design intake, 2026-11-12: add the
+[document viewer and annotation proposal](solid-document-viewer-design.md) and
+[invitation-provider sharing proposal](solid-sharing-design.md) to the second-stage
+options below. Incorporate the revised personal-override/IDE direction from
+[Moldable Solid Apps](Moldable-Solid-Apps.md). The icon-family item already covers
+the supplied archive. These additions select no implementation cycle or new
+priority; the broker roadmap remains governing.
+
 This records suite-wide direction alongside the
 [capability-broker roadmap](solid-capability-broker-roadmap.md), which continues
 to govern broker implementation. The broker phases do not schedule every app
@@ -112,6 +120,43 @@ around that boundary. Choose the initial note types, persistence representation
 and editor integration during a future cycle. Follow the published-npm
 dependency policy; this roadmap does not add sibling repository links.
 
+## Application icon family and favicons
+
+Requested by the maintainer on 2026-11-09. Adopt the supplied
+[Solid Workbench icon family](solid-workbench-icons.zip) for application identity
+across browser favicons, Launcher shortcuts and the eventual app store. Use a
+consistent icon for the same app across these surfaces, with application
+manifests/catalog entries supplying the default artwork and existing user icon
+overrides remaining authoritative.
+
+The inspected archive contains twelve editable, transparent SVG icons in cobalt
+`#2455FF` and coral `#FF503F`: Workbench, Contacts, Files, Profile, Zett, Notebook,
+Projects, CRM, Documents, Knowledge, Forms and Chat. It includes standalone SVGs,
+a shared symbol sprite, PNG favicons at 16/24/32/48 pixels, four-size ICO files
+and light/dark preview sheets. The standalone sources have a 32-by-32 viewBox;
+their source files are 275–706 bytes. Icon availability records artwork for
+future apps; it does not select those apps for implementation. Preferences is
+used only in a dialog iframe and needs no application icon or favicon.
+
+For favicons, use the app's standalone SVG with appropriate ICO/PNG fallbacks;
+a sprite symbol reference is not the favicon asset. For Launcher and app-store
+entries, reuse the same family through the existing manifest/icon paths, using
+standalone SVGs or the same-origin sprite where supported. Preserve arbitrary
+external app icons and user replacements. Keep application identity artwork
+distinct from the existing shared Feather interaction glyphs and status controls.
+Plan the asset/build composition in the implementation cycle; no runtime icon
+framework or application feature is selected by this addition.
+
+Future verification: check real browser tabs at favicon sizes, phone/desktop
+Launcher tiles, manifest/catalog rendering, light/dark themes and photo
+backgrounds. Review suitable icon backing and contrast for this full-colour
+artwork rather than assuming the current white-glyph treatment fits it. Retain
+visible app names, accessible labels and native keyboard/focus behavior. Verify
+user overrides and cached icons through reload/offline recovery, account for
+uncached images, and measure asset bytes/requests alongside existing app budgets.
+Larger platform/PWA exports, if needed, require their own size/visual checks.
+This is roadmap work; no assets or application code are installed by this update.
+
 ## Moldable apps and the future in-app IDE
 
 Added at the maintainer's request on 2026-11-07, following
@@ -125,9 +170,11 @@ The maintainer further clarifies that the ultimate goal is easy alteration
 through the moldable IDE by people without a professional programming background.
 Readable, self-explanatory feature code is therefore a requirement for apps today:
 prefer clear names and straightforward steps, and avoid clever tricks and
-unnecessary indirection. Apply the design's
-[readability rules](Moldable-Solid-Apps.md#write-for-the-person-changing-the-app)
-to new and changed features, including shared MVP UI components.
+unnecessary indirection. Apply the current `AGENTS.md` readability requirements
+and the [standing feature guardrails](#standing-feature-guardrails) to new and
+changed features, including shared MVP UI components. The revised moldability
+document no longer contains the earlier readability subsection; those standing
+requirements remain in force.
 
 ### Moldability and readability review follow-up
 
@@ -167,7 +214,11 @@ publication or core promotion is requested.
 
 Track these follow-ups in the review's recommended order:
 
-1. **Reconcile the design documents.** Resolve the review's described personal
+1. **Reconcile the design documents.** The 2026-11-12 intake finds the supplied
+   moldability revision now describes the personal layer, separate histories,
+   template notifications and marketplace boundary. The detailed IDE follow-up
+   below reflects that direction; persistence/runtime APIs and upstream-version
+   handling still need design. Resolve the review's described personal
    override layer applied last, independent IDE/app undo histories, effective
    template-change notifications, marketplace separation and upstream-version
    concerns against the repository design. Preserve current readability/library
@@ -270,9 +321,11 @@ previously covered these prerequisites or the IDE workflow.
   UI update helpers with model effects and options. Expose app-specific model
   setup, predicates and comparators as editable entries; commands/actions change
   options and SimplyFlow binds the resulting view. Keep native RDF authoritative.
-- Preserve SimplyFlow's component/app override precedence. An edit replaces an
-  entry by the same name in the app's corresponding section, leaving the
-  component original inspectable. Removing the override must reveal the
+- Preserve SimplyFlow's component/app override precedence. Personal edits live
+  in a separate layer applied last, under the same entry names in corresponding
+  sections, leaving component originals inspectable. A dedicated component or
+  the app definition can hold that layer; its concrete form remains open.
+  Removing the override must reveal the
   underlying definition. Verify this for every supported entry kind, including
   templates, styles, commands, actions and key bindings; do not add another
   renderer or a competing composition system.
@@ -352,11 +405,23 @@ These checks establish app readiness; they do not claim an IDE already exists.
   without live write credentials or write-capable APIs. A test double alone in
   the live app's credential context does not establish this isolation.
 - Apply valid edits on explicit save, live wherever possible; optionally update
-  valid HTML/CSS while typing. Persist app-level edits locally, with Pod storage
-  as another possible destination. Choose the format, dependency loading and
-  runtime update mechanism during IDE design. Native Turtle and RDF preservation
+  valid HTML/CSS while typing. Persist the user's personal override layer
+  locally, with Pod storage as another possible destination. Choose the storage
+  format and dependency loading during IDE design. SimplyFlow must notify its
+  renderer when the effective named template changes, including override removal,
+  and update affected live instances using their current bound state. Inspect
+  and, where needed, extend its public API rather than adding an app renderer.
+  This requirement does not itself reopen deferred build-time include composition.
+  Native Turtle and RDF preservation
   rules still apply to Pod resources and Turtle caches. This does not expand
   the workspace's opaque-state exception or authorize JSON-in-Turtle snapshots.
+- Keep definition undo/redo independent of app-data undo/redo: reverting a
+  template or action must leave contact edits intact, and reverting app data
+  must leave personal customizations intact. Verify both directions.
+- Keep personal save/apply separate from optional marketplace publication and
+  discovery. Retain component source origins for source-maintenance updates.
+  Detect and explain when an upstream definition changes beneath an override;
+  base-version identity and recovery/merge policy remain open design questions.
 - Provide correction after runtime errors, reload/reset controls, and a safe
   reload that skips local changes even if both app and IDE fail. Retain skipped
   edits for separate recovery. Verify import/export round trips, isolation from
@@ -588,6 +653,12 @@ CYC106 is Accepted by explicit maintainer review, recorded in ACC111;
 SRC107/DES108/IMP109/EVD110 retain scope, implementation and evaluation limits.
 Broader CSS review, Contacts enhancements and Workbench budget follow-up remain
 separate; no next cycle is selected.
+
+Presentation clarification, 2026-11-09: the maintainer specifies that Preferences
+is only used in the dialog iframe. It needs no standalone Launcher entry,
+app-store listing or application icon. Earlier standalone-use descriptions above
+record the CYC106 design history; this clarification sets the intended
+presentation.
 
 ### Apply shared preference changes across open apps
 
@@ -923,6 +994,40 @@ for consistent behavior, keyboard operation and focus return. Preserve the
 JavaScript budget and existing data/RDF contracts. This is a roadmap item, not
 a selected cycle, a new delivery order or an implementation change.
 
+### Escape closes dialogs while focus is inside an iframe
+
+Requested by the maintainer on 2026-11-12 and explicitly retained for later,
+without moving it ahead of Contacts. Fix modal dialogs that do not respond to
+Escape when focus is inside their embedded app. Escape should request the same
+close/cancel operation as the owning dialog's close button, including existing
+saving, unsaved-draft and discard checks. It must not bypass those checks or
+implicitly save/publish a task. Return focus to the invoking control on close.
+
+Initial source inspection finds an Account-specific child Escape handler and
+an existing nested-Account keyboard check. The capability host handles its own
+dialog's native cancel event, while Preferences has no equivalent child Escape
+forwarding in its component. Treat this as evidence of uneven coverage, not a
+claim that every iframe dialog fails. Reproduce the affected real workflows
+before choosing a shared implementation; inspect SimplyFlow event bindings,
+existing private ports and managed lifecycle APIs first.
+
+Cover Preferences, embedded Profile/Files tasks and Account, including nested
+dialogs and genuinely cross-origin providers. An inner popup/dialog or control
+that consumes Escape must retain its interaction; one key press must not close
+multiple modal layers. A provider's request to close must be scoped to its active
+invocation, with stale/unrelated frames unable to dismiss another task. Define
+cooperation for cross-origin providers rather than assuming the host can read
+their document or intercept child key events. Keep separate-tab fallback behavior
+explicit rather than treating a provider tab as a parent-owned modal.
+
+Acceptance: send native keyboard Escape with focus in an iframe input/control;
+verify the intended modal closes or presents its existing save/discard guard,
+the caller regains focus, and pending edits survive. Repeat for nested modal
+precedence, a consumed Escape, cross-origin providers, repeated open/close and
+iframe reload. Retain Account's existing regression check and test cancellation
+results and active-task cleanup. This is future keyboard/accessibility repair,
+not an implementation cycle or a change to provider authority.
+
 ### Short suite prefixes
 
 Requested by the maintainer on 2026-11-07. Use **swb-** or **swb_** as the
@@ -1037,7 +1142,12 @@ The initial capability list includes:
 - **CRM (customer relationship management).**
 - **Document management, versioning and knowledge base.** See the
   [documents, annotations and versioned knowledge-base proposal](solid-documents-knowledge-base-versioning.md)
-  as a second-stage option, detailed below.
+  as a second-stage option, detailed below. The
+  [viewer refinement](solid-document-viewer-design.md) adds PDF reading, private
+  and shared annotation layers, and replaceable note-body editing.
+- **Sharing through invitation providers.** Share a resource with a known
+  email/phone contact through a user-selected service, including identity
+  onboarding and completion while the owner browser is closed.
 - **Verifiable provenance, signed changes and timestamp attestation.**
   Trace published changes, sources and approvals through independently
   inspectable evidence.
@@ -1073,17 +1183,127 @@ working-copy drafts.
 
 Keep Files responsible for resource management, Documents for reading/editing
 and annotations, and the knowledge base for linked content and changes review,
-connected through capabilities and shared versioning integration. Investigate
-SVN as the first backend while keeping clients independent of it. The proposed
+connected through capabilities and shared versioning integration. The viewer
+proposal below narrows the first Documents workflow to reading and annotation;
+source-document editing stays separate. Investigate SVN as the first backend
+while keeping clients independent of it. The proposed
 Solid extension, contracts, editor choices and implementation sequence remain
 design work to evaluate, not implemented capabilities or an adopted standard.
 
 When selecting this option, follow the proposal's contract, storage, document,
 annotation and knowledge-base slices and their recovery/acceptance scenarios.
 Reconcile its advanced-editor budget and specialist-rendering requirements with
-the standing guardrails and current build enforcement before implementation;
-this roadmap addition changes neither. This records an option without selecting
-a cycle, priority among second-stage options or delivery date.
+the standing guardrails and current advisory build-budget policy before
+implementation. CYC129 makes size excesses warnings, not build/dev failures;
+measure the complete core workflow even when engine assets load lazily.
+This records an option without selecting a cycle, priority among second-stage
+options or delivery date.
+
+### Document viewer, annotation layers and replaceable note editors
+
+Added from the [viewer proposal](solid-document-viewer-design.md) on 2026-11-12.
+Keep reading and annotation together in Documents, with Files owning browsing
+and a knowledge-base caller owning its working copy. Start with standalone PDF
+reading, highlights, rectangular regions, comments and independent replies.
+Validate the format-plugin boundary with an image plugin using the same note
+UI/storage. PDF content editing, OCR, ink/redaction, embedded-annotation round
+trips and collaborative keystrokes remain separate work.
+
+Start each document with a private writing destination. Preserve typing locally;
+explicit Save publishes to the selected verified layer, with distinct local,
+remote, permission, conflict and unknown-outcome states. Shared replies identify
+their audience. Copy to shared creates a new reviewed annotation without exposing
+the private original, history or other replies. Opening or reconnecting must not
+publish drafts. Account/layer/document isolation, quota failures, multiple tabs,
+revocation and interrupted writes need recovery evidence. Basic notes work on
+ordinary Solid independently of a future version service; embedded knowledge
+working copies retain their own explicit publication boundary.
+
+Use native Web Annotation RDF, preserving unknown terms and original selectors.
+Bind anchors to the representation/revision actually read; changed-document
+matches remain explicit candidates until confirmed. Keep unsupported or missing
+anchors readable. Retain the Solid Bench sample as a dated, digested fixture:
+read legacy untyped bodies safely, navigate supported PDF fragments, and preserve
+unsupported selectors without rewriting source data merely by opening it.
+New body-bearing notes require current sanitised HTML; native editor formats
+are optional additions, not substitutes for portable display.
+
+Assess pinned PDF.js and Cobalt public APIs, licences and reuse before coding.
+Reconcile the proposed specialist PDF/rich-text mount boundaries with the
+SimplyFlow-only rendering rule before adopting them. Metro owns anonymous and
+authenticated reads; validate range/stream support, cancellation and coherent
+revision identity, with a bounded full-download fallback. A cached first page
+is not an offline document: define explicit offline availability for shell,
+plugin assets and complete selected bytes, preserving pending notes separately.
+Measure the complete read-and-note graph, worker/assets, useful first page and
+comment, memory and slow-connection phone behavior under advisory budgets.
+
+Reuse the existing private provider preferences for a proposed
+`edit-note-body` operation, with Cobalt as default and a second compatible
+provider proving replacement without caller changes. The editor returns an edit
+into the viewer's draft; only the viewer publishes. Require current safe HTML,
+explicit conversion for unsupported native formats, and durable provider draft
+recovery across iframe/tab reload, cancellation and broker loss. Keep credentials,
+PDF bytes and unrelated notes out of editor requests; respect the complete
+64 KB broker message limit. Define standalone invocation and scoped large-content
+access rather than assuming either is already supplied by the broker.
+
+Follow the proposal's contract, reading, private-note, shared-discussion,
+revision/embedding, image-extension and replacement slices. Resolve selector/RDF
+profiles, bounded layer discovery, launch/focus fields and verified server access
+policy before implementation. Verify private-from-first-write and author-edit
+permissions with another identity and direct server checks. Acceptance combines
+phone/keyboard/assistive-technology reading and non-drag selection, draft recovery,
+unknown-RDF round trips, provider replacement and the private-note/copy/reply/
+changed-PDF scenario. This is a second-stage option, not a scheduled cycle.
+
+### Sharing through user-selected invitation providers
+
+Add the [sharing proposal](solid-sharing-design.md) as a reusable capability for
+sharing an owner's resource with a known email address or phone number when the
+recipient's WebID is unknown. Provider setup is separate; each share needs one
+owner confirmation, and a trusted server-side provider completes acceptance
+while the owner's browser is closed. Recipients can use an existing identity
+or register and return to the invitation, without requiring their own storage.
+Apps invoke the sharing interface without owning invitation delivery, identity
+onboarding or ACL editing. Reuse capability routing and private provider
+preferences; define the service identity, discovery/API and management scope.
+This is distinct from choosing a contact, signing, or copying an annotation
+between layers, and does not expand broker Phase 3 automatically.
+
+Start with a read-only single-resource invitation, email delivery and a defined
+verification policy, allowing an optional second channel. Bind explicit acceptance,
+contact verification and the authenticated WebID to the immutable approved share.
+A recorded invitation is pending, not granted access. Keep delivery status separate;
+freeze the accepting identity, make retries idempotent, and reconcile lost write
+responses, cancellation races and uncertain outcomes without a second ordinary
+owner approval. Link previews must not consume invitations. Keep contact details,
+invitation secrets and outcome records private; use native RDF where persisted
+under the suite's contracts.
+
+Investigate WAC first, with separate ACP support only after its own compatibility
+work. Setup must demonstrate actual management authority on each target; inherited
+folder permissions do not prove control of every child. Explain the provider's
+broader access-control authority and verify its service authentication after the
+owner session ends. Preserve owner control and unrelated permissions through
+conditional updates. Accepted recipient access is ordinary Pod authorization and
+survives provider outage. Revocation removes only this share's contribution;
+disconnection removes effective provider authority as well as preference state.
+Invitation expiry is separate from access expiry; guaranteed timed access,
+folder sharing, onward delegation and ownership transfer stay outside the first
+slice. Local/offline preparation must not be reported as a remotely created
+invitation; define draft recovery and explicit submission for the core phone and
+keyboard workflow when the cycle is designed.
+
+Refresh SAI invitations/SAI-JS and LWS alignment before freezing the contract;
+draft endpoints and existing provider compatibility are not assumed. Close the
+private share inventory, default verification policy and replacement/disconnection
+semantics. Acceptance must show owner-browser-closed completion, authenticated
+onboarding return, expired/cancelled/claimed invitation rejection, interrupted
+policy-write recovery without lost unrelated grants, accepted access during
+provider outage, and effective cancellation/revocation/disconnection. Apply the
+standing accessibility, local recovery and download guardrails. This records a
+second-stage option without selecting a provider service or implementation cycle.
 
 ### Verifiable provenance and timestamp attestation
 
@@ -1121,9 +1341,11 @@ when used by the separately deferred optional AI capabilities.
 Add the [sign-change capability proposal](solid-signing-capability.md) as the
 signing boundary for these second-stage workflows. Reuse the general provider
 registry and the profile's `pim:preferencesFile` discovery, with explicit
-provider selection. The registry remains future broker work; existing mapped
-Files/Profile providers do not establish that it already exists. Keep provider
-selection, key enrolment, approval and Pod write permission distinct.
+provider selection. The browse registry and preference mechanism exist through
+accepted CYC118; signing still needs its own compatible contract, route policy
+and isolated approval presentation. A registered browse provider is not a
+signing provider. Keep provider selection, key enrolment, approval and Pod write
+permission distinct.
 
 The initial web signer uses a separate origin and a top-level approval window
 or tab. It renders readable operations from the exact immutable manifest it
@@ -1157,10 +1379,14 @@ proof profile. External coordination can follow a working slice; it is not a
 prerequisite.
 
 Versioned-root, working-copy, upload and retry contracts support atomic document
-publication. General provider selection and the isolated approval contract
-support signing. The signed-change profile connects both to Pod verification,
+publication. Standalone viewing/annotation can precede that service; historical
+and embedded working-copy workflows depend on its explicit revision/commit
+contracts. The note editor and invitation service reuse provider selection but
+have separate data, recovery and trust contracts; neither is a prerequisite for
+basic browse or the retained recipient-picker phase. General provider selection
+and the isolated approval contract support signing. The signed-change profile connects both to Pod verification,
 receipts and timestamp evidence. Plan coherent slices across those boundaries
-rather than treating the three designs as unrelated implementations. Their
+rather than treating these designs as unrelated implementations. Their
 first integrated evidence should cover a knowledge-base page and staged binary
 attachment, recoverable publication and independently verifiable export.
 

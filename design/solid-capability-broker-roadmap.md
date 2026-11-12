@@ -286,6 +286,14 @@ It does not establish the persistent preferred-provider registry described below
 
 ### Phase 3 — Second capability and replaceability
 
+CYC139 is Active for human review on 2026-11-12. The maintainer confirms a
+current-configured-book first Contacts picker. IMP143/EVD142 retain its native
+recipient identity contract, independent recipient preference, separate-origin
+caller/provider proof, second browse provider and full regression evidence.
+Multiple-book/cross-workspace browsing and the iframe Escape repair stay later.
+Passing fixtures do not constitute human acceptance or third-party certification.
+
+
 - Implement recipient selection in a contacts app, returning a WebID or appropriately identified contact resource.
 - Implement a second compatible `browse` provider (or a minimal test double hosted on another origin).
 - Change the user's preferred provider **without changing the caller**.
@@ -301,6 +309,29 @@ It does not establish the persistent preferred-provider registry described below
 - Only then consider Weblets embedding, embedded provider UIs, provider selection via AI, or automatic workspace composition.
 
 **Exit:** Explicit keep/change/remove decisions rather than automatic scope expansion.
+
+### Later capability proposals retained, 2026-11-12
+
+The suite roadmap now records two additional contracts for future planning:
+
+- [Note-body editing](solid-document-viewer-design.md#user-selected-note-body-editing-capability):
+  Cobalt default and a compatible replacement, returning current safe HTML into
+  the caller's draft. Final contract, provider routing, disclosure and durable
+  edit-session recovery still need work. Existing browse preferences provide a
+  foundation, not an implemented note editor or standalone invocation path.
+- [Invitation-provider sharing](solid-sharing-design.md): one owner confirmation
+  delegates completion to an explicitly trusted server-side provider. Broker
+  invocation does not grant Pod management authority; provider setup, verified
+  recipient identity, service authentication and policy-write recovery have
+  separate contracts.
+
+These proposals do not replace Phase 3's recipient selection/independent
+replaceability proof or Phase 4's evaluation. Use the existing private provider
+preferences and scoped transport where suitable; respect message limits and
+specify content access separately for large/private bodies. Their product scope,
+dependency order and acceptance scenarios remain in the
+[suite roadmap](solid-apps-roadmap.md#second-stage-virtual-company). No new
+capability URI, route or implementation phase is adopted by this intake.
 
 ### Retained roadmap item — Pod-synced workspaces
 
