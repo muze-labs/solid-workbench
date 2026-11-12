@@ -140,8 +140,11 @@
     min-height: 0;
     overflow: var(--swb-main-overflow, auto);
     display: var(--swb-main-display, block);
-    padding: var(--swb-ui-space-small) var(--swb-ui-space)
-      var(--swb-main-bottom, var(--swb-ui-space-large));
+    padding: var(
+      --swb-main-padding,
+      var(--swb-ui-space-small) var(--swb-ui-space)
+        var(--swb-main-bottom, var(--swb-ui-space-large))
+    );
   }
   .swb-app-content {
     max-width: 80rem;
@@ -158,9 +161,12 @@
     --swb-content-min-height: 0;
     --swb-content-overflow: auto;
   }
+  .swb-root:has([data-muze-solid-ui-content-view]) {
+    --swb-main-padding: 0;
+  }
   @media (max-width: 720px) {
     .swb-suite-main {
-      padding-inline: var(--swb-ui-space-small);
+      padding-inline: var(--swb-main-padding, var(--swb-ui-space-small));
     }
   }
   @media (max-width: 359px) {

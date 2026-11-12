@@ -1,5 +1,8 @@
 // Deliberately no Workbench library or framework: tests the wire contract.
-export function independentViewPeer(origin) {
+export function independentViewPeer(
+  origin,
+  presentation = 'interactive-scroll'
+) {
   return `<!doctype html><meta name="viewport" content="width=device-width">
     <title>Independent guarded viewer</title>
     <label>Recoverable draft <textarea id="draft">keep this draft</textarea></label>
@@ -36,7 +39,7 @@ export function independentViewPeer(origin) {
           generation=data.input.input.generation;
           report({opened:data.input.input.resource,inputs:data.input.input});
           result={result:{version:1,generation,ready:true,
-            presentation:'interactive-scroll',appearance:['font'],constraints:{minWidth:160}}};
+            presentation:${JSON.stringify(presentation)},appearance:['font'],constraints:{minWidth:160}}};
         }
         else if(data.method==='view') {
           const input=data.input;

@@ -139,6 +139,14 @@ providers through the [shared embedded-view work](#shared-embedded-app-views-fil
 The proposed first MVP includes text authoring and existing-image selection,
 local presentation, and no SimplyEdit dependency or remote presenting.
 
+Maintainer follow-up, 2026-11-12: opening Presenter without a resource URI
+should start a new presentation with blank slides. Define this entry flow
+alongside explicit resource opening and local draft recovery, preserving
+recoverable edits rather than overwriting them when starting a new deck.
+A subsequent version should offer a template picker with a default set of
+templates. Keep the initial blank-slide flow usable without that picker;
+choose the initial template set and its offline availability during design.
+
 ## Application icon family and favicons
 
 Requested by the maintainer on 2026-11-09 and reaffirmed on 2026-11-12
@@ -160,6 +168,13 @@ Forms checklist and regenerated PNG/ICO exports, superseding the earlier
 cobalt/coral description. Icon availability records artwork for
 future apps; it does not select those apps for implementation. Preferences is
 used only in a dialog iframe and needs no application icon or favicon.
+
+Presenter artwork remains missing: the maintainer reports its absent favicon
+during the 2026-11-12 review, and Presenter is not among the archive's twelve
+icons. Design a Presenter icon consistent with this family, review it at small
+sizes, and use it for its favicon, app manifest and Launcher entry. Retain
+Feather icons for interaction controls. This is future artwork/integration work,
+not completion of the accepted icon cycle.
 
 For favicons, use the app's standalone SVG with appropriate ICO/PNG fallbacks;
 a sprite symbol reference is not the favicon asset. For Launcher and app-store
@@ -198,6 +213,22 @@ user overrides and cached icons through reload/offline recovery, account for
 uncached images, and measure asset bytes/requests alongside existing app budgets.
 Larger platform/PWA exports, if needed, require their own size/visual checks.
 This is roadmap work; no assets or application code are installed by this update.
+
+### Window and tab titles
+
+Make a suite-wide decision about resource-oriented window/tab identity. The
+maintainer's preferred direction is the correct app favicon followed by the
+loaded resource's title, instead of the application title or an application-name
+suffix. The favicon supplies application identity; do not duplicate it as a
+text glyph in the title.
+
+Resolve the title source (resource metadata versus filename), an understandable
+fallback for untitled resources and new unsaved documents, and titles for apps
+with no loaded resource. Update the title when the resource changes or is
+renamed. Apply the agreed policy consistently to standalone tabs and
+Workbench-opened windows; verify browser tabs/window switching and accessible
+identification. Record these choices before implementation rather than treating
+the proposed title convention as an already implemented suite policy.
 
 ## Moldable apps and the future in-app IDE
 
@@ -1788,3 +1819,70 @@ Normal merge and push of main and the icon branch are authorized after exact
 integration validation. The supplied archive is retained as artwork source;
 the unrelated application-priorities document remains unchanged and uncommitted.
 No next cycle, release or deployment is selected.
+
+## Presenter proof in evaluation, 2026-11-12
+
+CYC-20261112-QG24H-175 continues embedded app views phase 2 after accepted CYC168
+and CYC163. The maintainer selects the proposed Presenter cycle and explicitly
+chooses native RDF text stored with the deck. Presenter now supplies title/text
+and title/image layouts, provider-owned text create/edit/view, Files image
+selection, multiple bounded/passive regions, native local/conditional Pod saves,
+and keyboard/phone local presentation. Workbench's Suite apps opens Presenter.
+DES177/IMP178/EVD179 retain scope, implementation and verification. This is
+Active work for human review, not an accepted completion or publication.
+
+The next resilience/usability stage should retain the measured cold first-task
+cost (about 1.84 MB / 37 s in the no-store uncompressed 50 KiB/s fixture), provider
+installation/offline availability, multi-tab deck edit coordination, account and
+workspace transitions, manual AT and production-provider checks. The MVP retains
+one local deck per account; a local deck library, richer text and layout
+negotiation remain future work. Explicit provider-draft recovery, guarded region
+transitions and a cross-origin provider are bounded evidence, not full recursive
+independent-host compatibility. No subsequent cycle is selected by this record.
+
+
+Presenter review correction: the maintainer rejects the initial form-based UI.
+CYC175 remains Active while its design is refined around one background-image /
+centered transparent-text template, thumbnails, direct editing and full-screen
+presentation. Use Margin Notes' Cobalt-to-native-RDF approach as precedent.
+
+Retain a shared Solid Workbench toolbar design task alongside this refinement:
+consider compact app-level actions and contextual controls, taking inspiration
+from SimplyFlow simply.edit's floating toolbar. Resolve selection/caret opening,
+keyboard focus and dismissal, phone/virtual-keyboard placement, overflow and
+provider/host ownership before standardizing or rolling it out across apps.
+The later toolbar-study confirmation supersedes the earlier styling deferral:
+include Bold, Italic and Link in Presenter first, with reusable components;
+apply the pattern to Files in a later cycle. This does not accept the implementation
+or authorize a suite-wide rollout.
+
+### Toolbar study applied first to Presenter
+
+Source: [interactive toolbar study](solid-workbench-toolbar-design.zip), supplied
+by the maintainer. Read its HTML, editable source and README alongside the
+SimplyFlow floating-toolbar precedent. Retain Feather icons and existing theme
+preferences. Reuse compact icon/label controls, neutral pressed states, floating
+selection tools and optional docking. The prototype's Files actions and fixed
+dark theme are examples, not new Files requirements.
+
+CYC175 now implements the single background/centered-text template, thumbnail
+list–details, inline Cobalt formatting and fullscreen navigation. DES177/IMP178/
+EVD179 hold the revised design and evidence; the earlier form-based proof was
+rejected. Shared controls and viewport placement live in solid-design; the shell
+provides an optional app-owned action row. Files adoption remains future work.
+
+Keep follow-ups explicit: richer text styling and undo/redo (absent in Cobalt
+0.1.0), physical-phone keyboard/IME and screen-reader review, wider toolbar
+composition, provider installation/offline resources, production cold-load cost,
+and multi-tab deck coordination. Use the revised cold measurements in EVD179;
+the earlier 37-second form workflow is historical evidence, not the current path.
+
+Cobalt composition prerequisite: the revised Presenter probe found that published
+Cobalt 0.1.0 displays committed IME text without updating its fragment. This is a
+verified preservation gap (EVD179), not just a physical-phone testing item. The
+maintainer authorizes the fix, then explicitly permits a local build while they
+handle publication later. Workbench now consumes the tested local 0.1.1 tarball
+with composition-aware save/closure guards. Native Chrome composition and RDF
+reload tests accompany it; physical-device and manual AT review remain distinct.
+Replace the temporary local dependency with the published version after release.
+No publication or cycle acceptance is inferred.

@@ -8,6 +8,10 @@ export function viewAppearance(value = {}) {
   const result = {};
   for (const key of Object.keys(value)) {
     const hint = value[key];
+    if (key === 'background' && hint === 'transparent') {
+      result[key] = hint;
+      continue;
+    }
     if (
       ['foreground', 'background', 'accent'].includes(key) &&
       typeof hint === 'string' &&
@@ -45,10 +49,15 @@ export function viewAppearance(value = {}) {
 }
 
 export function viewPresentation(value) {
+  const scrolling =
+    value?.interaction === 'interactive' && value.geometry === 'scroll';
+  const bounded =
+    ['passive', 'interactive'].includes(value?.interaction) &&
+    value.geometry === 'bounded' &&
+    ['contain', 'cover'].includes(value.fit);
   if (
     !value ||
-    value.interaction !== 'interactive' ||
-    value.geometry !== 'scroll' ||
+    !(scrolling || bounded) ||
     typeof value.visible !== 'boolean' ||
     !Number.isFinite(value.width) ||
     value.width < 0 ||
@@ -58,8 +67,9 @@ export function viewPresentation(value) {
     throw capabilityError('Unsupported view presentation.', 'denied');
   }
   return {
-    interaction: 'interactive',
-    geometry: 'scroll',
+    interaction: value.interaction,
+    geometry: value.geometry,
+    ...(bounded ? { fit: value.fit } : {}),
     visible: value.visible,
     width: value.width,
     height: value.height
@@ -69,13 +79,19 @@ export function viewPresentation(value) {
 // One region, one scoped connection. The caller renders all chrome with its own
 // component system and supplies native window/load events; no renderer lives here.
 export class EmbeddedView {
-  constructor({ broker, frame, change = () => {} }) {
-    Object.assign(this, { broker, frame, change });
+  constructor({
+    broker,
+    frame,
+    capability = viewResourceCapability,
+    change = () => {}
+  }) {
+    Object.assign(this, { broker, frame, capability, change });
     this.revision = 0;
     this.generation = crypto.randomUUID();
     this.controller = new AbortController();
   }
   async open(url, input) {
+    const presentation = viewPresentation(input.presentation);
     this.url = new URL(url);
     // Distinguish consecutive views of the same URL. SimplyFlow may combine
     // the close/open attribute updates before the browser sees about:blank.
@@ -83,15 +99,11 @@ export class EmbeddedView {
     this.ticket = this.broker.target
       ? await this.broker.beginEmbedded(
           this.url.href,
-          viewResourceCapability,
+          this.capability,
           'launcher',
           'view'
         )
-      : await this.broker.beginEmbedded(
-          this.url.href,
-          viewResourceCapability,
-          'view'
-        );
+      : await this.broker.beginEmbedded(this.url.href, this.capability, 'view');
     if (this.retired) {
       await this.broker.endEmbedded(this.ticket.id);
       return;
@@ -105,9 +117,9 @@ export class EmbeddedView {
           ...input,
           version: 1,
           generation: this.generation,
-          access: 'direct',
+          access: input.access || 'direct',
           appearance: viewAppearance(input.appearance),
-          presentation: viewPresentation(input.presentation)
+          presentation
         },
         { signal: this.controller.signal }
       );
@@ -118,7 +130,8 @@ export class EmbeddedView {
         result?.version !== 1 ||
         result.generation !== this.generation ||
         result.ready !== true ||
-        result.presentation !== 'interactive-scroll'
+        result.presentation !==
+          presentation.interaction + '-' + presentation.geometry
       ) {
         throw capabilityError('Provider did not confirm a usable view.');
       }

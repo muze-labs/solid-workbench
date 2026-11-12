@@ -24,7 +24,20 @@ export const muzeSolidViewer = {
       this.eventBindings.start();
       const host = this.runtime.host;
       host.manage({
-        capabilities: [this.api.viewResourceCapability],
+        capabilities: [
+          this.api.viewResourceCapability,
+          this.api.viewTextCapability,
+          this.api.createTextCapability,
+          this.api.editTextCapability
+        ],
+        canClose: () => ({
+          allowed:
+            !this.runtime.textDirty &&
+            (!this.runtime.cobaltActive ||
+              (!this.runtime.cobaltEditor?.isComposing() &&
+                this.runtime.cobaltRevision ===
+                  this.runtime.cobaltAcknowledged))
+        }),
         onRequest: (request) => this.actions.muzeSolidViewerRequest(request),
         onCancel: () => {
           this.runtime.loadGeneration += 1;
@@ -45,11 +58,33 @@ export const muzeSolidViewer = {
         );
       }
     },
-    async muzeSolidViewerRequest({ id, input }) {
+    async muzeSolidViewerRequest({ id, input, capability, requester }) {
       try {
         if (
+          input?.surface === 'slide-text' &&
+          [this.api.editTextCapability, this.api.viewTextCapability].includes(
+            capability
+          )
+        ) {
+          this.api.viewPresentation(input.presentation);
+          const result = await this.actions.muzeSolidCobaltOpen(
+            input,
+            requester
+          );
+          await this.runtime.host.managed.respond(id, { result });
+          return;
+        }
+        if (
+          [this.api.createTextCapability, this.api.editTextCapability].includes(
+            capability
+          )
+        ) {
+          await this.actions.muzeSolidTextOpen({ id, input, requester });
+          return;
+        }
+        if (
           input.version !== 1 ||
-          input.access !== 'direct' ||
+          !['direct', 'host-draft'].includes(input.access) ||
           typeof input.generation !== 'string'
         ) {
           throw new Error('viewer: Unsupported embedded view contract.');
@@ -57,23 +92,50 @@ export const muzeSolidViewer = {
         this.runtime.viewGeneration = input.generation;
         this.runtime.appearanceRevision = -1;
         this.actions.muzeSolidViewerContext({ ...input, revision: 0 });
-        await this.actions.muzeSolidViewerLoad(input.resource);
+        if (capability === this.api.viewTextCapability) {
+          const draft = this.api.textDraft(input);
+          this.data.muzeSolidViewerText = draft.text;
+          this.data.muzeSolidViewerStatus = '';
+          this.data.muzeSolidViewerImage = { hidden: '' };
+          await this.actions.muzeSolidViewerContentReady(draft.text, '');
+        } else {
+          if (input.access !== 'direct') {
+            throw new Error('viewer: Resource viewing requires direct access.');
+          }
+          this.runtime.expectedKind = input.contentKind;
+          await this.actions.muzeSolidViewerLoad(input.resource);
+        }
         await this.runtime.host.managed.respond(id, {
           result: {
             version: 1,
             generation: input.generation,
             ready: true,
-            presentation: 'interactive-scroll',
-            appearance: ['font', 'fontSize', 'lineHeight'],
+            presentation:
+              this.runtime.presentation.interaction +
+              '-' +
+              this.runtime.presentation.geometry,
+            appearance: [
+              'font',
+              'fontSize',
+              'lineHeight',
+              'foreground',
+              'background'
+            ],
             limitations: [
-              'Colours follow accessibility preferences.',
+              'Forced colours follow accessibility preferences.',
               'Image pixels retain their original appearance.'
             ],
-            constraints: { minWidth: 160, minHeight: 120, overflow: 'scroll' }
+            constraints: {
+              minWidth: 0,
+              minHeight: 0,
+              overflow:
+                this.runtime.presentation.geometry === 'bounded'
+                  ? 'reject'
+                  : 'scroll'
+            }
           }
         });
-      }
-      catch (error) {
+      } catch (error) {
         this.data.muzeSolidViewerStatus = error.message;
         if (this.runtime.host.managed.incoming.has(id)) {
           await this.runtime.host.managed.respond(id, {
@@ -97,8 +159,11 @@ export const muzeSolidViewer = {
       this.runtime.appearanceRevision = input.revision;
       this.runtime.presentation = presentation;
       // Complete hint sets: omission restores local defaults. Keep user scaling
-      // and accessible minimums; colours remain provider-owned in this profile.
+      // and accessible minimums; forced colours remain controlled by the user.
       this.data.muzeSolidViewerAppearance = {
+        'data-muze-solid-viewer-fit': presentation.fit || null,
+        'data-muze-solid-viewer-bounded':
+          presentation.geometry === 'bounded' ? '' : null,
         style:
           '--muze-viewer-font:' +
           (appearance.font || 'monospace') +
@@ -108,10 +173,19 @@ export const muzeSolidViewer = {
           'rem;' +
           '--muze-viewer-line-height:' +
           Math.max(1.5, appearance.lineHeight || 1.5) +
+          ';' +
+          '--muze-viewer-hint-foreground:' +
+          (appearance.foreground || 'inherit') +
+          ';' +
+          '--muze-viewer-hint-background:' +
+          (appearance.background || 'transparent') +
           ';'
       };
     },
     async muzeSolidViewerOperation(input) {
+      if (this.runtime.cobaltActive) {
+        return this.actions.muzeSolidCobaltOperation(input);
+      }
       if (input?.generation !== this.runtime.viewGeneration) {
         throw new Error('viewer: Retired view generation.');
       }
@@ -125,9 +199,17 @@ export const muzeSolidViewer = {
       }
       if (input.operation === 'update') {
         this.actions.muzeSolidViewerContext(input);
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        await this.actions.muzeSolidViewerContentReady(
+          this.data.muzeSolidViewerText,
+          this.runtime.imageUrl || ''
+        );
         return { revision: this.runtime.appearanceRevision };
       }
       if (input.operation === 'refresh') {
+        if (!this.data.muzeSolidViewerResource) {
+          return { ready: true };
+        }
         await this.actions.muzeSolidViewerLoad(
           this.data.muzeSolidViewerResource
         );
@@ -163,20 +245,24 @@ export const muzeSolidViewer = {
           ?.split(';')[0]
           .trim()
           .toLowerCase();
+        if (
+          this.runtime.expectedKind === 'image' &&
+          !type?.startsWith('image/')
+        ) {
+          throw new Error('viewer: Select an image resource for this region.');
+        }
         let text = '';
         let image = '';
         if (type?.startsWith('text/')) {
           text = await response.text();
-        }
-        else if (
+        } else if (
           ['image/png', 'image/jpeg', 'image/gif', 'image/webp'].includes(type)
         ) {
           const blob = await response.blob();
           const decoded = await createImageBitmap(blob);
           decoded.close();
           image = URL.createObjectURL(blob);
-        }
-        else {
+        } else {
           throw new Error(
             'viewer: This resource format is unsupported. ' +
               'Use another viewer or download it.'
@@ -199,8 +285,7 @@ export const muzeSolidViewer = {
         };
         this.data.muzeSolidViewerStatus = '';
         await this.actions.muzeSolidViewerContentReady(text, image);
-      }
-      catch (error) {
+      } catch (error) {
         if (generation === this.runtime.loadGeneration) {
           this.data.muzeSolidViewerStatus =
             error.message + ' Previously loaded content is retained.';
@@ -218,8 +303,7 @@ export const muzeSolidViewer = {
           observer.disconnect();
           if (error) {
             reject(error);
-          }
-          else {
+          } else {
             resolve();
           }
         };
@@ -242,9 +326,21 @@ export const muzeSolidViewer = {
             if (image) {
               await picture.decode();
             }
+            if (this.runtime.presentation?.geometry === 'bounded' && !image) {
+              const surface = this.container.querySelector(
+                '.muze-solid-viewer-surface'
+              );
+              if (
+                content.scrollHeight > surface.clientHeight + 1 ||
+                content.scrollWidth > surface.clientWidth + 1
+              ) {
+                throw new Error(
+                  'viewer: This text does not fit the region. Shorten it or use a larger region.'
+                );
+              }
+            }
             finish();
-          }
-          catch (error) {
+          } catch (error) {
             finish(error);
           }
         };

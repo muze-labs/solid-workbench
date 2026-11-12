@@ -13,12 +13,20 @@ import {
   named,
   literal
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
-import { readProvider, writeProvider, validateProvider, providerCapabilities } from './providers.mjs';
+import {
+  readProvider,
+  writeProvider,
+  validateProvider,
+  providerCapabilities
+} from './providers.mjs';
 export const defaults = Object.freeze({
   theme: 'system',
   browseProvider: null,
   recipientProvider: null,
   viewProvider: null,
+  textViewProvider: null,
+  textCreateProvider: null,
+  textEditProvider: null,
   textScale: '100',
   density: 'comfortable',
   language: 'en',
@@ -81,9 +89,11 @@ export function readPreferences(document) {
       if (Object.hasOwn(providerCapabilities, key)) {
         value = readProvider(
           new StateGraph(
-            document.source ?? document.graph.originalSource ?? '', document.url
+            document.source ?? document.graph.originalSource ?? '',
+            document.url
           ),
-          document.url, providerCapabilities[key]
+          document.url,
+          providerCapabilities[key]
         );
       }
       else if (key === 'workspaceResource') {
@@ -190,7 +200,12 @@ export async function savePreferences(session, document, settings, workspace) {
   ];
   for (const key of keys) {
     if (Object.hasOwn(providerCapabilities, key)) {
-      writeProvider(graph, document.url, settings[key], providerCapabilities[key]);
+      writeProvider(
+        graph,
+        document.url,
+        settings[key],
+        providerCapabilities[key]
+      );
       continue;
     }
     let value;

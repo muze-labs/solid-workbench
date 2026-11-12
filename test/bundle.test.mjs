@@ -14,7 +14,16 @@ test('readable and minified apps preserve isolated module graphs', async () => {
         .filter((item) => item.fileName.endsWith('.min.js') === Boolean(suffix))
         .map((item) => [item.fileName, item])
     );
-    const apps = ['contacts', 'files', 'launcher', 'profile', 'preferences', 'account', 'viewer'];
+    const apps = [
+      'contacts',
+      'files',
+      'launcher',
+      'profile',
+      'preferences',
+      'account',
+      'viewer',
+      'presenter'
+    ];
     assert.deepEqual(
       [...chunks.keys()].sort(),
       [
@@ -24,7 +33,8 @@ test('readable and minified apps preserve isolated module graphs', async () => {
           'shared/data',
           'shared/ui',
           'shared/profile',
-          'shared/backgrounds'
+          'shared/backgrounds',
+          'shared/cobalt'
         ].map(filename)
       ].sort()
     );
@@ -109,6 +119,9 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       const required = [data.fileName, ui.fileName];
       if (['launcher', 'preferences'].includes(name)) {
         required.push(filename('shared/backgrounds'));
+      }
+      if (['presenter', 'viewer'].includes(name)) {
+        required.push(filename('shared/cobalt'));
       }
       if (['contacts', 'profile'].includes(name)) {
         required.push(filename('shared/profile'));

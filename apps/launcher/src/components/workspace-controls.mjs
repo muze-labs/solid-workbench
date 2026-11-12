@@ -41,11 +41,9 @@ export const workspaceControls = {
       if (!this.runtime.host.selectedWebId) {
         return;
       }
-      const key = capability === this.api.browseCapability
-        ? 'browseProvider'
-        : capability === this.api.selectRecipientCapability
-          ? 'recipientProvider'
-          : capability === this.api.viewResourceCapability ? 'viewProvider' : null;
+      const key = Object.keys(this.api.providerCapabilities).find(
+        (key) => this.api.providerCapabilities[key] === capability
+      );
       return key ? this.runtime.host.preferences[key]?.url : undefined;
     },
     workspaceMessage: function (message, remember = false) {
@@ -137,11 +135,19 @@ export const workspaceControls = {
       this.runtime.workspace = new this.api.WorkspaceBroker({
         openAccountControls: (record) => {
           const app = new URL(record.entry.url);
-          const suiteApps = ['contacts', 'files', 'profile', 'preferences'];
+          const suiteApps = [
+            'contacts',
+            'files',
+            'profile',
+            'preferences',
+            'presenter',
+            'viewer'
+          ];
           const allowed = suiteApps.some((name) => {
             const trusted = new URL('../' + name + '/', location.href);
-            return app.origin === trusted.origin &&
-              app.pathname === trusted.pathname;
+            return (
+              app.origin === trusted.origin && app.pathname === trusted.pathname
+            );
           });
           if (!allowed) {
             throw new Error('launcher: Account controls are not granted.');
@@ -157,6 +163,12 @@ export const workspaceControls = {
         resolveProvider: (capability) =>
           this.actions.swb_preferredProvider(capability),
         embeddedProviders: [
+          ...['textViewProvider', 'textCreateProvider', 'textEditProvider'].map(
+            (key) => ({
+              url: new URL('../viewer/', location.href).href,
+              capability: this.api.providerCapabilities[key]
+            })
+          ),
           {
             url: new URL('../profile/', location.href).href,
             capability: this.api.editProfileCapability

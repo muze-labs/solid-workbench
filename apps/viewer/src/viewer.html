@@ -1,7 +1,8 @@
 <div
+  class="muze-solid-viewer-surface"
   data-simply-field="muzeSolidViewerAppearance"
   data-simply-transform="attributes"
-  data-simply-attributes="style"
+  data-simply-attributes="style data-muze-solid-viewer-bounded data-muze-solid-viewer-fit"
 >
   <form
     class="ds-form muze-solid-viewer-open"
@@ -20,6 +21,13 @@
         data-simply-transform="escape_html"
     /></label>
     <button class="ds-button" type="submit">View resource</button>
+    <button
+      class="ds-button"
+      type="button"
+      data-simply-command="muzeSolidTextNew"
+    >
+      Write text
+    </button>
   </form>
   <p
     class="muze-solid-viewer-status"
@@ -29,7 +37,6 @@
   ></p>
   <pre
     class="muze-solid-viewer-text"
-    tabindex="0"
     data-simply-field="muzeSolidViewerText"
     data-simply-transform="escape_html"
   ></pre>

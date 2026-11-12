@@ -3,6 +3,9 @@ import { named, sameTerm } from '@muze-labs/solid-app-data/state-rdf.mjs';
 
 export const capabilityNamespace = 'https://vocab.muze.nl/capability#';
 export const providerCapabilities = Object.freeze({
+  textViewProvider: 'https://vocab.muze.nl/capabilities/view-text',
+  textCreateProvider: 'https://vocab.muze.nl/capabilities/create-text',
+  textEditProvider: 'https://vocab.muze.nl/capabilities/edit-text',
   viewProvider: 'https://vocab.muze.nl/capabilities/view-resource',
   browseProvider: 'https://vocab.muze.nl/capabilities/browse',
   recipientProvider: 'https://vocab.muze.nl/capabilities/select-recipient'
@@ -97,8 +100,12 @@ function registryBinding(graph, url, capability) {
       throw new Error('preferences-provider: Unsupported picker binding.');
     }
   }
-  return { root, registry, binding,
-    choice: binding ? providerChoice(graph, binding) : null };
+  return {
+    root,
+    registry,
+    binding,
+    choice: binding ? providerChoice(graph, binding) : null
+  };
 }
 
 export function readProvider(graph, url, capability = browse) {

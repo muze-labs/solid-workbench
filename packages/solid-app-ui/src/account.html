@@ -16,6 +16,22 @@
   >
     {{title}}
   </h1>
+  <nav class="muze-solid-design-toolbar muze-solid-ui-app-toolbar"
+    aria-label="Application actions"
+    data-simply-field="muzeSolidUiAppToolbar"
+    data-simply-transform="attributes" data-simply-attributes="hidden">
+    <div style="display:contents" data-simply-list="muzeSolidUiAppTools">
+      <template><button type="button" class="muze-solid-design-tool"
+        data-simply-command="muzeSolidUiAppAction" data-simply-value=":value.command"
+        data-simply-field="attributes" data-simply-transform="attributes"
+        data-simply-attributes="disabled title aria-label data-muze-solid-action">
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true"><use
+          data-simply-field="icon" data-simply-transform="attributes"
+          data-simply-attributes="href"></use></svg>
+        <span data-simply-field="label" data-simply-transform="escape_html"></span>
+      </button></template>
+    </div>
+  </nav>
   <div
     class="swb-account ds-dropdown muze-solid-design-dropdown"
     data-simply-shortcuts="muzeSolidDesignDropdown"

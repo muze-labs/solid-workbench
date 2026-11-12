@@ -70,8 +70,10 @@ export const preferences = {
     async swb_initializePreferences() {
       const host = this.runtime.host;
       host.onAuthenticationRestored = () => {
-        if (this.runtime.syncError?.code === 'sign_in_required' &&
-            this.data.swb_status === this.runtime.syncErrorMessage) {
+        if (
+          this.runtime.syncError?.code === 'sign_in_required' &&
+          this.data.swb_status === this.runtime.syncErrorMessage
+        ) {
           this.data.swb_status =
             'Signed in. Your choices are retained; retry synchronization.';
         }
@@ -127,9 +129,15 @@ export const preferences = {
       if (
         event.capability !== this.api.editPreferencesCapability ||
         input?.owner !== host.selectedWebId ||
-        !['workbench', 'launcher', 'contacts', 'files', 'profile'].includes(
-          input.app
-        )
+        ![
+          'workbench',
+          'launcher',
+          'contacts',
+          'files',
+          'profile',
+          'presenter',
+          'viewer'
+        ].includes(input.app)
       ) {
         await host.managed.respond(event.id, {
           error: {
@@ -247,8 +255,11 @@ export const preferences = {
         return;
       }
       const session = this.runtime.host.session;
-      if (!session?.preferencesUrl || session.disconnected ||
-          !navigator.onLine) {
+      if (
+        !session?.preferencesUrl ||
+        session.disconnected ||
+        !navigator.onLine
+      ) {
         this.data.swb_status = '';
         return;
       }
@@ -269,10 +280,13 @@ export const preferences = {
         this.data.swb_conflicts = [];
       }
       catch (error) {
-        const connectionRequired =
-          ['sign_in_required', 'disconnected'].includes(error.code);
+        const connectionRequired = [
+          'sign_in_required',
+          'disconnected'
+        ].includes(error.code);
         this.data.swb_status = connectionRequired
-          ? '' : 'Your choices are retained. ' + error.message;
+          ? ''
+          : 'Your choices are retained. ' + error.message;
         this.runtime.syncError = error;
         this.runtime.syncErrorMessage = this.data.swb_status;
         this.data.swb_conflicts = (this.runtime.settings.conflicts || []).map(
@@ -281,17 +295,24 @@ export const preferences = {
             label:
               id +
               ': your choice “' +
-              this.actions.swb_preferenceLabel(id, this.runtime.settings.settings()[id]) +
+              this.actions.swb_preferenceLabel(
+                id,
+                this.runtime.settings.settings()[id]
+              ) +
               '”; Pod choice “' +
-              this.actions.swb_preferenceLabel(id, this.runtime.settings.confirmed(id)) +
+              this.actions.swb_preferenceLabel(
+                id,
+                this.runtime.settings.confirmed(id)
+              ) +
               '”.'
           })
         );
       }
     },
     swb_preferenceLabel(id, value) {
-      return ['browseProvider', 'recipientProvider', 'viewProvider'].includes(id)
-        ? this.actions.swb_providerLabel(value, id) : String(value);
+      return Object.hasOwn(this.api.providerCapabilities, id)
+        ? this.actions.swb_providerLabel(value, id)
+        : String(value);
     },
     async swb_resolveConflict(id, keepLocal) {
       try {

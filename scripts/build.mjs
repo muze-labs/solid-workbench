@@ -57,7 +57,8 @@ for (const name of [
   'profile',
   'preferences',
   'account',
-  'viewer'
+  'viewer',
+  'presenter'
 ]) {
   const route = name === 'launcher' ? 'workbench' : name;
   const title = applicationTitle(name);
@@ -70,14 +71,14 @@ for (const name of [
     path.join(root, 'packages/solid-app-ui/src/shell.html'),
     { appName: name }
   );
-  const body = name === 'account'
-    ? content
-    : shell.replace('{{content}}', content);
+  const body =
+    name === 'account' ? content : shell.replace('{{content}}', content);
   await mkdir(path.join(root, `www/${route}`), { recursive: true });
-  const assets = name === 'account'
-    ? ['manifest.ttl']
-    : ['manifest.ttl', 'icon.svg'];
-  const hasAppIcon = ['launcher', 'contacts', 'files', 'profile'].includes(name);
+  const assets =
+    name === 'account' ? ['manifest.ttl'] : ['manifest.ttl', 'icon.svg'];
+  const hasAppIcon = ['launcher', 'contacts', 'files', 'profile'].includes(
+    name
+  );
   if (hasAppIcon) {
     assets.push('favicon.ico', 'favicon-32.png');
   }
@@ -107,7 +108,7 @@ await writeFile(
   path.join(root, 'www/index.html'),
   '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=workbench/"><a href="workbench/">Open Solid Workbench</a>'
 );
-console.log('Built all seven apps in www/');
+console.log('Built all eight apps in www/');
 const outputs = Object.fromEntries(
   bundles
     .filter((item) => item.type === 'chunk')
@@ -139,7 +140,8 @@ function appSizes(suffix) {
     'profile',
     'preferences',
     'account',
-    'viewer'
+    'viewer',
+    'presenter'
   ]) {
     const files = importGraph(`www/assets/${name}/src/index${suffix}.js`);
     importGraph('www/assets/redirect' + suffix + '.js', files);
@@ -158,7 +160,9 @@ function appSizes(suffix) {
           suffix +
           ' exceeds its ' +
           budget +
-          ' byte gzip JavaScript budget: measured ' + total + ' bytes.'
+          ' byte gzip JavaScript budget: measured ' +
+          total +
+          ' bytes.'
       );
     }
   }

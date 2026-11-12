@@ -27,3 +27,54 @@
     gap: 0.5rem;
   }
 }
+
+@layer component {
+  .muze-solid-viewer,
+  .muze-solid-viewer-display {
+    height: 100%;
+  }
+  .muze-solid-viewer-surface {
+    color: var(--muze-viewer-hint-foreground, inherit);
+    background: var(--muze-viewer-hint-background, transparent);
+  }
+  .muze-solid-viewer-surface[data-muze-solid-viewer-bounded] {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .muze-solid-viewer-surface[data-muze-solid-viewer-bounded]
+    > .muze-solid-viewer-text {
+    margin: 0;
+    flex: 0 0 auto;
+  }
+  .muze-solid-viewer-text:empty,
+  .muze-solid-viewer-status:empty {
+    display: none;
+  }
+  .muze-solid-viewer-surface[data-muze-solid-viewer-bounded]
+    > .muze-solid-viewer-image {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .muze-solid-text-input {
+    width: 100%;
+    min-height: 12rem;
+  }
+  .muze-solid-text-editor {
+    padding: 1rem;
+  }
+  @media (forced-colors: active) {
+    .muze-solid-viewer-surface {
+      color: CanvasText;
+      background: Canvas;
+    }
+  }
+}
+
+@layer component {
+  .muze-solid-viewer-surface[data-muze-solid-viewer-fit="cover"] > .muze-solid-viewer-image { object-fit: cover; }
+}

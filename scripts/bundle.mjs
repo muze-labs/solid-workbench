@@ -4,7 +4,16 @@ import { rollup } from 'rollup';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 
-const appNames = ['launcher', 'contacts', 'files', 'profile', 'preferences', 'account', 'viewer'];
+const appNames = [
+  'launcher',
+  'contacts',
+  'files',
+  'profile',
+  'preferences',
+  'account',
+  'viewer',
+  'presenter'
+];
 
 function entryOwners(id, getModuleInfo) {
   const owners = new Set();
@@ -41,6 +50,9 @@ function sharedChunk(id, { getModuleInfo }) {
     entryOwners(id, getModuleInfo).size === 2
   ) {
     return 'shared/profile';
+  }
+  if (/\/@muze-labs\/cobalt-(?:rich-text-note|note-core)\//.test(id)) {
+    return 'shared/cobalt';
   }
   if (id.includes('/node_modules/')) {
     if (
