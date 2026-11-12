@@ -98,3 +98,30 @@ another task cannot reveal a later invocation. CYC49 is accepted on 2026-11-07; 
 The ready reveal crossfades the loading indicator out and the provider content
 in over 0.3 seconds. Reduced-motion preference reveals immediately. Duplicate
 ready signals do not restart the transition; closing cleans up its timer.
+
+
+## Iframe Escape cooperation (CYC157, awaiting acceptance)
+
+Suite providers use an editable window keydown action in the shared capability
+component. An unconsumed Escape outside composition requests the same guarded
+close as the host button. Native child modals/popovers handle their own Escape
+first; repeated keys are not forwarded. Custom controls that consume Escape
+must prevent its default or stop propagation. The host retains save, unsaved
+edit and explicit discard checks and restores focus after actual closure.
+
+`managed.requestPresentationClose()` sends this presentation message to the
+exact host origin captured during the task offer:
+
+```js
+{ type: 'solid-apps:presentation-close', id: taskId, key: taskKey }
+```
+
+An independent provider can send the same message after its scoped offer; it
+needs no access to the host DOM. The host checks source window, exact provider
+origin, current id/key and the active visible iframe invocation. Requests from
+stale tasks, unrelated windows, interrupted frames and separate task tabs are
+ignored. The helper returns false outside a ready embedded task. A disconnected
+broker port does not revoke this presentation request: the host must still let
+the user explicitly keep or discard a visible draft. This message does not save,
+complete a capability or grant data access. Cross-origin providers must cooperate;
+a host cannot intercept keyboard events inside an arbitrary provider document.

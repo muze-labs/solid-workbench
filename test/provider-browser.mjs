@@ -29,20 +29,35 @@ const provider = createServer((request, response) => {
   if (!cooperative) {
     // Independent provider deliberately sends no disconnect on navigation.
     response.end(`<!doctype html><title>Independent picker</title>
-      <h1>Independent picker</h1><script>
+      <h1>Independent picker</h1><input aria-label="Resource"><script>
       addEventListener('message', event => {
         if (event.source !== parent || event.data?.type !== 'solid-apps:offer' ||
             !event.ports[0]) return;
+        const ticket = {id:event.data.id,key:event.data.key};
+        window.closePresentation = () => parent.postMessage({
+          type:'solid-apps:presentation-close',...ticket
+        }, event.origin);
         const port = event.ports[0];
         window.protocolPort = port;
         port.onmessage = ({data}) => {
+          if (data.type === 'reply' && data.id === 'register') {
+            port.postMessage({type:'call',id:'ready',method:'ready',input:null});
+          }
           if (data.type === 'call' && data.method === 'capability') {
             window.pending = data;
+          }
+          if (data.type === 'call' && data.method === 'can-close') {
+            port.postMessage({type:'reply',id:data.id,result:{allowed:true}});
           }
         };
         port.start();
         port.postMessage({type:'call',id:'register',method:'register',
           input:{capabilities:['https://vocab.muze.nl/capabilities/browse']}});
+      });
+      addEventListener('keydown',event=>{
+        if(event.key==='Escape' && !event.defaultPrevented && window.pending) {
+          event.preventDefault();window.closePresentation();
+        }
       });
       parent.postMessage({type:'solid-apps:embedded-ready'}, '*');
       </script>`);
@@ -197,13 +212,14 @@ async function openPreferences() {
   await wait('swbPreferencesApp.runtime.request', true);
   await wait('document.querySelector("iframe").getAttribute("aria-busy")==="false"');
   await wait('document.activeElement.dataset.muzeSolidDesignSection==="appearance"', true);
-  const section = await run(`const r=document.querySelector('[data-muze-solid-design-section=providers]').getBoundingClientRect();
-    return {x:r.x+r.width/2,y:r.y+r.height/2};`, true);
-  const frame = await run(`const r=document.querySelector('iframe').getBoundingClientRect();return {x:r.x,y:r.y};`);
-  for (const type of ['mousePressed','mouseReleased']) {
-    await page.send('Input.dispatchMouseEvent', {type,x:frame.x+section.x,
-      y:frame.y+section.y,button:'left',clickCount:1});
-  }
+  await run('document.querySelector("[data-muze-solid-design-section=providers]").focus();', true);
+  await page.send('Input.dispatchKeyEvent', {
+    type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r'
+  });
+  await page.send('Input.dispatchKeyEvent', {
+    type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13
+  });
+  await wait('swbPreferencesApp.runtime.section==="providers"', true);
   await wait('!swbPreferencesApp.data.swb_providerDiscovery.startsWith("Checking")', true);
   await wait('!document.querySelector("[data-simply-command=swb_chooseProvider]").disabled', true);
 }
@@ -216,6 +232,88 @@ async function closePreferences() {
     'document.querySelector("iframe").getAttribute("src")==="about:blank" && ' +
     'document.querySelector("iframe").contentWindow.location.href==="about:blank"');
   await page.send('Emulation.setFocusEmulationEnabled', { enabled: false });
+}
+async function escapeKey(target = page) {
+  for (const type of ['rawKeyDown', 'keyUp']) {
+    await target.send('Input.dispatchKeyEvent', {
+      type, key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27
+    });
+  }
+}
+async function checkPreferencesEscape() {
+  // Native controls in the child must consume Escape before the parent modal.
+  await run(`const input=document.createElement('input');
+    input.id='escape-fixture';document.body.append(input);input.focus();
+    input.addEventListener('keydown',event=>event.preventDefault(),{once:true});`, true);
+  await escapeKey();
+  assert.equal(await run('return document.querySelector("dialog.muze-solid-ui-capability-dialog").open;'), true);
+  await run(`const input=document.querySelector('#escape-fixture');
+    for(const options of [{repeat:true},{isComposing:true}]) {
+      input.dispatchEvent(new KeyboardEvent('keydown', {
+        key:'Escape',bubbles:true,cancelable:true,...options
+      }));
+    }`, true);
+  // A real child popover consumes one key; the following key may close its host.
+  for (const tag of ['div', 'dialog']) {
+    await run(`const layer=document.createElement(${JSON.stringify(tag)});
+      layer.id='escape-layer';
+      const button=document.createElement('button');button.textContent='Inner';
+      layer.append(button);document.body.append(layer);
+      if(layer.tagName==='DIALOG') { layer.showModal(); }
+      else { layer.popover='auto';layer.showPopover(); }
+      button.focus();`, true);
+    await escapeKey();
+    await wait('!document.querySelector("#escape-layer").matches(":modal, :popover-open")', true);
+    assert.equal(await run('return document.querySelector("dialog.muze-solid-ui-capability-dialog").open;'), true,
+      'One native Escape closes only the inner layer');
+    await run('document.querySelector("#escape-layer").remove();', true);
+  }
+  // Nested Account is another iframe with its existing private close route.
+  await run('document.querySelector(".muze-solid-ui-account-status").click();', true);
+  await wait('!document.querySelector(".connect-dialog iframe").hidden && document.querySelector(".connect-dialog iframe").contentWindow.swbAccountApp?.runtime.peer', true);
+  await run(`const doc=document.querySelector('.connect-dialog iframe').contentDocument;
+    const menu=doc.createElement('div');menu.id='account-escape-menu';
+    menu.popover='auto';const button=doc.createElement('button');
+    button.textContent='Inner account control';menu.append(button);
+    doc.body.append(menu);menu.showPopover();button.focus();`, true);
+  await escapeKey();
+  await wait('!document.querySelector(".connect-dialog iframe").contentDocument.querySelector("#account-escape-menu").matches(":popover-open")', true);
+  assert.equal(await run('return document.querySelector(".connect-dialog").open;', true), true,
+    'Account also leaves Escape to an inner popover');
+  await run('document.querySelector(".connect-dialog iframe").contentDocument.querySelector("[name=webId]").focus();', true);
+  await escapeKey();
+  await wait('!document.querySelector(".connect-dialog").open', true);
+  assert.equal(await run('return document.querySelector("dialog.muze-solid-ui-capability-dialog").open;'), true);
+  await run('document.querySelector("#escape-fixture").focus();', true);
+  const previous = await run('return solidLauncher.host.view.runtime.muzeSolidUiCall.ticket;');
+  // The correct ticket from the wrong window is not authority to dismiss.
+  await run(`window.postMessage({type:'solid-apps:presentation-close',
+    ...${JSON.stringify(previous)}},location.origin);`);
+  await run(`dispatchEvent(new MessageEvent('message', {
+    source:document.querySelector('iframe').contentWindow,
+    origin:'https://unrelated.example',
+    data:{type:'solid-apps:presentation-close',...${JSON.stringify(previous)}}
+  }));`);
+  await new Promise(resolve=>setTimeout(resolve,60));
+  assert.equal(await run('return document.querySelector("dialog.muze-solid-ui-capability-dialog").open;'), true);
+  await page.send('Network.enable');
+  await page.send('Network.emulateNetworkConditions', {
+    offline:true,latency:0,downloadThroughput:-1,uploadThroughput:-1
+  });
+  await escapeKey();
+  await wait('!solidLauncher.host.view.runtime.muzeSolidUiCall');
+  await wait('document.activeElement.matches(".swb-account-button")');
+  await page.send('Network.emulateNetworkConditions', {
+    offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1
+  });
+  await closePreferences();
+  await openPreferences();
+  await run(`parent.postMessage({type:'solid-apps:presentation-close',
+    ...${JSON.stringify(previous)}},location.origin);`, true);
+  await new Promise(resolve=>setTimeout(resolve,60));
+  assert.equal(await run('return document.querySelector("dialog.muze-solid-ui-capability-dialog").open;'), true,
+    'A previous ticket cannot close a new invocation in the reused frame');
+  console.log('PASS: native iframe Escape, consumed/composing/repeated keys, inner modal/popover/Account, focus return and stale ticket isolation at phone width.');
 }
 async function pickAndRespond(cancel = false, measure = false) {
   const started = await run("return performance.now();");
@@ -269,6 +367,7 @@ try {
     name:'Other picker',mode:'',anonymous:false,
     manifest:location.origin+'/picker-manifest'});`);
   await openPreferences();
+  await checkPreferencesEscape();
   await wait('[...document.querySelector("[data-simply-command=swb_chooseProvider]").options].some(o=>o.text.startsWith("Other picker"))', true);
   // Reconstructed feature source remains usable for live edits and restoration.
   const editable = await run(`const app=swbPreferencesApp;
@@ -342,6 +441,39 @@ try {
     'https://pod.example/previous');
   assert.equal(await run('return solidLauncher.workspace.snapshot().apps.length;'), 0);
   // The same host detects navigation even without SDK disconnect cooperation.
+  cooperative = false;
+  await wait('!solidLauncher.host.view.runtime.muzeSolidUiCall && document.querySelector("iframe").getAttribute("src")==="about:blank"');
+  await run('await solidLauncher.ui.actions.swb_openDiagnostics();');
+  await run('document.querySelector("details.swb-launch-profile").open=true;');
+  await run('document.querySelector("[data-simply-command=pickResource]").focus();');
+  await page.send('Input.dispatchKeyEvent', {
+    type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r'
+  });
+  await page.send('Input.dispatchKeyEvent', {
+    type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13
+  });
+  await wait('solidLauncher.host.view.runtime.muzeSolidUiCall?.attached');
+  await wait('document.querySelector("iframe").getAttribute("aria-busy")==="false"');
+  const escapeTree = await page.send('Page.getFrameTree');
+  const escapeFrame = escapeTree.frameTree.childFrames.find(item => item.frame.url.startsWith(providerOrigin));
+  const escapeWorld = await page.send('Page.createIsolatedWorld', {
+    frameId:escapeFrame.frame.id,worldName:'escape-test'
+  });
+  const activeTicket = await run('return solidLauncher.host.view.runtime.muzeSolidUiCall.ticket;');
+  await page.send('Runtime.evaluate', {
+    contextId:escapeWorld.executionContextId,
+    expression:`parent.postMessage({type:'solid-apps:presentation-close',
+      id:${JSON.stringify(activeTicket.id)},key:'wrong'},${JSON.stringify(origin)});
+      document.querySelector('input').focus();`
+  });
+  await new Promise(resolve=>setTimeout(resolve,60));
+  assert.equal(await run('return document.querySelector("dialog.muze-solid-ui-capability-dialog").open;'),true);
+  await escapeKey();
+  await wait('!solidLauncher.ui.runtime.selection && !solidLauncher.host.view.runtime.muzeSolidUiCall');
+  await wait('document.activeElement.dataset.simplyCommand==="pickResource"');
+  console.log('PASS: independent cross-origin provider requests guarded close with its current ticket; wrong key rejected and focus restored.');
+  await clickCaller('[aria-label="Close diagnostics"]');
+  await wait('!document.querySelector(".swb-diagnostics").open');
   for (const useSdk of [true, false]) {
     cooperative = useSdk;
     await run('solidLauncher.ui.actions.handlePickResource();');
@@ -429,6 +561,13 @@ try {
     }
     await new Promise(resolve=>setTimeout(resolve,40));
   }
+  assert.equal((await tab.send('Runtime.evaluate', {
+    expression:'managed.requestPresentationClose()',returnByValue:true
+  })).result.value,false);
+  await tab.send('Runtime.evaluate', {expression:'document.querySelector("#select").focus();'});
+  await escapeKey(tab);
+  assert.equal(await run('return Boolean(solidLauncher.ui.runtime.selection);'),true,
+    'A separate provider tab does not own a parent modal Escape');
   await tab.send('Runtime.evaluate',{expression:'document.querySelector("#select").click();'});
   await wait('!solidLauncher.ui.runtime.selection');
   assert.equal(await run('return solidLauncher.ui.data.resource;'),'https://pod.example/chosen.ttl#item');

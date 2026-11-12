@@ -321,6 +321,20 @@ export class ManagedApp {
     }, 0);
   }
 
+  requestPresentationClose() {
+    if (!this.embedded || !this.ready || !this.parent || !this.resume) {
+      return false;
+    }
+    const { id, key, origin } = this.resume;
+    // Presentation remains reachable if the broker port disconnects: the host
+    // must still offer its ordinary unsaved-edit/discard guard in that case.
+    this.parent.postMessage(
+      { type: 'solid-apps:presentation-close', id, key },
+      origin
+    );
+    return true;
+  }
+
   announce() {
     if (this.task) {
       return;

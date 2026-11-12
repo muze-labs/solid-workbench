@@ -94,7 +94,9 @@ export const swbAccount = {
     },
     swb_accountEscape(event) {
       // Escape in a child document does not reach the parent's native dialog.
-      if (event.key === 'Escape' && !event.defaultPrevented) {
+      if (event.key === 'Escape' && !event.defaultPrevented &&
+          !event.isComposing && !event.repeat &&
+          !this.container.ownerDocument.querySelector(':modal, :popover-open')) {
         event.preventDefault();
         this.runtime.peer?.call('close', null).catch(() => {});
       }

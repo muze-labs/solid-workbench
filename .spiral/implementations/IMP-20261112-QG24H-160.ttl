@@ -1,0 +1,21 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261112-QG24H-160 a sd:Implementation ;
+    dcterms:identifier "IMP-20261112-QG24H-160" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261112-QG24H-160.md" ;
+    sd:status sd:Active ;
+    sd:implementationLocation "packages/solid-app-ui/src/components/capability-dialog.mjs" ;
+    sd:implementationLocation "packages/solid-app-data/src/capabilities.mjs" ;
+    sd:implementationLocation "apps/account/src/components/account.mjs" ;
+    sd:implementationLocation "apps/launcher/src/components/resource-selection.mjs" ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-159 ;
+        sd:gitCommit "ec67d3a9087e93c729702baf3b548ff49b0e0af9" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261112-QG24H-154 ;
+        sd:gitCommit "935a765b474092c234c1e25f7cd115250df83b7d" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-159 ;
+        sd:gitCommit "ec67d3a9087e93c729702baf3b548ff49b0e0af9" ] ;
+    sd:implementationChangeKind sd:SemanticChange .

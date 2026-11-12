@@ -24,6 +24,19 @@ import {
   formatBrowserException
 } from './support/chrome.mjs';
 
+async function escapeInFrame(page, frameExpression, selector) {
+  await page.send('Page.bringToFront');
+  await page.send('Runtime.evaluate', {
+    expression: frameExpression + '.document.querySelector(' +
+      JSON.stringify(selector) + ').focus()'
+  });
+  for (const type of ['rawKeyDown', 'keyUp']) {
+    await page.send('Input.dispatchKeyEvent', {
+      type, key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27
+    });
+  }
+}
+
 // The app is exercised through HTTP against an isolated in-memory Pod, never a user's Pod.
 const resources = new Map();
 let base;
@@ -1174,7 +1187,8 @@ try {
     profileFrame +
       '.document.querySelector(".swb-profile-card form").requestSubmit();'
   );
-  await click('[data-simply-command=muzeSolidUiCloseCapability]');
+  await escapeInFrame(page, profileFrame,
+    '.swb-profile-card [name=name]');
   await wait(
     'document.querySelector(".muze-solid-ui-capability-dialog [role=status]").textContent.includes("Wait for the save")'
   );
@@ -1225,7 +1239,8 @@ try {
       profileFrame +
       '.document.querySelector(".swb-profile-card [name=name]");input.value="Unsaved capability name";input.dispatchEvent(new Event("input",{bubbles:true}));'
   );
-  await click('[data-simply-command=muzeSolidUiCloseCapability]');
+  await escapeInFrame(page, profileFrame,
+    '.swb-profile-card [name=name]');
   await wait(
     '!document.querySelector(".muze-solid-ui-capability-dialog footer").hidden'
   );
@@ -1257,7 +1272,8 @@ try {
     'Unsaved capability name',
     'A routing failure must preserve the provider and its draft until explicit discard'
   );
-  await click('[data-simply-command=muzeSolidUiCloseCapability]');
+  await escapeInFrame(page, profileFrame,
+    '.swb-profile-card [name=name]');
   await wait(
     '!document.querySelector(".muze-solid-ui-capability-dialog footer").hidden'
   );
@@ -1308,7 +1324,25 @@ try {
     await evaluate('return solidLauncher.ui.data.resource;'),
     base + '/storage/'
   );
+  await evaluate('await solidLauncher.ui.actions.swb_openDiagnostics();');
+  await evaluate('document.querySelector("[data-simply-command=pickResource]").focus();');
+  await page.send('Input.dispatchKeyEvent', {
+    type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r'
+  });
+  await page.send('Input.dispatchKeyEvent', {
+    type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13
+  });
+  await wait(profileFrame + '.solidFiles?.host.managed?.ready');
+  await wait('document.querySelector(".muze-solid-ui-capability-frame").getAttribute("aria-busy")==="false"');
+  await escapeInFrame(page, profileFrame,
+    '[data-simply-command=selectFolder]');
+  await wait('!solidLauncher.host.view.runtime.muzeSolidUiCall');
+  assert.equal(await evaluate('return solidLauncher.ui.data.resource;'),
+    base + '/storage/');
+  assert.equal(await evaluate('return document.activeElement.dataset.simplyCommand;'),
+    'pickResource', 'Files Escape cancels and restores the caller focus');
   await evaluate('solidLauncher.ui.actions.setResource("");');
+
 
   const profileProvider = await evaluate(
     'return solidLauncher.workspace.embeddedProviders[0].url;'
