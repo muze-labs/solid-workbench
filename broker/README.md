@@ -7,11 +7,18 @@ its implementation and evaluation remain in Git history.
 ## Try it locally
 
 Run `npm run dev` and open `http://127.0.0.1:4174/workbench/`. Connect Solid Workbench
-through **WebID / connection**, then click **Choose in Files**. Launcher focuses
-one allowed live Files provider, or opens/reuses a built-in Files instance if
-needed. No manual pre-opening is required. Files keeps its own Solid connection;
+through **WebID / connection**, then click **Choose in Files**. The current button
+opens the configured preferred picker through the transient iframe/tab presenter,
+defaulting to built-in Files. No manual pre-opening is required. Files keeps its own Solid connection;
 connect there if requested. Selection controls return a URL to Launcher without
 downloading or writing the selected resource. Cancellation preserves the field.
+
+### Retained live-window helper
+
+The following startup, focus and instance-grant details describe the exposed
+`chooseFiles` compatibility API and its fixtures, rather than the current button.
+The maintainer confirms there are no external consumers; Phase 4 recommends
+retiring this obsolete path and updating in-project dependencies together.
 
 Startup opens synchronously from the click and waits up to 30 seconds for the
 verified app connection. Cancel selection also cancels that wait. Blocked popups,
@@ -41,6 +48,8 @@ gets this permission automatically. Exactly one allowed connected provider must
 match; multiple providers produce an ambiguity error. An app opened directly
 continues to work independently, but does not join this managed session.
 
+### Managed workspace apps
+
 Each launch creates a fresh instance. **Preferences → Open apps in** chooses
 tabs (default) or windows. The workspace list can focus/restore an instance or
 close it individually. It distinguishes Restoring, Connected and setup errors.
@@ -52,6 +61,22 @@ to reconnect safely; save its in-app edits before reloading. Closing an individu
 set. Closing the workspace retains the set for reopening. Allow popups for
 multiple-app restoration; **Restore apps** and individual restore buttons provide
 recovery when the browser blocks automatic startup.
+
+## Preferred picker tasks
+
+The current Default apps preferences independently select Files/folder and
+recipient providers. These use transient owner-scoped tasks through the shipped
+iframe/tab presenter, separate from the legacy live-instance Choose in Files
+grant described above. Files' Share action opens the recipient picker and shows
+the chosen person's details; it changes no permissions. The caller keeps its
+own Solid session and validates the returned data. See the
+[current contracts](../design/solid-resource-picker.md).
+
+[Phase 4 evaluation](../.spiral/evidence/EVD-20261112-QG24H-147.md) distinguishes
+tested cancellation/local close from incomplete automatic raw-port loss
+detection, and app-specific value checks from complete-frame limits. The
+accepted assessment records follow-up work; those repairs are not implemented
+by this guide.
 
 ## Save and restore
 

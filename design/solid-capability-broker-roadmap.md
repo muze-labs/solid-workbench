@@ -196,14 +196,18 @@ The data exchanged has URI-defined predicates and types; JSON-LD is a useful wir
   private MessagePort with an explicit target origin. Children accept offers
   only from their captured opener. Local instance secrets support reconnection
   after reload; secrets are never exported to the Pod or launch URLs.
-- `PortConnection` owns bounded calls/replies/cancellation. Current route policy
-  permits only Launcher to request browse from explicitly allowed instances.
+- `PortConnection` owns calls/replies/cancellation and bounds active/pending
+  counts. CYC145 finds complete raw-frame size/type enforcement and automatic
+  remote-loss settlement need follow-up; app-specific checks are not a global
+  wire guarantee. The legacy live route permits only Launcher to request browse
+  from explicitly allowed instances; preferred pickers use scoped task tickets.
 - No shared third-party storage, worker singleton or relay service is assumed.
   COOP can sever opener relationships. Ordinary opener access deliberately trusts
   linked apps, including the browser's cross-origin opener-navigation surface.
-- Host embedding, layout negotiation and a broader routing/delegation policy
-  remain deferred. Managed children monitor opener closure; standalone apps
-  continue to run when opened directly.
+- Generic Weblets embedding, layout negotiation and a broader routing/delegation
+  policy remain deferred. The existing task presenter hosts configured providers.
+  Managed children monitor opener closure; standalone apps continue to run when
+  opened directly.
 
 ## 6. Minimal wire protocol (proposal)
 
@@ -304,6 +308,29 @@ not selected by acceptance. Fixture passes do not certify third-party providers.
 **Exit:** Both capability reuse and broker replaceability are demonstrated, with no mandatory Muze-hosted service.
 
 ### Phase 4 — Evaluate before extending
+
+CYC145 completes this phase on 2026-11-12, with the maintainer-confirmed goal of
+an evidence-backed keep/change/defer assessment. The
+[failure/complexity/download matrix](../.spiral/evidence/EVD-20261112-QG24H-147.md)
+and [accepted decisions](../.spiral/designs/DES-20261112-QG24H-148.md) are recorded
+in [ACC150](../.spiral/acceptance/ACC-20261112-QG24H-150.md). Fresh source/build checks and the two relevant Chrome suites pass.
+Independent raw-port probes reproduce incomplete wire bounds and remote-loss
+settlement; [RSK149](../.spiral/risks/RSK-20261112-QG24H-149.md) records the exact
+limits. The proposed first follow-up is bounded, reliably settled provider calls,
+with actual lifecycle reproduction before choosing a repair mechanism. Keep the
+existing architecture; defer broader schemas/discovery/ranking/protocol changes
+without a concrete consumer. CYC145 is Accepted; Phase 4 assessment is complete. This
+does not select a follow-up implementation cycle or deliver the proposed repairs.
+
+Second review reproduces a concrete shipped-UI case: reloading Contacts during
+selection leaves the old request waiting; Close offers Discard and recovers.
+Prioritize that recovery boundary when scoping the follow-up. Establish whether a size limit is needed, what it protects and which data or
+boundary it applies to before choosing a value from measurements. The existing
+64 KiB constant is not a universal frame-size requirement. The
+current Choose in Files button uses preferred transient presentation; live
+instance routing remains an exposed obsolete API. The maintainer confirms no
+external consumers, so retire it with coordinated in-project changes. Independent caller/provider fixtures do not prove replacement by an
+independently implemented broker.
 
 - Record actual complexity: new vocabulary terms, lines of client/broker code, setup steps, failure cases and user-facing decisions.
 - Test failures (offline broker, untrusted origin, stale provider, denied access, cancelled dialog, multiple providers and concurrent requests).

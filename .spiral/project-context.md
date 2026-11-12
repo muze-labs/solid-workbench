@@ -1,5 +1,15 @@
 # Solid Workbench project context
 
+## Greenfield API policy, confirmed 2026-11-12
+
+The maintainer confirms that no APIs have consumers outside this project.
+Backward compatibility with legacy APIs is not required. Remove obsolete paths
+and update in-project callers and tests together; do not retain compatibility
+shims, deprecation periods or duplicate machinery for hypothetical consumers.
+Choose contract changes for current needs. Standing native RDF/data-preservation
+requirements still apply; this policy does not authorize discarding user data.
+
+
 ## Current build-budget policy, 2026-11-09
 
 The maintainer explicitly requests that budget checks never fail builds or
@@ -2057,3 +2067,95 @@ the seven proposed composition stages and sign-up entry are present. Tracked
 edits pass git diff --check. Preserve the supplied proposal's Markdown hard
 breaks. No runtime, dependencies or tests change, so application/browser suites
 are not repeated for this documentation-only delivery.
+
+## Broker Phase 4 evaluated for review, 2026-11-12
+
+The maintainer agrees to the proposed Phase 4 keep/change/defer cycle. CYC145 is
+Active on verified spiral/CYC-20261112-QG24H-145-capability-evaluation from clean
+main eac0b1e72e84330f8c8238f05b660a04bec9d439. This continues the governing
+roadmap after accepted CYC139. SRC146 records the instruction; EVD147 retains
+the effective-source, complexity, setup, failure and download evidence; DES148
+proposes decisions. No product, dependency, build or test files change.
+
+Fresh npm run check passes 27 test files/both builds. The provider and recipient
+Chrome suites pass unchanged, including the real Files caller, independent
+peers, native selected RDF, source-document access, cancellation and phone/
+keyboard/loaded-offline behavior. Existing complete eight-suite CYC139 evidence
+is historical, not rerun here. Readable dev assets are restored. Manual AT,
+production providers and cold-offline use remain unclaimed.
+
+Node and Chrome raw-port probes reproduce 70000-character request/reply frames
+crossing the helper's intended limit and a timeout:null call remaining pending
+after remote port closure, until explicit local close. RSK149 records this
+near-term concern and limits: parent/popup monitoring handles some full-app loss
+paths, so reproduce actual surviving-caller/broker/provider combinations before
+choosing a repair mechanism. Raw bounds and lifecycle hardening are the proposed
+first follow-up. Keep current native preferences, scoped routing, provider-owned
+UI and data ownership; defer general SHACL/manifests/ranking/URI wire renames and
+AI/federation without demonstrated need. Documentation overclaims are corrected.
+
+CYC145 remains Active in Evaluate awaiting human review, not accepted. The
+recommended follow-up is not yet an authorized implementation cycle. No commit,
+merge, push, publication or runtime correction is requested or performed.
+
+## CYC145 second review, 2026-11-12
+
+The maintainer requests a double-check of Phase 4. DES148/EVD147/RSK149 now
+distinguish the exposed legacy helper from today's preferred-picker button and
+the serializable helper's 64 KiB budget from a yet-to-be-agreed global frame
+contract. Before enforcing any complete-frame cap, audit payload/envelope
+compatibility. The architecture/defer conclusions remain scoped to demonstrated
+selection workflows; no independent broker implementation was tested.
+
+A new disposable Chrome probe uses the shipped Workbench presenter and Contacts:
+reload during selection leaves one pending broker call after 1800 ms while the
+new Contacts app has no request. The real Close action offers Discard after its
+guard timeout; Discard releases the task. This strengthens a specific interrupted
+picker recovery follow-up without selecting a heartbeat, arbitrary inactivity
+timeout or broad lifecycle redesign. Runtime code remains unchanged. CYC145 is
+still Active awaiting human review; no commit or next implementation cycle.
+
+## CYC145 greenfield correction, 2026-11-12
+
+The maintainer rejects the assessment's legacy-API preservation rationale:
+there are no external consumers. DES148 now recommends retiring obsolete
+chooseFiles/live-browse machinery after checking actual in-project dependencies.
+Inspection finds API exposure, instance grant UI/policy, native workspace state
+fields and fixtures, while the current picker button uses the transient path.
+These must be changed coherently rather than preserved for compatibility.
+This updates the evaluation and standing project context; no implementation,
+acceptance, commit or integration is inferred.
+
+
+## Size-limit rationale required, 2026-11-12
+
+The maintainer agrees to add a decision gate before choosing capability size
+limits: establish whether a limit is needed, what it protects, and which data
+and boundary it applies to. No documented justification for the exact 64 KiB
+serializable constant was found; it is not a universal transport requirement.
+DES148 now requires evidence for need/scope and, if justified, a measured value
+and recovery behavior. Shape/type validation is a separate question. No runtime
+limit changes, acceptance or delivery action are implied.
+
+
+## CYC145 assessment accepted, 2026-11-12
+
+The maintainer says “this assesment is accepted”. ACC150 records acceptance of
+the revised DES148 assessment and bounded EVD147 evidence. CYC145 is Accepted,
+superseding its earlier Active/review notes; broker Phase 4 evaluation is complete.
+The accepted direction includes removal of obsolete APIs without compatibility
+shims, investigation of interrupted-picker reload recovery, and evidence for the
+need, protective purpose and scope of any size limit before selecting a value.
+The inherited 64 KiB constant is not a requirement. RSK149 remains open, and
+broader schemas/discovery/ranking/AI/federation remain deferred. No runtime fixes,
+new implementation cycle, commit, merge or push are authorized by acceptance.
+
+
+## Accepted CYC145 delivery authorized, 2026-11-12
+
+The maintainer requests “commit, merge and push. Then discuss the next cycle.”
+ACC150 now references exact committed assessment/evidence versions. The accepted
+cycle is delivered through immutable causal commits and a normal merge into
+latest main after validation; main and the cycle branch are authorized for push.
+No product changes accompany delivery, and no next implementation cycle is
+selected. Reconcile both governing roadmaps before proposing the follow-up.
