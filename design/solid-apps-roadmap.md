@@ -1774,3 +1774,17 @@ latest main and push after exact integration validation. Existing evidence
 limits and future MIME-ranking/tab work remain explicit. The separate Active
 icon cycle, changed icon archive and priorities design document are preserved.
 No next cycle, release or deployment is authorized by this acceptance.
+
+
+## CYC163 accepted for integration, 2026-11-12
+
+The maintainer confirms that the icon cycle was also accepted and requests
+commit, merge and push. ACC174 records acceptance of implementation
+047c67e49151063d0c408e9e8e51215d9362d3de and verification
+155840f2e2698a174ed00b6a0d4fcdd29e2a18ac. CYC163 is Accepted, superseding earlier
+pending-review notes. Current main (including CYC168 views) has been reconciled;
+216 source tests, both builds and the complete nine-suite Chrome command pass.
+Normal merge and push of main and the icon branch are authorized after exact
+integration validation. The supplied archive is retained as artwork source;
+the unrelated application-priorities document remains unchanged and uncommitted.
+No next cycle, release or deployment is selected.
