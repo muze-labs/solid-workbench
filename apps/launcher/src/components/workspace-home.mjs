@@ -219,6 +219,7 @@ export const workspaceHome = {
       const next = this.api.selectWorkspace(structuredClone(previous), id);
       const entry = this.api.activeWorkspace(next);
       const store = await this.actions.swb_openShortcuts(entry);
+      await this.runtime.workspace.prepareViewsForClose();
       try {
         await persistence.stage(next, {});
       }
@@ -226,7 +227,7 @@ export const workspaceHome = {
         persistence.snapshot = previous;
         throw error;
       }
-      this.runtime.workspace.closeApps();
+      await this.runtime.workspace.closeApps();
       this.runtime.store = store;
       this.actions.createWorkspace();
       this.runtime.host.workspaceContext = {

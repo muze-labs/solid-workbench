@@ -1,3 +1,4 @@
+export { muzeSolidFileDetails } from './components/file-details.mjs';
 export { swbFileSharing } from './components/file-sharing.mjs';
 export { fileNavigation } from './components/file-navigation.mjs';
 export { fileEditing } from './components/file-editing.mjs';

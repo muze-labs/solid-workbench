@@ -13,6 +13,9 @@ export const lifecycle = {
       this.runtime.managedOptions = {
         capabilities: [this.api.browseCapability],
         waitForPresentation: true,
+        canClose: async () => ({
+          allowed: await this.actions.muzeSolidFilesReleaseView()
+        }),
         onRequest: (...args) => this.actions.receiveBrowseRequest(...args),
         onCancel: (...args) => this.actions.cancelBrowseRequest(...args)
       };

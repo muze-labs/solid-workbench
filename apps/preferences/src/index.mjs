@@ -1,3 +1,4 @@
+import { viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
 import { model } from '@muze-labs/simplyflow/model';
 import { effect, destroy } from '@muze-labs/simplyflow/state';
 import { from } from '@muze-nl/jaqt';
@@ -78,6 +79,7 @@ const definition = {
     ...defaults
   },
   api: {
+    viewResourceCapability,
     model,
     effect,
     destroy,

@@ -486,6 +486,9 @@ try {
     await wait('!solidLauncher.ui.runtime.selection && solidLauncher.host.view.runtime.muzeSolidUiCall?.failed');
     assert.equal(await run('return solidLauncher.ui.data.resource;'), 'https://pod.example/previous');
     assert.equal(await run('return solidLauncher.workspace.instances.has(' + JSON.stringify(ticket) + ');'), false);
+    // Port disconnect can arrive before the iframe's navigation/load event.
+    // Wait for the user-visible navigation recovery state before asserting it.
+    await wait('solidLauncher.host.view.data.muzeSolidUiDialog.message.includes("not been restarted")');
     assert.match(await run('return solidLauncher.host.view.data.muzeSolidUiDialog.message;'), /not been restarted/);
     await clickCaller('[data-simply-command=muzeSolidUiCloseCapability]');
     await wait('!solidLauncher.host.view.runtime.muzeSolidUiCall');

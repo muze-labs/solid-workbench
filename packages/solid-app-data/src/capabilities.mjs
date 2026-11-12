@@ -250,6 +250,7 @@ export class ManagedApp {
     restoreState = () => {},
     onRequest,
     onCancel,
+    onView,
     onState,
     onContext = () => {},
     onPreferences = () => {},
@@ -265,6 +266,7 @@ export class ManagedApp {
       restoreState,
       onRequest,
       onCancel,
+      onView,
       onState,
       onContext,
       onPreferences,
@@ -440,6 +442,9 @@ export class ManagedApp {
     ) {
       return this.onPreferences(input);
     }
+    if (method === 'view' && this.embedded && this.onView) {
+      return this.onView(input);
+    }
     if (method === 'can-close') {
       return this.canClose();
     }
@@ -520,13 +525,13 @@ export class ManagedApp {
     }
     return this.peer.call('embed-provider', { capability });
   }
-  beginEmbedded(url, capability) {
+  beginEmbedded(url, capability, presentation = 'task') {
     if (!this.peer || !this.ready) {
       throw capabilityError(
         'Open this app through Launcher to use embedded capabilities.'
       );
     }
-    return this.peer.call('embed', { url, capability });
+    return this.peer.call('embed', { url, capability, presentation });
   }
   requestEmbedded(id, input, options) {
     return this.peer.call(
@@ -534,6 +539,9 @@ export class ManagedApp {
       { id, input },
       { ...options, timeout: null }
     );
+  }
+  updateEmbeddedView(id, input) {
+    return this.peer.call('embed-view', { id, input });
   }
   canCloseEmbedded(id) {
     return this.peer.call('embed-can-close', { id });

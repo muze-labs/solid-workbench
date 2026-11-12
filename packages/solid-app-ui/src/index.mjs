@@ -32,6 +32,7 @@ import sources from './features.mjs?entries';
 
 export function shell({
   acceptLaunch = false,
+  embeddedContentOnly = false,
   overrides = {},
   templates = {},
   accountOptions = {},
@@ -118,8 +119,14 @@ export function shell({
       muzeSolidUiTitle: document.title.replace(/ · Solid Workbench$/, ''),
       muzeSolidDesignNotice: { text: '', visibility: { hidden: '' } },
       muzeSolidUiEmbedded: { hidden: task ? null : '' },
+      muzeSolidUiHeader: {
+        'data-muze-solid-ui-content-view':
+          embeddedContentOnly && host.embedded ? '' : null
+      },
       muzeSolidUiMenuVisibility: { hidden: task ? '' : null },
-      muzeSolidUiTaskConnectVisibility: { hidden: task ? null : '' },
+      muzeSolidUiTaskConnectVisibility: {
+        hidden: task && !(embeddedContentOnly && host.embedded) ? null : ''
+      },
       muzeSolidUiDialog: {
         title: '',
         message: '',

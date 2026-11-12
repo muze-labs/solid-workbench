@@ -48,7 +48,7 @@ export const lifecycle = {
       this.runtime.host.accountChanged = async (session) => {
         // Other app windows can acquire edits while the sign-in popup is open.
         await this.runtime.host.beforeAccountLeave();
-        this.runtime.workspace?.closeApps();
+        await this.runtime.workspace?.closeApps();
         localStorage.setItem('solid-apps.webId', session.webId);
         window.location.reload();
       };

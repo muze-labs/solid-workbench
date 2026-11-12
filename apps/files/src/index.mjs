@@ -1,3 +1,6 @@
+import { installEvents } from '@muze-labs/simplyflow-events';
+import { EmbeddedView, viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
+import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
 import { readRecipient } from '@muze-labs/solid-app-data/recipient.mjs';
 import { readProfile } from '@muze-labs/solid-profile';
 import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
@@ -23,6 +26,7 @@ import {
 } from '@muze-labs/solid-app-data/link-metadata.mjs';
 import { app } from '@muze-labs/simplyflow/app';
 import {
+  muzeSolidFileDetails,
   swbFileSharing,
   fileNavigation,
   fileEditing,
@@ -40,6 +44,7 @@ const definition = {
   components: {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
+    muzeSolidFileDetails,
     swbFileSharing,
     fileNavigation,
     fileEditing,
@@ -47,6 +52,14 @@ const definition = {
     lifecycle
   },
   data: {
+    muzeSolidFilesLocation: { 'data-muze-solid-files-detail': null },
+    muzeSolidFilesDetails: { hidden: '' },
+    muzeSolidFilesDetailName: '', muzeSolidFilesDetailResource: '',
+    muzeSolidFilesProvider: '', muzeSolidFilesViewStatus: '',
+    muzeSolidFilesRecovery: { hidden: '' },
+    muzeSolidFilesLoading: { hidden: '' },
+    muzeSolidFilesStandalone: {}, muzeSolidFilesDiscard: { hidden: '' },
+    muzeSolidFilesFrame: { src: 'about:blank', hidden: '' },
     entries: [],
     url: '',
     empty: '',
@@ -60,6 +73,7 @@ const definition = {
     swb_shareWebId: '', swb_shareStatus: ''
   },
   api: {
+    EmbeddedView, WorkspaceBroker, viewResourceCapability,
     app,
     listFolder,
     readDownload,
@@ -92,7 +106,9 @@ ui.definition.modules = {
     ]
   }
 };
+installEvents(ui);
 await ui.actions.initialize();
+ui.actions.muzeSolidFilesInitializeDetails();
 ui.definition.instances = {
   account: host.view
 };

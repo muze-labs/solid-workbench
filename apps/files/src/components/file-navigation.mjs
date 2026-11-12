@@ -21,7 +21,8 @@ export const fileNavigation = {
       if (kind === 'selection') {
         return this.runtime.host.run(() => this.actions.selectFile(url));
       }
-      return this.commands.call('downloadResource', null, url);
+      return this.runtime.host.run(() =>
+        this.actions.muzeSolidFilesSelectDetails(url));
     },
     up() {
       this.actions.operation(() =>
@@ -66,6 +67,9 @@ export const fileNavigation = {
       return normalized;
     },
     browse: async function (url) {
+      if (!await this.actions.muzeSolidFilesReleaseView()) {
+        return;
+      }
       const session = this.runtime.host.requireSession();
       this.runtime.root = this.actions.locationValue();
       if (!this.runtime.root) {
@@ -80,6 +84,11 @@ export const fileNavigation = {
         this.runtime.root,
         url
       );
+      if (this.runtime.current !== url) {
+        this.runtime.detailsResource = '';
+        this.runtime.files.state.options.selected = '';
+        this.data.muzeSolidFilesDetails = { hidden: '' };
+      }
       this.runtime.current = url;
       this.data.url = url;
       this.runtime.files.state.data = this.api
@@ -160,10 +169,11 @@ export const fileNavigation = {
       list.addEffect(function (input) {
         return owner.api.effect(() => {
           const picking = this.state.options.picker;
+          const selected = this.state.options.selected;
           return owner.api
             .from(input.current)
             .where(owner.actions.visibleFile)
-            .select((entry) => owner.actions.fileRow(entry, picking))
+            .select((entry) => owner.actions.fileRow(entry, picking, selected))
             .toArray();
         });
       });
@@ -180,8 +190,12 @@ export const fileNavigation = {
     visibleFile(entry) {
       return !entry.deleted;
     },
-    fileRow(entry, picking) {
+    fileRow(entry, picking, selected) {
       return {
+        selected: {
+          'aria-current': selected === entry.url ? 'page' : null,
+          title: entry.name
+        },
         url: entry.url,
         name: entry.name,
         type: entry.type,

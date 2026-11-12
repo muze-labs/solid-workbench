@@ -1,0 +1,42 @@
+@layer component {
+  .muze-solid-files-layout {
+    min-height: 65vh;
+    align-items: start;
+  }
+  .muze-solid-files-details {
+    overflow-wrap: anywhere;
+  }
+  .muze-solid-files-heading {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+  .muze-solid-files-title {
+    display: block;
+    max-inline-size: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .muze-solid-files-view-stage {
+    height: 65vh;
+    min-height: 18rem;
+  }
+  .muze-solid-files-frame {
+    border: 0;
+  }
+  .muze-solid-files-recovery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  @media (max-width: 719px) {
+    .muze-solid-files-location[data-muze-solid-files-detail] {
+      display: none;
+    }
+  }
+  @media (min-width: 720px) {
+    .muze-solid-files-layout {
+      grid-template-columns: minmax(20rem, 40%) minmax(0, 1fr);
+    }
+  }
+}
