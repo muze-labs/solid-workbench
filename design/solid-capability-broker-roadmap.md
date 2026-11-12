@@ -196,11 +196,11 @@ The data exchanged has URI-defined predicates and types; JSON-LD is a useful wir
   private MessagePort with an explicit target origin. Children accept offers
   only from their captured opener. Local instance secrets support reconnection
   after reload; secrets are never exported to the Pod or launch URLs.
-- `PortConnection` owns calls/replies/cancellation and bounds active/pending
-  counts. CYC145 finds complete raw-frame size/type enforcement and automatic
-  remote-loss settlement need follow-up; app-specific checks are not a global
-  wire guarantee. The legacy live route permits only Launcher to request browse
-  from explicitly allowed instances; preferred pickers use scoped task tickets.
+- `PortConnection` owns calls/replies/cancellation/disconnect and bounds
+  active/pending counts. CYC151 validates envelope shape and adds cooperative
+  disconnect and observed iframe-navigation recovery. Capability payloads have
+  no universal byte limit; domain validation remains with their owners. The
+  obsolete live route is removed; configured providers use caller-scoped tickets.
 - No shared third-party storage, worker singleton or relay service is assumed.
   COOP can sever opener relationships. Ordinary opener access deliberately trusts
   linked apps, including the browser's cross-origin opener-navigation surface.
@@ -338,6 +338,16 @@ independently implemented broker.
 - Only then consider Weblets embedding, embedded provider UIs, provider selection via AI, or automatic workspace composition.
 
 **Exit:** Explicit keep/change/remove decisions rather than automatic scope expansion.
+
+### Phase 4 follow-up accepted, 2026-11-12
+
+The maintainer confirms CYC151: shared capability invocation reliability and
+simplification. This continues the accepted assessment with obsolete-route
+removal, interrupted-task recovery and evidence-based size-limit disposition.
+CYC151 is Accepted; [ACC156](../.spiral/acceptance/ACC-20261112-QG24H-156.md)
+records human acceptance and [EVD155](../.spiral/evidence/EVD-20261112-QG24H-155.md)
+retains verification and remaining limits. Iframe Escape and the other suite
+roadmap items remain separate follow-ups; no next cycle is selected.
 
 ### Later capability proposals retained, 2026-11-12
 

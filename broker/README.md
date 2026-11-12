@@ -61,7 +61,8 @@ retired 64 KiB state and 60000-byte contact limits had no established resource
 budget. Background workspace saves retain a separate keepalive safeguard;
 large checkpoints use explicit save while local recovery state is preserved.
 See [CYC151 evidence](../.spiral/evidence/EVD-20261112-QG24H-155.md) for tested
-coverage and limits. This implementation is awaiting human acceptance.
+coverage and limits. [ACC156](../.spiral/acceptance/ACC-20261112-QG24H-156.md)
+records human acceptance.
 
 ## Save and restore
 
