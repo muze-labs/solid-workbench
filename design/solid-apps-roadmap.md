@@ -32,6 +32,11 @@ options below. Incorporate the revised personal-override/IDE direction from
 the supplied archive. These additions select no implementation cycle or new
 priority; the broker roadmap remains governing.
 
+Further design intake, 2026-11-12: retain the
+[AI-composable Workbench proposal](solid-workbench-ai-composition-design.md) in
+the deferred optional-AI and interface-composition work below. Its stages are
+proposed decision gates, not approval to implement or a change in priority.
+
 This records suite-wide direction alongside the
 [capability-broker roadmap](solid-capability-broker-roadmap.md), which continues
 to govern broker implementation. The broker phases do not schedule every app
@@ -505,6 +510,20 @@ signed in. Attempt existing session restoration first so a signed-in user does
 not receive an unnecessary prompt. Reuse the current Metro authentication and
 shared dialog components; distinguish first-use onboarding from stale-session
 recovery rather than creating another authentication mechanism.
+
+Reaffirmed by the maintainer on 2026-11-12: provide a user-friendly **Create
+account / Sign up** entry alongside **Sign in**. Guide a first-time user through
+getting an identity and, where needed, storage without requiring them to know
+a WebID, issuer URL or Solid terminology beforehand. Explain provider choices
+and where their account and data will live in plain language. Hand off account
+creation to the chosen provider, then guide the user back to Workbench and
+their original task. Keep existing-account sign-in easy to find.
+
+Acceptance should include a first-time user completing sign-up and returning
+to a usable app on a phone, with keyboard and assistive technology. Cover
+cancelled/failed registration, interrupted return and retry without losing
+local work; explain when registration needs a connection. Provider selection
+and the exact registration/return mechanism remain future design work.
 
 **Design sign-up before implementation.** The experience must support Solid's
 decentralized model rather than imply one central Workbench account service.
@@ -1127,6 +1146,59 @@ Verify installed and ordinary browser use, including offline reopening and
 updates that preserve pending local changes. Select the exact implementation
 and supported-browser checks in the relevant cycle; PWA support is not claimed
 to exist merely because the apps are browser applications.
+
+## Deferred optional AI and composable interfaces
+
+Added at the maintainer's request on 2026-11-12 from the
+[AI-composable Workbench design](solid-workbench-ai-composition-design.md),
+alongside the existing [optional AI boundaries](solid-optional-ai-capabilities.md).
+Keep AI optional and replaceable: an ordinary Assistant app may propose useful
+connections between semantic capabilities, provider-owned interfaces and named
+SimplyFlow components. The broker remains a narrow connection/policy mechanism;
+the Assistant receives no ambient credentials, protected graphs or privileged
+workspace access. Users inspect and approve consequential operations through
+ordinary application authorization and trusted operation details.
+
+Retain the proposal's staged work for future selection:
+
+1. **Inventory contracts.** Describe two real capabilities and two components,
+   their public dependencies and missing metadata. Track hidden editable-state
+   dependencies as moldability defects; reuse existing definitions.
+2. **Discover capabilities.** Extend existing registry paths with inspectable
+   descriptions and input/output contracts. Demonstrate zero, one and multiple
+   providers, explicit user preferences and inactive-provider handling.
+3. **Evaluate declarative UI composition.** Investigate a bounded A2UI adapter
+   over SimplyFlow with an approved component catalog and one capability-bound
+   interaction. SimplyFlow stays the sole renderer; reject executable generated
+   code and unknown actions. No external protocol/version is adopted here.
+4. **Try an optional Assistant.** Propose a small composition through an ordinary
+   replaceable AI provider. Preserve the same usable manual workflow and show
+   what information is disclosed.
+5. **Combine component and application interfaces.** Reuse provider-owned pickers
+   alongside composed controls, with scoped origins, focus, cancellation and
+   lifecycle cleanup. Providers retain their own data and interaction ownership.
+6. **Save user-owned compositions.** Persist native RDF references and explicit
+   configuration, separate from source data and conversation state. Support
+   manual editing, AI removal, provider replacement, missing resources and
+   offline/reload recovery without copying protected graphs into saved layouts.
+7. **Investigate federation.** Compare independently hosted discovery and
+   Weblets-style cooperation, including optional MCP/A2A/MCP Apps/glottis
+   adapters. Refresh specifications, public APIs and licences before choosing
+   anything; demonstrate independent implementations and standalone use.
+
+The proposed first vertical experiment selects a Solid resource through the
+existing Files provider and opens it in an explicitly chosen application, with
+the same path available without AI. Evaluate component/provider replacement,
+least-data disclosure, malformed output, cancellation and failure, phone and
+keyboard/assistive-technology task completion, and complete cold-load/download
+costs. Saved work must remain usable after all AI providers are removed.
+
+The proposal's supplied-snapshot baseline predates accepted CYC118/CYC139
+provider preferences and recipient selection. Reuse those existing paths;
+general discovery, composition and the IDE are still future work. Broker
+Phase 4 evaluation governs before expansion. Adapter location, vocabulary,
+validation shapes and composition persistence need design; the optional-AI
+deferral remains, with no new cycle, implementation priority or delivery date.
 
 ## Second stage: virtual company
 

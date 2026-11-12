@@ -314,7 +314,7 @@ not selected by acceptance. Fixture passes do not certify third-party providers.
 
 ### Later capability proposals retained, 2026-11-12
 
-The suite roadmap now records two additional contracts for future planning:
+The suite roadmap records additional proposals for future planning:
 
 - [Note-body editing](solid-document-viewer-design.md#user-selected-note-body-editing-capability):
   Cobalt default and a compatible replacement, returning current safe HTML into
@@ -326,14 +326,25 @@ The suite roadmap now records two additional contracts for future planning:
   invocation does not grant Pod management authority; provider setup, verified
   recipient identity, service authentication and policy-write recovery have
   separate contracts.
+- [Optional AI and interface composition](solid-workbench-ai-composition-design.md):
+  inventory capability/component contracts, extend inspectable discovery, then
+  evaluate a bounded SimplyFlow adapter, an ordinary optional Assistant, mixed
+  provider-owned interfaces, saved compositions and later federation. Reuse
+  accepted browse/recipient preferences; keep the broker narrow and enforce
+  authorization independently of discovery or generated UI. The supplied
+  snapshot's missing-registry observations predate CYC118/CYC139. No A2UI,
+  MCP/A2A or alternative transport is adopted by recording the proposal.
 
 These proposals do not replace Phase 3's recipient selection/independent
 replaceability proof or Phase 4's evaluation. Use the existing private provider
 preferences and scoped transport where suitable; respect message limits and
 specify content access separately for large/private bodies. Their product scope,
 dependency order and acceptance scenarios remain in the
-[suite roadmap](solid-apps-roadmap.md#second-stage-virtual-company). No new
+[suite roadmap](solid-apps-roadmap.md). No new
 capability URI, route or implementation phase is adopted by this intake.
+Optional AI and composition retain their separate
+[deferred roadmap section](solid-apps-roadmap.md#deferred-optional-ai-and-composable-interfaces)
+and existing implementation deferral; they do not advance ahead of Phase 4.
 
 ### Retained roadmap item — Pod-synced workspaces
 

@@ -66,3 +66,11 @@ No special broker rights, omniscient assistant context, central AI registry, or 
 Exact capability URIs and shapes, consent UX, provider trust/verification, local-model packaging, and whether AI-generated adapters can be published to a shared catalogue remain open. Resolve these only when a concrete use case requires them.
 
 **Implementation priority:** None for now. Preserve the boundaries above when evolving the broker, registry, workspace, and application APIs.
+
+Roadmap intake, 2026-11-12: the
+[AI-composable Workbench proposal](solid-workbench-ai-composition-design.md)
+expands the future contract-discovery, component/interface-composition and
+ordinary Assistant experiments. Its stages are retained in the
+[suite roadmap](solid-apps-roadmap.md#deferred-optional-ai-and-composable-interfaces).
+This records future work without lifting the implementation deferral or adopting
+an external UI/agent protocol.

@@ -2021,3 +2021,39 @@ push of main/cycle branches are explicitly authorized after exact integration
 validation. Existing advisory size and manual AT/production evidence limits
 remain. Requested design intake and its source documents are preserved in Git;
 the separate AI composition proposal stays uncommitted.
+
+## User-friendly sign-up reaffirmed, 2026-11-12
+
+The maintainer asks to add a user-friendly way to sign up alongside sign-in.
+The existing startup/decentralized-sign-up roadmap item now explicitly includes
+a Create account entry, plain-language provider guidance, provider registration
+and return to the original task. Retain existing-account sign-in and local work;
+evaluate phone, keyboard/AT, cancellation and interrupted registration recovery.
+No provider or registration mechanism is selected. This is documentation-only
+roadmap work, with no new implementation cycle or delivery authorization.
+
+## AI-composition design intake and documentation delivery, 2026-11-12
+
+The maintainer asks to add the new design documents to the roadmap and commit
+and push the update. The new untracked source is the AI-composable Workbench
+proposal; viewer/sharing, revised moldability and icons already have roadmap
+coverage and committed sources. Read the full composition proposal and compare
+the optional-AI note and governing suite/broker roadmaps. Retain contract
+inventory, inspectable discovery, a bounded SimplyFlow UI adapter, an ordinary
+optional Assistant, mixed provider interfaces, native saved compositions and
+later independent federation as deferred stages. Existing provider preferences
+and recipient selection supersede the source's supplied-snapshot baseline.
+
+The source remains an initial proposal, not implementation approval. Broker
+Phase 4, optional-AI deferral, native RDF, authorization, manual workflows and
+standing guardrails remain governing. External protocol/version/API claims are
+research candidates to refresh when a cycle is selected, not newly verified by
+this local documentation intake. Include the pending user-friendly sign-up
+roadmap update in the authorized documentation commit/push. No product changes,
+new implementation cycle or deployment are requested.
+
+Documentation verification: all 64 relative Markdown document targets resolve;
+the seven proposed composition stages and sign-up entry are present. Tracked
+edits pass git diff --check. Preserve the supplied proposal's Markdown hard
+breaks. No runtime, dependencies or tests change, so application/browser suites
+are not repeated for this documentation-only delivery.
