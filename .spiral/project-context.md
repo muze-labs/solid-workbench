@@ -2149,3 +2149,13 @@ need, protective purpose and scope of any size limit before selecting a value.
 The inherited 64 KiB constant is not a requirement. RSK149 remains open, and
 broader schemas/discovery/ranking/AI/federation remain deferred. No runtime fixes,
 new implementation cycle, commit, merge or push are authorized by acceptance.
+
+
+## Accepted CYC145 delivery authorized, 2026-11-12
+
+The maintainer requests “commit, merge and push. Then discuss the next cycle.”
+ACC150 now references exact committed assessment/evidence versions. The accepted
+cycle is delivered through immutable causal commits and a normal merge into
+latest main after validation; main and the cycle branch are authorized for push.
+No product changes accompany delivery, and no next implementation cycle is
+selected. Reconcile both governing roadmaps before proposing the follow-up.
