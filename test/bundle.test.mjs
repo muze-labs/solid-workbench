@@ -14,7 +14,7 @@ test('readable and minified apps preserve isolated module graphs', async () => {
         .filter((item) => item.fileName.endsWith('.min.js') === Boolean(suffix))
         .map((item) => [item.fileName, item])
     );
-    const apps = ['contacts', 'files', 'launcher', 'profile', 'preferences', 'account'];
+    const apps = ['contacts', 'files', 'launcher', 'profile', 'preferences', 'account', 'viewer'];
     assert.deepEqual(
       [...chunks.keys()].sort(),
       [

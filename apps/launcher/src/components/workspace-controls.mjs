@@ -44,7 +44,8 @@ export const workspaceControls = {
       const key = capability === this.api.browseCapability
         ? 'browseProvider'
         : capability === this.api.selectRecipientCapability
-          ? 'recipientProvider' : null;
+          ? 'recipientProvider'
+          : capability === this.api.viewResourceCapability ? 'viewProvider' : null;
       return key ? this.runtime.host.preferences[key]?.url : undefined;
     },
     workspaceMessage: function (message, remember = false) {
@@ -171,6 +172,10 @@ export const workspaceControls = {
           {
             url: new URL('../contacts/', location.href).href,
             capability: this.api.selectRecipientCapability
+          },
+          {
+            url: new URL('../viewer/', location.href).href,
+            capability: this.api.viewResourceCapability
           }
         ],
         snapshot: this.runtime.persistence.snapshot,
@@ -235,7 +240,7 @@ export const workspaceControls = {
       this.actions.workspaceMessage('Workspace saved to your Solid Pod.', true);
       if (close) {
         this.runtime.persistence.skipExit = true;
-        this.runtime.workspace.closeApps();
+        await this.runtime.workspace.closeApps();
         this.actions.renderWorkspace();
         this.runtime.host.message('Workspace saved and managed apps closed.');
         this.actions.workspaceMessage(
@@ -325,6 +330,7 @@ export const workspaceControls = {
     },
     handleUsePodWorkspace() {
       this.actions.workspaceOperation(async () => {
+        await this.runtime.workspace.prepareViewsForClose();
         this.runtime.workspace.closing = true;
         try {
           await this.runtime.persistence.resolveConflict(
@@ -337,7 +343,7 @@ export const workspaceControls = {
           this.runtime.workspace.closing = false;
           throw error;
         }
-        this.runtime.workspace.closeApps();
+        await this.runtime.workspace.closeApps();
         this.actions.createWorkspace();
         this.data.conflictReview = { hidden: '' };
         this.runtime.workspace.restore();
@@ -353,7 +359,7 @@ export const workspaceControls = {
         await this.runtime.persistence.work.catch(() => {});
         await this.runtime.persistence.persist();
         this.runtime.persistence.skipExit = true;
-        this.runtime.workspace.closeApps();
+        await this.runtime.workspace.closeApps();
         this.actions.renderWorkspace();
         this.runtime.host.message(
           'Locally saved workspace retained; managed apps closed.'

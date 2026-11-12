@@ -210,13 +210,18 @@ export class WorkspaceBroker {
       return this.embeddedProvider(input.capability);
     }
     if (method === 'embed' && record.registered && !record.embedded) {
-      return this.beginEmbedded(input.url, input.capability, record.entry.id);
+      return this.beginEmbedded(
+        input.url, input.capability, record.entry.id, input.presentation
+      );
     }
     if (method === 'embed-call' && record.registered && !record.embedded) {
       return this.requestEmbedded(input.id, input.input, {
         ...options,
         requester: record.entry.id
       });
+    }
+    if (method === 'embed-view' && record.registered && !record.embedded) {
+      return this.updateEmbeddedView(input.id, input.input, record.entry.id);
     }
     if (method === 'embed-close' && record.registered && !record.embedded) {
       return this.endEmbedded(input.id, record.entry.id);
@@ -298,7 +303,12 @@ export class WorkspaceBroker {
     }
     return providers[0].url;
   }
-  beginEmbedded(url, capability, requester = 'launcher') {
+  beginEmbedded(
+    url, capability, requester = 'launcher', presentation = 'task'
+  ) {
+    if (!['task', 'view'].includes(presentation)) {
+      throw capabilityError('Unknown embedded presentation.', 'denied');
+    }
     if (
       requester !== 'launcher' &&
       !this.instances.get(requester)?.registered
@@ -328,7 +338,8 @@ export class WorkspaceBroker {
     }
     if (
       [...this.instances.values()].some(
-        (record) => record.embedded && record.owner === requester
+        (record) => record.embedded && record.owner === requester &&
+          record.presentation !== 'view' && presentation !== 'view'
       )
     ) {
       throw capabilityError(
@@ -343,6 +354,7 @@ export class WorkspaceBroker {
       state: null
     });
     record.embedded = true;
+    record.presentation = presentation;
     record.owner = requester;
     record.capability = capability;
     return { id: record.entry.id, key: record.key };
@@ -421,6 +433,18 @@ export class WorkspaceBroker {
       }
       throw error;
     }
+  }
+
+  async updateEmbeddedView(id, input, requester = 'launcher') {
+    const record = this.embeddedRecord(id, requester);
+    if (record.presentation !== 'view' || !record.ready || !record.peer ||
+        record.peer.closed || !record.invoked) {
+      throw capabilityError('View connection is unavailable.', 'disconnected');
+    }
+    if (!['update', 'refresh', 'prepare'].includes(input?.operation)) {
+      throw capabilityError('Unsupported view operation.', 'denied');
+    }
+    return record.peer.call('view', serializable(input), { timeout: 10000 });
   }
 
   async canCloseEmbedded(id, requester = 'launcher') {
@@ -604,12 +628,41 @@ export class WorkspaceBroker {
     if (!record) {
       return;
     }
+    await this.prepareRemoval(record);
     record.win?.close();
     this.detach(record);
     this.instances.delete(id);
     await this.changed();
   }
-  closeApps() {
+  async prepareRemoval(record) {
+    const hasViews = [...this.instances.values()].some((child) =>
+      child.embedded && child.presentation === 'view' &&
+      child.owner === record.entry.id);
+    if (!hasViews) {
+      return;
+    }
+    if (!record.peer || record.peer.closed) {
+      throw capabilityError(
+        'Reconnect the app and close its view before removing it.',
+        'disconnected'
+      );
+    }
+    // Files coordinates its children, freezes approved transitions and disposes
+    // them immediately. Ordinary apps retain their existing checkpoint policy.
+    const status = await record.peer.call('can-close', null);
+    if (status?.allowed !== true) {
+      throw capabilityError(
+        'Finish the open view before closing this app.', 'busy'
+      );
+    }
+  }
+  async prepareViewsForClose() {
+    for (const record of this.instances.values()) {
+      await this.prepareRemoval(record);
+    }
+  }
+  async closeApps() {
+    await this.prepareViewsForClose();
     this.closing = true;
     for (const record of this.instances.values()) {
       record.win?.close();

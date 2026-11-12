@@ -12,6 +12,7 @@
   .swb-file-list {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     margin-block: var(--swb-files-space);
   }
   .swb-file-cell {
@@ -21,6 +22,20 @@
   }
   .swb-file-action {
     margin: 0;
+  }
+  .swb-file-name {
+    display: block;
+    max-inline-size: min(16rem, 100%);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: start;
+  }
+  .swb-file-heading:first-child {
+    width: 45%;
+  }
+  .swb-file-heading:nth-child(2) {
+    width: 15%;
   }
   .swb-file-heading {
     font-weight: 700;

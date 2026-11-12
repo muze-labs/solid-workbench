@@ -2288,3 +2288,50 @@ favicons and Launcher artwork. IMP166/EVD167 record custom-icon/RDF preservation
 source checks, all eight Chrome suites, phone/theme review and measured download
 costs. The cycle remains Active awaiting human acceptance; no commit/integration
 is implied. Remaining future-app artwork stays in the supplied archive.
+
+
+## Shared embedded views first proof ready for review, 2026-11-12
+
+CYC-20261112-QG24H-168 implements the first Files list/details proof on its own
+branch, independently of the Active icon cycle CYC163. Files automatically opens
+the configured viewer; the separate Resource Viewer supports `text/*` and
+raster images through its own Metro session. Existing native provider preferences
+now include resource views. Shared tickets support finite readiness, persistent
+updates and guarded teardown while preserving modal picker behavior.
+
+IMP171/EVD172 record 216 source tests/both builds, all nine Chrome suites,
+independent cross-origin draft guards, own-user data access, loaded-offline
+preservation, phone/desktop and theme review, and a cold usable viewer at about
+560 KB / 7 requests / 11.3 seconds on the uncompressed throttled fixture. Existing
+advisory JS warnings remain non-blocking. The cycle remains Active awaiting human
+acceptance; no integration, commit or publication is implied.
+
+This completes an implementation proof for review, not the full proposal.
+Presenter regions/text authoring, richer editors, bounded/passive presentation,
+full layout negotiation, recursive independent-host verification, durable editor
+crash recovery and widgets remain subsequent work. No third cycle is started.
+
+
+CYC168 maintainer review corrections: content-only embedded viewer; linked
+filename, automatic opening, no persistent View/Refresh/Close/About/Ready chrome
+or default border. Shared loading feedback and error-only recovery remain.
+Names retain full text/tooltips with bounded ellipses; the details title uses all
+available pane width. Generic text supports all `text/*` as escaped source.
+Future exact MIME viewers should outrank the wildcard fallback by default while
+preserving explicit choice; view-selection tabs remain a possible later UI.
+Same-provider reopening uses the existing task parameter's generation value to
+ensure a fresh frame navigation after guarded closure. Human acceptance remains
+pending; no commit, merge or push is inferred.
+
+
+## CYC168 accepted for integration, 2026-11-12
+
+The maintainer confirms “This works, good enough for now. Accepted, commit,
+merge and push plesae”. ACC173 accepts implementation 804f514d376218f040fc169422acf9bb74656179
+and verification 6efb0ca57ba2f6a0e877f28debf6529f7094c15a. CYC168 is Accepted,
+superseding its earlier Active/review notes. The reviewed automatic Files view,
+text/* fallback and minimal embedded UI are authorized for normal merge into
+latest main and push after exact integration validation. Existing evidence
+limits and future MIME-ranking/tab work remain explicit. The separate Active
+icon cycle, changed icon archive and priorities design document are preserved.
+No next cycle, release or deployment is authorized by this acceptance.

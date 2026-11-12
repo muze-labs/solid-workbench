@@ -325,7 +325,7 @@ test('failed checkpoint or local switch save leaves current apps and state intac
   const { workspaceHome } = await import(
     '../apps/launcher/src/components/workspace-home.mjs'
   );
-  for (const failurePoint of ['checkpoint', 'storage']) {
+  for (const failurePoint of ['checkpoint', 'view', 'storage']) {
     const snapshot = initial();
     const work = addWorkspace(snapshot, 'Work');
     let closed = false;
@@ -347,6 +347,11 @@ test('failed checkpoint or local switch save leaves current apps and state intac
         workspace: {
           async checkpoint() {
             if (failurePoint === 'checkpoint') {
+              throw failure;
+            }
+          },
+          async prepareViewsForClose() {
+            if (failurePoint === 'view') {
               throw failure;
             }
           },

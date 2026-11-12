@@ -1,0 +1,20 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261112-QG24H-171 a sd:Implementation ;
+    dcterms:identifier "IMP-20261112-QG24H-171" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261112-QG24H-171.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-170 ;
+        sd:gitCommit "bc1f29b06dd91e85316a8a29731ad8ab811a2ad8" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261112-QG24H-160 ;
+        sd:gitCommit "dd75b038344b664ca9e5e9fef5fe03631dc33f6c" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-170 ;
+        sd:gitCommit "bc1f29b06dd91e85316a8a29731ad8ab811a2ad8" ] ;
+    sd:implementationChangeKind sd:SemanticChange ;
+    sd:implementationLocation "packages/solid-app-data/src/embedded-view.mjs" ;
+    sd:implementationLocation "apps/files/src/components/file-details.mjs" ;
+    sd:implementationLocation "apps/viewer/src/components/viewer.mjs" .

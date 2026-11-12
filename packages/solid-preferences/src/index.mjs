@@ -18,6 +18,7 @@ export const defaults = Object.freeze({
   theme: 'system',
   browseProvider: null,
   recipientProvider: null,
+  viewProvider: null,
   textScale: '100',
   density: 'comfortable',
   language: 'en',

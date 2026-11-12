@@ -1,3 +1,4 @@
+import { viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
 import * as backgrounds from './backgrounds.mjs';
 import backgroundSource from './backgrounds.mjs' with { type: 'text' };
 import manifestSource from './manifests.mjs' with { type: 'text' };
@@ -98,6 +99,7 @@ const definition = {
     profileLink: { href: '../profile/' }
   },
   api: {
+    viewResourceCapability,
     backgrounds,
     ...directory,
     readApplicationManifest,

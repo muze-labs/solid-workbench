@@ -56,7 +56,8 @@ for (const name of [
   'files',
   'profile',
   'preferences',
-  'account'
+  'account',
+  'viewer'
 ]) {
   const route = name === 'launcher' ? 'workbench' : name;
   const title = applicationTitle(name);
@@ -106,7 +107,7 @@ await writeFile(
   path.join(root, 'www/index.html'),
   '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=workbench/"><a href="workbench/">Open Solid Workbench</a>'
 );
-console.log('Built all six apps in www/');
+console.log('Built all seven apps in www/');
 const outputs = Object.fromEntries(
   bundles
     .filter((item) => item.type === 'chunk')
@@ -137,7 +138,8 @@ function appSizes(suffix) {
     'files',
     'profile',
     'preferences',
-    'account'
+    'account',
+    'viewer'
   ]) {
     const files = importGraph(`www/assets/${name}/src/index${suffix}.js`);
     importGraph('www/assets/redirect' + suffix + '.js', files);
