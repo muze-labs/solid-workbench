@@ -1,3 +1,4 @@
+import { checkAppIcons } from './support/app-icons.mjs';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import { gzipSync } from 'node:zlib';
@@ -107,7 +108,11 @@ const server = http.createServer(async (request, response) => {
         ? 'text/css'
         : path.endsWith('.svg')
           ? 'image/svg+xml'
-          : path.endsWith('.jpg')
+          : path.endsWith('.ico')
+            ? 'image/vnd.microsoft.icon'
+            : path.endsWith('.png')
+              ? 'image/png'
+              : path.endsWith('.jpg')
             ? 'image/jpeg'
             : path.endsWith('.ttl')
               ? 'text/turtle'
@@ -261,6 +266,7 @@ try {
     downloadThroughput: -1,
     uploadThroughput: -1
   });
+  await checkAppIcons(page, origin);
   const initial = await run(
     'return solidLauncher.ui.runtime.persistence.snapshot.directory.active;'
   );

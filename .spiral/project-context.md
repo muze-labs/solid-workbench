@@ -2266,6 +2266,30 @@ standards/library claims. Include the source and roadmap updates in the ongoing
 authorized delivery; preserve the unrelated icon archive.
 
 
+## Revised icon archive intake, 2026-11-12
+
+The maintainer asks to read the icon archive and put its implementation as
+favicons and Launcher icons on the roadmap. Inspect its README, all twelve
+standalone SVGs, sprite symbols, ICO sizes and rendered preview. Update the
+existing icon-family item rather than create a duplicate: the current palette
+is cyan #0AA6C2 and warm orange #F39A3E, with the Forms checklist and matching
+16/24/32/48-pixel raster exports. Correct the earlier palette/file-size claims.
+Record static-asset publication, per-app favicons and manifest/default-shortcut
+integration, preserving explicit icon overrides and external app artwork.
+Browser, theme, phone, offline/cache and download verification remain future
+implementation evidence. This is documentation-only planning; no implementation
+cycle, asset installation, commit or push is requested. Preserve the archive.
+
+
+## App icon cycle ready for review, 2026-11-12
+
+CYC-20261112-QG24H-163 implements supplied Workbench, Files, Contacts and Profile
+favicons and Launcher artwork. IMP166/EVD167 record custom-icon/RDF preservation,
+source checks, all eight Chrome suites, phone/theme review and measured download
+costs. The cycle remains Active awaiting human acceptance; no commit/integration
+is implied. Remaining future-app artwork stays in the supplied archive.
+
+
 ## Shared embedded views first proof ready for review, 2026-11-12
 
 CYC-20261112-QG24H-168 implements the first Files list/details proof on its own
@@ -2311,3 +2335,17 @@ latest main and push after exact integration validation. Existing evidence
 limits and future MIME-ranking/tab work remain explicit. The separate Active
 icon cycle, changed icon archive and priorities design document are preserved.
 No next cycle, release or deployment is authorized by this acceptance.
+
+
+## CYC163 accepted for integration, 2026-11-12
+
+The maintainer confirms that the icon cycle was also accepted and requests
+commit, merge and push. ACC174 records acceptance of implementation
+047c67e49151063d0c408e9e8e51215d9362d3de and verification
+155840f2e2698a174ed00b6a0d4fcdd29e2a18ac. CYC163 is Accepted, superseding earlier
+pending-review notes. Current main (including CYC168 views) has been reconciled;
+216 source tests, both builds and the complete nine-suite Chrome command pass.
+Normal merge and push of main and the icon branch are authorized after exact
+integration validation. The supplied archive is retained as artwork source;
+the unrelated application-priorities document remains unchanged and uncommitted.
+No next cycle, release or deployment is selected.

@@ -1,3 +1,3 @@
 @prefix schema: <https://schema.org/> .
 <> a schema:SoftwareApplication ; schema:name "Solid Workbench" ;
-   schema:url <./> ; schema:image <../assets/feather-icons.svg#grid> .
+   schema:url <./> ; schema:image <icon.svg> .

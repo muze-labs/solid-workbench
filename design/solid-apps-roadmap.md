@@ -141,19 +141,23 @@ local presentation, and no SimplyEdit dependency or remote presenting.
 
 ## Application icon family and favicons
 
-Requested by the maintainer on 2026-11-09. Adopt the supplied
+Requested by the maintainer on 2026-11-09 and reaffirmed on 2026-11-12
+after inspecting the revised archive. Adopt the supplied
 [Solid Workbench icon family](solid-workbench-icons.zip) for application identity
 across browser favicons, Launcher shortcuts and the eventual app store. Use a
 consistent icon for the same app across these surfaces, with application
 manifests/catalog entries supplying the default artwork and existing user icon
 overrides remaining authoritative.
 
-The inspected archive contains twelve editable, transparent SVG icons in cobalt
-`#2455FF` and coral `#FF503F`: Workbench, Contacts, Files, Profile, Zett, Notebook,
+The archive inspected on 2026-11-12 contains twelve editable, transparent SVG
+icons in cyan `#0AA6C2` and warm orange `#F39A3E`: Workbench, Contacts, Files,
+Profile, Zett, Notebook,
 Projects, CRM, Documents, Knowledge, Forms and Chat. It includes standalone SVGs,
 a shared symbol sprite, PNG favicons at 16/24/32/48 pixels, four-size ICO files
 and light/dark preview sheets. The standalone sources have a 32-by-32 viewBox;
-their source files are 275–706 bytes. Icon availability records artwork for
+their standalone source files are 290–858 bytes. This revision includes the
+Forms checklist and regenerated PNG/ICO exports, superseding the earlier
+cobalt/coral description. Icon availability records artwork for
 future apps; it does not select those apps for implementation. Preferences is
 used only in a dialog iframe and needs no application icon or favicon.
 
@@ -165,6 +169,25 @@ external app icons and user replacements. Keep application identity artwork
 distinct from the existing shared Feather interaction glyphs and status controls.
 Plan the asset/build composition in the implementation cycle; no runtime icon
 framework or application feature is selected by this addition.
+
+Retain these concrete implementation steps for a future cycle:
+
+1. Publish the supplied artwork through the existing static-asset/build pipeline,
+   retaining editable SVGs and the matching raster fallbacks. Use the revised
+   archive as the source of truth; no runtime icon dependency is needed.
+2. Add application-specific favicon links for Workbench, Files, Contacts and
+   Profile, using their standalone SVG and matching ICO/PNG assets. The archive's
+   sprite alone is not a browser favicon. Reserve other supplied icons for their
+   corresponding future apps; resolve missing artwork separately when needed.
+3. Update suite application manifests and Launcher default-icon selection to use
+   the same artwork. Verify both newly added shortcuts and existing shortcuts
+   using default icons, while retaining explicit user replacements and external
+   application icons. Render the full-colour artwork without the white-glyph
+   treatment used for Feather controls; keep those interaction glyphs separate.
+
+The archive README documents inline `--sw-cyan` and `--sw-orange` hints with
+explicit colour fallbacks. Do not rely on parent-page CSS recolouring standalone
+images or favicon assets. Review the actual rendered result during implementation.
 
 Future verification: check real browser tabs at favicon sizes, phone/desktop
 Launcher tiles, manifest/catalog rendering, light/dark themes and photo
@@ -1699,6 +1722,15 @@ future work. No authentication fix, next cycle, deployment or publication is
 selected by acceptance.
 
 
+## App icon cycle ready for review, 2026-11-12
+
+CYC-20261112-QG24H-163 implements supplied Workbench, Files, Contacts and Profile
+favicons and Launcher artwork. IMP166/EVD167 record custom-icon/RDF preservation,
+source checks, all eight Chrome suites, phone/theme review and measured download
+costs. The cycle remains Active awaiting human acceptance; no commit/integration
+is implied. Remaining future-app artwork stays in the supplied archive.
+
+
 ## Shared embedded views first proof ready for review, 2026-11-12
 
 CYC-20261112-QG24H-168 implements the first Files list/details proof on its own
@@ -1742,3 +1774,17 @@ latest main and push after exact integration validation. Existing evidence
 limits and future MIME-ranking/tab work remain explicit. The separate Active
 icon cycle, changed icon archive and priorities design document are preserved.
 No next cycle, release or deployment is authorized by this acceptance.
+
+
+## CYC163 accepted for integration, 2026-11-12
+
+The maintainer confirms that the icon cycle was also accepted and requests
+commit, merge and push. ACC174 records acceptance of implementation
+047c67e49151063d0c408e9e8e51215d9362d3de and verification
+155840f2e2698a174ed00b6a0d4fcdd29e2a18ac. CYC163 is Accepted, superseding earlier
+pending-review notes. Current main (including CYC168 views) has been reconciled;
+216 source tests, both builds and the complete nine-suite Chrome command pass.
+Normal merge and push of main and the icon branch are authorized after exact
+integration validation. The supplied archive is retained as artwork source;
+the unrelated application-priorities document remains unchanged and uncommitted.
+No next cycle, release or deployment is selected.

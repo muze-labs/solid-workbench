@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../www/', import.meta.url));
 const types = {
   '.svg': 'image/svg+xml',
+  '.ico': 'image/vnd.microsoft.icon',
   '.jpg': 'image/jpeg',
   '.png': 'image/png',
   '.webp': 'image/webp',

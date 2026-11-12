@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="square"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32">
+  <title>Contacts</title>
+  <path fill="#0AA6C2" style="fill:var(--sw-cyan,var(--sw-blue,#0AA6C2))" d="M5 2H21Q24 2 24 5V27Q24 30 21 30H5Q2 30 2 27V5Q2 2 5 2Z M17 12A4 4 0 1 0 9 12A4 4 0 1 0 17 12Z M6 24H20V23C20 16 6 16 6 23Z" fill-rule="evenodd"/><path fill="#F39A3E" style="fill:var(--sw-orange,var(--sw-coral,#F39A3E))" d="M26 5H28Q30 5 30 7V11Q30 13 28 13H26Z M26 17H28Q30 17 30 19V23Q30 25 28 25H26Z" />
+</svg>
