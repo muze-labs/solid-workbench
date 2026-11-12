@@ -1,0 +1,29 @@
+@layer theme {
+  .muze-solid-viewer {
+    --muze-viewer-foreground: var(--ds-color);
+    --muze-viewer-background: var(--ds-color-background);
+  }
+}
+@layer component {
+  .muze-solid-viewer {
+    color: var(--muze-viewer-foreground, CanvasText);
+    background: var(--muze-viewer-background, Canvas);
+    min-width: 0;
+  }
+  .muze-solid-viewer-text {
+    font-family: var(--muze-viewer-font, monospace);
+    font-size: var(--muze-viewer-font-size, 1rem);
+    line-height: var(--muze-viewer-line-height, 1.5);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .muze-solid-viewer-image {
+    max-width: 100%;
+    height: auto;
+  }
+  .muze-solid-viewer-open {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}

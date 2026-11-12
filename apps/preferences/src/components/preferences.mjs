@@ -290,7 +290,7 @@ export const preferences = {
       }
     },
     swb_preferenceLabel(id, value) {
-      return ['browseProvider', 'recipientProvider'].includes(id)
+      return ['browseProvider', 'recipientProvider', 'viewProvider'].includes(id)
         ? this.actions.swb_providerLabel(value, id) : String(value);
     },
     async swb_resolveConflict(id, keepLocal) {

@@ -15,7 +15,7 @@ export const swbProviderPreferences = {
   },
   commands: {
     swb_chooseProviderKind(select) {
-      if (!['browseProvider', 'recipientProvider'].includes(select.value)) {
+      if (!['browseProvider', 'recipientProvider', 'viewProvider'].includes(select.value)) {
         return;
       }
       this.data.swb_providerKind = select.value;
@@ -56,7 +56,9 @@ export const swbProviderPreferences = {
     },
     swb_providerCapability() {
       return this.actions.swb_providerKey() === 'browseProvider'
-        ? this.api.browseCapability : this.api.selectRecipientCapability;
+        ? this.api.browseCapability
+        : this.actions.swb_providerKey() === 'recipientProvider'
+          ? this.api.selectRecipientCapability : this.api.viewResourceCapability;
     },
     swb_initializeProviders() {
       const owner = this;
@@ -93,7 +95,8 @@ export const swbProviderPreferences = {
       return value
         ? value.url + ' (' + value.application + ')'
         : key === 'browseProvider'
-          ? 'Built-in Files' : 'Built-in Contacts';
+          ? 'Built-in Files' : key === 'recipientProvider'
+            ? 'Built-in Contacts' : 'Built-in Resource Viewer';
     },
     swb_renderProvider() {
       const state = this.runtime.settings;

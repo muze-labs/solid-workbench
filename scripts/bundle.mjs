@@ -4,7 +4,7 @@ import { rollup } from 'rollup';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 
-const appNames = ['launcher', 'contacts', 'files', 'profile', 'preferences', 'account'];
+const appNames = ['launcher', 'contacts', 'files', 'profile', 'preferences', 'account', 'viewer'];
 
 function entryOwners(id, getModuleInfo) {
   const owners = new Set();

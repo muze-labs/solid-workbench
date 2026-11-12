@@ -91,7 +91,7 @@ export const account = {
       this.runtime.accountAttempt = (this.runtime.accountAttempt || 0) + 1;
       return this.actions.run(async () => {
         await this.runtime.host.beforeAccountLeave?.();
-        this.runtime.host.capabilityBroker?.closeApps();
+        await this.runtime.host.capabilityBroker?.closeApps();
         this.api.logoutAccount(this.runtime.host.selectedWebId);
         this.runtime.session?.logout();
         localStorage.setItem(

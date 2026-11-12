@@ -1,0 +1,43 @@
+<div
+  data-simply-field="muzeSolidViewerAppearance"
+  data-simply-transform="attributes"
+  data-simply-attributes="style"
+>
+  <form
+    class="ds-form muze-solid-viewer-open"
+    data-simply-command="muzeSolidViewerOpen"
+    data-simply-field="muzeSolidViewerStandalone"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
+    <label
+      >Resource URL
+      <input
+        type="url"
+        name="resource"
+        required
+        data-simply-field="muzeSolidViewerResource"
+        data-simply-transform="escape_html"
+    /></label>
+    <button class="ds-button" type="submit">View resource</button>
+  </form>
+  <p
+    class="muze-solid-viewer-status"
+    role="status"
+    data-simply-field="muzeSolidViewerStatus"
+    data-simply-transform="escape_html"
+  ></p>
+  <pre
+    class="muze-solid-viewer-text"
+    tabindex="0"
+    data-simply-field="muzeSolidViewerText"
+    data-simply-transform="escape_html"
+  ></pre>
+  <img
+    class="muze-solid-viewer-image"
+    data-simply-field="muzeSolidViewerImage"
+    data-simply-transform="attributes"
+    data-simply-attributes="src alt hidden"
+    hidden
+  />
+</div>

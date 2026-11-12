@@ -30,6 +30,11 @@
     padding-inline-end: 3rem;
   }
   /* The DS heading mask belongs to horizontally scrolling panel headings. */
+  /* Content views use the host's chrome. Keep their status and request-specific
+     recovery available without allocating an empty toolbar. */
+  .swb-suite-header[data-muze-solid-ui-content-view] {
+    display: contents;
+  }
   .swb-suite-header::after {
     content: none;
   }
