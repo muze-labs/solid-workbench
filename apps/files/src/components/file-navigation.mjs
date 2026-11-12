@@ -170,6 +170,7 @@ export const fileNavigation = {
       this.runtime.files = list;
       this.runtime.listEffect = this.api.effect(() => {
         this.data.entries = list.view.current;
+        this.data.pickerEntries = list.view.current;
         this.data.empty =
           list.view.current.length || !this.runtime.current
             ? ''

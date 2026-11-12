@@ -8,6 +8,10 @@
     --swb-picker-border: var(--ds-grey-low);
   }
 }
+@layer component {
+  .swb-resource-choices { list-style: none; padding: 0; }
+  .swb-resource-choice { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+}
 @layer page {
   /* The Files page owns its embedded presentation, not shared header markup. */
   .swb-files:has(.muze-solid-ui-embedded:not([hidden])) {

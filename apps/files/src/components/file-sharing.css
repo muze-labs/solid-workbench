@@ -1,0 +1,11 @@
+@layer component {
+  .swb-files-sharing {
+    overflow-wrap: anywhere;
+    padding: var(--swb-share-space, 1rem);
+  }
+  .swb-share-button {
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

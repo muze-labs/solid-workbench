@@ -1,3 +1,18 @@
+export const selectRecipientCapability =
+  'https://vocab.muze.nl/capabilities/select-recipient';
+export function recipientId(result) {
+  const id = result?.['@id'];
+  if (typeof id !== 'string') {
+    throw capabilityError('Provider did not return a recipient identifier.');
+  }
+  const uuid = /^urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
+  if (uuid.test(id)) {
+    return id;
+  }
+  selectionUrl(result);
+  // Validate without normalising a native RDF subject's identity.
+  return id;
+}
 export const editPreferencesCapability =
   'https://vocab.muze.nl/capabilities/edit-preferences';
 export const editProfileCapability =

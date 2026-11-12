@@ -1,3 +1,6 @@
+import { readRecipient } from '@muze-labs/solid-app-data/recipient.mjs';
+import { readProfile } from '@muze-labs/solid-profile';
+import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import {
   muzeSolidDesignDialog,
   muzeSolidDesignListDetails
@@ -11,7 +14,7 @@ import { from } from '@muze-nl/jaqt';
 import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { shell } from '@muze-labs/solid-app-ui';
-import { browseCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
+import { browseCapability, selectRecipientCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { httpUrl } from '@muze-labs/solid-app-data';
 import {
   linkState,
@@ -20,6 +23,7 @@ import {
 } from '@muze-labs/solid-app-data/link-metadata.mjs';
 import { app } from '@muze-labs/simplyflow/app';
 import {
+  swbFileSharing,
   fileNavigation,
   fileEditing,
   resourcePicker,
@@ -36,6 +40,7 @@ const definition = {
   components: {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
+    swbFileSharing,
     fileNavigation,
     fileEditing,
     resourcePicker,
@@ -47,7 +52,12 @@ const definition = {
     empty: '',
     picker: { hidden: '' },
     editing: { hidden: host.task ? '' : null },
-    requester: ''
+    requester: '',
+    pickerEntries: [],
+    swb_shareVisible: { hidden: '' },
+    swb_shareResource: '', swb_sharePerson: '', swb_shareId: '',
+    swb_shareDocument: '', swb_shareEmail: '', swb_sharePhone: '',
+    swb_shareWebId: '', swb_shareStatus: ''
   },
   api: {
     app,
@@ -62,6 +72,7 @@ const definition = {
     apps,
     shell,
     browseCapability,
+    selectRecipientCapability, readRecipient, readProfile, launchUrl,
     httpUrl,
     linkState,
     markResourceDeleted,

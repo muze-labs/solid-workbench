@@ -47,10 +47,27 @@ export const lifecycle = {
         this.runtime.current || this.runtime.restoredFolder,
         'iri'
       );
+      const share = this.runtime.shareSelection;
+      for (const [field, key] of [['shareResource', 'resource'],
+        ['shareRecipient', 'id'], ['shareDocument', 'document']]) {
+        this.runtime.appState.set(this.api.apps + field, share?.[key], 'iri');
+      }
+      this.runtime.appState.set(this.api.apps + 'shareLabel', share?.label);
       return this.runtime.appState.snapshot();
     },
     async restoreState(state) {
       this.runtime.appState.restore(state);
+      const shareId = this.runtime.appState.read(this.api.apps + 'shareRecipient', 'iri');
+      if (shareId) {
+        this.runtime.shareSelection = {
+          id: shareId,
+          resource: this.runtime.appState.read(this.api.apps + 'shareResource', 'iri'),
+          document: this.runtime.appState.read(this.api.apps + 'shareDocument', 'iri'),
+          label: this.runtime.appState.read(this.api.apps + 'shareLabel')
+        };
+        this.actions.swb_renderShare();
+        this.data.swb_shareStatus = 'Selection restored. Choose again to load current details. Permissions unchanged.';
+      }
       this.runtime.restoredFolder = this.runtime.appState.read(
         this.api.apps + 'folder',
         'iri'

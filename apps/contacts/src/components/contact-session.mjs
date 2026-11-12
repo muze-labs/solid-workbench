@@ -58,7 +58,13 @@ export const contactSession = {
         });
         this.actions.refreshPeople();
       });
+      this.actions.swb_renderRecipientPicker();
       this.runtime.host.onContext = async () => {
+        if (this.runtime.recipientRequest) {
+          await this.actions.swb_finishRecipient({ error: {
+            code: 'cancelled', message: 'The account or workspace changed.'
+          } });
+        }
         const owner = this.runtime.host.selectedWebId || 'anonymous';
         const resource = this.actions.swb_contactsResource();
         const key = owner + ':' + resource;
@@ -80,6 +86,15 @@ export const contactSession = {
         );
       this.runtime.appState = new this.api.AppState();
       this.runtime.host.manage({
+        capabilities: [this.api.selectRecipientCapability],
+        waitForPresentation: true,
+        onRequest: (event) => this.actions.swb_receiveRecipient(event),
+        onCancel: (event) => this.actions.swb_cancelRecipientRequest(event),
+        onFocus: () => {
+          if (this.runtime.recipientRequest) {
+            this.container.querySelector('.swb-recipient-picker input')?.focus();
+          }
+        },
         getState: (...args) => this.actions.captureState(...args),
         restoreState: (...args) => this.actions.restoreState(...args)
       });

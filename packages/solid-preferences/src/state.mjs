@@ -9,6 +9,7 @@ import {
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { defaults, readPreferences, validatePreferences } from './index.mjs';
 import {
+  providerCapabilities,
   providerChoice,
   setProviderChoice,
   sameProvider,
@@ -32,14 +33,15 @@ function value(graph, scope, key) {
     throw new Error('preferences-state: Multiple cached values for ' + key);
   }
   const entry = values[0];
-  if (key === 'browseProvider' && scope !== 'draft' && entry) {
+  if (Object.hasOwn(providerCapabilities, key) && scope !== 'draft' && entry) {
     return entry.termType === 'NamedNode' ? providerChoice(graph, entry) : null;
   }
   return entry?.termType === 'NamedNode' ? entry.id : entry?.value;
 }
 function put(graph, scope, key, text) {
-  if (key === 'browseProvider' && scope !== 'draft') {
-    const node = named(root + scope + ':provider');
+  if (Object.hasOwn(providerCapabilities, key) && scope !== 'draft') {
+    const suffix = key === 'browseProvider' ? 'provider' : key;
+    const node = named(root + scope + ':' + suffix);
     setProviderChoice(graph, node, text);
     graph.set(
       subject(scope),
@@ -55,7 +57,8 @@ function put(graph, scope, key, text) {
   );
 }
 function equal(key, left, right) {
-  return key === 'browseProvider' ? sameProvider(left, right) : left === right;
+  return Object.hasOwn(providerCapabilities, key)
+    ? sameProvider(left, right) : left === right;
 }
 function lock(name, operation) {
   if (globalThis.navigator?.locks) {
@@ -144,7 +147,7 @@ export class PreferenceState {
       }
       put(this.graph, 'pending', key, text);
       const draft = value(this.graph, 'draft', key);
-      if (draft === text || (key === 'browseProvider' &&
+      if (draft === text || (Object.hasOwn(providerCapabilities, key) &&
           (text === null || draft === text.url))) {
         this.graph.set(subject('draft'), apps + key, undefined);
       }
@@ -215,8 +218,8 @@ export class PreferenceState {
       const remoteGraph = new StateGraph(remote.source || '', this.url);
       const graph = remoteGraph.clone();
       for (const [key, text] of Object.entries(patch)) {
-        if (key === 'browseProvider') {
-          writeProvider(graph, this.url, text);
+        if (Object.hasOwn(providerCapabilities, key)) {
+          writeProvider(graph, this.url, text, providerCapabilities[key]);
           continue;
         }
         graph.set(
@@ -227,8 +230,8 @@ export class PreferenceState {
       }
       // A fallback is not evidence of an acknowledged native write.
       const reachedPod = (key) => {
-        if (key === 'browseProvider') {
-          return sameProvider(current.browseProvider, patch[key]);
+        if (Object.hasOwn(providerCapabilities, key)) {
+          return sameProvider(current[key], patch[key]);
         }
         const terms = remoteGraph.values(
           named(this.url + '#solid-apps'),

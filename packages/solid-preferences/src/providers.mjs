@@ -2,7 +2,11 @@ import { httpUrl } from '@muze-labs/solid-app-data/url.mjs';
 import { named, sameTerm } from '@muze-labs/solid-app-data/state-rdf.mjs';
 
 export const capabilityNamespace = 'https://vocab.muze.nl/capability#';
-const browse = 'https://vocab.muze.nl/capabilities/browse';
+export const providerCapabilities = Object.freeze({
+  browseProvider: 'https://vocab.muze.nl/capabilities/browse',
+  recipientProvider: 'https://vocab.muze.nl/capabilities/select-recipient'
+});
+const browse = providerCapabilities.browseProvider;
 const member = 'http://www.w3.org/2000/01/rdf-schema#member';
 const launch = 'https://schema.org/url';
 
@@ -57,7 +61,7 @@ export function setProviderChoice(graph, node, choice) {
   graph.set(node, launch, choice ? named(choice.url) : undefined);
 }
 
-function registryBinding(graph, url) {
+function registryBinding(graph, url, capability) {
   const root = named(url + '#solid-apps');
   const registry = graph.one(root, capabilityNamespace + 'registry', 'iri');
   if (!registry) {
@@ -73,10 +77,10 @@ function registryBinding(graph, url) {
     .filter((node) =>
       graph
         .values(node, capabilityNamespace + 'provides')
-        .some((term) => sameTerm(term, named(browse)))
+        .some((term) => sameTerm(term, named(capability)))
     );
   if (bindings.length > 1) {
-    throw new Error('preferences-provider: Multiple resource-picker bindings.');
+    throw new Error('preferences-provider: Multiple picker bindings.');
   }
   const binding = bindings[0];
   if (binding) {
@@ -96,13 +100,13 @@ function registryBinding(graph, url) {
     choice: binding ? providerChoice(graph, binding) : null };
 }
 
-export function readProvider(graph, url) {
-  return registryBinding(graph, url).choice || null;
+export function readProvider(graph, url, capability = browse) {
+  return registryBinding(graph, url, capability).choice || null;
 }
 
-export function writeProvider(graph, url, choice) {
+export function writeProvider(graph, url, choice, capability = browse) {
   validateProvider(choice);
-  let { root, registry, binding } = registryBinding(graph, url);
+  let { root, registry, binding } = registryBinding(graph, url, capability);
   if (!choice) {
     if (binding) {
       graph.quads = graph.quads.filter(
@@ -125,7 +129,7 @@ export function writeProvider(graph, url, choice) {
   if (!binding) {
     binding = named(url + '#picker-' + crypto.randomUUID());
     graph.add(registry, member, binding);
-    graph.set(binding, capabilityNamespace + 'provides', named(browse));
+    graph.set(binding, capabilityNamespace + 'provides', named(capability));
   }
   setProviderChoice(graph, binding, choice);
 }

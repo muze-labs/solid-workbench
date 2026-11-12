@@ -15,4 +15,14 @@ project:IMP-20261109-QG24H-121 a sd:Implementation ;
         sd:gitCommit "ec587d314dd51cf81e49bff35299ed9cd1103ab2" ] ;
     sd:derivedFrom [ a sd:ArtifactReference ;
         sd:artifact project:CYC-20261109-QG24H-118 ;
-        sd:gitCommit "d1d622c103ede636ae9af611dd31c2b67a11a38c" ] .
+        sd:gitCommit "d1d622c103ede636ae9af611dd31c2b67a11a38c" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261109-QG24H-121 ;
+        sd:gitCommit "11157eb577c6a6c93a88bc4e041ac4cc16b3d47f" ] ;
+    sd:implementationChangeKind sd:SemanticChange  ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-141 ;
+        sd:gitCommit "ad5723db7240d38edd481fcff2e85dc9575658bb" ] ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:SRC-20261112-QG24H-140 ;
+        sd:gitCommit "ad5723db7240d38edd481fcff2e85dc9575658bb" ] .

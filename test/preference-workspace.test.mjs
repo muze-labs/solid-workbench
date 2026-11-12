@@ -158,5 +158,5 @@ test('Preferences receives saved app metadata and verified live support for a no
   const snapshot = f.context.actions.swb_preferencesSnapshot();
   assert.deepEqual(snapshot.applications, [{ name: 'Picker',
     url: 'https://apps.example/picker/', manifest: 'https://apps.example/manifest.ttl',
-    live: true }]);
+    live: true, capabilities: [f.context.api.browseCapability] }]);
 });

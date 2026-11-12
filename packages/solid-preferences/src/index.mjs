@@ -13,10 +13,11 @@ import {
   named,
   literal
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
-import { readProvider, writeProvider, validateProvider } from './providers.mjs';
+import { readProvider, writeProvider, validateProvider, providerCapabilities } from './providers.mjs';
 export const defaults = Object.freeze({
   theme: 'system',
   browseProvider: null,
+  recipientProvider: null,
   textScale: '100',
   density: 'comfortable',
   language: 'en',
@@ -76,12 +77,12 @@ export function readPreferences(document) {
   return Object.fromEntries(
     Object.entries(defaults).map(([key, fallback]) => {
       let value;
-      if (key === 'browseProvider') {
+      if (Object.hasOwn(providerCapabilities, key)) {
         value = readProvider(
           new StateGraph(
             document.source ?? document.graph.originalSource ?? '', document.url
           ),
-          document.url
+          document.url, providerCapabilities[key]
         );
       }
       else if (key === 'workspaceResource') {
@@ -98,7 +99,9 @@ export function readPreferences(document) {
   );
 }
 export function validatePreferences(settings) {
-  validateProvider(settings.browseProvider ?? null);
+  for (const key of Object.keys(providerCapabilities)) {
+    validateProvider(settings[key] ?? null);
+  }
   if (!['tab', 'window'].includes(settings.launchTarget)) {
     throw new Error('solid-preferences: Choose new tabs or new windows.');
   }
@@ -185,8 +188,8 @@ export async function savePreferences(session, document, settings, workspace) {
     'filesRoot'
   ];
   for (const key of keys) {
-    if (key === 'browseProvider') {
-      writeProvider(graph, document.url, settings[key]);
+    if (Object.hasOwn(providerCapabilities, key)) {
+      writeProvider(graph, document.url, settings[key], providerCapabilities[key]);
       continue;
     }
     let value;

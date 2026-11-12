@@ -22,6 +22,7 @@ import {
   editProfileCapability,
   editPreferencesCapability,
   browseCapability,
+  selectRecipientCapability,
   selectionUrl
 } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { chooseFiles } from './picker.mjs';
@@ -113,6 +114,7 @@ const definition = {
     editProfileCapability,
     editPreferencesCapability,
     browseCapability,
+  selectRecipientCapability,
     selectionUrl,
     chooseFiles,
     openCollection,

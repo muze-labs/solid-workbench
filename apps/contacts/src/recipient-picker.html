@@ -1,0 +1,50 @@
+<section class="swb-recipient-picker" aria-label="Select a recipient" hidden
+  data-simply-field="swb_recipientPicker"
+  data-simply-transform="attributes" data-simply-attributes="hidden">
+  <h2>Select a recipient</h2>
+  <p>Requested by <span class="swb-recipient-identity"
+    data-simply-field="swb_recipientRequester"
+    data-simply-transform="escape_html"></span></p>
+  <p>Current address book: <span class="swb-recipient-identity"
+    data-simply-field="swb_recipientSource"
+    data-simply-transform="escape_html"></span></p>
+  <p>The selected contact's information is returned to the requesting app.
+    This does not grant access to the resource or verify their identity.</p>
+  <label>Search contacts
+    <input type="search" class="swb-control swb-labeled-control"
+      data-simply-field="swb_recipientSearch"
+      data-simply-command="swb_searchRecipients"
+      data-simply-immediate="true" />
+  </label>
+  <ul class="swb-person-list" data-simply-list="people">
+    <template><li class="swb-list-item">
+      <button type="button" class="swb-list-action"
+        data-simply-command="swb_chooseRecipient" data-simply-value=":value.id">
+        <span data-simply-field="label"
+          data-simply-transform="escape_html"></span>
+        <span class="swb-recipient-identity" data-simply-field="id"
+          data-simply-transform="escape_html"></span>
+      </button>
+    </li></template>
+  </ul>
+  <p data-simply-field="empty" data-simply-transform="escape_html"></p>
+  <p role="status" data-simply-field="swb_recipientStatus"
+    data-simply-transform="escape_html"></p>
+  <p class="swb-recipient-identity" aria-live="polite"
+    data-simply-field="swb_recipientSelected"
+    data-simply-transform="escape_html"></p>
+  <details>
+    <summary>Contact information returned to the app</summary>
+    <pre class="swb-recipient-data" data-simply-field="swb_recipientDescription"
+      data-simply-transform="escape_html"></pre>
+  </details>
+  <div class="swb-actions">
+    <button type="button" class="ds-button ds-button-primary swb-recipient-control" disabled
+      data-simply-command="swb_useRecipient" data-simply-field="swb_recipientUse"
+      data-simply-transform="attributes" data-simply-attributes="disabled">
+      Use this contact
+    </button>
+    <button type="button" class="ds-button swb-recipient-control"
+      data-simply-command="swb_cancelRecipient">Cancel</button>
+  </div>
+</section>
