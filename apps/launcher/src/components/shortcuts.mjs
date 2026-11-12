@@ -259,15 +259,20 @@ export const shortcuts = {
       }
       catch {}
       const sprite = new URL('../assets/feather-icons.svg', location.href);
-      if (!override && icon) {
+      if (!override) {
         for (const [app, symbol] of Object.entries({
           files: 'folder',
           contacts: 'users',
           profile: 'user',
           workbench: 'grid'
         })) {
-          if (icon === new URL('../' + app + '/icon.svg', location.href).href) {
-            icon = sprite.href + '#' + symbol;
+          const appUrl = new URL('../' + app + '/', location.href);
+          const isLocalApp = url?.split(/[?#]/, 1)[0] === appUrl.href;
+          const oldDefault = sprite.href + '#' + symbol;
+          if (isLocalApp && (!icon || icon === oldDefault)) {
+            // Update the view of cached default artwork without rewriting RDF
+            // or replacing a user-selected or external application's image.
+            icon = new URL('icon.svg', appUrl).href;
           }
         }
       }

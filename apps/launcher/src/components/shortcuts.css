@@ -95,6 +95,9 @@
     background: var(--swb-shortcuts-accent);
     color: var(--swb-shortcuts-accent-text);
   }
+  .swb-shortcut-image {
+    background: var(--swb-shortcuts-image-surface, #f3f6fa);
+  }
   .swb-shortcut-settings {
     width: 100%;
     font-size: 0.85rem;

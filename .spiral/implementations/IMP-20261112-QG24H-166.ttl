@@ -1,0 +1,11 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261112-QG24H-166 a sd:Implementation ;
+    dcterms:identifier "IMP-20261112-QG24H-166" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261112-QG24H-166.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-165 ;
+        sd:gitCommit "7ef351ba5a33f6ba180a31d1cf2d20ba87c7ad54" ] ;
+    sd:implementationLocation "apps/launcher/src/components/shortcuts.mjs" .

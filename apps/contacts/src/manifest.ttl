@@ -1,5 +1,5 @@
 @prefix cap: <https://vocab.muze.nl/capability#> .
 @prefix schema: <https://schema.org/> .
 <> a schema:SoftwareApplication ; schema:name "Contacts" ;
-   schema:url <./> ; schema:image <../assets/feather-icons.svg#users> ;
+   schema:url <./> ; schema:image <icon.svg> ;
    cap:provides <https://vocab.muze.nl/capabilities/select-recipient> .

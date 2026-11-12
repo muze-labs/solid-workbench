@@ -145,7 +145,7 @@ export const workspaceHome = {
                   new URL(root).hostname),
               schema$url: { id: url },
               schema$image: {
-                id: new URL('../assets/feather-icons.svg#folder', location.href)
+                id: new URL('../files/icon.svg', location.href)
                   .href
               }
             });
