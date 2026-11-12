@@ -1633,6 +1633,21 @@ The recorded session/managed regression limits remain; no authentication fix or
 new cycle is selected. The requested status/recovery roadmap additions remain
 future work. Unrelated user files stay excluded; no publication is requested.
 
+## Application icon family requested for adoption, 2026-11-09
+
+The maintainer requests inspection of design/solid-workbench-icons.zip and a
+roadmap item for its use as favicons, Launcher icons and eventual app-store
+artwork. The archive's README, SVG sources, PNG/ICO sizes and rendered preview
+were inspected: twelve cobalt/coral app icons, standalone SVGs and symbol sprite,
+16/24/32/48-pixel PNGs and four-size ICOs. The suite roadmap records adoption
+through existing manifest/icon paths, preservation of user/external icons and
+phone/theme/background/accessibility/download checks. The maintainer clarifies
+that Preferences is only used in the dialog iframe and needs no application
+icon, favicon, standalone Launcher entry or app-store listing. Earlier
+standalone-use descriptions are superseded as presentation direction. This is documentation-only
+future direction; no new cycle, app implementation, asset installation, commit
+or publication is selected. The archive and unrelated user files remain intact.
+
 ## Account-status cycle selected, 2026-11-09
 
 The maintainer agrees to shared account status and sign-in recovery next. CYC124
@@ -1888,3 +1903,121 @@ record the accepted Metro handoff and ACC138's exact implementation/evaluation
 versions. Normal merge into current main and push of main/cycle branches are
 authorized after exact candidate integration validation. Unrelated pending icon
 roadmap/context and supplied design files remain outside delivery.
+
+
+## New design intake and roadmap reconciliation, 2026-11-12
+
+The maintainer asks to read new design-folder files and add missing roadmap
+work. Read solid-document-viewer-design.md, solid-sharing-design.md and the
+changed Moldable-Solid-Apps.md, compared with existing suite/broker roadmaps.
+The supplied icon archive already has a detailed roadmap item; preserve it.
+The existing documents/versioning, provenance and signing proposals already
+have roadmap coverage; the viewer refines that document direction.
+
+Suite additions retain PDF/image reading and annotation layers, Cobalt/default
+and replaceable note-body editing, explicit private/shared save and recovery,
+legacy Web Annotation compatibility and revision-aware anchors. Invitation
+sharing is a separate second-stage option with user-selected providers,
+owner-browser-closed completion and verified authorization/retry/disconnection.
+The revised IDE direction is reflected in personal-layer precedence, separate
+undo histories, SimplyFlow template notifications, marketplace separation and
+open upstream-version handling. Standing AGENTS readability/feature constraints
+and the accepted build-time composition boundary remain applicable.
+
+The viewer's 2026-11-08 enforced-budget and not-yet-existing registry statements
+are historical source observations. Current planning uses accepted CYC129's
+advisory policy and CYC118's browse preferences/registry foundation; future
+editor/sharing/signing contracts and routing still need implementation. Specialist
+PDF/rich-text rendering requires reconciliation with SimplyFlow rules before
+code changes. Refresh cited protocol/library research when selecting that work;
+this documentation review does not newly verify external conformance claims.
+
+The broker roadmap cross-references these later contracts while retaining
+Phase 3/4 and current direction. This is documentation-only intake, with no
+new cycle, product change, implementation priority, commit or publication.
+Supplied documents and unrelated user changes remain intact.
+
+
+## Iframe-dialog Escape repair retained, 2026-11-12
+
+The maintainer requests a fix for Escape not closing dialogs when focus is in
+an iframe, then explicitly chooses “Add it to the roadmap for later”. The suite
+MVP UI roadmap retains the repair and native keyboard/focus/draft-preservation
+acceptance scenarios. Initial inspection finds Account's existing child Escape
+handler and nested regression check, while the generic capability host listens
+for its own native dialog cancel and Preferences lacks the analogous forwarding.
+Reproduce actual affected workflows before implementation; preserve existing
+close guards, nested controls and scoped cross-origin authority. No new cycle,
+product changes, reprioritization ahead of Contacts, commit or push is requested.
+
+
+## Contacts Phase 3 cycle opened, 2026-11-12
+
+The maintainer selects Contacts recipient selection and provider replaceability.
+CYC139 is Active in Analyze/Plan on verified
+spiral/CYC-20261112-QG24H-139-contacts-picker from main f1a36e0. SRC140/DES141/
+EVD142 retain instruction, source/composition gap and proposed scope. Contacts
+registers no selection capabilities/handler; Launcher/native preference choice
+is browse-specific. The current-book first boundary is presented for confirmation
+against broader multiple-book/cross-workspace roadmap requirements before product
+changes. Existing cross-origin fixtures reuse ManagedApp; independent protocol
+peers remain part of Phase 3 evidence. Preserve pending docs/user files; no
+implementation, acceptance, commit, integration or publication is claimed.
+
+
+## CYC139 implementation evaluated, 2026-11-12
+
+The maintainer confirms “Current book first (recommended)”. On verified
+spiral/CYC-20261112-QG24H-139-contacts-picker, IMP143 adds the Contacts picker,
+explicit native contact identity selection, per-operation Default apps preference
+and existing scoped broker integration. IMP121 retains lineage for its shared
+preference extension. EVD142 records preserved state/RDF, native phone/keyboard/
+200%/offline behavior and independently implemented caller/provider evidence.
+Final npm run check passes 25 files/both builds; the complete eight-suite Chrome
+command passes, exit 0. Readable assets are restored for the running dev server.
+Contacts is 200101/134794 readable/minified gzip bytes with advisory warnings;
+the cold uncompressed fixture costs 657460 bytes/9 requests/about 13 seconds at
+50 KiB/s/150 ms. No manual AT or production-provider certification is claimed.
+CYC139 stays Active for human review, with no commit, merge, push or publication.
+Broader book browsing/search, sharing and iframe Escape remain later work.
+All pending supplied design/icon/moldability edits remain preserved.
+
+
+## CYC139 corrected after real integration review, 2026-11-12
+
+The maintainer reports a UUID-only picker result is not usable externally, asks
+for Files Share to initiate recipient selection within the same Workbench/user
+context, explicitly chooses selected-data fallback for local/unsynced contacts,
+and requires distinct picker UIs. The correction remains on verified CYC139.
+Files now has the real Share → choose person → selection-summary path. Results
+keep native identity, include a configured document locator and a bounded native
+RDF description; document-only results are read through the caller's own Metro
+session. Only selected data is exported, with payload preview and explicit
+unsupported-structure/size refusal. Files has a focused resource-selection list
+rather than its normal management table. No permissions/invitations are changed.
+
+Cancel/reload, actor changes, existing browsing, native RDF and earlier provider
+choices retain their contracts. Native workspace state holds references/label,
+not contact-body snapshots. Source checks pass 27 files/both builds; two complete
+eight-suite Chrome commands pass, including actual Files consuming data and
+source references. A final reply-envelope size check passes focused contracts
+and final source/build verification afterwards. EVD142 preserves qualifications,
+phone screenshots, cold costs and all intermediate fixture failures. Readable
+dev assets are restored. CYC139 remains Active for renewed human review; no
+commit, integration, publication, full share flow or Escape repair is inferred.
+
+
+## CYC139 accepted for integration, 2026-11-12
+
+The maintainer says “accepted, commit merge and push please.” ACC144 accepts
+implementation f1f56e61ae1700ff8670292420e22348dd510cd6 and evaluation
+2402bd8bef8ad16a46da54483976797da4e97c98. CYC139 is now Accepted, superseding
+the earlier Active/review notes. Useful recipient data/source references, the
+real Files Share selection summary, separate picker UIs and independent provider
+choices are included. Permissions/invitations, broader books and iframe Escape
+remain later work. Broker Phase 4 evaluation remains the roadmap's next step;
+no next implementation cycle is selected. Normal merge into latest main and
+push of main/cycle branches are explicitly authorized after exact integration
+validation. Existing advisory size and manual AT/production evidence limits
+remain. Requested design intake and its source documents are preserved in Git;
+the separate AI composition proposal stays uncommitted.

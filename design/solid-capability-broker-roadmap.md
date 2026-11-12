@@ -286,12 +286,14 @@ It does not establish the persistent preferred-provider registry described below
 
 ### Phase 3 — Second capability and replaceability
 
-CYC139 is Active for human review on 2026-11-12. The maintainer confirms a
+CYC139 is Accepted by the maintainer on 2026-11-12 (ACC144). The maintainer confirms a
 current-configured-book first Contacts picker. IMP143/EVD142 retain its native
 recipient identity contract, independent recipient preference, separate-origin
 caller/provider proof, second browse provider and full regression evidence.
 Multiple-book/cross-workspace browsing and the iframe Escape repair stay later.
-Passing fixtures do not constitute human acceptance or third-party certification.
+Acceptance includes the corrected Files Share caller and useful native RDF/source
+result, plus focused picker UIs. Phase 4 evaluation is next; broader scope is
+not selected by acceptance. Fixture passes do not certify third-party providers.
 
 
 - Implement recipient selection in a contacts app, returning a WebID or appropriately identified contact resource.
