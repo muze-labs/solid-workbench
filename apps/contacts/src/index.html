@@ -1,4 +1,6 @@
-<div class="swb-split-view ds-panels-panes muze-solid-design-list-details">
+<div data-simply-field="swb_contactEditor"
+  data-simply-transform="attributes" data-simply-attributes="hidden"
+  class="swb-split-view ds-panels-panes muze-solid-design-list-details">
   {{view:contacts-list:./list.html}}
   <section
     class="swb-contact-details ds-panels-pane ds-panels-details swb-list-pane"
@@ -15,3 +17,4 @@
     {{view:contacts-details:./details.html}}
   </section>
 </div>
+{{view:swb-contacts-recipient-picker:./recipient-picker.html}}

@@ -41,12 +41,14 @@ export const workspaceControls = {
   },
   actions: {
     swb_preferredProvider(capability) {
-      if (
-        capability === this.api.browseCapability &&
-        this.runtime.host.selectedWebId
-      ) {
-        return this.runtime.host.preferences.browseProvider?.url;
+      if (!this.runtime.host.selectedWebId) {
+        return;
       }
+      const key = capability === this.api.browseCapability
+        ? 'browseProvider'
+        : capability === this.api.selectRecipientCapability
+          ? 'recipientProvider' : null;
+      return key ? this.runtime.host.preferences[key]?.url : undefined;
     },
     workspaceMessage: function (message, remember = false) {
       this.runtime.workspaceError = null;
@@ -169,6 +171,10 @@ export const workspaceControls = {
           {
             url: new URL('../preferences/', location.href).href,
             capability: this.api.editPreferencesCapability
+          },
+          {
+            url: new URL('../contacts/', location.href).href,
+            capability: this.api.selectRecipientCapability
           }
         ],
         snapshot: this.runtime.persistence.snapshot,

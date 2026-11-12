@@ -5,11 +5,19 @@
   data-simply-attributes="hidden"
 >
   <p>
-    Choose the app that selects files and folders. This choice applies across
+    Choose the app that selects resources or recipients. This choice applies across
     your workspaces under the selected WebID.
   </p>
+  <label>Selection task
+    <select class="swb-control swb-labeled-control"
+      data-simply-field="swb_providerKind"
+      data-simply-command="swb_chooseProviderKind">
+      <option value="browseProvider">Files and folders</option>
+      <option value="recipientProvider">Recipients</option>
+    </select>
+  </label>
   <p>
-    Current resource picker:
+    Current picker:
     <strong
       class="swb-provider-current"
       data-simply-field="swb_providerCurrent"
@@ -17,7 +25,7 @@
     ></strong>
   </p>
   <label
-    >Resource picker
+    >Picker application
     <select
       class="swb-control swb-labeled-control"
       data-simply-field="swb_providerSelect"
@@ -45,8 +53,8 @@
     </label>
   </div>
   <p id="swb-provider-help">
-    Saved apps appear when their manifest or live connection declares resource
-    selection. A custom app must implement the Workbench resource-picker
+    Saved apps appear when their manifest or live connection declares the selected
+    operation. A custom app must implement the Workbench selection
     protocol. An unavailable app will show an error; your choice stays
     unchanged.
   </p>
@@ -67,6 +75,6 @@
     class="ds-button"
     data-simply-command="swb_resetProvider"
   >
-    Use built-in Files
+    Use built-in app
   </button>
 </section>

@@ -17,5 +17,16 @@
     <p class="swb-picker-description">
       Choose a file, or select the current folder.
     </p>
+    <ul class="swb-resource-choices" data-simply-list="pickerEntries">
+      <template><li class="swb-resource-choice">
+        <button type="button" class="ds-button swb-picker-button"
+          data-simply-command="open" data-simply-value=":value.url">
+          <span data-simply-field="name" data-simply-transform="escape_html"></span>
+          <span data-simply-field="type" data-simply-transform="escape_html"></span>
+        </button>
+        <button type="button" class="ds-button swb-picker-button"
+          data-simply-command="selectResource" data-simply-value=":value.url">Select</button>
+      </li></template>
+    </ul>
   </section>
 </div>

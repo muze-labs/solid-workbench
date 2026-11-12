@@ -77,3 +77,20 @@ private tickets, exact origin/route/query checks, readiness and cancellation.
 A custom choice does not grant general app-to-app or Pod access. Provider URLs
 receive the supported launch context without overwriting their route. Ordinary
 permission-checked top-level routing and the legacy picker API remain intact.
+
+
+## Preferred recipient picker
+
+The Default apps section also selects the recipient picker. `recipientProvider`
+uses the same application/URL native binding and whole-choice conflict rules
+as `browseProvider`, with `cap:provides` set to
+`https://vocab.muze.nl/capabilities/select-recipient`. Its default is Contacts.
+The editor's Selection task control switches between resource and recipient
+choices and keeps their drafts independent. Registered live declarations and
+explicit manifests are checked for the selected capability; custom URLs still
+need runtime capability support. Resetting one picker preserves the other.
+
+The native local cache keeps each provider's named choice separate in confirmed,
+pending and baseline scopes. The existing browse cache node identity is retained
+for compatibility. Neither binding grants Pod permission or broadens ordinary
+app-to-app routing; invocation still uses an exact scoped embedded ticket.

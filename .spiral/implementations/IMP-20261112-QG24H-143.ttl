@@ -1,0 +1,19 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261112-QG24H-143 a sd:Implementation ;
+    dcterms:identifier "IMP-20261112-QG24H-143" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261112-QG24H-143.md" ;
+    sd:implementationLocation "apps/contacts/src/components/recipient-picker.mjs" ;
+    sd:implementationLocation "apps/contacts/src/recipient-picker.html" ;
+    sd:implementationLocation "packages/solid-app-data/src/capabilities.mjs" ;
+    sd:implementationLocation "packages/solid-app-data/src/recipient.mjs" ;
+    sd:implementationLocation "apps/files/src/components/file-sharing.mjs" ;
+    sd:implementationLocation "apps/files/src/picker.html" ;
+    sd:status sd:Active  ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-141 ;
+        sd:gitCommit "ad5723db7240d38edd481fcff2e85dc9575658bb" ] ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:SRC-20261112-QG24H-140 ;
+        sd:gitCommit "ad5723db7240d38edd481fcff2e85dc9575658bb" ] .

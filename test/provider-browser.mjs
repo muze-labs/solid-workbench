@@ -262,13 +262,15 @@ try {
   await wait('document.querySelector("[data-muze-solid-design-section=providers]").getAttribute("aria-current")==="page"', true);
   await run('swbPreferencesApp.actions.swb_focusSelectedSection();', true);
   await wait('document.activeElement.dataset.muzeSolidDesignSection==="providers"', true);
-  for (const key of ['Tab', 'ArrowDown']) {
+  for (const [step, key] of ['Tab', 'Tab', 'ArrowDown'].entries()) {
     for (const type of ['keyDown', 'keyUp']) {
       await page.send('Input.dispatchKeyEvent', {type, key, code:key,
         windowsVirtualKeyCode:key==='Tab'?9:40});
     }
     if (key === 'Tab') {
-      await wait('document.activeElement.matches("[data-simply-command=swb_chooseProvider]")', true);
+      await wait(step === 0
+        ? 'document.activeElement.matches("[data-simply-command=swb_chooseProviderKind]")'
+        : 'document.activeElement.matches("[data-simply-command=swb_chooseProvider]")', true);
     }
   }
   await wait('swbPreferencesApp.runtime.settings.pending().length===0 && swbPreferencesApp.runtime.settings.settings().browseProvider', true);
@@ -286,7 +288,9 @@ try {
     item.frame.url.includes('/preferences/'));
   const ax = await page.send('Accessibility.getFullAXTree', { frameId: frame.frame.id });
   assert(ax.nodes.some((node) => node.role?.value === 'combobox' &&
-    node.name?.value === 'Resource picker'));
+    node.name?.value === 'Picker application'));
+  assert(ax.nodes.some((node) => node.role?.value === 'combobox' &&
+    node.name?.value === 'Selection task'));
   await run('document.documentElement.style.fontSize="200%";', true);
   assert.equal(await run('const p=document.querySelector(".swb-provider-current").parentElement;return p.scrollWidth<=p.clientWidth;', true), true);
   await writeFile('/tmp/provider118-phone-text200.png', Buffer.from(

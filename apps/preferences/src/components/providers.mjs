@@ -14,6 +14,16 @@ export const swbProviderPreferences = {
     }
   },
   commands: {
+    swb_chooseProviderKind(select) {
+      if (!['browseProvider', 'recipientProvider'].includes(select.value)) {
+        return;
+      }
+      this.data.swb_providerKind = select.value;
+      this.runtime.providerKey = select.value;
+      this.runtime.customProvider = false;
+      this.runtime.providerModel.state.data = [];
+      return this.actions.swb_loadProviders();
+    },
     swb_chooseProvider(select) {
       if (select.value === 'custom') {
         this.runtime.customProvider = true;
@@ -41,6 +51,13 @@ export const swbProviderPreferences = {
     }
   },
   actions: {
+    swb_providerKey() {
+      return this.runtime.providerKey || 'browseProvider';
+    },
+    swb_providerCapability() {
+      return this.actions.swb_providerKey() === 'browseProvider'
+        ? this.api.browseCapability : this.api.selectRecipientCapability;
+    },
     swb_initializeProviders() {
       const owner = this;
       const list = this.api.model({ data: [], options: {} });
@@ -72,17 +89,19 @@ export const swbProviderPreferences = {
         this.api.destroy(effect);
       }
     },
-    swb_providerLabel(value) {
+    swb_providerLabel(value, key = this.actions.swb_providerKey()) {
       return value
         ? value.url + ' (' + value.application + ')'
-        : 'Built-in Files';
+        : key === 'browseProvider'
+          ? 'Built-in Files' : 'Built-in Contacts';
     },
     swb_renderProvider() {
       const state = this.runtime.settings;
       if (!state) {
         return;
       }
-      const choice = state.settings().browseProvider;
+      const key = this.actions.swb_providerKey();
+      const choice = state.settings()[key];
       const rows = this.runtime.providerRows || [];
       const known = rows.find(
         (row) =>
@@ -91,7 +110,7 @@ export const swbProviderPreferences = {
           row.choice.application === choice.application &&
           row.choice.url === choice.url
       );
-      const draft = state.drafts().browseProvider;
+      const draft = state.drafts()[key];
       this.data.swb_providerCurrent = this.actions.swb_providerLabel(choice);
       this.data.swb_providerUrl = draft || choice?.url || '';
       const custom =
@@ -101,7 +120,7 @@ export const swbProviderPreferences = {
       this.data.swb_providerCustom = { hidden: custom ? null : '' };
       this.data.swb_providerSelect = {
         options: [
-          { value: 'builtin', text: 'Built-in Files' },
+          { value: 'builtin', text: this.actions.swb_providerLabel(null) },
           ...rows.map((row) => ({ value: row.id, text: row.label })),
           { value: 'custom', text: 'Custom app URL' }
         ],
@@ -114,7 +133,9 @@ export const swbProviderPreferences = {
       }
       this.actions.swb_localWriteStarted();
       try {
-        await this.runtime.settings.draft('browseProvider', event.target.value);
+        await this.runtime.settings.draft(
+          this.actions.swb_providerKey(), event.target.value
+        );
       }
       catch (error) {
         this.data.swb_status = error.message;
@@ -136,11 +157,11 @@ export const swbProviderPreferences = {
         if (state.owner !== owner) {
           throw new Error('preferences: Identity changed; reopen Preferences.');
         }
-        await state.change('browseProvider', choice);
+        await state.change(this.actions.swb_providerKey(), choice);
         this.runtime.customProvider = false;
         this.actions.swb_renderProvider();
         this.api.announcePreferences(owner);
-        this.data.swb_status = 'Resource picker saved on this device.';
+        this.data.swb_status = 'Default app saved on this device.';
         clearTimeout(this.runtime.syncTimer);
         this.runtime.syncTimer = setTimeout(
           () => this.actions.swb_synchronize(),
@@ -158,6 +179,9 @@ export const swbProviderPreferences = {
       const generation = (this.runtime.providerGeneration || 0) + 1;
       this.runtime.providerGeneration = generation;
       const owner = this.runtime.host.selectedWebId || '';
+      const key = this.actions.swb_providerKey();
+      const capability = this.actions.swb_providerCapability();
+      this.actions.swb_renderProvider();
       const candidates = new Map();
       this.data.swb_providerDiscovery = 'Checking saved app declarations…';
       let unavailable = 0;
@@ -175,7 +199,8 @@ export const swbProviderPreferences = {
       for (const app of applications) {
         let choice = null;
         try {
-          if (app.live && app.url) {
+          if ((app.capabilities?.includes(capability) ||
+              (app.live && capability === this.api.browseCapability)) && app.url) {
             choice = { application: app.url, url: app.url };
           }
           else if (app.manifest) {
@@ -205,7 +230,7 @@ export const swbProviderPreferences = {
               );
               if (
                 capabilities.some(
-                  (term) => this.api.idOf(term) === this.api.browseCapability
+                  (term) => this.api.idOf(term) === capability
                 )
               ) {
                 choice = {
@@ -239,6 +264,7 @@ export const swbProviderPreferences = {
       }
       if (
         generation !== this.runtime.providerGeneration ||
+        key !== this.actions.swb_providerKey() ||
         owner !== (this.runtime.host.selectedWebId || '')
       ) {
         return;
@@ -251,7 +277,7 @@ export const swbProviderPreferences = {
       }
       else if (this.data.swb_providerDiscovery.startsWith('Checking')) {
         this.data.swb_providerDiscovery =
-          'No saved apps declare resource selection yet.';
+          'No saved apps declare this selection operation yet.';
       }
       this.actions.swb_renderProvider();
     }

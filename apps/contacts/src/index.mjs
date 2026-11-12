@@ -1,3 +1,6 @@
+import { describeRecipient } from '@muze-labs/solid-app-data/recipient.mjs';
+import { selectRecipientCapability, recipientId }
+  from '@muze-labs/solid-app-data/capabilities.mjs';
 import {
   muzeSolidDesignDialog,
   muzeSolidDesignListDetails
@@ -30,7 +33,7 @@ import {
   profileSources
 } from '@muze-labs/solid-profile/view.mjs';
 import { writeDraft, readDraft } from '@muze-labs/solid-profile/state.mjs';
-import { contactList, contactEditing, contactSession } from './features.mjs';
+import { contactList, contactEditing, contactSession, swbRecipientPicker } from './features.mjs';
 import sources from './features.mjs?entries';
 
 const host = shell({
@@ -44,9 +47,19 @@ const definition = {
     ...profileComponents,
     contactList,
     contactEditing,
-    contactSession
+    contactSession,
+    swbRecipientPicker
   },
   data: {
+    swb_recipientPicker: { hidden: '' },
+    swb_contactEditor: { hidden: host.task ? '' : null },
+    swb_recipientUse: { disabled: '' },
+    swb_recipientSearch: '',
+    swb_recipientSource: '',
+    swb_recipientRequester: '',
+    swb_recipientSelected: '',
+    swb_recipientDescription: '',
+    swb_recipientStatus: 'Waiting for a recipient request…',
     profile: profileDefaults(),
     people: [],
     empty: '',
@@ -55,6 +68,9 @@ const definition = {
   },
   api: {
     app,
+    selectRecipientCapability,
+    recipientId,
+    describeRecipient,
     model,
     effect,
     destroy,

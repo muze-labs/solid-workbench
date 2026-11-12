@@ -37,6 +37,9 @@ export const resourcePicker = {
       this.data.editing = {
         hidden: pending || this.runtime.host?.task ? '' : null
       };
+      this.data.swb_shareVisible = {
+        hidden: !pending && !this.runtime.host?.task && this.runtime.shareSelection ? null : ''
+      };
       this.data.requester = pending
         ? pending.requester.application + ' (' + pending.requester.origin + ')'
         : '';
@@ -72,7 +75,7 @@ export const resourcePicker = {
     },
     receiveBrowseRequest(event) {
       let error;
-      if (this.runtime.pending || this.runtime.selecting) {
+      if (this.runtime.pending || this.runtime.selecting || this.runtime.sharing) {
         error = {
           code: 'busy',
           message: 'Files is handling another selection.'

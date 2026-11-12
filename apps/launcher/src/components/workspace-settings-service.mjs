@@ -125,6 +125,12 @@ export const workspaceSettingsService = {
             url: view.link.href,
             manifest: this.api.idOf(this.api.valueAt(node,
               this.api.prefixes.schema + 'subjectOf')),
+            capabilities: [...new Set(
+              [...this.runtime.workspace.instances.values()]
+                .filter((record) => record.registered &&
+                  record.entry.url === view.link.href)
+                .flatMap((record) => record.capabilities)
+            )],
             live: [...this.runtime.workspace.instances.values()].some((record) =>
               record.registered && record.entry.url === view.link.href &&
               record.capabilities.includes(this.api.browseCapability))

@@ -290,8 +290,8 @@ export const preferences = {
       }
     },
     swb_preferenceLabel(id, value) {
-      return id === 'browseProvider'
-        ? this.actions.swb_providerLabel(value) : String(value);
+      return ['browseProvider', 'recipientProvider'].includes(id)
+        ? this.actions.swb_providerLabel(value, id) : String(value);
     },
     async swb_resolveConflict(id, keepLocal) {
       try {

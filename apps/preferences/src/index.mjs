@@ -9,7 +9,7 @@ import {
   valueAt,
   httpUrl
 } from '@muze-labs/solid-app-data';
-import { browseCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
+import { browseCapability, selectRecipientCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { app } from '@muze-labs/simplyflow/app';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import { shell } from '@muze-labs/solid-app-ui';
@@ -67,6 +67,7 @@ const definition = {
     swb_newWorkspace: '',
     swb_providerCurrent: 'Built-in Files',
     swb_providerUrl: '',
+    swb_providerKind: 'browseProvider',
     swb_providerSelect: { options: [], selected: 'builtin' },
     swb_providerCustom: { hidden: '' },
     swb_providerDiscovery: '',
@@ -88,6 +89,7 @@ const definition = {
     valueAt,
     httpUrl,
     browseCapability,
+    selectRecipientCapability,
     PreferenceState,
     PreferenceDrafts,
     announcePreferences,
