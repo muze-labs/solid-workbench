@@ -100,11 +100,13 @@ async function key(page, value, code) {
     type: 'rawKeyDown', key: value, code: physical,
     windowsVirtualKeyCode: code, nativeVirtualKeyCode: code
   });
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'char', key: value, code: physical,
-    text: value === 'Enter' ? '\r' : value,
-    unmodifiedText: value === 'Enter' ? '\r' : value
-  });
+  if (value !== 'Escape') {
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'char', key: value, code: physical,
+      text: value === 'Enter' ? '\r' : value,
+      unmodifiedText: value === 'Enter' ? '\r' : value
+    });
+  }
   await page.send('Input.dispatchKeyEvent', {
     type: 'keyUp', key: value, code: physical,
     windowsVirtualKeyCode: code, nativeVirtualKeyCode: code
@@ -182,7 +184,9 @@ try {
     (await files.send('Page.captureScreenshot',{format:'png'})).data,'base64'));
   await run(files,'document.querySelector("[data-simply-command=swb_changeShareRecipient]").click();');
   await until(files,'document.querySelector("iframe")?.contentWindow.muzeSolidContactsApp?.runtime.recipientRequest');
-  await run(files, `document.querySelector('iframe').contentDocument.querySelector('[data-simply-command=swb_cancelRecipient]').click();`);
+  await run(files, `document.querySelector('iframe').contentDocument.querySelector('[data-simply-command=swb_cancelRecipient]').focus();`);
+  await files.send('Page.bringToFront');
+  await key(files, 'Escape', 27);
   await until(files,'!solidFiles.ui.runtime.sharing');
   assert.equal(await run(files,'return solidFiles.ui.data.swb_shareId;'),identity);
   // A reloaded Contacts task settles through the shared presenter/broker. The

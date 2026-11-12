@@ -2206,3 +2206,61 @@ removal and evidence-based payload policy are included. The maintainer authorize
 normal merge into latest main and push of main/cycle branches after exact
 validation. Unrelated icon archive changes remain excluded and preserved.
 No next cycle is selected; iframe Escape and other roadmap work remain deferred.
+
+
+## Iframe Escape cycle selected, 2026-11-12
+
+Following CYC151 delivery, the maintainer confirms the proposed iframe Escape
+repair: “lets do that”. CYC157 is Active on verified
+spiral/CYC-20261112-QG24H-157-iframe-escape from main 5a32643. SRC158/DES159/
+IMP160/EVD161 retain intent, design, implementation and evidence. Before edits,
+a disposable native Chrome probe reproduces Preferences remaining open on
+iframe Escape while the close action succeeds. Extend the existing scoped
+presentation protocol and SimplyFlow event component; preserve save/discard,
+local modal/popover precedence, data and separate-tab behavior. No new broker
+route or renderer. A related disabled-invoker focus gap is repaired using
+aria-disabled and the existing selection guard. Evaluation is in progress;
+no acceptance, commit, merge or push is inferred. Preserve the icon archive.
+
+
+## CYC157 evaluated for review, 2026-11-12
+
+The shared iframe Escape repair is complete on its dedicated branch. Final
+npm run check passes 210 tests/both builds; all eight Chrome suites pass. EVD161
+records nested Account/modals/popovers, consumed keys, actual Profile save/draft/
+disconnection guards, Files/Contacts preservation, independent cross-origin
+cooperation, stale-frame rejection, phone focus return and loaded-offline closure.
+No dependencies added; complete app graphs add less than 1 KB gzip. Advisory
+warnings remain, including Files' readable graph now at 200122 bytes. The bounded
+cold Contacts fixture remains about 13 seconds. Readable dev assets restored;
+no manual AT/cross-browser certification. CYC157 is Active in Evaluate awaiting
+human acceptance, with no commit, merge or push. The icon archive is preserved.
+
+
+## CYC157 accepted for integration, 2026-11-12
+
+The maintainer says “accepted, commit, merge and push please”. ACC162 accepts
+implementation dd75b038344b664ca9e5e9fef5fe03631dc33f6c and verification
+0956b42be6cce154ac9c8775c3174b891f799651. CYC157 is Accepted, superseding its
+earlier Active/review notes. Direct human review authorizes normal merge into
+latest main and push after exact integration validation. Existing evidence
+limits and advisory download warnings remain. Preserve the unrelated icon
+archive. The later request to add the supplied embedded-view proposal to the
+roadmap is documentation-only and does not authorize its implementation.
+
+
+## Embedded app views design intake, 2026-11-12
+
+During CYC157 delivery the maintainer asks to add the new design document to the
+roadmap. Read the complete supplied shared-embedded-app-views proposal and retain
+its Files proof → Presenter proof → resilience → later widgets/document embeds
+sequence, appearance hints, native RDF, draft-safe transitions and Weblets
+independence/recursive-authority gates in the suite roadmap. Cross-reference the
+existing widget direction and broker proposals. A separate Presenter owns layout;
+providers own viewing/editing. No SimplyEdit or remote presenting in its proposed
+first MVP. Reuse accepted CYC151/CYC157 foundations without claiming persistent
+multi-region support already exists. API names, tokens and concrete providers
+remain open. This documentation-only intake selects no implementation cycle or
+priority; external references are retained research leads, not freshly verified
+standards/library claims. Include the source and roadmap updates in the ongoing
+authorized delivery; preserve the unrelated icon archive.

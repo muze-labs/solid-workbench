@@ -474,6 +474,30 @@ test('registered providers do not gain account-control authority by declaring a 
 });
 
 
+test('presentation close is scoped to an attached iframe, including port loss', () => {
+  const messages = [];
+  const app = {
+    embedded: true, ready: true,
+    parent: { postMessage: (...args) => messages.push(args) },
+    resume: { id: 'task', key: 'secret', origin: 'https://caller.example' },
+    peer: { closed: true }
+  };
+  const close = () => ManagedApp.prototype.requestPresentationClose.call(app);
+  assert.equal(close(), true);
+  assert.deepEqual(messages, [[{
+    type: 'solid-apps:presentation-close', id: 'task', key: 'secret'
+  }, 'https://caller.example']]);
+  for (const [name, value] of [
+    ['embedded', false], ['ready', false], ['parent', null], ['resume', null]
+  ]) {
+    const original = app[name];
+    app[name] = value;
+    assert.equal(close(), false);
+    app[name] = original;
+  }
+  assert.equal(messages.length, 1);
+});
+
 test('cooperative remote close settles unbounded calls and aborts active work',
   { timeout: 1000 }, async (t) => {
     let started;

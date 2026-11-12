@@ -84,7 +84,7 @@ const definition = {
     empty: '',
     resource: '',
     pickerMessage: '',
-    pickState: { disabled: null },
+    pickState: { 'aria-disabled': 'false' },
     cancelState: { hidden: '' },
     workspaceEntries: [],
     workspaceMessage: 'Loading workspace…',

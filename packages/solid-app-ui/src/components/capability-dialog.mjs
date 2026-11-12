@@ -4,6 +4,11 @@ import template from '../capability-dialog.html' with { type: 'text' };
 export const muzeSolidUiCapabilityDialog = {
   styles: { 'swb-capability-dialog': styles },
   templates: { 'muze-solid-ui-capability-dialog': template },
+  events: {
+    muzeSolidUiCapabilityEscape: {
+      target: 'window', type: 'keydown', action: 'muzeSolidUiCapabilityEscape'
+    }
+  },
   commands: {
     muzeSolidUiOpenCapabilityTab() {
       const call = this.runtime.muzeSolidUiCall;
@@ -46,6 +51,20 @@ export const muzeSolidUiCapabilityDialog = {
     }
   },
   actions: {
+    muzeSolidUiCapabilityEscape(event) {
+      if (event.key !== 'Escape' || event.defaultPrevented ||
+          event.isComposing || event.repeat) {
+        return;
+      }
+      // Native inner layers process this key after dispatch. Forwarding it now
+      // would close both layers, or bypass an inner dialog's own cancel guard.
+      if (this.container.ownerDocument.querySelector(':modal, :popover-open')) {
+        return;
+      }
+      if (this.runtime.host.managed?.requestPresentationClose()) {
+        event.preventDefault();
+      }
+    },
     muzeSolidUiInitializeCapability() {
       const dialog = this.container.querySelector(
         '.muze-solid-ui-capability-dialog'
@@ -109,6 +128,17 @@ export const muzeSolidUiCapabilityDialog = {
         event.source !== call.window ||
         event.origin !== new URL(call.url).origin
       ) {
+        return;
+      }
+      if (event.data?.type === 'solid-apps:presentation-close') {
+        if (call.attached && !call.popup && !call.interrupted && !call.close &&
+            !call.controller.signal.aborted &&
+            this.runtime.muzeSolidUiDialog.open &&
+            !this.runtime.muzeSolidUiFrame.hidden &&
+            event.data.id === call.ticket.id &&
+            event.data.key === call.ticket.key) {
+          this.actions.run(this.actions.muzeSolidUiCheckCapabilityClose);
+        }
         return;
       }
       if (event.data?.type === 'solid-apps:presentation-ready') {
@@ -479,9 +509,15 @@ export const muzeSolidUiCapabilityDialog = {
         status = await call.broker.canCloseEmbedded(call.ticket.id);
       }
       catch (error) {
+        if (this.runtime.muzeSolidUiCall !== call) {
+          return;
+        }
         this.data.muzeSolidUiDialog.message =
           'The app is not responding. Closing may discard unsaved edits.';
         this.data.muzeSolidUiDialog.discard = { hidden: null };
+        return;
+      }
+      if (this.runtime.muzeSolidUiCall !== call) {
         return;
       }
       if (status.saving) {

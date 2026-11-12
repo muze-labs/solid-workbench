@@ -37,6 +37,12 @@ Further design intake, 2026-11-12: retain the
 the deferred optional-AI and interface-composition work below. Its stages are
 proposed decision gates, not approval to implement or a change in priority.
 
+Embedded-view design intake, 2026-11-12: retain the
+[shared embedded app views proposal](solid-workbench-embedded-app-views-design.md)
+for Files details, a future Solid Presenter app and later Launcher widgets.
+The staged proof below selects no next cycle or priority and does not establish
+final capability names or a complete Weblets protocol.
+
 This records suite-wide direction alongside the
 [capability-broker roadmap](solid-capability-broker-roadmap.md), which continues
 to govern broker implementation. The broker phases do not schedule every app
@@ -124,6 +130,14 @@ the application owns its note list, toolbar and persistence. Plan the Solid app
 around that boundary. Choose the initial note types, persistence representation
 and editor integration during a future cycle. Follow the published-npm
 dependency policy; this roadmap does not add sibling repository links.
+
+### Solid Presenter
+
+Retain a separate presentation app owning decks, slide order, templates and
+named regions. Content viewing, creation and editing belong to compatible
+providers through the [shared embedded-view work](#shared-embedded-app-views-files-and-presenter).
+The proposed first MVP includes text authoring and existing-image selection,
+local presentation, and no SimplyEdit dependency or remote presenting.
 
 ## Application icon family and favicons
 
@@ -888,7 +902,11 @@ Active widgets are a stretch goal, outside the MVP: optional pieces run when the
 Launcher starts and supply UI in a small area, inspired by Windows 8 Metro.
 Their lifecycle, rendering/capability integration, data access, failure isolation,
 permissions, offline behavior, accessibility and download costs need later design.
-No third-party script execution or embedding model is selected by this idea.
+The later [shared embedded-view proposal](#shared-embedded-app-views-files-and-presenter)
+identifies the intended common hosting foundation. Reuse it for both
+resource-backed and resource-free operations, with explicit startup, visibility,
+background and write policies. Widget implementation remains outside the MVP;
+this does not authorize arbitrary third-party startup execution.
 
 This discussion establishes direction and open choices, not a selected cycle,
 implementation design, immediate workspace/onboarding/widget delivery or approval
@@ -1015,6 +1033,12 @@ a selected cycle, a new delivery order or an implementation change.
 
 ### Escape closes dialogs while focus is inside an iframe
 
+Accepted [CYC157](../.spiral/cycles/CYC-20261112-QG24H-157.md)
+after CYC151 delivery. Implemented and verified with native Chrome keyboard
+checks, existing save/discard guards and scoped cross-origin cooperation; see
+[EVD161](../.spiral/evidence/EVD-20261112-QG24H-161.md) and
+[ACC162](../.spiral/acceptance/ACC-20261112-QG24H-162.md).
+
 Requested by the maintainer on 2026-11-12 and explicitly retained for later,
 without moving it ahead of Contacts. Fix modal dialogs that do not respond to
 Escape when focus is inside their embedded app. Escape should request the same
@@ -1044,8 +1068,8 @@ verify the intended modal closes or presents its existing save/discard guard,
 the caller regains focus, and pending edits survive. Repeat for nested modal
 precedence, a consumed Escape, cross-origin providers, repeated open/close and
 iframe reload. Retain Account's existing regression check and test cancellation
-results and active-task cleanup. This is future keyboard/accessibility repair,
-not an implementation cycle or a change to provider authority.
+results and active-task cleanup. These scenarios are covered by accepted CYC157
+without changing provider authority.
 
 ### Short suite prefixes
 
@@ -1146,6 +1170,88 @@ Verify installed and ordinary browser use, including offline reopening and
 updates that preserve pending local changes. Select the exact implementation
 and supported-browser checks in the relevant cycle; PWA support is not claimed
 to exist merely because the apps are browser applications.
+
+## Shared embedded app views: Files and Presenter
+
+Added at the maintainer's request on 2026-11-12 from the
+[shared embedded app views design](solid-workbench-embedded-app-views-design.md).
+Treat it as a staged proposal, alongside existing document-viewer, Semantic Open
+With and composition work. It neither selects the next cycle nor requires AI.
+
+Keep semantic operations, shared provider lifecycle and host layout distinct.
+Files owns resource selection and a list/details interface; Presenter owns decks
+and named regions; providers own their content UI. Reuse current registration,
+provider preferences and scoped transport, extending only demonstrated gaps in
+persistent/multiple-view hosting. Do not create a second broker, renderer,
+authentication stack, widget format or AI-specific component system. Normal
+iframe/loading/error/chrome rendering stays with SimplyFlow. Providers may use
+other frameworks and must remain useful at their own URLs.
+
+Retain the proposed delivery sequence for future cycle selection:
+
+1. **Shared contract and Files proof.** Start with explicit registrations, simple
+   format matching and direct-resource access. Implement a details pane with
+   usable readiness, provider selection/replacement, resource changes, initial
+   appearance hints, live hint updates, failure and disposal. Prove replacement
+   with an independently hosted provider. On phones use sequential list/details
+   screens when needed; retain metadata, standalone opening and download.
+2. **Presenter proof using the same host.** Adapt a small set of SimplyPresent-
+   inspired layouts into stable named regions. Demonstrate multiple simultaneous
+   text/image views, a complete text-creation/editing path without SimplyEdit,
+   and local presentation with passive bounded content. Creation is an explicit
+   operation, not an assumed property of editing. Viewing and editing providers
+   may differ; templates constrain capabilities rather than app identities.
+3. **Resilience and usability.** Exercise rapid selection changes, provider
+   replacement/reload, stale generations, failure isolation, draft recovery,
+   cancellation, conflicts and account/workspace transitions. Verify phone use,
+   keyboard focus/navigation and assistive technology, distinguishing manual
+   review from automation. Measure the full usable task including nested apps,
+   authentication, images, fonts and requests before expanding layouts.
+4. **Later reuse.** Apply the same lifecycle to resource-backed and resource-free
+   Launcher widgets and future document embeds. Defer widget startup/background
+   policy, broader semantic recognition, nested-layout editing, AI composition,
+   immutable snapshots/revision pinning, export and remote presenting.
+
+Preserve drafts before changing resource, provider, mode, region or slide.
+Transition approval must remain valid until disposal; cancellation leaves the
+current content and label together, while late messages cannot replace a newer
+selection. Failure/timeout never implies permission to discard. Distinguish
+provider-owned direct-resource writes from an explicit host-owned draft contract;
+read, edit, subscribe and delegate remain separate permissions. Resource URIs,
+selected views, renderers and synchronization are separate concepts. Capability
+advertisements and passive UI modes confer no data access or server permissions.
+
+Initial instance-local appearance hints cover typography with font fallbacks,
+legible colour pairs and surface preferences. Use typed semantic values, not
+arbitrary CSS or automatic host-font URL fetches. Providers report support and
+limitations; accessibility and meaningful content formatting take precedence.
+Updates/removal must preserve selection, drafts and undo, restore defaults and
+reject obsolete revisions without remounting the editor or restyling siblings.
+Keep ownership visible, especially for editing/privileged interfaces.
+
+Persist authored layouts, stable region identities, provider/resource bindings,
+connection intent and typed configuration as native RDF. Never persist live
+ports, grants, HTML snapshots or JSON-in-Turtle layouts. Revalidate origins,
+capabilities and authority on restore; missing providers yield recoverable
+placeholders. Offline use needs both available code and content. Removing a
+region does not delete its resource; host and provider undo remain separate.
+
+Before claiming full Weblets compatibility, additionally prove useful standalone
+apps, an independent host without Launcher/WebID/RDF requirements, a three-level
+composition with immediate-parent authority and no sibling/grandparent bypass,
+constraint/allocation size negotiation without loops, and restoration with
+revocation or origin/API changes. Partial-view transclusion and cross-boundary
+overlays need their own evidence; overlays, if introduced, retain opaque
+host-owned identity/close chrome and focus control. These are architectural
+boundaries, not a requirement for a general composition editor in the first MVP.
+
+The source's CYC151 baseline is already accepted; CYC157 now also supplies guarded
+iframe Escape and focus-return evidence. Neither proves long-lived multi-region
+hosting. Keep residual process-loss limits explicit and do not revive obsolete
+live routes or arbitrary global payload caps. Final API URIs/versions, lifecycle
+extensions, appearance tokens, draft acknowledgements and deck RDF terms remain
+implementation decisions. Refresh cited library/standards claims when selecting
+that work; this intake is a local design comparison, not conformance certification.
 
 ## Deferred optional AI and composable interfaces
 

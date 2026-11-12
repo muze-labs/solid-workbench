@@ -26,7 +26,9 @@ export const resourceSelection = {
       }
       this.runtime.host.run(async () => {
         this.runtime.selection = new AbortController();
-        this.data.pickState = { disabled: '' };
+        // Keep the invoking control focusable for native dialog focus return.
+        // The selection guard above prevents duplicate invocations.
+        this.data.pickState = { 'aria-disabled': 'true' };
         this.data.cancelState = { hidden: null };
         this.data.pickerMessage = 'Opening resource picker…';
         const workspace = this.runtime.workspace;
@@ -58,7 +60,7 @@ export const resourceSelection = {
         }
         finally {
           this.runtime.selection = null;
-          this.data.pickState = { disabled: null };
+          this.data.pickState = { 'aria-disabled': 'false' };
           this.data.cancelState = { hidden: '' };
         }
       });
