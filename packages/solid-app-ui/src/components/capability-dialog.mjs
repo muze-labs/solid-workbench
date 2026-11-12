@@ -119,9 +119,17 @@ export const muzeSolidUiCapabilityDialog = {
         }
         return;
       }
-      if (event.data?.type !== 'solid-apps:embedded-ready' || call.attached) {
+      if (event.data?.type !== 'solid-apps:embedded-ready') {
         return;
       }
+      if (call.attached) {
+        if (typeof event.data.generation === 'string' &&
+            event.data.generation !== call.generation) {
+          this.actions.muzeSolidUiInterruptCapability(call);
+        }
+        return;
+      }
+      call.generation = event.data.generation;
       call.attached = true;
       call.waitForPresentation = event.data.presentation === 'explicit';
       if (call.waitForPresentation && !call.popup) {
@@ -162,10 +170,39 @@ export const muzeSolidUiCapabilityDialog = {
       if (!call || call.popup || frame.src !== call.url) {
         return;
       }
+      // An initial about:blank load can arrive after assigning the provider URL.
+      if (!call.frameLoaded && frame.contentDocument?.URL === 'about:blank') {
+        return;
+      }
+      if (call.frameLoaded) {
+        this.actions.muzeSolidUiInterruptCapability(call);
+        return;
+      }
       call.frameLoaded = true;
       if (call.attached && !call.waitForPresentation) {
         this.actions.muzeSolidUiRevealCapability(call);
       }
+    },
+    muzeSolidUiInterruptCapability(call) {
+      if (this.runtime.muzeSolidUiCall !== call || call.close ||
+          call.interrupted || call.controller.signal.aborted) {
+        return;
+      }
+      call.interrupted = true;
+      this.actions.muzeSolidUiShowInterruption(call);
+      // Ending this ticket rejects its pending call; it never starts another.
+      this.actions.run(() => this.actions.muzeSolidUiEndConnection(call));
+    },
+    muzeSolidUiShowInterruption(call) {
+      this.data.muzeSolidUiDialog.loading = { hidden: '' };
+      this.data.muzeSolidUiDialog.frame = {
+        src: call.url, hidden: '', inert: ''
+      };
+      this.data.muzeSolidUiDialog.fallback = { hidden: '' };
+      this.data.muzeSolidUiDialog.discard = { hidden: '' };
+      this.data.muzeSolidUiDialog.message =
+        'The app reloaded or navigated away. Close this dialog and ' +
+        'start the task again. It has not been restarted automatically.';
     },
     muzeSolidUiRevealCapability(call) {
       if (
@@ -173,6 +210,7 @@ export const muzeSolidUiCapabilityDialog = {
         call.popup ||
         call.presented ||
         call.close ||
+        call.interrupted ||
         call.controller.signal.aborted
       ) {
         return;
@@ -270,6 +308,7 @@ export const muzeSolidUiCapabilityDialog = {
         catch (error) {
           if (
             call.attached ||
+            call.interrupted ||
             call.controller.signal.aborted ||
             error.code === 'cancelled'
           ) {
@@ -296,6 +335,11 @@ export const muzeSolidUiCapabilityDialog = {
       catch (error) {
         if (error.code === 'cancelled' || call.controller.signal.aborted) {
           call.close = true;
+        }
+        else if (call.interrupted) {
+          call.failed = true;
+          await this.actions.muzeSolidUiEndConnection(call);
+          this.actions.muzeSolidUiShowInterruption(call);
         }
         else {
           call.failed = call.attached;
@@ -393,13 +437,14 @@ export const muzeSolidUiCapabilityDialog = {
       clearTimeout(call.presentationTimer);
       clearTimeout(call.fadeTimer);
       if (call.ticket) {
+        const ticket = call.ticket;
+        call.ticket = null;
         try {
-          await call.broker.endEmbedded(call.ticket.id);
+          await call.broker.endEmbedded(ticket.id);
         }
         catch {
           // The workspace may already have released this transient instance.
         }
-        call.ticket = null;
       }
     },
     async muzeSolidUiReleaseCapability(call, close) {
@@ -419,9 +464,14 @@ export const muzeSolidUiCapabilityDialog = {
       const call = this.runtime.muzeSolidUiCall;
       if (!call?.ticket) {
         call?.controller.abort();
-        await this.actions.muzeSolidDesignCloseDialog(
-          this.runtime.muzeSolidUiDialog
-        );
+        if (call?.failed) {
+          await this.actions.muzeSolidUiReleaseCapability(call, true);
+        }
+        else {
+          await this.actions.muzeSolidDesignCloseDialog(
+            this.runtime.muzeSolidUiDialog
+          );
+        }
         return;
       }
       let status;

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { WorkspaceState, emptyWorkspace } from '../packages/solid-app-data/src/workspace-state.mjs';
 import { oldm, prefixes } from '../packages/solid-app-data/src/index.mjs';
-import { StateGraph, apps, stateRoot, named } from '../packages/solid-app-data/src/state-rdf.mjs';
+import { StateGraph, apps, stateRoot, named, sameGraph } from '../packages/solid-app-data/src/state-rdf.mjs';
 import { readWorkspace, writeWorkspace, sameWorkspace } from '../packages/solid-app-data/src/workspace-rdf.mjs';
 const owner = 'https://person.example/profile#me';
 const url = 'https://pod.example/workspace.ttl';
@@ -26,7 +26,7 @@ function fixture(turtle = '<#other> <https://example.org/value> [<https://exampl
     remote: (text, tag) => { turtle = text; etag = tag; } };
 }
 const snapshot = () => ({ ...emptyWorkspace(), apps: [{ id: 'one',
-  url: 'https://files.example/', allowBrowse: true,
+  url: 'https://files.example/',
   state: { turtle: '<' + stateRoot + '> <' + apps + 'folder> <https://pod.example/>; <https://example.org/unknown> \"preserve\".' } }] });
 
 test('local updates do not write the Pod; a conditional checkpoint preserves native RDF', async () => {
@@ -314,4 +314,27 @@ test('an edit during checkpoint preparation cannot be acknowledged with an older
   const acknowledged = readWorkspace(new StateGraph(written().body, url),
     url + '#workspace');
   assert(sameWorkspace(acknowledged, state.snapshot));
+});
+
+
+test('large checkpoints stay local on exit and can be explicitly saved', async () => {
+  const { state, session, written, source } = fixture();
+  await state.open();
+  await state.bind(session, url);
+  const value = snapshot();
+  value.apps[0].state = {
+    turtle: `<${stateRoot}> <urn:note> "${'é'.repeat(40000)}" .`
+  };
+  await state.stage(value);
+  state.attemptExit(session, url);
+  await Promise.resolve();
+  assert.equal(written(), undefined);
+  assert.equal(state.dirty, true);
+  const reopened = new WorkspaceState({ owner, source });
+  await reopened.open();
+  assert(sameGraph(reopened.snapshot.apps[0].state.turtle,
+    value.apps[0].state.turtle));
+  assert.equal(await state.save(session, url), true);
+  assert.equal(written().keepalive, undefined);
+  assert.equal(written().headers['If-Match'], '"v1"');
 });

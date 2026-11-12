@@ -24,28 +24,30 @@ book pilot below; shape filters and multiple-book browsing remain deferred. Both
 The server relay described in the original version of this document is
 superseded by the [browser-local workspace design](solid-managed-workspace.md).
 The capability semantics above remain current. Launcher opens an instance,
-checks its origin/window, and offers a private MessagePort. Only explicitly
-allowed providers receive selection requests. Files uses its own Solid session;
+checks its origin/window, and offers a private MessagePort. Only the configured provider
+receives a caller-scoped transient selection request. Files uses its own Solid session;
 a WebID in a launch URL establishes neither routing nor Pod authorization.
 
-`PortConnection` frames calls, replies and cancellation with unique request IDs.
-Pending and active call counts are bounded. Finite-deadline calls expire;
-interactive embedded calls deliberately use no deadline. Explicit local close
-rejects pending work. CYC145's [evaluation](../.spiral/evidence/EVD-20261112-QG24H-147.md)
-finds that raw frames do not yet enforce the JSON/64 KiB helper's limits, and
-remote port closure alone does not settle a call without a timeout. Parent/tab
-monitoring and explicit cancellation cover some composed loss paths; universal
-automatic disconnect recovery is not established. These gaps are retained in
-[RSK149](../.spiral/risks/RSK-20261112-QG24H-149.md) for a proposed follow-up.
-A busy Files UI refuses another request instead of replacing the selection the
-user is considering. Invocations are not replayed on reconnect. Multiple allowed
-live providers produce an ambiguity error.
+`PortConnection` carries calls, replies and cancellation with request IDs, plus
+an explicit disconnect frame. Frame shape and pending/active call counts are
+checked; capability arguments and results retain their domain validation.
+Interactive embedded calls have no inactivity deadline. Cooperative disconnect
+settles pending work; the shared presenter also detects repeated iframe loads
+and changed provider generations, ends the old ticket and shows recovery guidance.
+The caller keeps its prior value and can explicitly start a new task after
+closing the interrupted dialog. No invocation is automatically replayed.
+
+Separate tabs retain closed-window monitoring. Arbitrary process loss without
+an observable signal remains outside this guarantee. Connected providers retain
+save/discard guards. Busy providers cannot replace an existing selection.
+The obsolete live-instance route, chooseFiles API and per-instance grants are
+removed; preferred provider configuration and scoped tickets remain.
 
 Launcher validates a returned HTTP(S) URL before changing its resource draft.
 Cancellation preserves the previous field. Files owns picker UI, selection and
 its existing data policy. SimplyFlow renders content; no second renderer is
 introduced. Test cross-origin routing, cancellation, provider loss, denied reads,
-source/origin/instance checks and per-instance grants. The browser proof uses
+source/origin/owner checks and exact configured-provider tickets. The browser proof uses
 fixture data; see [setup and evidence limits](../broker/README.md).
 
 
@@ -119,9 +121,11 @@ and language metadata in that bounded description, with other named links left
 as references. The picker previews exactly what is returned. Shared/cyclic
 anonymous values are refused rather than flattened by the installed writer.
 The bridge supplies the public OLDM-Turtle writer with a selected-subject view;
-it is not another RDF parser or serializer. The description is capped at 60000
-UTF-8 bytes with the complete response remaining within the existing 64 KB
-transport bound. No truncation or automatic publication occurs.
+it is not another RDF parser or serializer. CYC151 removes the unjustified
+60000-byte description and 64 KiB helper limits. Only the selected description
+is exported, with no truncation or automatic publication. Future byte limits
+require an evidenced protective purpose, applicable boundary and measured value;
+the structured-clone transport itself has no project-defined universal byte cap.
 
 Both pickers use focused task views rather than miniature management apps.
 Contacts offers current-book search, explicit choice/confirmation, payload

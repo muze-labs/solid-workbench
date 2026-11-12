@@ -1,0 +1,20 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261112-QG24H-154 a sd:Implementation ;
+    dcterms:identifier "IMP-20261112-QG24H-154" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261112-QG24H-154.md" ;
+    sd:status sd:Active ;
+    sd:implementationLocation "packages/solid-app-data/src/capabilities.mjs" ;
+    sd:implementationLocation "packages/solid-app-data/src/workspace-broker.mjs" ;
+    sd:implementationLocation "packages/solid-app-ui/src/components/capability-dialog.mjs" ;
+    sd:implementationLocation "apps/launcher/src/components/workspace-controls.mjs" ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-148 ;
+        sd:gitCommit "07ef38cea12fa63b2689ab858523c04a4208f175" ]  ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-153 ;
+        sd:gitCommit "5c0b47fb076b27854b04318f61a91c8287912af1" ] ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:SRC-20261112-QG24H-152 ;
+        sd:gitCommit "5c0b47fb076b27854b04318f61a91c8287912af1" ] .

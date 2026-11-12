@@ -185,6 +185,35 @@ try {
   await run(files, `document.querySelector('iframe').contentDocument.querySelector('[data-simply-command=swb_cancelRecipient]').click();`);
   await until(files,'!solidFiles.ui.runtime.sharing');
   assert.equal(await run(files,'return solidFiles.ui.data.swb_shareId;'),identity);
+  // A reloaded Contacts task settles through the shared presenter/broker. The
+  // real managed Files caller retains its existing recipient and native draft.
+  await run(files, `document.querySelector(
+    '[data-simply-command=swb_changeShareRecipient]').focus();`);
+  await key(files, 'Enter', 13);
+  await until(files, 'document.querySelector("iframe")?.contentWindow.muzeSolidContactsApp?.runtime.recipientRequest');
+  await until(files, 'solidFiles.host.view.runtime.muzeSolidUiCall?.frameLoaded');
+  const interruptedTicket = await run(files,
+    'return solidFiles.host.view.runtime.muzeSolidUiCall.ticket.id;');
+  await run(files, 'document.querySelector("iframe").contentWindow.location.reload();');
+  await until(files, '!solidFiles.ui.runtime.sharing && solidFiles.host.view.runtime.muzeSolidUiCall?.failed');
+  assert.equal(await run(files, 'return solidFiles.ui.data.swb_shareId;'), identity);
+  assert.equal(await run(files, 'return solidFiles.ui.data.swb_sharePerson;'), 'Beta');
+  await until(page, '!solidLauncher.workspace.instances.has(' + JSON.stringify(interruptedTicket) + ')');
+  assert.match(await run(files, 'return solidFiles.host.view.data.muzeSolidUiDialog.message;'), /not been restarted/);
+  await writeFile('/tmp/cyc151-recipient-interrupted-phone.png', Buffer.from(
+    (await files.send('Page.captureScreenshot', { format: 'png' })).data, 'base64'));
+  await run(files, `document.querySelector(
+    '[data-simply-command=muzeSolidUiCloseCapability]').focus();`);
+  await key(files, 'Enter', 13);
+  await until(files, '!solidFiles.host.view.runtime.muzeSolidUiCall');
+  await until(files, 'document.activeElement.dataset.simplyCommand==="swb_changeShareRecipient"');
+  await key(files, 'Enter', 13);
+  await until(files, 'document.querySelector("iframe")?.contentWindow.muzeSolidContactsApp?.runtime.recipientRequest');
+  await run(files, `document.querySelector('iframe').contentDocument.querySelector(
+    '[data-simply-command=swb_cancelRecipient]').click();`);
+  await until(files, '!solidFiles.ui.runtime.sharing && !solidFiles.host.view.runtime.muzeSolidUiCall');
+  assert.equal(await run(files, 'return solidFiles.ui.data.swb_shareId;'), identity);
+  console.log('PASS: shared Contacts reload recovery, owner-slot release, retained Files recipient, phone keyboard close/focus and explicit retry.');
   const restoredState=await run(files,'return solidFiles.ui.actions.captureState().turtle;');
   assert(!restoredState.includes('beta@example.org'),'Workspace state retains references rather than contact payloads');
   await files.send('Page.reload');

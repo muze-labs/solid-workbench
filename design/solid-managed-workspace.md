@@ -118,7 +118,11 @@ resource. A 401 is never parsed as workspace data. No pre-write ETag is reused,
 no unconditional replacement is introduced, and ordinary-close attempts require
 an already-prepared validator. This corrects FBK-20261101-QG24H-15.
 
-## File-picker activation and bounded on-demand startup
+## Historical file-picker activation and bounded on-demand startup
+
+Superseded by preferred transient provider tasks. CYC151 removes the old
+chooseFiles/live-browse API and grants described in this historical section;
+see [current picker contracts](solid-resource-picker.md).
 
 Following FBK20, Choose in Files reuses one eligible, allowed live provider and
 focuses its WindowProxy synchronously from the user's click. If no live provider

@@ -13,7 +13,6 @@ export class WorkspaceBroker {
     keys = {},
     onChange = () => {},
     onMessage = () => {},
-    authorize = () => false,
     target = window,
     embeddedProviders = [],
     resolveProvider = () => undefined,
@@ -32,7 +31,6 @@ export class WorkspaceBroker {
     Object.assign(this, {
       onChange,
       onMessage,
-      authorize,
       target,
       checkpointTimeout,
       embeddedProviders,
@@ -91,14 +89,13 @@ export class WorkspaceBroker {
   changed() {
     return this.onChange(this.snapshot(), this.keys());
   }
-  open(url, { allowBrowse = false, label = '', id } = {}) {
+  open(url, { label = '', id } = {}) {
     let record = id && this.instances.get(id);
     if (!record) {
       record = this.add({
         id: crypto.randomUUID(),
         url,
         label,
-        allowBrowse,
         state: null
       });
     }
@@ -283,12 +280,6 @@ export class WorkspaceBroker {
       }
       return { saved: true };
     }
-    if (method === 'request' && record.registered) {
-      return this.request(input.capability, input.input, {
-        ...options,
-        requester: record.entry.id
-      });
-    }
     throw capabilityError('Unsupported workspace operation.', 'denied');
   }
   embeddedProvider(capability) {
@@ -398,31 +389,40 @@ export class WorkspaceBroker {
       throw capabilityError('This capability task is already running.', 'busy');
     }
     record.invoked = true;
-    await this.whenReady(id, { signal, timeout: 20000 });
-    if (!record.capabilities.includes(record.capability)) {
-      throw capabilityError(
-        'Provider does not implement this capability.',
-        'denied'
+    try {
+      await this.whenReady(id, { signal, timeout: 20000 });
+      if (!record.capabilities.includes(record.capability)) {
+        throw capabilityError(
+          'Provider does not implement this capability.',
+          'denied'
+        );
+      }
+      const origin =
+        requester === 'launcher'
+          ? this.target.location.origin
+          : new URL(this.instances.get(requester).entry.url).origin;
+      const response = await record.peer.call(
+        'capability',
+        {
+          capability: record.capability,
+          input: serializable(input),
+          requester: { application: requester, origin }
+        },
+        { signal, timeout: null }
       );
+      if (response.error) {
+        throw capabilityError(response.error.message, response.error.code);
+      }
+      return response.result;
     }
-    const origin =
-      requester === 'launcher'
-        ? this.target.location.origin
-        : new URL(this.instances.get(requester).entry.url).origin;
-    const response = await record.peer.call(
-      'capability',
-      {
-        capability: record.capability,
-        input: serializable(input),
-        requester: { application: requester, origin }
-      },
-      { signal, timeout: null }
-    );
-    if (response.error) {
-      throw capabilityError(response.error.message, response.error.code);
+    catch (error) {
+      if (error.code === 'disconnected' && this.instances.get(id) === record) {
+        this.endEmbedded(id, requester);
+      }
+      throw error;
     }
-    return response.result;
   }
+
   async canCloseEmbedded(id, requester = 'launcher') {
     const record = this.embeddedRecord(id, requester);
     if (!record.ready || !record.peer || record.peer.closed) {
@@ -459,6 +459,7 @@ export class WorkspaceBroker {
         }
         else if (
           !record ||
+          record.peer?.closed ||
           (!record.embedded && (!record.win || record.win.closed))
         ) {
           finish(
@@ -496,51 +497,6 @@ export class WorkspaceBroker {
       signal?.addEventListener('abort', cancel, { once: true });
       check();
     });
-  }
-  async request(
-    capability,
-    input,
-    { requester = 'launcher', signal, providerId } = {}
-  ) {
-    const providers = from([...this.instances.values()])
-      .where(
-        (record) =>
-          (providerId === undefined || record.entry.id === providerId) &&
-          record.registered &&
-          record.ready &&
-          record.peer &&
-          !record.peer.closed &&
-          record.capabilities.includes(capability) &&
-          this.authorize(requester, record.entry, capability)
-      )
-      .toArray();
-    if (providers.length !== 1) {
-      throw capabilityError(
-        providers.length
-          ? 'More than one provider is available.'
-          : 'Open Files through Launcher and allow resource selection.'
-      );
-    }
-    try {
-      providers[0].win?.focus();
-    }
-    catch {}
-    const result = await providers[0].peer.call(
-      'capability',
-      {
-        capability,
-        input: serializable(input),
-        requester: {
-          application: requester,
-          origin: this.target.location.origin
-        }
-      },
-      { signal }
-    );
-    if (result.error) {
-      throw capabilityError(result.error.message, result.error.code);
-    }
-    return result.result;
   }
   async checkpoint() {
     for (const record of this.instances.values()) {
@@ -629,10 +585,6 @@ export class WorkspaceBroker {
         failures.map((result) => result.reason.message).join('\n')
       );
     }
-  }
-  async allow(id, value) {
-    this.instances.get(id).entry.allowBrowse = Boolean(value);
-    await this.changed();
   }
   detach(record) {
     for (const child of this.instances.values()) {

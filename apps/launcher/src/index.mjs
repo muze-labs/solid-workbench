@@ -9,7 +9,6 @@ import {
   muzeSolidDesignListDetails,
   muzeSolidDesignDropdown
 } from '@muze-labs/solid-design';
-import pickerSource from './picker.mjs' with { type: 'text' };
 import shortcutSource from './shortcuts.mjs' with { type: 'text' };
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import { model } from '@muze-labs/simplyflow/model';
@@ -25,7 +24,6 @@ import {
   selectRecipientCapability,
   selectionUrl
 } from '@muze-labs/solid-app-data/capabilities.mjs';
-import { chooseFiles } from './picker.mjs';
 import {
   openCollection,
   recoverCollection
@@ -116,7 +114,6 @@ const definition = {
     browseCapability,
   selectRecipientCapability,
     selectionUrl,
-    chooseFiles,
     openCollection,
     recoverCollection,
     prefixes,
@@ -147,14 +144,6 @@ ui.definition.modules = {
     source: manifestSource,
     origin: 'apps/launcher/src/manifests.mjs',
     dependencies: ['@muze-labs/solid-app-data']
-  },
-  picker: {
-    source: pickerSource,
-    origin: 'apps/launcher/src/picker.mjs',
-    dependencies: [
-      '@muze-nl/jaqt',
-      '@muze-labs/solid-app-data/capabilities.mjs'
-    ]
   },
   shortcuts: {
     source: shortcutSource,

@@ -163,7 +163,6 @@ export function sameWorkspace(a, b) {
         entry.id === other.id &&
         entry.url === other.url &&
         (entry.label || '') === (other.label || '') &&
-        entry.allowBrowse === other.allowBrowse &&
         sameState(entry.state, other.state)
       );
     })
@@ -196,7 +195,6 @@ export function readWorkspace(graph, root) {
     const result = {
       id,
       url: iri(graph, entry, apps + 'launchUrl', true),
-      allowBrowse: boolean(graph, entry, apps + 'allowBrowse', true),
       state: exportState(graph, entry)
     };
     const label = text(graph, entry, 'http://purl.org/dc/terms/title');
@@ -273,11 +271,6 @@ export function writeWorkspace(graph, root, snapshot) {
     graph.add(instance, rdf + 'type', named(apps + 'AppInstance'));
     graph.set(instance, apps + 'instanceId', literal(entry.id));
     graph.set(instance, apps + 'launchUrl', named(entry.url));
-    graph.set(
-      instance,
-      apps + 'allowBrowse',
-      literal(entry.allowBrowse, xsd + 'boolean')
-    );
     graph.set(
       instance,
       'http://purl.org/dc/terms/title',

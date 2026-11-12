@@ -68,15 +68,8 @@ export const shortcuts = {
         if (!element.getAttribute('href')) {
           throw new Error('launcher: Connect to Solid to open this resource.');
         }
-        const isFiles =
-          new URL(element.href).pathname ===
-            new URL('../files/', location.href).pathname ||
-          (element.closest('.swb-app-grid') &&
-            element ===
-              this.runtime.host.main.querySelector('.swb-app-grid a[href*=files]'));
         this.actions.openApplication(element.href, {
-          label: element.textContent.trim(),
-          allowBrowse: Boolean(isFiles)
+          label: element.textContent.trim()
         });
       });
     },

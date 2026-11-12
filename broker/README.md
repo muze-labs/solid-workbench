@@ -13,40 +13,11 @@ defaulting to built-in Files. No manual pre-opening is required. Files keeps its
 connect there if requested. Selection controls return a URL to Launcher without
 downloading or writing the selected resource. Cancellation preserves the field.
 
-### Retained live-window helper
-
-The following startup, focus and instance-grant details describe the exposed
-`chooseFiles` compatibility API and its fixtures, rather than the current button.
-The maintainer confirms there are no external consumers; Phase 4 recommends
-retiring this obsolete path and updating in-project dependencies together.
-
-Startup opens synchronously from the click and waits up to 30 seconds for the
-verified app connection. Cancel selection also cancels that wait. Blocked popups,
-closed apps, setup failures and timeouts are reported. Existing denied instances
-are never silently granted. Multiple eligible providers require enabling the
-workspace's **Allow resource selection** for just one instance.
-
-Focus is requested for Files and, after selection/cancellation, for Launcher.
-Browsers can refuse focus requests; the UI tells you to switch tabs if needed.
-The isolated Chrome proof verifies Files tab activation and returned results;
-it does not guarantee the return-to-Launcher focus on every browser. Launcher
-advertises a unique live window name through its verified opener handshake;
-selection/cancellation targets that existing tab during the user's click. The
-isolated Chrome test verifies the return without opening another tab. This hint
-is separate from stored workspace state and does not grant a capability.
-
-Protected browsing may still require the provider's sign-in window. The Solid
-session retains and closes that window even when authorization first becomes
-necessary after an identity token was cached. The callback's “Completing
-sign-in…” page should disappear after the response is handled. Popup blocking,
-denied consent and noninteractive sign-in refusal remain visible errors.
-
-For a cross-origin demonstration, add a shortcut to
-`http://localhost:4174/files/`, open it through Launcher, and enable **Allow
-resource selection** for that instance in the workspace list. Built-in Files
-gets this permission automatically. Exactly one allowed connected provider must
-match; multiple providers produce an ambiguity error. An app opened directly
-continues to work independently, but does not join this managed session.
+Select a different resource or recipient provider in **Preferences → Default
+apps**. Providers may use another origin; task tickets bind the selected URL,
+capability and caller. Opening a normal managed app does not grant it picker
+requests. The obsolete live-window helper and instance grant controls have been
+removed. Protected browsing still uses the provider's own Solid session.
 
 ### Managed workspace apps
 
@@ -56,7 +27,7 @@ close it individually. It distinguishes Restoring, Connected and setup errors.
 Save collects fresh state from ready apps with a ten-second deadline. A failed
 checkpoint names the app and leaves apps open; successfully collected sibling
 state stays local. Reconnecting a current client preserves its live UI and does
-not replay old restoration state. An older already-open client may need a reload
+not replay old restoration state. A client that does not negotiate restoration may need a reload
 to reconnect safely; save its in-app edits before reloading. Closing an individual instance removes it from the saved
 set. Closing the workspace retains the set for reopening. Allow popups for
 multiple-app restoration; **Restore apps** and individual restore buttons provide
@@ -66,17 +37,31 @@ recovery when the browser blocks automatic startup.
 
 The current Default apps preferences independently select Files/folder and
 recipient providers. These use transient owner-scoped tasks through the shipped
-iframe/tab presenter, separate from the legacy live-instance Choose in Files
-grant described above. Files' Share action opens the recipient picker and shows
+iframe/tab presenter. Files' Share action opens the recipient picker and shows
 the chosen person's details; it changes no permissions. The caller keeps its
 own Solid session and validates the returned data. See the
 [current contracts](../design/solid-resource-picker.md).
 
-[Phase 4 evaluation](../.spiral/evidence/EVD-20261112-QG24H-147.md) distinguishes
-tested cancellation/local close from incomplete automatic raw-port loss
-detection, and app-specific value checks from complete-frame limits. The
-accepted assessment records follow-up work; those repairs are not implemented
-by this guide.
+The shared presenter ends an interrupted task when its provider reloads or
+navigates its iframe. It shows recovery guidance and releases the broker ticket;
+close the dialog and invoke the task again. A disconnect also settles the call,
+but a still-visible editor retains its draft and explicit discard guard. Previous caller
+choices remain intact. Invocations are never replayed automatically. Connected
+editors retain their existing save/discard guards.
+
+Private ports carry an explicit disconnect frame. Independent providers can
+cooperate with that protocol; the host also observes iframe navigation without
+requiring the SDK. Separate tabs are monitored for closure. Abrupt process loss
+without a lifecycle signal is not universally detected. Interactive tasks have
+no inactivity deadline, so time spent reading or editing is not a failure.
+
+Frame shape, active-call counts and domain values are validated. There is no
+universal byte cap on capability messages or native restoration state. The
+retired 64 KiB state and 60000-byte contact limits had no established resource
+budget. Background workspace saves retain a separate keepalive safeguard;
+large checkpoints use explicit save while local recovery state is preserved.
+See [CYC151 evidence](../.spiral/evidence/EVD-20261112-QG24H-155.md) for tested
+coverage and limits. This implementation is awaiting human acceptance.
 
 ## Save and restore
 

@@ -53,14 +53,12 @@ const snapshot = () => ({
       id: 'one',
       url: 'https://apps.example/files/',
       label: 'First',
-      allowBrowse: true,
       state: nativeState()
     },
     {
       id: 'two',
       url: 'https://apps.example/files/',
       label: 'Second',
-      allowBrowse: false,
       state: nativeState()
     }
   ]
@@ -261,7 +259,7 @@ test('native scalar multiplicity, datatype and ordering corruption fail before w
     },
     (graph) => {
       const [entry] = graph.list(named(root), apps + 'instances').values;
-      graph.set(entry, apps + 'allowBrowse', literal('maybe', xsd + 'boolean'));
+      graph.set(entry, apps + 'launchUrl', literal('not an IRI'));
     }
   ]) {
     const graph = new StateGraph();
@@ -523,4 +521,32 @@ test('a conflict during retired-snapshot cleanup retains local state and retries
   assert.equal(puts[1].headers['If-Match'], '"fresh"');
   assert.match(body, /updated externally/);
   assert(!body.includes('retired'));
+});
+
+
+test('retired route grants are unowned RDF preserved on workspace updates', () => {
+  const graph = new StateGraph();
+  const value = snapshot();
+  writeWorkspace(graph, root, value);
+  const [entry] = graph.list(named(root), apps + 'instances').values;
+  assert.equal(graph.values(entry, apps + 'allowBrowse').length, 0);
+  const previous = literal('not interpreted', xsd + 'string');
+  graph.add(entry, apps + 'allowBrowse', previous);
+  const loaded = readWorkspace(graph, root);
+  assert(!('allowBrowse' in loaded.apps[0]));
+  loaded.apps[0].label = 'Renamed';
+  writeWorkspace(graph, root, loaded);
+  assert.deepEqual(graph.values(entry, apps + 'allowBrowse'), [previous]);
+  assert.equal(readWorkspace(graph, root).apps[0].label, 'Renamed');
+});
+
+test('native restoration state above 64 KiB preserves unknown terms', () => {
+  const state = { turtle: `<${stateRoot}> <urn:unknown> "${'é'.repeat(40000)}" .` };
+  assert(new TextEncoder().encode(state.turtle).length > 65536);
+  assert.deepEqual(validateAppState(state), state);
+  const value = snapshot();
+  value.apps[0].state = state;
+  const graph = new StateGraph();
+  writeWorkspace(graph, root, value);
+  assert(sameGraph(readWorkspace(graph, root).apps[0].state.turtle, state.turtle));
 });
