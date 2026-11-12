@@ -62,6 +62,14 @@ This is the Muze-owned Solid Apps monorepo. It explicitly adopts:
   for our shared packages and developer tooling.
 - [Maturity policy](https://github.com/muze-nl/.github/blob/main/maturity-policy.md).
 
+Whenever changing code that implements a published specification, double-check
+the relevant specification sections before making the change. Verify the
+applicable version, required versus optional behavior, and conditions for each
+supported workflow. Do not generalize a requirement from one profile or extension
+to the whole protocol. Record the specification references and check that tests
+cover the affected supported workflows; passing existing tests does not replace
+checking the specification.
+
 Required reading before designing or changing an app:
 [Moldable Solid Apps](design/Moldable-Solid-Apps.md). Apply its rules for apps
 today so each app exposes editable feature datasets for the future in-app IDE.
