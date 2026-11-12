@@ -1814,3 +1814,77 @@ push of main/cycle branches are authorized after exact validation. This adds no
 app bytes/dependencies and preserves non-budget errors. CYC124 remains a separate
 accepted cycle; no package publication or unrelated design-file commit is
 requested.
+
+
+## Metro release handoff selected, 2026-11-11
+
+The maintainer agrees to close the published-dependency gap before returning
+to broker Phase 3. CYC133 is Active on verified
+spiral/CYC-20261111-QG24H-133-metro-release from accepted main a186795.
+SRC134/DES135/IMP136/EVD137 retain scope and evidence. Metro's existing fix is
+committed as b5d3b96 with OAuth2 0.9.4, OIDC 0.9.5 requiring OAuth2 ^0.9.4 and
+required browser bundles. Full Metro tests pass 536 checks, both builds and the
+existing release dry-run pass; exact archives are inspected. Actual publication
+requires npm login (whoami returns 401); the maintainer has been asked to sign
+in. Workbench dependency/lockfile changes and fresh npm ci verification remain
+pending registry publication. No completed handoff, new cycle acceptance or
+Workbench commit/integration is claimed. Preserve unrelated pending icon/context
+and supplied design files; legacy Metro checkouts stay untouched.
+
+
+## Metro preparation held for compatibility correction, 2026-11-11
+
+The maintainer explicitly selects Prepare the release only, then requests an
+iss compatibility audit. The prepared guard regresses supported page redirects
+from servers without RFC 9207 iss support and skips strict missing-issuer
+validation. A disposable two-page mock redirect probe confirms both cases, with
+a matching-issuer HTTP-200 control. EVD137/DES135 supersede earlier readiness:
+b5d3b96 and its archives are not publishable as prepared. No publication or
+further product change/commit is performed. Proposed minimal correction keeps
+code/error callback detection separate from existing conditional issuer checks;
+confirmation is needed before changing that previously agreed policy. CYC133
+remains Active, with Workbench dependency changes deferred.
+
+
+## Metro correction prepared and verified, 2026-11-11
+
+The maintainer confirms correcting the demonstrated compatibility regression.
+Metro 47a33e8 supersedes the invalid strict-iss preparation: callback code/error
+detection is independent of conditional issuer validation, and present empty
+issuers reject. Corrective commits preserve history on fix/oauth2-redirect-iss.
+Full release dry-run passes 721 checks, final app source/build passes, the full
+Chrome suite passes the classifier change and final issuer Chrome verification
+passes after the empty-issuer correction. EVD137 records exact qualifications,
+archives and graph costs. Publication remains explicitly excluded by Prepare the
+release only; CYC133 is Active for review, with registry dependency updates and
+fresh npm ci still deferred. Unrelated design/icon/AGENTS work remains intact.
+
+
+## Published Metro handoff evaluated, 2026-11-12
+
+The maintainer reports publication and requests updating/testing. On verified
+CYC133, Workbench now declares OAuth2 ^0.9.4/OIDC ^0.9.5 and locks their registry
+releases. Fresh npm ci succeeds; all installed files equal the corrected release
+archives. npm run check passes 24 test files/both builds, and the complete
+seven-suite Chrome command passes, exit 0. Readable assets are restored. EVD137
+retains detailed evidence and unchanged advisory size warnings. The reproducible
+dependency gap is resolved; CYC133 remains Active awaiting human acceptance.
+No commit, merge, push, new feature cycle or publication is inferred.
+
+
+## CYC133 accepted, 2026-11-12
+
+The maintainer reports “everything still works, so accepted” after running the
+updated apps. ACC138 records human acceptance; CYC133 is Accepted, superseding
+its pending review status. There are no remaining Active cycle records. The
+accepted implementation/evaluation remain uncommitted; no commit, merge, push,
+publication or next cycle is authorized by acceptance alone.
+
+
+## Accepted CYC133 delivery authorized, 2026-11-12
+
+The maintainer requests commit, merge and push. Immutable causal delivery commits
+record the accepted Metro handoff and ACC138's exact implementation/evaluation
+versions. Normal merge into current main and push of main/cycle branches are
+authorized after exact candidate integration validation. Unrelated pending icon
+roadmap/context and supplied design files remain outside delivery.
