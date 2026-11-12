@@ -1345,7 +1345,7 @@ try {
 
 
   const profileProvider = await evaluate(
-    'return solidLauncher.workspace.embeddedProviders[0].url;'
+    'return solidLauncher.workspace.embeddedProviders.find(provider => provider.capability === solidLauncher.ui.api.editProfileCapability).url;'
   );
   await evaluate(`
     window.presentationRequest = null;
@@ -1357,7 +1357,7 @@ try {
   `);
   for (const mode of ['manual', 'reduced', 'legacy', 'missing', 'cancel']) {
     await evaluate(
-      'window.presentationRequest=null; solidLauncher.workspace.embeddedProviders[0].url=' +
+      'window.presentationRequest=null; solidLauncher.workspace.embeddedProviders.find(provider => provider.capability === solidLauncher.ui.api.editProfileCapability).url=' +
         JSON.stringify(base + '/presentation-provider/?mode=' + mode) +
         ';'
     );
@@ -1489,7 +1489,7 @@ try {
 
   // A real framing refusal must offer a tab that completes the same request.
   await evaluate(
-    'solidLauncher.workspace.embeddedProviders[0].url=' +
+    'solidLauncher.workspace.embeddedProviders.find(provider => provider.capability === solidLauncher.ui.api.editProfileCapability).url=' +
       JSON.stringify(base + '/embedded-profile/') +
       ';'
   );
@@ -1543,7 +1543,7 @@ try {
   launchedPage.close();
   launchedPage = null;
   await evaluate(
-    'solidLauncher.workspace.embeddedProviders[0].url=' +
+    'solidLauncher.workspace.embeddedProviders.find(provider => provider.capability === solidLauncher.ui.api.editProfileCapability).url=' +
       JSON.stringify(profileProvider) +
       ';'
   );
@@ -1552,7 +1552,7 @@ try {
     await evaluate(
       'return document.querySelectorAll(".swb-app-grid a[href]").length;'
     ),
-    3
+    4
   );
   await submit('.swb-saved-apps form', {
     name: 'Example app',

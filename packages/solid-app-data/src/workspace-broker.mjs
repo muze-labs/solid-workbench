@@ -441,7 +441,7 @@ export class WorkspaceBroker {
         record.peer.closed || !record.invoked) {
       throw capabilityError('View connection is unavailable.', 'disconnected');
     }
-    if (!['update', 'refresh', 'prepare'].includes(input?.operation)) {
+    if (!['update', 'refresh', 'prepare', 'read', 'acknowledge'].includes(input?.operation)) {
       throw capabilityError('Unsupported view operation.', 'denied');
     }
     return record.peer.call('view', serializable(input), { timeout: 10000 });

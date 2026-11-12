@@ -410,9 +410,9 @@ try {
     item.frame.url.includes('/preferences/'));
   const ax = await page.send('Accessibility.getFullAXTree', { frameId: frame.frame.id });
   assert(ax.nodes.some((node) => node.role?.value === 'combobox' &&
-    node.name?.value === 'Picker application'));
+    node.name?.value === 'Application'));
   assert(ax.nodes.some((node) => node.role?.value === 'combobox' &&
-    node.name?.value === 'Selection task'));
+    node.name?.value === 'Task'));
   await run('document.documentElement.style.fontSize="200%";', true);
   assert.equal(await run('const p=document.querySelector(".swb-provider-current").parentElement;return p.scrollWidth<=p.clientWidth;', true), true);
   await writeFile('/tmp/provider118-phone-text200.png', Buffer.from(

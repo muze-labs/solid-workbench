@@ -104,7 +104,7 @@ export const shortcuts = {
       return this.runtime.workspace.open(href, options);
     },
     renderLinks: function () {
-      for (const name of ['contacts', 'files', 'profile']) {
+      for (const name of ['contacts', 'files', 'profile', 'presenter']) {
         const target = new URL('../' + name + '/', location.href).href;
         let href = target;
         if (this.runtime.host.session) {

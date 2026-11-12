@@ -1,0 +1,117 @@
+@layer component {
+  .muze-solid-cobalt {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-items: center;
+    padding: 8%;
+    box-sizing: border-box;
+    background: transparent;
+    color: white;
+  }
+  .muze-solid-cobalt-edit,
+  .muze-solid-cobalt-read {
+    font-family: system-ui;
+    font-weight: 500;
+    line-height: 1.25;
+    font-size: 5vw;
+    text-align: center;
+    padding-block: 0.125em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    text-shadow: 0 2px 8px #0009;
+    min-width: 0;
+    max-height: calc(100vh - 16vw);
+    box-sizing: border-box;
+    overflow: auto;
+    outline-offset: 8px;
+  }
+  .muze-solid-cobalt-edit:empty::before {
+    content: 'Click to add text';
+    opacity: 0.65;
+  }
+  .muze-solid-cobalt-edit:focus-visible {
+    outline: 1px dashed currentColor;
+  }
+  .muze-solid-cobalt-read {
+    display: none;
+  }
+  .muze-solid-cobalt[data-readonly] > .muze-solid-cobalt-edit,
+  .muze-solid-cobalt[data-readonly] > .muze-solid-cobalt-tools,
+  .muze-solid-cobalt[data-readonly] > .muze-solid-cobalt-open-tools,
+  .muze-solid-cobalt[data-readonly] > .muze-solid-cobalt-status {
+    display: none;
+  }
+  .muze-solid-cobalt[data-readonly] > .muze-solid-cobalt-read {
+    display: block;
+  }
+  .muze-solid-cobalt-tools {
+    position: fixed;
+    z-index: 5;
+    max-width: calc(100% - 16px);
+    max-height: calc(100dvh - 16px);
+    overflow: auto;
+    box-shadow: 0 3px 12px #0005;
+    color: CanvasText;
+    background: Canvas;
+    font-size: 1rem;
+  }
+  .muze-solid-cobalt-tools[data-docked] {
+    inset: 0 0 auto;
+    max-width: 100%;
+    box-shadow: none;
+  }
+  .muze-solid-cobalt-link {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    padding: 8px;
+    gap: 4px;
+  }
+  .muze-solid-cobalt-link input {
+    width: 12em;
+    max-width: 100%;
+    font: inherit;
+  }
+  .muze-solid-cobalt-link label {
+    min-width: 0;
+    margin: 0;
+  }
+  .muze-solid-cobalt-open-tools {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+  }
+  .muze-solid-cobalt-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    background: Canvas;
+    color: CanvasText;
+    font-size: 0.875rem;
+  }
+  .muze-solid-cobalt-status:empty {
+    display: none;
+  }
+  @media (forced-colors: active) {
+    .muze-solid-cobalt {
+      background: Canvas;
+      color: CanvasText;
+    }
+    .muze-solid-cobalt-edit,
+    .muze-solid-cobalt-read {
+      text-shadow: none;
+    }
+  }
+}
+@layer page {
+  html:has(.muze-solid-cobalt:not([hidden])),
+  body:has(.muze-solid-cobalt:not([hidden])) {
+    background: transparent;
+  }
+  .muze-solid-viewer:has(.muze-solid-cobalt:not([hidden])) {
+    background: transparent;
+  }
+}

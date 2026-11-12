@@ -1,0 +1,17 @@
+{
+  "name": "@muze-labs/solid-presenter-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@muze-labs/cobalt-rich-text-note": "file:../../local-packages/muze-labs-cobalt-rich-text-note-0.1.1.tgz",
+    "@muze-labs/simplyflow": "^0.10.4",
+    "@muze-labs/simplyflow-events": "0.1.0",
+    "@muze-labs/solid-app-data": "0.1.0",
+    "@muze-labs/solid-app-ui": "0.1.0",
+    "@muze-labs/solid-design": "0.1.0",
+    "@muze-labs/solid-preferences": "0.1.0",
+    "@muze-labs/solid-workspace": "^0.2.1",
+    "@muze-nl/jaqt": "^0.10.7"
+  }
+}

@@ -1,3 +1,12 @@
 <section class="muze-solid-viewer">
-  {{view:muze-solid-viewer:./viewer.html}}
+  <div
+    data-simply-field="muzeSolidViewerDisplay"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+    class="muze-solid-viewer-display"
+  >
+    {{view:muze-solid-viewer:./viewer.html}}
+  </div>
+  {{view:muze-solid-text-editor:./text-editor.html}}
+  {{view:muze-solid-cobalt-editor:./cobalt-editor.html}}
 </section>

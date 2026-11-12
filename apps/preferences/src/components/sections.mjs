@@ -10,7 +10,14 @@ const common = [
   { id: 'opening', label: 'Opening applications' },
   { id: 'providers', label: 'Default apps' }
 ];
-const contributions = { workbench, contacts, files, profile };
+const contributions = {
+  workbench,
+  contacts,
+  files,
+  profile,
+  presenter: [],
+  viewer: []
+};
 export const sections = {
   templates: { 'swb-preferences-sections': template },
   api: { common, contributions },
@@ -83,7 +90,8 @@ export const sections = {
       for (const entry of this.data.swb_sections) {
         entry.attributes['aria-current'] = entry.id === id ? 'page' : null;
         entry.attributes.class =
-          'ds-button ds-nav swb-section-choice' + (entry.id === id ? ' ds-selected' : '');
+          'ds-button ds-nav swb-section-choice' +
+          (entry.id === id ? ' ds-selected' : '');
         entry.attributes.tabindex = entry.id === id ? '0' : '-1';
         entry.attributes['data-muze-solid-design-section'] = entry.id;
       }

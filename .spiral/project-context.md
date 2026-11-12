@@ -2349,3 +2349,115 @@ Normal merge and push of main and the icon branch are authorized after exact
 integration validation. The supplied archive is retained as artwork source;
 the unrelated application-priorities document remains unchanged and uncommitted.
 No next cycle, release or deployment is selected.
+
+## Presenter proof selected and implemented, 2026-11-12
+
+After accepting and delivering CYC168 and CYC163, the maintainer selects the
+proposed next cycle: “continue with the next cycle”. CYC175 is isolated on
+`spiral/CYC-20261112-QG24H-175-presenter` from main 43e3bb3. SRC176 records the
+confirmed outcome and the subsequent explicit answer to store text with the deck.
+DES177/IMP178/EVD179 retain design, implementation and bounded verification.
+
+Presenter owns native RDF decks, two named-region layouts, slide order and local
+presentation. Resource Viewer supplies separate text view/create/edit providers;
+Files supplies image selection. Shared EmbeddedView supports passive bounded
+views with explicit fit failure, independent regions and guarded teardown.
+Native local deck/provider drafts, conditional Pod saves, no-ETag baseline
+recovery, saved provider preferences and managed/standalone tasks are included.
+No new renderer, HTTP/auth implementation or external library version is added.
+
+Source/build checks pass 227 tests and both variants. All ten Chrome suites have
+passing results; EVD179 records an intermittent Workbench diagnostics timeout
+and successful unchanged rerun, rather than a clean uninterrupted command. The current
+uncompressed/no-store cold title-slide workflow costs about 1.84 MB / 19 entries /
+37 seconds at 50 KiB/s and 150 ms; readable size warnings remain advisory.
+One current local deck per account, no multi-tab editing coordination, no cold
+provider/image cache, rich text or remote presentation are claimed. Human/manual
+AT and production-provider review remain distinct from automated evidence.
+CYC175 remains Active, with no human acceptance, commit, merge or push inferred.
+Preserve the unrelated application-priorities design document unchanged.
+
+
+## Presenter review reopens design
+
+The maintainer rejects CYC175's initial UI and pauses product redesign for
+further discussion. SRC176/DES177 record one background-image/centered transparent
+text template, thumbnails, direct editing and full-screen presentation as the
+revised direction. They identify Margin Notes' native Cobalt-fragment RDF bridge
+and authorize a separate Cobalt change event (implemented and tested, uncommitted
+and unpublished). They also request broader Workbench toolbar design, inspired
+by SimplyFlow simply.edit's floating toolbar. This supersedes the earlier
+ready-for-review usability characterization; CYC175 remains Active in design
+refinement, with no resumed Presenter implementation or acceptance inferred.
+
+## Presenter toolbar revision resumed
+
+The maintainer supplies the HTML toolbar study archive and confirms Presenter
+first with reusable components, Files later, and Bold/Italic/Link now. CYC175
+resumes implementation on its existing dedicated branch; this supersedes the
+previous design pause and styling deferral. One background/centered-text template,
+thumbnail list–details, inline Cobalt editing and fullscreen presentation replace
+the rejected form UI. Shared toolbar controls and placement remain narrow; no
+suite-wide rollout is inferred. Published Cobalt 0.1.0 is consumed through its
+public reactive input, without the separate unpublished notification dependency.
+IMP178 and the revised section of EVD179 record current behavior, verification
+and explicit limits. The cycle remains Active and requires human review; no
+commit, merge or publication is authorized. Preserve both supplied design files.
+
+The revised evaluation then finds an actual Cobalt 0.1.0 composition-input gap:
+visible IME text does not reach the saved fragment. EVD179 records the probe.
+The maintainer is asked whether to extend the Cobalt work before Presenter
+readiness or restrict the current review to non-composition desktop/toolbars.
+No answer or publication authority is inferred; CYC175 remains Active.
+
+The maintainer confirms fixing composition in Cobalt before Presenter readiness.
+Continue the separate Cobalt branch and verify the native fragment/change-event
+contract and Presenter save path. Publication remains a distinct final action;
+the current Workbench dependency must remain a published npm version.
+
+
+The authorized Cobalt correction is now implemented on its existing feature
+branch as a 0.1.1 candidate, with 75 Vitest/16 notebook tests and native Chrome
+Presenter composition/save/reload verification. EVD179 records details and the
+prepared integration patch. Release authorization is the remaining prerequisite:
+actual Workbench and its review server still use published Cobalt 0.1.0. Do not
+claim IME readiness until the published dependency and tested host guards are
+integrated. CYC175 remains Active; no commit or publication is inferred.
+
+
+The maintainer now says “I'll publish later, use a local build for now”. This
+explicitly permits a temporary local Cobalt package for this cycle, superseding
+the publication prerequisite above. Integrate the tested 0.1.1 tarball and
+composition guards on the existing Presenter branch; verify the actual app and
+serve it for review. Record the pinned artifact and replace it with the published
+npm dependency after release. No publication, commit, merge or push is authorized.
+
+
+Local Cobalt integration is complete for review: actual Workbench uses the
+pinned 0.1.1 tarball and composition guards. 234 source tests, both builds,
+embedded-view and full Presenter Chrome scenarios pass. Full browser verification
+still reports the previously observed Contacts recovery-message assertion;
+EVD179 records this unresolved failure and successful independent checks. The
+readable dev build is served at http://127.0.0.1:4174/presenter/. Publication is
+deferred to the maintainer. The cycle remains Active; no acceptance or commit.
+
+
+Review correction: the styling direction is approved, but click-to-edit was
+blocked by an accidentally unscoped pointer-events rule. It is now restricted to
+presentation mode. Phone/desktop edit regressions use actual tap/click and native
+input, not programmatic editor focus. Source/build and the full Presenter
+scenario pass; EVD179 retains the reproduction and remaining suite evidence.
+This is a correction within Active CYC175, not new cycle acceptance.
+
+
+## Presenter accepted for integration, 2026-11-12
+
+The maintainer accepts the reviewed Presenter and explicitly requests commit,
+merge and push. ACC180 accepts implementation 123a3fdd7d6995c2ac4d48ec93824130da37cc57
+and verification e13922742be51cfbc7e189ed2fd4986f3eb560eb. CYC175 is Accepted,
+superseding earlier Active/pending-review entries. The current local Cobalt build
+remains authorized while the maintainer handles its upstream work later. The
+known Contacts browser assertion remains disclosed, and icon/favicon, window
+titles and blank-start/template choices remain roadmap follow-ups. Direct human
+review supplies acceptance and integration authority; no new cycle or npm
+publication is requested. Preserve the unrelated priorities document unchanged.

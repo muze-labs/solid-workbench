@@ -1,0 +1,17 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261112-QG24H-178 a sd:Implementation ;
+    dcterms:identifier "IMP-20261112-QG24H-178" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261112-QG24H-178.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-177 ;
+        sd:gitCommit "84c32fbf3f59e4f00e5e9295e5ebf9b9e9dd24bd" ] ;
+    sd:implementationLocation "apps/presenter/src/components/presenter.mjs" ;
+    sd:implementationLocation "apps/presenter/src/deck-data.mjs" ;
+    sd:implementationLocation "apps/viewer/src/components/text-editor.mjs" ;
+    sd:implementationLocation "apps/viewer/src/components/cobalt-editor.mjs" ;
+    sd:implementationLocation "packages/solid-app-data/src/cobalt-fragment.mjs" ;
+    sd:implementationLocation "packages/solid-design/src/toolbar.css" ;
+    sd:implementationLocation "packages/solid-app-data/src/embedded-view.mjs" .

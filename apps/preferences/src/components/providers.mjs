@@ -15,7 +15,7 @@ export const swbProviderPreferences = {
   },
   commands: {
     swb_chooseProviderKind(select) {
-      if (!['browseProvider', 'recipientProvider', 'viewProvider'].includes(select.value)) {
+      if (!Object.hasOwn(this.api.providerCapabilities, select.value)) {
         return;
       }
       this.data.swb_providerKind = select.value;
@@ -55,10 +55,7 @@ export const swbProviderPreferences = {
       return this.runtime.providerKey || 'browseProvider';
     },
     swb_providerCapability() {
-      return this.actions.swb_providerKey() === 'browseProvider'
-        ? this.api.browseCapability
-        : this.actions.swb_providerKey() === 'recipientProvider'
-          ? this.api.selectRecipientCapability : this.api.viewResourceCapability;
+      return this.api.providerCapabilities[this.actions.swb_providerKey()];
     },
     swb_initializeProviders() {
       const owner = this;
@@ -95,8 +92,10 @@ export const swbProviderPreferences = {
       return value
         ? value.url + ' (' + value.application + ')'
         : key === 'browseProvider'
-          ? 'Built-in Files' : key === 'recipientProvider'
-            ? 'Built-in Contacts' : 'Built-in Resource Viewer';
+          ? 'Built-in Files'
+          : key === 'recipientProvider'
+            ? 'Built-in Contacts'
+            : 'Built-in Resource Viewer';
     },
     swb_renderProvider() {
       const state = this.runtime.settings;
@@ -137,7 +136,8 @@ export const swbProviderPreferences = {
       this.actions.swb_localWriteStarted();
       try {
         await this.runtime.settings.draft(
-          this.actions.swb_providerKey(), event.target.value
+          this.actions.swb_providerKey(),
+          event.target.value
         );
       }
       catch (error) {
@@ -202,8 +202,11 @@ export const swbProviderPreferences = {
       for (const app of applications) {
         let choice = null;
         try {
-          if ((app.capabilities?.includes(capability) ||
-              (app.live && capability === this.api.browseCapability)) && app.url) {
+          if (
+            (app.capabilities?.includes(capability) ||
+              (app.live && capability === this.api.browseCapability)) &&
+            app.url
+          ) {
             choice = { application: app.url, url: app.url };
           }
           else if (app.manifest) {
@@ -232,9 +235,7 @@ export const swbProviderPreferences = {
                 ) || []
               );
               if (
-                capabilities.some(
-                  (term) => this.api.idOf(term) === capability
-                )
+                capabilities.some((term) => this.api.idOf(term) === capability)
               ) {
                 choice = {
                   application: new URL(node.id).href,

@@ -1,0 +1,63 @@
+@layer theme {
+  .muze-solid-design-toolbar {
+    --muze-toolbar-background: var(--ds-color-background, Canvas);
+    --muze-toolbar-color: var(--ds-color, CanvasText);
+    --muze-toolbar-hover: color-mix(in srgb, currentColor 12%, transparent);
+    --muze-toolbar-selected: color-mix(in srgb, currentColor 22%, transparent);
+  }
+}
+@layer component {
+  .muze-solid-design-toolbar {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    padding: 4px;
+    color: var(--muze-toolbar-color, CanvasText);
+    background: var(--muze-toolbar-background, Canvas);
+    max-inline-size: 100%;
+    box-sizing: border-box;
+  }
+  .muze-solid-design-tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  .muze-solid-design-tool:hover,
+  .muze-solid-design-tool[aria-expanded='true'] {
+    background: var(--muze-toolbar-hover);
+  }
+  .muze-solid-design-tool[aria-pressed='true'] {
+    background: var(--muze-toolbar-selected);
+  }
+  .muze-solid-design-tool:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -3px;
+  }
+  .muze-solid-design-tool:disabled {
+    opacity: 0.5;
+  }
+  .muze-solid-design-tool-stacked {
+    flex-direction: column;
+    font-size: 0.75rem;
+    min-width: 50px;
+    min-height: 52px;
+    gap: 3px;
+  }
+  .muze-solid-design-toolbar-floating {
+    position: fixed;
+    z-index: 5;
+    box-shadow: 0 3px 12px #0004;
+    width: max-content;
+  }
+}

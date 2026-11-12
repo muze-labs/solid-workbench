@@ -1,3 +1,4 @@
+import { providerCapabilities } from '@muze-labs/solid-preferences/providers.mjs';
 import { viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
 import { model } from '@muze-labs/simplyflow/model';
 import { effect, destroy } from '@muze-labs/simplyflow/state';
@@ -10,7 +11,10 @@ import {
   valueAt,
   httpUrl
 } from '@muze-labs/solid-app-data';
-import { browseCapability, selectRecipientCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
+import {
+  browseCapability,
+  selectRecipientCapability
+} from '@muze-labs/solid-app-data/capabilities.mjs';
 import { app } from '@muze-labs/simplyflow/app';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import { shell } from '@muze-labs/solid-app-ui';
@@ -80,6 +84,7 @@ const definition = {
   },
   api: {
     viewResourceCapability,
+    providerCapabilities,
     model,
     effect,
     destroy,

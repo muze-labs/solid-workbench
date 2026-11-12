@@ -1,0 +1,263 @@
+<fieldset
+  class="muze-solid-presenter-controls"
+  data-simply-field="muzeSolidPresenterBusy"
+  data-simply-transform="attributes"
+  data-simply-attributes="disabled"
+>
+  <legend class="swb-visually-hidden">Deck editor</legend>
+  <div
+    class="muze-solid-presenter-workspace"
+    data-simply-field="muzeSolidPresenterMode"
+    data-simply-transform="attributes"
+    data-simply-attributes="data-muze-solid-presenting"
+  >
+    <div class="muze-solid-presenter-document muze-solid-presenter-editing">
+      <input
+        class="muze-solid-presenter-title"
+        aria-label="Deck title"
+        name="deck-title"
+        data-simply-field="muzeSolidPresenterTitle"
+        data-simply-transform="escape_html"
+      />
+      <details class="muze-solid-presenter-deck-menu">
+        <summary class="muze-solid-design-tool">Deck</summary>
+        <div class="muze-solid-presenter-deck-sheet">
+          <label
+            >Deck document URL<input
+              type="url"
+              data-simply-field="muzeSolidPresenterUrl"
+              data-simply-transform="escape_html"
+          /></label>
+          <div class="muze-solid-design-toolbar">
+            <button
+              class="muze-solid-design-tool"
+              data-simply-command="muzeSolidPresenterSave"
+            >
+              Save to Pod
+            </button>
+            <button
+              class="muze-solid-design-tool"
+              data-simply-command="muzeSolidPresenterOpen"
+            >
+              Open from Pod
+            </button>
+          </div>
+          <div class="muze-solid-design-toolbar">
+            <button
+              class="muze-solid-design-tool"
+              data-simply-command="muzeSolidPresenterNew"
+            >
+              New deck
+            </button>
+            <button
+              class="muze-solid-design-tool"
+              data-simply-command="muzeSolidPresenterImportLocal"
+            >
+              Copy signed-out deck
+            </button>
+          </div>
+        </div>
+      </details>
+    </div>
+    <div class="muze-solid-presenter-panels">
+      <nav
+        class="muze-solid-presenter-filmstrip muze-solid-presenter-editing"
+        aria-label="Slides"
+      >
+        <ol
+          class="muze-solid-presenter-list"
+          data-simply-list="muzeSolidPresenterSlides"
+        >
+          <template
+            ><li>
+              <button
+                class="muze-solid-presenter-slide-button"
+                data-simply-command="muzeSolidPresenterSelect"
+                data-simply-value=":value.id"
+                data-simply-field="attributes"
+                data-simply-transform="attributes"
+                data-simply-attributes="aria-current aria-label title"
+              >
+                <span class="muze-solid-presenter-thumbnail" aria-hidden="true">
+                  <img
+                    class="muze-solid-presenter-thumbnail-image"
+                    alt=""
+                    data-simply-field="image"
+                    data-simply-transform="attributes"
+                    data-simply-attributes="src hidden"
+                  />
+                  <span
+                    class="muze-solid-presenter-thumbnail-text"
+                    data-simply-field="fragment"
+                    data-simply-transform="muzeSolidPresenterRichText"
+                  ></span>
+                </span>
+                <span
+                  class="muze-solid-presenter-thumbnail-number"
+                  data-simply-field="number"
+                  data-simply-transform="escape_html"
+                ></span>
+              </button></li
+          ></template>
+        </ol>
+      </nav>
+      <section
+        class="muze-solid-presenter-current"
+        aria-label="Current slide"
+        data-simply-field="muzeSolidPresenterSelection"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <div
+          class="muze-solid-presenter-slide-tools muze-solid-presenter-editing muze-solid-design-toolbar"
+          aria-label="Slide actions"
+        >
+          <button
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidPresenterBackground"
+            data-simply-field="muzeSolidPresenterBackgroundVisibility"
+            data-simply-transform="attributes"
+            data-simply-attributes="hidden"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#image"></use></svg
+            >Background
+          </button>
+          <button
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidPresenterMove"
+            data-simply-value="-1"
+            aria-label="Move slide earlier"
+            title="Move slide earlier"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#arrow-left"></use>
+            </svg>
+          </button>
+          <button
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidPresenterMove"
+            data-simply-value="1"
+            aria-label="Move slide later"
+            title="Move slide later"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#arrow-right"></use>
+            </svg>
+          </button>
+          <button
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidPresenterRemove"
+            aria-label="Remove slide"
+            title="Remove slide"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#trash-2"></use>
+            </svg>
+          </button>
+          <details class="muze-solid-presenter-view-options">
+            <summary class="muze-solid-design-tool">View options</summary>
+            <div
+              class="muze-solid-presenter-deck-sheet"
+              data-simply-list="muzeSolidPresenterRegions"
+            >
+              <template
+                ><div>
+                  <span
+                    data-simply-field="label"
+                    data-simply-transform="escape_html"
+                  ></span>
+                  <button
+                    class="muze-solid-design-tool"
+                    data-simply-command="muzeSolidPresenterRetryRegion"
+                    data-simply-value=":value.id"
+                  >
+                    Retry
+                  </button>
+                  <button
+                    class="muze-solid-design-tool"
+                    data-simply-command="muzeSolidPresenterUseProvider"
+                    data-simply-value=":value.id"
+                  >
+                    Use preferred provider
+                  </button>
+                  <button
+                    class="muze-solid-design-tool"
+                    data-simply-command="muzeSolidPresenterDiscardRegion"
+                    data-simply-value=":value.id"
+                    hidden
+                    data-simply-field="discard"
+                    data-simply-transform="attributes"
+                    data-simply-attributes="hidden"
+                  >
+                    Discard view and its draft
+                  </button>
+                </div></template
+              >
+            </div>
+          </details>
+        </div>
+        <div class="muze-solid-presenter-stage">
+          {{view:muze-solid-presenter-regions:./regions.html}}
+        </div>
+        <nav
+          class="muze-solid-presenter-navigation muze-solid-design-toolbar"
+          aria-label="Presentation controls"
+        >
+          <button
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidPresenterStep"
+            data-simply-value="-1"
+            aria-label="Previous slide"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#chevron-left"></use>
+            </svg>
+          </button>
+          <span
+            role="status"
+            data-simply-field="muzeSolidPresenterPosition"
+            data-simply-transform="escape_html"
+          ></span>
+          <button
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidPresenterStep"
+            data-simply-value="1"
+            aria-label="Next slide"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#chevron-right"></use>
+            </svg>
+          </button>
+          <button
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidPresenterExit"
+          >
+            Exit presentation
+          </button>
+        </nav>
+      </section>
+      <div
+        class="muze-solid-presenter-empty"
+        data-simply-field="muzeSolidPresenterEmpty"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <p>Start with a slide.</p>
+        <button
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidPresenterAdd"
+          data-simply-value="image"
+        >
+          Add slide
+        </button>
+      </div>
+    </div>
+    <p
+      role="status"
+      class="muze-solid-presenter-status muze-solid-presenter-editing"
+      data-simply-field="muzeSolidPresenterStatus"
+      data-simply-transform="escape_html"
+    ></p>
+  </div>
+</fieldset>

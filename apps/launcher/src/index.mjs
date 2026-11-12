@@ -1,3 +1,4 @@
+import { providerCapabilities } from '@muze-labs/solid-preferences/providers.mjs';
 import { viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
 import * as backgrounds from './backgrounds.mjs';
 import backgroundSource from './backgrounds.mjs' with { type: 'text' };
@@ -96,10 +97,12 @@ const definition = {
     podVersion: '',
     contactsLink: { href: '../contacts/' },
     filesLink: { href: '../files/' },
+    presenterLink: { href: '../presenter/' },
     profileLink: { href: '../profile/' }
   },
   api: {
     viewResourceCapability,
+    providerCapabilities,
     backgrounds,
     ...directory,
     readApplicationManifest,
@@ -114,7 +117,7 @@ const definition = {
     editProfileCapability,
     editPreferencesCapability,
     browseCapability,
-  selectRecipientCapability,
+    selectRecipientCapability,
     selectionUrl,
     openCollection,
     recoverCollection,

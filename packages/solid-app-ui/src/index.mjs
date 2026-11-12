@@ -21,6 +21,7 @@ import {
   muzeSolidDesignDropdown,
   muzeSolidDesignToast,
   account,
+  muzeSolidUiAppToolbar,
   muzeSolidUiCapabilityDialog,
   sessionServices,
   sessionRecovery,
@@ -102,6 +103,7 @@ export function shell({
       muzeSolidDesignDialog,
       muzeSolidDesignDropdown,
       muzeSolidDesignToast,
+      muzeSolidUiAppToolbar,
       account: {
         ...account,
         templates: { 'suite-account': templates.account }
@@ -115,6 +117,8 @@ export function shell({
       ...accountOptions.components
     },
     data: {
+      muzeSolidUiAppTools: [],
+      muzeSolidUiAppToolbar: { hidden: '' },
       // The document title includes the suite name; the app heading does not.
       muzeSolidUiTitle: document.title.replace(/ · Solid Workbench$/, ''),
       muzeSolidDesignNotice: { text: '', visibility: { hidden: '' } },

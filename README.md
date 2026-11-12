@@ -18,14 +18,14 @@ npm run dev
 ```
 
 Open <http://127.0.0.1:4174/> or <http://127.0.0.1:4174/workbench/>.
-Solid Workbench links to Contacts, Files and Profile.
+Solid Workbench links to Contacts, Files, Profile and Presenter.
 The dev command builds once, then starts the server. Restart it after changing
 server code or response types; rebuilding `www/` alone does not reload the
 running server's configuration.
 Node 20.6 or newer is required for the build; the browser integration harness uses
 Node 22 or newer (native WebSocket) and `google-chrome` on PATH. Use localhost or
 HTTPS so browser storage, crypto and authentication work. Deploy `www/` as static
-files, preserving all six app paths and `/redirect.html`. External dependencies
+files, preserving all eight app paths and `/redirect.html`. External dependencies
 come from npm; workspace links only connect packages inside this repository.
 
 Contacts and shortcuts work locally in IndexedDB before connecting. Enter a WebID
@@ -55,6 +55,8 @@ logout from these apps; the identity provider may retain its own login session.
 | Contacts | Add sparse contacts, search, view/edit profiles, delete with tombstones, local persistence and explicit Solid sync. |
 | Profile | Read a WebID profile, edit your connected profile, or edit a local contact using the same component as Contacts. |
 | Files | Browse folders, create folders, upload/download binary files, and mark resources deleted through link metadata. |
+| Presenter | Background and centered rich text, inline provider editing, thumbnails, native RDF autosave and conditional Pod saves, fullscreen presentation. |
+| Resource Viewer | Standalone and embedded text/image viewing; independent text create/edit capabilities. |
 | Preferences | Dialog app for shared appearance, app settings and default providers. |
 | Account | Dialog app for WebID, connection status, connect/disconnect and browser logout; Workbench coordinates managed switching. |
 
@@ -63,6 +65,40 @@ and notes. Names and WebIDs are optional. Editing a private contact does not edi
 that person's public profile. Remote profile editing is offered only for your
 connected WebID; server authorization remains authoritative. Structured vCard
 values are displayed and preserved but cannot yet be edited.
+
+## Create and present a deck
+
+Open **Suite apps → Open Presenter** in Workbench, or `/presenter/` directly.
+Choose **Add slide**, click the centered text and type. Select text for the
+Feather **Bold**, **Italic** and **Link** controls. **Dock / Float** changes toolbar
+placement; **Text tools** or Ctrl+Space opens it from the keyboard, and Escape
+returns to editing. **Background** opens the Files image picker. The numbered
+thumbnails select slides; arrow buttons reorder them without dragging.
+
+**Present** requests fullscreen, with a viewport-sized fallback when unavailable.
+Use Previous/Next, arrow keys or Page Up/Down, and Escape to exit. Long text remains
+editable but reports a fit error in presentation instead of silently clipping it.
+
+The deck, including formatting, autosaves as native Turtle on this device,
+separately for each account and signed-out use. Under **Deck**, supply a `.ttl`
+document URL and choose **Save to Pod**. Save before opening or starting another
+deck. A conflict keeps local edits; save to a new URL to retain a separate copy.
+**Copy signed-out deck** copies that local deck into an empty account deck and
+retains the original. One current local deck per account is supported; simultaneous
+editing in multiple tabs is not coordinated.
+
+The separate Cobalt provider saves a native recovery draft before notifying
+Presenter. Presenter clears that draft only after confirming durable local deck
+storage. Images remain URL references, read through the provider's own connection.
+Loaded text remains editable offline; uncached images and provider code are not
+available offline. **View options** offers retry and provider recovery. Presenter
+exposes `muzeSolidPresenterApp` for inspection. The temporary local Cobalt 0.1.1
+build fixes composition input: committed IME text reaches the native fragment,
+and unfinished composition prevents slide closure or passive presentation.
+The maintainer has authorized this local package while npm publication is pending;
+see [local package provenance](local-packages/README.md). Cobalt still does not
+supply undo/redo. Additional styling, physical-phone keyboards and manual
+assistive-technology review remain follow-up.
 
 ## Launch a profile resource
 

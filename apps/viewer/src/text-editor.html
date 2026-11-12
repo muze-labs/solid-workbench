@@ -1,0 +1,40 @@
+<section
+  class="muze-solid-text-editor"
+  hidden
+  data-simply-field="muzeSolidTextVisibility"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+>
+  <h2
+    data-simply-field="muzeSolidTextTitle"
+    data-simply-transform="escape_html"
+  ></h2>
+  <label
+    >Text
+    <textarea
+      class="muze-solid-text-input"
+      rows="10"
+      data-simply-field="muzeSolidTextDraft"
+      data-simply-transform="escape_html"
+    ></textarea>
+  </label>
+  <p
+    role="status"
+    data-simply-field="muzeSolidTextStatus"
+    data-simply-transform="escape_html"
+  ></p>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="muzeSolidTextApply"
+  >
+    Use text
+  </button>
+  <button
+    type="button"
+    class="ds-button"
+    data-simply-command="muzeSolidTextCancel"
+  >
+    Cancel
+  </button>
+</section>

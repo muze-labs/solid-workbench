@@ -47,6 +47,34 @@ test('appearance is typed, complete and cannot import arbitrary CSS', () => {
   );
 });
 
+test('bounded presentation supports editing with explicit contain fit', () => {
+  const bounded = {
+    ...presentation,
+    interaction: 'passive',
+    geometry: 'bounded',
+    fit: 'contain'
+  };
+  assert.deepEqual(viewPresentation(bounded), bounded);
+  assert.deepEqual(viewPresentation({ ...bounded, fit: 'cover' }), {
+    ...bounded,
+    fit: 'cover'
+  });
+  const editable = { ...bounded, interaction: 'interactive' };
+  assert.deepEqual(viewPresentation(editable), editable);
+  assert.deepEqual(viewAppearance({ background: 'transparent' }), {
+    background: 'transparent'
+  });
+  for (const invalid of [
+    { ...bounded, fit: undefined },
+    { ...bounded, fit: 'crop' },
+    { ...bounded, interaction: 'unknown' },
+    { ...bounded, width: -1 },
+    { ...bounded, height: Infinity }
+  ]) {
+    assert.throws(() => viewPresentation(invalid), /Unsupported/);
+  }
+});
+
 test('persistent ticket is owner scoped, transient and can coexist with a task', async (t) => {
   const url = 'https://viewer.example/';
   const target = {
@@ -182,4 +210,56 @@ test('parent removal and workspace close retain views when their owner refuses',
   await broker.remove('owner');
   assert.equal(broker.instances.has(view.id), false);
   assert.equal(broker.instances.has('owner'), false);
+});
+
+test('editor read and acknowledgement retain the existing owner boundary', async (t) => {
+  const target = {
+    name: '',
+    location: { origin: 'https://host.example' },
+    addEventListener() {},
+    removeEventListener() {}
+  };
+  const broker = new WorkspaceBroker({
+    target,
+    resolveProvider: () => 'https://editor.example/'
+  });
+  t.after(() => broker.dispose());
+  const ticket = broker.beginEmbedded(
+    'https://editor.example/',
+    'urn:edit',
+    'launcher',
+    'view'
+  );
+  const record = broker.embeddedRecord(ticket.id, 'launcher');
+  const calls = [];
+  Object.assign(record, {
+    ready: true,
+    invoked: true,
+    peer: {
+      closed: false,
+      close() {},
+      async call(method, input) {
+        calls.push({ method, input });
+        return input;
+      }
+    }
+  });
+  for (const operation of ['read', 'acknowledge']) {
+    const input = { operation, generation: 'one', revision: 2 };
+    assert.deepEqual(await broker.updateEmbeddedView(ticket.id, input), input);
+    await assert.rejects(
+      broker.updateEmbeddedView(ticket.id, input, 'other'),
+      /another caller/
+    );
+  }
+  assert.equal(calls.length, 2);
+  await assert.rejects(
+    broker.updateEmbeddedView(ticket.id, { operation: 'write' }),
+    /Unsupported/
+  );
+  record.peer.closed = true;
+  await assert.rejects(
+    broker.updateEmbeddedView(ticket.id, { operation: 'read' }),
+    /unavailable/
+  );
 });

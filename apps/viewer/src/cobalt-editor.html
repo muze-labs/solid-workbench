@@ -1,0 +1,122 @@
+<section
+  class="muze-solid-cobalt"
+  hidden
+  data-simply-field="muzeSolidCobaltVisibility"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden data-readonly"
+>
+  <div
+    class="muze-solid-cobalt-edit"
+    role="textbox"
+    aria-label="Slide text"
+    aria-multiline="true"
+    spellcheck="true"
+  ></div>
+  <div
+    class="muze-solid-cobalt-read"
+    data-simply-field="muzeSolidCobaltFragment"
+    data-simply-transform="muzeSolidCobaltRender"
+  ></div>
+  <div
+    class="muze-solid-cobalt-tools"
+    data-simply-field="muzeSolidCobaltTools"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden style data-docked"
+  >
+    <div
+      class="muze-solid-design-toolbar"
+      role="group"
+      aria-label="Text formatting"
+    >
+      <button
+        type="button"
+        class="muze-solid-design-tool muze-solid-design-tool-stacked"
+        data-simply-command="muzeSolidCobaltFormat"
+        data-simply-value="strong"
+        data-simply-field="muzeSolidCobaltBold"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-pressed"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#bold"></use></svg
+        >Bold
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool muze-solid-design-tool-stacked"
+        data-simply-command="muzeSolidCobaltFormat"
+        data-simply-value="em"
+        data-simply-field="muzeSolidCobaltItalic"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-pressed"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#italic"></use></svg
+        >Italic
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool muze-solid-design-tool-stacked"
+        data-simply-command="muzeSolidCobaltLink"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#link"></use></svg
+        >Link
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool muze-solid-design-tool-stacked"
+        data-simply-command="muzeSolidCobaltDock"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#layout"></use>
+        </svg>
+        <span
+          data-simply-field="muzeSolidCobaltDockLabel"
+          data-simply-transform="escape_html"
+          >Dock</span
+        >
+      </button>
+    </div>
+    <form
+      class="muze-solid-cobalt-link"
+      data-simply-command="muzeSolidCobaltApplyLink"
+      hidden
+      data-simply-field="muzeSolidCobaltLinkPanel"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+    >
+      <label
+        >Link address<input
+          type="url"
+          name="href"
+          required
+          placeholder="https://…"
+      /></label>
+      <button class="muze-solid-design-tool" type="submit">Apply</button>
+      <button
+        class="muze-solid-design-tool"
+        type="button"
+        data-simply-command="muzeSolidCobaltUnlink"
+      >
+        Remove link
+      </button>
+    </form>
+  </div>
+  <button
+    class="muze-solid-design-tool muze-solid-cobalt-open-tools"
+    data-simply-command="muzeSolidCobaltTools"
+    aria-label="Text tools (Ctrl+Space)"
+    title="Text tools (Ctrl+Space)"
+  >
+    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#type"></use>
+    </svg>
+  </button>
+  <p
+    class="muze-solid-cobalt-status"
+    role="status"
+    data-simply-field="muzeSolidCobaltStatus"
+    data-simply-transform="escape_html"
+  ></p>
+</section>
