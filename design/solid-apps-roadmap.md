@@ -1923,3 +1923,20 @@ This prioritizes the demo over the previously proposed broad resilience cycle;
 that stage remains retained. CYC181 is Accepted on 2026-11-13 under ACC186;
 the documented managed Presenter native-click test limitation remains. Normal
 integration is authorized after validation; no publication is requested.
+
+## Lean runtime and optional authoring sources, 2026-11-13
+
+After CYC181, the maintainer selects CYC187 to reduce ordinary JavaScript
+downloads by removing duplicate readable inspection sources from runtime
+bundles. Operational SimplyFlow feature datasets remain available. Authored
+behavior and API-module text move to optional, version-matched static artifacts
+for later explicit IDE loading; no IDE UI or automatic source loader is selected.
+This supersedes always-embedded source retention. Measure complete normal app
+graphs/callbacks and optional authoring costs separately, and verify normal
+phone/keyboard/recovery workflows with those assets unavailable. The broader
+embedded-view resilience phase and unclassified Presenter test issue remain
+recorded; they are not silently reclassified as observed product defects.
+
+CYC187 is Accepted on 2026-11-13 under ACC192 after review of size and behavior
+evidence. The maintainer authorizes normal commit/merge/push after validation;
+the known Presenter browser click-test limitation remains explicitly disclosed.
