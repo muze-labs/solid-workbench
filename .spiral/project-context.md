@@ -2544,3 +2544,11 @@ limitations remain explicitly accepted evidence qualifications. Direct normal
 merge into latest main and push of main/cycle are authorized after exact
 validation. Preserve unrelated presentation-link roadmap edits and the priorities
 document. App Gallery remains future investigation; no new cycle or publication.
+
+CYC181 delivery records exact accepted-product equivalence and prospective
+integration validation in EVD185. A delivery audit found two culture references
+in the first design commit using submodule instead of project coordinates; they
+are corrected prospectively without rewriting history. Current references pass;
+the two historical findings remain disclosed. Existing stock parser/base tooling
+and Presenter native-pointer limits are retained, not claimed resolved. No
+product behavior changed after acceptance.
