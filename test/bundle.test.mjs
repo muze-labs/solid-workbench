@@ -7,6 +7,43 @@ test('readable and minified apps preserve isolated module graphs', async () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   const output = await bundleApplications(root);
   const allChunks = output.filter((item) => item.type === 'chunk');
+  const authoring = new Map(
+    output
+      .filter(
+        (item) =>
+          item.type === 'asset' && item.fileName.startsWith('authoring/')
+      )
+      .map((item) => [item.fileName, item])
+  );
+  assert(authoring.size > 20, 'authored feature data is separately deployed');
+  let reconstructed = 0;
+  for (const asset of authoring.values()) {
+    const value = (
+      await import(
+        'data:text/javascript;base64,' +
+          Buffer.from(asset.source).toString('base64')
+      )
+    ).default;
+    if (typeof value === 'string') {
+      assert(value.length > 0, 'API source text is retained outside runtime');
+      continue;
+    }
+    for (const entries of Object.values(value)) {
+      for (const metadata of Object.values(entries)) {
+        assert(metadata.origin, 'authoring data retains its file identity');
+        if (metadata.source) {
+          const body = Function('return (' + metadata.source + ')')();
+          assert.equal(
+            typeof body,
+            metadata.kind === 'event' ? 'object' : 'function'
+          );
+          reconstructed += 1;
+        }
+      }
+    }
+  }
+  assert(reconstructed > 100, 'authored behaviors survive extraction');
+
   for (const suffix of ['', '.min']) {
     const filename = (name) => name + suffix + '.js';
     const chunks = new Map(
@@ -64,6 +101,10 @@ test('readable and minified apps preserve isolated module graphs', async () => {
     );
     const moduleOwners = new Map();
     for (const [name, chunk] of chunks) {
+      assert(!chunk.imports.some((file) => file.startsWith('authoring/')));
+      assert(
+        !chunk.dynamicImports.some((file) => file.startsWith('authoring/'))
+      );
       for (const id of Object.keys(chunk.modules)) {
         assert(!moduleOwners.has(id), 'Duplicated module: ' + id);
         moduleOwners.set(id, name);

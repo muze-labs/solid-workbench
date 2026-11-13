@@ -73,7 +73,9 @@ checking the specification.
 Required reading before designing or changing an app:
 [Moldable Solid Apps](design/Moldable-Solid-Apps.md). Apply its rules for apps
 today so each app exposes editable feature datasets for the future in-app IDE.
-The IDE itself remains future roadmap work.
+Authored readable inspection sources are optional, version-matched build assets;
+normal startup and use must not fetch them. Keep the operational feature datasets
+in the runtime. The IDE itself remains future roadmap work.
 
 Required reading before starting any work that needs CSS:
 [Browser Styling Guide for AI](design/Browser-Styling-Guide-for-AI.md).

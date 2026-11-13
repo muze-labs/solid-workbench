@@ -40,7 +40,9 @@ export async function composeTemplate(filename, { appName = '' } = {}) {
   if (appName) {
     source = source.replaceAll('{{title}}', applicationTitle(appName));
     source = source.replaceAll('{{appName}}', appName);
-    const fillsContent = ['contacts', 'profile', 'preferences'].includes(appName);
+    const fillsContent = ['contacts', 'profile', 'preferences'].includes(
+      appName
+    );
     source = source.replaceAll(
       '{{appLayout}}',
       fillsContent ? 'swb-fill-content' : ''
@@ -101,8 +103,8 @@ export function editableSources() {
           )
         ) {
           // Rollup keys imports by specifier before attribute-aware resolution.
-          // Give text its own internal identity, even when the same module is
-          // also imported as executable code. Authored code/maps stay intact.
+          // Give text its own identity even when a file is also executable.
+          // Inspection-only JavaScript uses the explicit ?source import.
           node.source.value =
             textPrefix + path.resolve(path.dirname(id), node.source.value);
           changed = true;
@@ -135,7 +137,6 @@ export function editableSources() {
               ])
             )
         );
-        const entries = {};
         const metadataImports = [];
         const metadataExports = [];
         for (const statement of tree.body) {
@@ -224,16 +225,41 @@ export function editableSources() {
                 sections[section.key.name || section.key.value] = functions;
               }
             }
-            entries[declaration.id.name] = sections;
+            const reference = this.emitFile({
+              type: 'asset',
+              name:
+                path.basename(filename, '.mjs') +
+                '-' +
+                declaration.id.name +
+                '.entries.js',
+              source:
+                'export default ' + JSON.stringify(sections, null, 2) + ';\n'
+            });
+            metadataExports.push(
+              JSON.stringify(declaration.id.name) +
+                ': { url: import.meta.ROLLUP_FILE_URL_' +
+                reference +
+                ' }'
+            );
           }
         }
         return (
           metadataImports.join('\n') +
-          '\nexport default { ...' +
-          JSON.stringify(entries) +
-          (metadataExports.length ? ', ' + metadataExports.join(', ') : '') +
+          '\nexport default { ' +
+          metadataExports.join(', ') +
           ' };'
         );
+      }
+      if (id.endsWith('?source')) {
+        const filename = id.slice(0, -7);
+        this.addWatchFile(filename);
+        const source = await readFile(filename, 'utf8');
+        const reference = this.emitFile({
+          type: 'asset',
+          name: path.basename(filename, '.mjs') + '.module-source.js',
+          source: 'export default ' + JSON.stringify(source) + ';\n'
+        });
+        return 'export default import.meta.ROLLUP_FILE_URL_' + reference + ';';
       }
       if (!id.startsWith(textPrefix)) {
         return;
@@ -256,7 +282,7 @@ export function editableSources() {
             : path.resolve(path.dirname(importer), id);
         return { id: textPrefix + filename, attributes: {} };
       }
-      if (id.endsWith('?entries')) {
+      if (id.endsWith('?entries') || id.endsWith('?source')) {
         if (path.isAbsolute(id)) {
           return id;
         }

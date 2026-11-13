@@ -1,16 +1,15 @@
 import assert from 'node:assert/strict';
 
-// Integration coverage for retained authored source in production bundles.
+// Explicit authoring-tool coverage; normal startup must not load these assets.
 // All storage APIs in the second host are explicit fixture doubles.
 export async function checkFeatureSources(page, appName) {
-  const result = await page.evaluate(() => {
+  const result = await page.evaluate(async () => {
     const route = location.pathname.split('/').filter(Boolean).at(-1);
     const name = route === 'workbench' ? 'launcher' : route;
     let owner = globalThis.swbPreferencesApp;
     if (name !== 'preferences') {
-      owner = globalThis[
-        'muzeSolid' + name[0].toUpperCase() + name.slice(1) + 'App'
-      ];
+      owner =
+        globalThis['muzeSolid' + name[0].toUpperCase() + name.slice(1) + 'App'];
     }
     const entries = [];
     const instances = owner.definition.instances || {
@@ -18,11 +17,35 @@ export async function checkFeatureSources(page, appName) {
     };
     const definitions = [
       owner.definition,
-      ...Object.values(instances).map(
-        (view) => view.definition
-      )
+      ...Object.values(instances).map((view) => view.definition)
     ];
+    const automaticSources = performance
+      .getEntriesByType('resource')
+      .filter((entry) => new URL(entry.name).pathname.includes('/authoring/'));
+    if (automaticSources.length) {
+      throw new Error(
+        'feature-test: Startup requested optional authoring sources'
+      );
+    }
+    // This fixture explicitly acts as an authoring tool, after checking startup.
+    // No equivalent loader is installed in the application runtime.
     for (const definition of definitions) {
+      for (const [name, descriptor] of Object.entries(definition.sources)) {
+        if (!descriptor.url) {
+          throw new Error(
+            'feature-test: Missing same-build source URL for ' + name
+          );
+        }
+        const metadata = (await import(descriptor.url)).default;
+        definition.sources[name] = { ...metadata, ...descriptor };
+      }
+      for (const module of Object.values(definition.modules || {})) {
+        if (typeof (await import(module.sourceUrl)).default !== 'string') {
+          throw new Error(
+            'feature-test: API module source is not readable text'
+          );
+        }
+      }
       for (const component of Object.values(definition.sources)) {
         for (const [section, values] of Object.entries(component)) {
           for (const [entry, metadata] of Object.entries(values)) {
@@ -35,7 +58,8 @@ export async function checkFeatureSources(page, appName) {
               const reconstructed = Function(
                 'return (' + metadata.source + ')'
               )();
-              const expected = metadata.kind === 'event' ? 'object' : 'function';
+              const expected =
+                metadata.kind === 'event' ? 'object' : 'function';
               if (typeof reconstructed !== expected) {
                 throw new Error(
                   'feature-test: Invalid ' + section + '.' + entry
@@ -113,7 +137,9 @@ export async function checkFeatureSources(page, appName) {
           app.data.people.length === 1 &&
           app.data.people[0].id === 'sample:b' &&
           mount.querySelector('[aria-label="Find sample people"]') !== null &&
-          mount.querySelector('.swb-person-list').textContent.includes('Beta') &&
+          mount
+            .querySelector('.swb-person-list')
+            .textContent.includes('Beta') &&
           original.templates['contacts-list'].includes('Search contacts') &&
           !sample[0].search
         );

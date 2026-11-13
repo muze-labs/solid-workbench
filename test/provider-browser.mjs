@@ -371,7 +371,8 @@ try {
   await wait('[...document.querySelector("[data-simply-command=swb_chooseProvider]").options].some(o=>o.text.startsWith("Other picker"))', true);
   // Reconstructed feature source remains usable for live edits and restoration.
   const editable = await run(`const app=swbPreferencesApp;
-    const entries=app.definition.sources.swbProviderPreferences.actions;
+    const descriptor=app.definition.sources.swbProviderPreferences;
+    const entries=(await import(descriptor.url)).default.actions;
     for(const entry of Object.values(entries)) {
       if(typeof Function('return ('+entry.source+')')()!=='function') {
         throw new Error('provider-browser: Invalid editable source');

@@ -2552,3 +2552,29 @@ are corrected prospectively without rewriting history. Current references pass;
 the two historical findings remain disclosed. Existing stock parser/base tooling
 and Presenter native-pointer limits are retained, not claimed resolved. No
 product behavior changed after acceptance.
+
+## Lean-runtime cycle selected, 2026-11-13
+
+After CYC181 delivery the maintainer selects smaller initial JavaScript in place
+of the proposed Presenter reliability cycle. A measured source-copy probe and
+concrete optional-authoring scope are presented; they confirm “lets do it”.
+CYC187 is Active on verified spiral/CYC-20261113-QG24H-187-lean-runtime-sources
+from main 0702a85. SRC188/DES189/IMP190/EVD191 retain scope/evidence. Runtime
+feature datasets stay editable; readable inspection sources move to optional
+matching static assets, without IDE UI/loader or normal automatic requests.
+Update the earlier always-shipped source policy prospectively. Existing native
+data/recovery, renderer, app boundaries and advisory budgets remain. Preserve
+unrelated planning; no commit/integration/publication is authorized.
+
+CYC187 now enters Evaluate, remaining Active pending maintainer acceptance.
+Implementation separates optional authoring payloads; complete minified graphs
+shrink 12–18% across the suite. Unit/build checks and native catalog/styling,
+including readable mode and authoring-denied core tasks, pass. The full browser
+command retains the unclassified Presenter click failure at :332; no clean
+suite or defect resolution is claimed. EVD191 records cold-task and size data.
+No commit/integration/publication was performed.
+
+The maintainer subsequently accepts CYC187 and explicitly requests commit,
+merge and push. ACC192 records exact implementation/evidence versions. CYC187
+is Accepted; earlier pending notes are superseded. Normal integration against
+latest main is authorized, with unrelated user planning excluded and preserved.

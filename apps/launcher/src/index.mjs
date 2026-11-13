@@ -1,10 +1,10 @@
 import { AppCatalog } from './catalog.mjs';
-import catalogSource from './catalog.mjs' with { type: 'text' };
+import catalogSource from './catalog.mjs?source';
 import { providerCapabilities } from '@muze-labs/solid-preferences/providers.mjs';
 import { viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
 import * as backgrounds from './backgrounds.mjs';
-import backgroundSource from './backgrounds.mjs' with { type: 'text' };
-import manifestSource from './manifests.mjs' with { type: 'text' };
+import backgroundSource from './backgrounds.mjs?source';
+import manifestSource from './manifests.mjs?source';
 import { readApplicationManifest } from './manifests.mjs';
 import * as directory from '@muze-labs/solid-app-data/workspace-directory.mjs';
 import { installEvents } from '@muze-labs/simplyflow-events';
@@ -14,7 +14,7 @@ import {
   muzeSolidDesignDropdown,
   muzeSolidDesignToolbar
 } from '@muze-labs/solid-design';
-import shortcutSource from './shortcuts.mjs' with { type: 'text' };
+import shortcutSource from './shortcuts.mjs?source';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import { model } from '@muze-labs/simplyflow/model';
 import { effect, destroy } from '@muze-labs/simplyflow/state';
@@ -165,7 +165,7 @@ exposeDefinition(ui, definition, sources);
 installEvents(ui);
 ui.definition.modules = {
   catalog: {
-    source: catalogSource,
+    sourceUrl: catalogSource,
     origin: 'apps/launcher/src/catalog.mjs',
     dependencies: [
       '@muze-labs/solid-app-data',
@@ -175,17 +175,17 @@ ui.definition.modules = {
     ]
   },
   backgrounds: {
-    source: backgroundSource,
+    sourceUrl: backgroundSource,
     origin: 'apps/launcher/src/backgrounds.mjs',
     dependencies: ['@muze-labs/solid-app-data']
   },
   manifests: {
-    source: manifestSource,
+    sourceUrl: manifestSource,
     origin: 'apps/launcher/src/manifests.mjs',
     dependencies: ['@muze-labs/solid-app-data', './shortcuts.mjs']
   },
   shortcuts: {
-    source: shortcutSource,
+    sourceUrl: shortcutSource,
     origin: 'apps/launcher/src/shortcuts.mjs',
     dependencies: [
       '@muze-labs/solid-app-data',

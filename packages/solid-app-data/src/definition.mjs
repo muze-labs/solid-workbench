@@ -1,5 +1,5 @@
-// Source metadata only: SimplyFlow owns composition, bindings and rendering.
-// The build supplies authored behavior source before bundling/minification.
+// SimplyFlow owns composition, bindings and runtime feature definitions.
+// Sources contain optional same-build authoring URLs, never startup payloads.
 export function exposeDefinition(view, options, sources) {
   const sections = [
     'templates',

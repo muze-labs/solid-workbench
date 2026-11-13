@@ -4,9 +4,15 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { startChrome } from './support/chrome.mjs';
 
 let origin;
+let authoringRequests = 0;
 const folders = new Set();
 const server = createServer(async (request, response) => {
   const url = new URL(request.url, origin);
+  if (url.pathname.startsWith('/assets/authoring/')) {
+    authoringRequests += 1;
+    response.writeHead(404).end('Optional authoring sources unavailable');
+    return;
+  }
 
   response.setHeader('Cache-Control', 'no-store');
   if (url.pathname === '/profile') {
@@ -382,6 +388,7 @@ try {
     features: [{ name: 'prefers-color-scheme', value: 'dark' }]
   });
   await capture('files-dark');
+  assert.equal(authoringRequests, 0, 'Normal workflows never request authoring sources');
   console.log(
     'PASS: real Contacts create/edit/cancel, Preferences controls and Files folder create in empty phone list; phone/desktop layouts and theme captures.'
   );

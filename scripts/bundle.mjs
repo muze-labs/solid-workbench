@@ -135,6 +135,7 @@ export async function bundleApplications(root) {
         entryFileNames: '[name]' + suffix + '.js',
         chunkFileNames: '[name]' + suffix + '.js',
         sourcemap: true,
+        assetFileNames: 'authoring/[name]-[hash][extname]',
         onlyExplicitManualChunks: true,
         manualChunks: sharedChunk,
         plugins
