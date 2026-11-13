@@ -83,7 +83,7 @@ test('Contacts retains filtering across source refresh without changing RDF', as
 
 test('Files model updates picker visibility and source replacements without mutation', () => {
   const view = actionContext([fileNavigation, resourcePicker], {
-    runtime: { pending: null }
+    runtime: { pending: null, host: { view: { data: {} } } }
   });
   view.actions.initializeFiles();
   try {
@@ -115,6 +115,7 @@ test('Files model updates picker visibility and source replacements without muta
     view.actions.renderPicker();
     assert.equal(view.data.entries[0].pick.hidden, null);
     assert.equal(view.data.entries[0].edit.hidden, '');
+    assert.equal(view.runtime.host.view.data.muzeSolidUiAppToolbar.hidden, '');
     assert.equal(source[0].pick, undefined);
     assert.equal(source[1].deleted, true);
     view.runtime.files.state.data = [];

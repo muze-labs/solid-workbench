@@ -1,19 +1,124 @@
-<div style="display: contents">
-  <form class="swb-toolbar swb-app-toolbar" data-simply-command="browse">
-    <label class="swb-toolbar-label"
-      >Folder URL<input
-        class="swb-control swb-labeled-control"
-        name="url"
-        type="url"
-        required
-        data-simply-field="url" /></label
-    ><button class="ds-button swb-toolbar-button">Open folder</button
-    ><button
-      type="button"
-      class="ds-button swb-toolbar-button"
-      data-simply-command="up"
+<nav class="muze-solid-files-location" aria-label="Folder location">
+  <button
+    type="button"
+    class="muze-solid-design-tool"
+    data-simply-command="up"
+    aria-label="Parent folder"
+    title="Parent folder"
+    data-simply-field="muzeSolidFilesParent"
+    data-simply-transform="attributes"
+    data-simply-attributes="disabled"
+  >
+    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#arrow-up"></use>
+    </svg>
+  </button>
+  <div class="muze-solid-files-path">
+    <span
+      class="muze-solid-files-ancestor-path"
+      data-simply-list="muzeSolidFilesAncestors"
     >
-      Parent folder
+      <template
+        ><span class="muze-solid-files-crumb-part">
+          <button
+            type="button"
+            class="muze-solid-design-tool muze-solid-files-crumb"
+            data-simply-command="muzeSolidFilesBrowseFolder"
+            data-simply-value=":value.url"
+          >
+            <span
+              class="muze-solid-files-crumb-text"
+              data-simply-field="label"
+              data-simply-transform="escape_html"
+            ></span></button
+          ><span aria-hidden="true">/</span>
+        </span></template
+      >
+    </span>
+    <button
+      type="button"
+      class="muze-solid-design-tool muze-solid-files-ancestors"
+      popovertarget="muze-solid-files-location-sheet"
+      aria-label="Show full folder path"
+      title="Show full folder path"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#more-horizontal"></use>
+      </svg>
     </button>
-  </form>
-</div>
+    <button
+      type="button"
+      class="muze-solid-design-tool muze-solid-files-current-folder"
+      popovertarget="muze-solid-files-location-sheet"
+    >
+      <span
+        class="muze-solid-files-crumb-text"
+        data-simply-field="muzeSolidFilesFolderName"
+        data-simply-transform="escape_html"
+      ></span
+      ><svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#chevron-down"></use>
+      </svg>
+    </button>
+  </div>
+  <button
+    type="button"
+    class="muze-solid-design-tool muze-solid-files-location-edit"
+    popovertarget="muze-solid-files-location-sheet"
+    aria-label="Edit folder address"
+    title="Edit folder address"
+    data-muze-solid-files-edit-location
+  >
+    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#edit-2"></use>
+    </svg>
+  </button>
+  <div
+    id="muze-solid-files-location-sheet"
+    class="muze-solid-files-location-sheet"
+    popover
+    data-simply-field="muzeSolidFilesLocationPlacement"
+    data-simply-transform="attributes"
+    data-simply-attributes="style"
+  >
+    <p class="muze-solid-files-caption">Folder location</p>
+    <ul
+      class="muze-solid-files-folder-options"
+      data-simply-list="muzeSolidFilesFolders"
+    >
+      <template
+        ><li>
+          <button
+            type="button"
+            class="muze-solid-design-tool muze-solid-files-folder-option"
+            data-simply-command="muzeSolidFilesBrowseFolder"
+            data-simply-value=":value.url"
+            data-simply-field="attributes"
+            data-simply-transform="attributes"
+            data-simply-attributes="style"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#folder"></use></svg
+            ><span
+              data-simply-field="label"
+              data-simply-transform="escape_html"
+            ></span>
+          </button></li
+      ></template>
+    </ul>
+    <form class="muze-solid-files-location-form" data-simply-command="browse">
+      <label class="muze-solid-files-url-label"
+        >Folder URL
+        <input
+          class="swb-control swb-labeled-control"
+          name="url"
+          type="url"
+          required
+          data-simply-field="url"
+          aria-label="Folder URL"
+        />
+      </label>
+      <button class="muze-solid-design-tool">Open folder</button>
+    </form>
+  </div>
+</nav>

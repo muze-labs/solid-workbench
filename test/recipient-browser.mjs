@@ -161,8 +161,12 @@ try {
   await files.send('Emulation.setFocusEmulationEnabled',{enabled:true});
   await files.send('Page.bringToFront');
   await until(files,'!solidFiles.ui.runtime.busy');
-  await until(files,'document.querySelector("[data-simply-command=swb_shareResource]")?.checkVisibility()');
-  await run(files,'document.querySelector("[data-simply-command=swb_shareResource]").focus();');
+  await until(files,'document.querySelector(".muze-solid-files-entry-more")?.checkVisibility()');
+  await run(files,'document.querySelector(".muze-solid-files-entry-more").focus();');
+  await key(files,'Enter',13);
+  await until(files,'document.querySelector(".muze-solid-files-entry-menu").matches(":popover-open")');
+  await until(files,'document.querySelector(".muze-solid-files-entry-menu [data-simply-command=swb_shareResource]")?.checkVisibility()');
+  await run(files,'document.querySelector(".muze-solid-files-entry-menu [data-simply-command=swb_shareResource]").focus();');
   await until(files,'document.activeElement.dataset.simplyCommand==="swb_shareResource"');
   await key(files,'Enter',13);
   await until(files,'document.querySelector("iframe")?.contentWindow.muzeSolidContactsApp?.runtime.recipientRequest');
@@ -230,7 +234,7 @@ try {
       location.origin+'/files/',{},'Choose a resource').then(value=>window.filePicked=value);`);
   await until(page,'document.querySelector("iframe")?.contentWindow.solidFiles?.ui.runtime.pending');
   await until(page,'document.querySelector("iframe").contentWindow.solidFiles.ui.data.entries.length===1');
-  assert.equal(await run(page,'return document.querySelector("iframe").contentDocument.querySelector("table.swb-file-list").checkVisibility();'),false);
+  assert.equal(await run(page,'return document.querySelector("iframe").contentDocument.querySelector(".swb-file-list").checkVisibility();'),false);
   await until(page,'document.querySelector("iframe").getAttribute("aria-busy")==="false"');
   await until(page,'document.querySelector("iframe").contentDocument.querySelector(".swb-resource-choices").checkVisibility()');
   await run(page, `document.querySelector('iframe').contentDocument.querySelector('.swb-resource-choices [data-simply-command=selectResource]').click();`);

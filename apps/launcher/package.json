@@ -9,6 +9,7 @@
     "@muze-labs/simplyflow": "^0.10.4",
     "@muze-nl/jaqt": "^0.10.7",
     "@muze-labs/solid-design": "0.1.0",
-    "@muze-labs/simplyflow-events": "0.1.0"
+    "@muze-labs/simplyflow-events": "0.1.0",
+    "@muze-labs/solid-workspace": "^0.2.1"
   }
 }

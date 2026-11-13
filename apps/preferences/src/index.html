@@ -3,7 +3,7 @@
   data-simply-shortcuts="muzeSolidDesignSections"
 >
   <nav
-    class="ds-panels-pane ds-panels-list ds-navbar-side swb-list-pane"
+    class="ds-panels-pane ds-panels-list ds-navbar-side swb-list-pane muze-solid-preferences-navigation"
     aria-label="Preferences sections"
   >
     <label
@@ -48,12 +48,12 @@
     </ul>
   </nav>
   <section
-    class="ds-panels-pane ds-panels-details swb-list-pane"
+    class="ds-panels-pane ds-panels-details swb-list-pane muze-solid-preferences-settings"
     aria-label="Settings"
   >
     <button
       type="button"
-      class="ds-button muze-solid-design-list-back"
+      class="muze-solid-design-tool muze-solid-design-list-back"
       data-simply-command="muzeSolidDesignShowList"
     >
       Back to sections
@@ -86,7 +86,7 @@
       ></label>
       <button
         type="button"
-        class="ds-button"
+        class="muze-solid-design-tool"
         data-simply-command="swb_refreshWorkspace"
       >
         Refresh workspace settings
@@ -114,7 +114,7 @@
           <p data-simply-field="label" data-simply-transform="escape_html"></p>
           <button
             type="button"
-            class="ds-button"
+            class="muze-solid-design-tool"
             data-simply-command="swb_keepLocal"
             data-simply-value=":value.id"
           >
@@ -122,7 +122,7 @@
           </button>
           <button
             type="button"
-            class="ds-button"
+            class="muze-solid-design-tool"
             data-simply-command="swb_useRemote"
             data-simply-value=":value.id"
           >
@@ -131,7 +131,11 @@
         </li></template
       >
     </ul>
-    <button type="button" class="ds-button" data-simply-command="swb_retrySync">
+    <button
+      type="button"
+      class="muze-solid-design-tool"
+      data-simply-command="swb_retrySync"
+    >
       Retry synchronization
     </button>
   </section>

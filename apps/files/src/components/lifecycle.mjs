@@ -2,6 +2,7 @@ export const lifecycle = {
   actions: {
     async initialize() {
       this.actions.initializeFiles();
+      this.actions.muzeSolidFilesInitializeTools();
       this.runtime.container =
         this.runtime.host.main.querySelector('.swb-file-controls');
       this.runtime.current = '';

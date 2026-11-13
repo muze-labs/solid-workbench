@@ -1,26 +1,77 @@
 <div style="display: contents">
-  <div
-    class="swb-toolbar swb-app-toolbar"
-    data-simply-field="editing"
-    data-simply-transform="attributes"
-    data-simply-attributes="hidden"
-  >
-    <form data-simply-command="mkdir">
-      <label
-        >New folder name<input
-          class="swb-control swb-labeled-control"
-          name="name"
-          required /></label
-      ><button class="ds-button swb-toolbar-button">Create folder</button>
-    </form>
-    <label
-      class="ds-button swb-file-upload swb-toolbar-label swb-toolbar-button"
-      >Upload files<input
-        class="swb-control swb-labeled-control swb-file-upload-input"
-        type="file"
-        multiple
-        aria-label="Upload files"
-        data-simply-command="upload"
-    /></label>
+  <div id="muze-solid-files-more-menu" class="muze-solid-files-more-menu" popover>
+    <button
+      type="button"
+      class="muze-solid-design-tool muze-solid-files-folder-option"
+      data-simply-command="muzeSolidFilesRefresh"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#refresh-cw"></use></svg
+      >Refresh
+    </button>
   </div>
+  <input
+    class="swb-file-upload-input"
+    type="file"
+    multiple
+    hidden
+    aria-label="Upload files"
+    data-simply-command="upload"
+  />
+  <dialog
+    class="ds-dialog muze-solid-design-dialog muze-solid-files-create-dialog"
+    data-simply-behavior="muzeSolidDesignDialog"
+    aria-labelledby="muze-solid-files-create-title"
+  >
+    <form
+      class="swb-dialog-form muze-solid-files-create-form"
+      data-simply-command="mkdir"
+    >
+      <header class="muze-solid-design-dialog-header">
+        <h2 id="muze-solid-files-create-title" class="swb-dialog-title">
+          New folder
+        </h2>
+        <button
+          type="button"
+          class="ds-button muze-solid-design-dialog-close"
+          data-simply-command="muzeSolidDesignCloseDialog"
+          aria-label="Close new folder dialog"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#x"></use>
+          </svg>
+        </button>
+      </header>
+      <div class="muze-solid-design-dialog-content">
+        <label
+          >New folder name<input
+            class="swb-control swb-labeled-control"
+            name="name"
+            aria-describedby="muze-solid-files-create-status"
+            required
+            autofocus
+        /></label>
+        <p
+          id="muze-solid-files-create-status"
+          role="status"
+          data-simply-field="muzeSolidFilesCreateStatus"
+          data-simply-transform="escape_html"
+        ></p>
+      </div>
+      <footer class="muze-solid-design-dialog-footer">
+        <button type="submit" class="muze-solid-design-tool">
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#check"></use></svg
+          >Create folder
+        </button>
+        <button
+          type="button"
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidDesignCloseDialog"
+        >
+          Cancel
+        </button>
+      </footer>
+    </form>
+  </dialog>
 </div>

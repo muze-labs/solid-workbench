@@ -1,12 +1,16 @@
 import { installEvents } from '@muze-labs/simplyflow-events';
-import { EmbeddedView, viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
+import {
+  EmbeddedView,
+  viewResourceCapability
+} from '@muze-labs/solid-app-data/embedded-view.mjs';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
 import { readRecipient } from '@muze-labs/solid-app-data/recipient.mjs';
 import { readProfile } from '@muze-labs/solid-profile';
 import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import {
   muzeSolidDesignDialog,
-  muzeSolidDesignListDetails
+  muzeSolidDesignListDetails,
+  muzeSolidDesignToolbar
 } from '@muze-labs/solid-design';
 import fileDataSource from './data.mjs' with { type: 'text' };
 import { listFolder, readDownload, uploadFiles } from './data.mjs';
@@ -17,7 +21,10 @@ import { from } from '@muze-nl/jaqt';
 import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { shell } from '@muze-labs/solid-app-ui';
-import { browseCapability, selectRecipientCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
+import {
+  browseCapability,
+  selectRecipientCapability
+} from '@muze-labs/solid-app-data/capabilities.mjs';
 import { httpUrl } from '@muze-labs/solid-app-data';
 import {
   linkState,
@@ -40,10 +47,12 @@ const host = shell({
   templates: { account: accountTemplate }
 });
 const definition = {
-  container: host.main.querySelector('.swb-file-controls'),
+  // The browser's own mode attribute must also be inside the binding scope.
+  container: host.main,
   components: {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
+    muzeSolidDesignToolbar,
     muzeSolidFileDetails,
     swbFileSharing,
     fileNavigation,
@@ -52,13 +61,22 @@ const definition = {
     lifecycle
   },
   data: {
+    muzeSolidFilesCreateStatus: '',
+    muzeSolidFilesFolderName: 'Folder',
+    muzeSolidFilesAncestors: [],
+    muzeSolidFilesFolders: [],
+    muzeSolidFilesParent: { disabled: '' },
+    muzeSolidFilesLocationPlacement: {},
     muzeSolidFilesLocation: { 'data-muze-solid-files-detail': null },
     muzeSolidFilesDetails: { hidden: '' },
-    muzeSolidFilesDetailName: '', muzeSolidFilesDetailResource: '',
-    muzeSolidFilesProvider: '', muzeSolidFilesViewStatus: '',
+    muzeSolidFilesDetailName: '',
+    muzeSolidFilesDetailResource: '',
+    muzeSolidFilesProvider: '',
+    muzeSolidFilesViewStatus: '',
     muzeSolidFilesRecovery: { hidden: '' },
     muzeSolidFilesLoading: { hidden: '' },
-    muzeSolidFilesStandalone: {}, muzeSolidFilesDiscard: { hidden: '' },
+    muzeSolidFilesStandalone: {},
+    muzeSolidFilesDiscard: { hidden: '' },
     muzeSolidFilesFrame: { src: 'about:blank', hidden: '' },
     entries: [],
     url: '',
@@ -68,12 +86,19 @@ const definition = {
     requester: '',
     pickerEntries: [],
     swb_shareVisible: { hidden: '' },
-    swb_shareResource: '', swb_sharePerson: '', swb_shareId: '',
-    swb_shareDocument: '', swb_shareEmail: '', swb_sharePhone: '',
-    swb_shareWebId: '', swb_shareStatus: ''
+    swb_shareResource: '',
+    swb_sharePerson: '',
+    swb_shareId: '',
+    swb_shareDocument: '',
+    swb_shareEmail: '',
+    swb_sharePhone: '',
+    swb_shareWebId: '',
+    swb_shareStatus: ''
   },
   api: {
-    EmbeddedView, WorkspaceBroker, viewResourceCapability,
+    EmbeddedView,
+    WorkspaceBroker,
+    viewResourceCapability,
     app,
     listFolder,
     readDownload,
@@ -86,7 +111,10 @@ const definition = {
     apps,
     shell,
     browseCapability,
-    selectRecipientCapability, readRecipient, readProfile, launchUrl,
+    selectRecipientCapability,
+    readRecipient,
+    readProfile,
+    launchUrl,
     httpUrl,
     linkState,
     markResourceDeleted,

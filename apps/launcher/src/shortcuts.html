@@ -1,88 +1,6 @@
 <div style="display: contents">
   <section class="swb-saved-apps">
     <h2 class="swb-visually-hidden">Your shortcuts</h2>
-    <dialog
-      data-simply-behavior="muzeSolidDesignDialog"
-      class="ds-dialog muze-solid-design-dialog muze-solid-launcher-add-dialog"
-    >
-      <form class="swb-dialog-form" data-simply-command="add">
-        <header class="muze-solid-design-dialog-header">
-          <h2 class="swb-dialog-title">Add shortcut</h2>
-          <button
-            type="button"
-            class="ds-button muze-solid-design-dialog-close"
-            data-simply-command="muzeSolidDesignCloseDialog"
-            aria-label="Close add shortcut dialog"
-          >
-            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-              <use href="../assets/feather-icons.svg#x"></use>
-            </svg>
-          </button>
-        </header>
-        <div class="muze-solid-design-dialog-content">
-          <label
-            >Name<input class="swb-control swb-labeled-control" name="name"
-          /></label>
-          <label
-            >Application URL<input
-              class="swb-control swb-labeled-control"
-              name="url"
-              type="url"
-          /></label>
-          <label
-            >Application manifest URL (optional)<input
-              class="swb-control swb-labeled-control"
-              name="manifest"
-              type="url"
-          /></label>
-          <label
-            >Icon URL (optional)<input
-              class="swb-control swb-labeled-control"
-              name="icon"
-              type="url"
-          /></label>
-          <p>
-            Enter an application URL, or use its RDF manifest. You can change
-            the name and icon.
-          </p>
-          <details>
-            <summary>Launch options</summary>
-            <label
-              >Launch mode<select
-                class="swb-control swb-labeled-control"
-                name="launchMode"
-              >
-                <option value="">Follow application</option>
-                <option value="fragment">URL fragment (#)</option>
-                <option value="query">URL query (?)</option>
-              </select></label
-            >
-            <label
-              ><input
-                class="swb-control swb-labeled-control"
-                type="checkbox"
-                name="anonymous"
-              />
-              Launch anonymously (omit WebID)</label
-            >
-            <p class="swb-muted">
-              Anonymous applies to this shortcut. It does not sign you out of
-              the receiving app.
-            </p>
-          </details>
-        </div>
-        <footer class="muze-solid-design-dialog-footer">
-          <button class="ds-button ds-button-primary">Add shortcut</button>
-          <button
-            type="button"
-            class="ds-button"
-            data-simply-command="muzeSolidDesignCloseDialog"
-          >
-            Cancel
-          </button>
-        </footer>
-      </form>
-    </dialog>
     <div class="swb-launcher-grid">
       <ul
         class="swb-person-list swb-shortcut-list"
@@ -213,12 +131,12 @@
       <button
         type="button"
         class="ds-button swb-add-shortcut"
-        data-simply-command="muzeSolidLauncherAddDialog"
+        data-simply-command="muzeSolidCatalogOpen"
       >
         <svg class="ds-icon ds-icon-feather swb-app-icon" aria-hidden="true">
           <use href="../assets/feather-icons.svg#plus"></use>
         </svg>
-        <span>Add shortcut</span>
+        <span>Add apps</span>
       </button>
     </div>
     <p

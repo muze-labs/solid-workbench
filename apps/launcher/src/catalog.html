@@ -1,0 +1,277 @@
+<dialog
+  class="ds-dialog muze-solid-design-dialog muze-solid-catalog-dialog"
+  data-simply-behavior="muzeSolidDesignDialog"
+  aria-labelledby="muze-solid-catalog-title"
+>
+  <header class="muze-solid-design-dialog-header">
+    <h2 id="muze-solid-catalog-title" class="swb-dialog-title">Add apps</h2>
+    <button
+      type="button"
+      class="ds-button muze-solid-design-dialog-close"
+      data-simply-command="muzeSolidCatalogClose"
+      aria-label="Close app catalog"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#x"></use>
+      </svg>
+    </button>
+  </header>
+  <p
+    class="muze-solid-catalog-status"
+    role="status"
+    data-simply-field="muzeSolidCatalogStatus"
+    data-simply-transform="escape_html"
+  ></p>
+  <fieldset
+    class="muze-solid-catalog-controls"
+    data-simply-field="muzeSolidCatalogBusy"
+    data-simply-transform="attributes"
+    data-simply-attributes="disabled"
+  >
+    <legend class="swb-visually-hidden">App catalog</legend>
+    <div
+      class="ds-panels muze-solid-design-list-details muze-solid-catalog-layout"
+      data-simply-shortcuts="muzeSolidDesignSections"
+    >
+      <nav
+        class="ds-panels-pane ds-panels-list ds-navbar-side swb-list-pane muze-solid-catalog-categories"
+        aria-label="App categories"
+      >
+        <ul
+          class="ds-navbar-nav"
+          data-muze-solid-design-sections
+          data-simply-list="muzeSolidCatalogCategories"
+        >
+          <template
+            ><li>
+              <button
+                type="button"
+                data-simply-command="muzeSolidCatalogCategory"
+                data-simply-value=":value.id"
+                data-simply-field="attributes"
+                data-simply-transform="attributes"
+                data-simply-attributes="class aria-current tabindex data-muze-solid-catalog-category"
+              >
+                <span
+                  data-simply-field="label"
+                  data-simply-transform="escape_html"
+                ></span>
+              </button></li
+          ></template>
+        </ul>
+      </nav>
+      <section
+        class="ds-panels-pane ds-panels-details swb-list-pane muze-solid-catalog-details"
+        aria-label="Apps in category"
+      >
+        <button
+          type="button"
+          class="muze-solid-design-tool muze-solid-design-list-back"
+          data-simply-command="muzeSolidDesignShowList"
+        >
+          Back to categories
+        </button>
+        <h3
+          tabindex="-1"
+          class="muze-solid-catalog-heading"
+          data-simply-field="muzeSolidCatalogCategoryTitle"
+          data-simply-transform="escape_html"
+        ></h3>
+        <div
+          data-simply-field="muzeSolidCatalogAppsPanel"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+        >
+          <div class="muze-solid-design-toolbar">
+            <label class="muze-solid-design-toolbar-field">
+              <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                <use href="../assets/feather-icons.svg#search"></use>
+              </svg>
+              <span class="swb-visually-hidden">Search apps</span>
+              <input
+                type="search"
+                class="swb-control muze-solid-design-toolbar-input"
+                placeholder="Search apps"
+                aria-label="Search apps"
+                data-simply-command="muzeSolidCatalogSearch"
+                data-simply-immediate="true"
+              />
+            </label>
+            <button
+              type="button"
+              class="muze-solid-design-tool"
+              data-simply-command="muzeSolidCatalogRefresh"
+            >
+              <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                <use href="../assets/feather-icons.svg#refresh-cw"></use></svg
+              >Refresh
+            </button>
+          </div>
+          <ul
+            class="muze-solid-catalog-apps"
+            data-simply-list="muzeSolidCatalogApps"
+          >
+            <template
+              ><li class="muze-solid-catalog-card">
+                <img
+                  class="muze-solid-catalog-icon"
+                  alt=""
+                  loading="lazy"
+                  width="40"
+                  height="40"
+                  data-simply-field="image"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="src"
+                />
+                <h3
+                  class="muze-solid-catalog-name"
+                  data-simply-field="name"
+                  data-simply-transform="escape_html"
+                ></h3>
+                <p
+                  class="muze-solid-catalog-description"
+                  data-simply-field="description"
+                  data-simply-transform="escape_html"
+                ></p>
+                <div
+                  class="muze-solid-design-toolbar-group muze-solid-catalog-actions"
+                >
+                  <button
+                    type="button"
+                    class="muze-solid-design-tool"
+                    data-simply-field="addAttributes"
+                    data-simply-transform="attributes"
+                    data-simply-attributes="aria-label"
+                    data-simply-command="muzeSolidCatalogAdd"
+                    data-simply-value=":value.id"
+                  >
+                    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                      <use href="../assets/feather-icons.svg#plus"></use></svg
+                    >Add app
+                  </button>
+                  <a
+                    href="#muze-solid-catalog-info"
+                    data-simply-command="muzeSolidCatalogInfo"
+                    data-simply-value=":value.id"
+                    data-simply-field="infoAttributes"
+                    data-simply-transform="attributes"
+                    data-simply-attributes="aria-label data-muze-solid-catalog-entry"
+                    >More info</a
+                  >
+                </div>
+              </li></template
+            >
+          </ul>
+          <p
+            data-simply-field="muzeSolidCatalogEmpty"
+            data-simply-transform="escape_html"
+          ></p>
+        </div>
+        <div
+          data-simply-field="muzeSolidCatalogManualPanel"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+        >
+          {{view:muze-solid-catalog-manual:./catalog-manual.html}}
+        </div>
+        <div
+          data-simply-field="muzeSolidCatalogSourcesPanel"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+        >
+          <details class="muze-solid-catalog-source-panel">
+            <summary>Catalog sources</summary>
+            <ul
+              class="muze-solid-catalog-sources"
+              data-simply-list="muzeSolidCatalogSources"
+            >
+              <template
+                ><li>
+                  <p
+                    class="swb-resource-url"
+                    data-simply-field="url"
+                    data-simply-transform="escape_html"
+                  ></p>
+                  <p
+                    role="status"
+                    data-simply-field="status"
+                    data-simply-transform="escape_html"
+                  ></p>
+                  <button
+                    type="button"
+                    class="muze-solid-design-tool"
+                    data-simply-command="muzeSolidCatalogRemoveSource"
+                    data-simply-value=":value.id"
+                  >
+                    Remove source
+                  </button>
+                </li></template
+              >
+            </ul>
+            <form
+              class="muze-solid-design-toolbar"
+              data-simply-command="muzeSolidCatalogAddSource"
+            >
+              <label class="muze-solid-design-toolbar-field"
+                ><span>Catalog URL</span>
+                <input
+                  class="swb-control muze-solid-design-toolbar-input"
+                  type="url"
+                  name="catalogUrl"
+                  required
+                  placeholder="https://example.org/apps/index.ttl"
+                />
+              </label>
+              <button class="muze-solid-design-tool">Add source</button>
+            </form>
+            <p>
+              Sources and saved listings stay on this device. Added apps stay in
+              Workbench when a source is removed.
+            </p>
+          </details>
+        </div>
+        <article
+          id="muze-solid-catalog-info"
+          data-simply-field="muzeSolidCatalogInfoPanel"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+        >
+          <button
+            type="button"
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidCatalogInfoBack"
+          >
+            Back to apps
+          </button>
+          <h4
+            tabindex="-1"
+            data-simply-field="muzeSolidCatalogInfo.name"
+            data-simply-transform="escape_html"
+          ></h4>
+          <p
+            class="muze-solid-catalog-info-text"
+            data-simply-field="muzeSolidCatalogInfo.text"
+            data-simply-transform="escape_html"
+          ></p>
+          <img
+            class="muze-solid-catalog-screenshot"
+            loading="lazy"
+            data-simply-field="muzeSolidCatalogInfo.screenshot"
+            data-simply-transform="attributes"
+            data-simply-attributes="src alt hidden"
+          />
+          <button
+            type="button"
+            class="ds-button ds-button-primary"
+            data-simply-command="muzeSolidCatalogAdd"
+            data-simply-field="muzeSolidCatalogInfo.add"
+            data-simply-transform="attributes"
+            data-simply-attributes="data-simply-value aria-label"
+          >
+            Add app
+          </button>
+        </article>
+      </section>
+    </div>
+  </fieldset>
+</dialog>

@@ -104,6 +104,7 @@ test('existing managed Files callbacks retain state, arguments, promises and fai
     {
       ...filesLifecycle.actions,
       initializeFiles() {},
+      muzeSolidFilesInitializeTools() {},
       receiveBrowseRequest(value) {
         return value;
       },

@@ -1,26 +1,25 @@
-/* DS adapter: resolve host values at this component boundary. */
-@layer theme {
-  .swb-file-upload {
-    --swb-upload-focus: var(--ds-color);
+@layer page {
+  .muze-solid-files-create-dialog {
+    inline-size: min(28rem, calc(100vw - 2rem));
   }
 }
 
 @layer page {
-  .swb-file-upload {
-    position: relative;
-    overflow: hidden;
+  [data-muze-solid-action='muzeSolidFilesMore'] { display: none; }
+  .muze-solid-files-more-menu {
+    position: fixed;
+    inset: 48px auto auto 60px;
     margin: 0;
+    inline-size: 12rem;
+    max-inline-size: calc(100vw - 16px);
+    padding: 6px;
+    border: 0;
+    color: var(--muze-files-text, CanvasText);
+    background: var(--muze-files-chrome, Canvas);
+    box-shadow: 0 4px 12px #0005;
   }
-  .swb-file-upload-input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-  }
-  .swb-file-upload:focus-within {
-    outline: 2px solid var(--swb-upload-focus);
-    outline-offset: 2px;
+  @media (max-width: 650px) {
+    [data-muze-solid-action='muzeSolidFilesRefresh'] { display: none; }
+    [data-muze-solid-action='muzeSolidFilesMore'] { display: inline-flex; }
   }
 }

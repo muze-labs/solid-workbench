@@ -1,0 +1,107 @@
+@layer theme {
+  .muze-solid-catalog-dialog {
+    --muze-catalog-border: var(--ds-grey-medium, GrayText);
+    --muze-catalog-surface: var(--ds-color-background, Canvas);
+  }
+}
+@layer page {
+  .muze-solid-catalog-dialog {
+    inline-size: min(64rem, calc(100vw - 2rem));
+    block-size: min(46rem, calc(100dvh - 2rem));
+  }
+  .muze-solid-catalog-status {
+    flex: none;
+    padding-inline: 16px;
+    margin-block: 8px;
+  }
+  .muze-solid-catalog-layout {
+    /* Keep offscreen accessible labels inside the scrolling panes. */
+    position: relative;
+    --swb-list-details-list-width: 13rem;
+  }
+  .muze-solid-catalog-categories {
+    border-inline-end: 1px solid var(--muze-catalog-border, GrayText);
+  }
+  .muze-solid-catalog-details {
+    padding: 12px;
+    box-sizing: border-box;
+  }
+  .muze-solid-catalog-heading {
+    margin-block: 0 12px;
+  }
+  .muze-solid-catalog-manual-form {
+    display: grid;
+    gap: 12px;
+  }
+  .muze-solid-catalog-screenshot {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+    max-block-size: 60dvh;
+    object-fit: contain;
+    margin-block: 12px;
+  }
+  .muze-solid-catalog-info-text {
+    white-space: pre-wrap;
+  }
+  .muze-solid-catalog-controls {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-inline-size: 0;
+    min-block-size: 0;
+    flex: 1;
+  }
+  .muze-solid-catalog-apps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin-block: 12px;
+  }
+  .muze-solid-catalog-card {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-content: start;
+    gap: 8px 12px;
+    padding: 16px;
+    border: 1px solid var(--muze-catalog-border, GrayText);
+    background: var(--muze-catalog-surface, Canvas);
+  }
+  .muze-solid-catalog-actions {
+    grid-column: 1 / -1;
+  }
+  .muze-solid-catalog-icon {
+    object-fit: contain;
+    /* Standalone SVGs can use black strokes even in a dark host theme. */
+    background: #edf4f8;
+    padding: 4px;
+    box-sizing: border-box;
+  }
+  .muze-solid-catalog-name {
+    margin: 0;
+    align-self: center;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+  .muze-solid-catalog-description {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .muze-solid-catalog-source-panel {
+    margin-block: 16px;
+  }
+  .muze-solid-catalog-sources {
+    padding-inline-start: 20px;
+  }
+}
+
+@layer page {
+  @media (max-width: 719px) {
+    .muze-solid-catalog-dialog {
+      inline-size: 100%;
+      block-size: 100dvh;
+    }
+  }
+}

@@ -1,0 +1,8 @@
+@prefix schema: <https://schema.org/> .
+@prefix apps: <https://vocab.muze.nl/solid-apps#> .
+
+<> a schema:SoftwareApplication ;
+    schema:name "Penny" ;
+    schema:url <https://penny.vincenttunru.com/> ;
+    schema:image <external-app.svg> ;
+    apps:anonymousLaunch true .

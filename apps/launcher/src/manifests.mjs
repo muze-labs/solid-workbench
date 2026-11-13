@@ -1,3 +1,4 @@
+import { shortcutLaunch } from './shortcuts.mjs';
 import {
   createSolidMetroClient,
   loadDocument,
@@ -17,6 +18,10 @@ export async function readApplicationManifest(url, session) {
       oldm: false
     });
   const document = await loadDocument(client, url);
+  return applicationManifest(document);
+}
+
+export function applicationManifest(document) {
   const descriptions = [...document.graph.data].filter((subject) =>
     [].concat(subject.a || []).includes(prefixes.schema + 'SoftwareApplication')
   );
@@ -29,6 +34,7 @@ export async function readApplicationManifest(url, session) {
   const image = idOf(valueAt(node, prefixes.schema + 'image'));
   const launch = idOf(valueAt(node, prefixes.schema + 'url'));
   return {
+    anonymous: shortcutLaunch(node).anonymous,
     name: String(valueAt(node, prefixes.schema + 'name') || ''),
     url: httpUrl(launch),
     icon: image ? httpUrl(image) : ''

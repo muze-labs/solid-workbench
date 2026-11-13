@@ -1,61 +1,171 @@
-/* DS adapter: resolve host values at this component boundary. */
 @layer theme {
-  .swb-file-list {
-    --swb-files-space: var(--ds-space);
-    --swb-files-space-small: var(--ds-space-d2);
-    --swb-files-border: var(--ds-grey-medium);
-    --swb-files-space-tiny: var(--ds-space-d4);
+  .swb-file-controls {
+    --muze-files-chrome: var(--ds-color-background, Canvas);
+    --muze-files-text: var(--ds-color, CanvasText);
+    --muze-files-content: color-mix(
+      in srgb,
+      var(--ds-color-background, Canvas) 94%,
+      var(--ds-color, CanvasText)
+    );
+    --muze-files-hover: color-mix(
+      in srgb,
+      var(--ds-color, CanvasText) 12%,
+      transparent
+    );
+    --muze-files-selected: color-mix(
+      in srgb,
+      var(--ds-color, CanvasText) 22%,
+      transparent
+    );
   }
 }
-
 @layer page {
+  /* File navigation owns the page's fixed chrome and scrolling regions. */
+  .swb-files {
+    --swb-main-padding: 0;
+    --swb-main-display: flex;
+    --swb-main-overflow: hidden;
+    --swb-content-flex: 1;
+    --swb-content-min-height: 0;
+    --swb-content-overflow: hidden;
+  }
+  .swb-file-controls {
+    block-size: 100%;
+    min-inline-size: 0;
+    background: var(--muze-files-chrome, Canvas);
+  }
+  .muze-solid-files-context {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex: none;
+    min-inline-size: 0;
+    padding-inline: 8px;
+  }
+  .muze-solid-files-location {
+    max-inline-size: var(--muze-files-location-max, 100%);
+    display: flex;
+    align-items: center;
+    flex: 0 1 auto;
+    min-inline-size: 0;
+    padding-block: 4px;
+  }
+  .muze-solid-files-path,
+  .muze-solid-files-ancestor-path,
+  .muze-solid-files-crumb-part {
+    display: flex;
+    align-items: center;
+    min-inline-size: 0;
+  }
+  .muze-solid-files-path {
+    flex: 1;
+  }
+  .muze-solid-files-crumb,
+  .muze-solid-files-current-folder {
+    font-size: 0.8125rem;
+    min-inline-size: 0;
+    padding-inline: 8px;
+  }
+  .muze-solid-files-crumb-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .muze-solid-files-ancestors {
+    display: none;
+  }
+  .muze-solid-files-location-sheet,
+  .muze-solid-files-entry-menu {
+    position: fixed;
+    inset: 6rem 12px auto auto;
+    margin: 0;
+    inline-size: min(26rem, calc(100vw - 16px));
+    max-block-size: min(70dvh, 32rem);
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 14px;
+    border: 0;
+    background: var(--muze-files-chrome, Canvas);
+    color: var(--muze-files-text, CanvasText);
+    box-shadow: 0 6px 20px #0005;
+  }
+  .muze-solid-files-folder-options,
   .swb-file-list {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    margin-block: var(--swb-files-space);
-  }
-  .swb-file-cell {
-    padding: var(--swb-files-space-small);
-    text-align: start;
-    border-bottom: 1px solid var(--swb-files-border);
-  }
-  .swb-file-action {
+    list-style: none;
+    padding: 0;
     margin: 0;
   }
+  .muze-solid-files-location-form {
+    display: flex;
+    gap: 8px;
+    align-items: end;
+  }
+  .muze-solid-files-url-label {
+    flex: 1;
+    min-inline-size: 0;
+  }
+  .muze-solid-files-folder-option {
+    padding-inline-start: calc(8px + min(
+      var(--muze-files-folder-depth, 0) * 16px, 96px
+    ));
+    inline-size: 100%;
+    justify-content: start;
+    white-space: normal;
+  }
+  .muze-solid-files-caption {
+    margin: 0 0 8px;
+    font-size: 0.8125rem;
+    overflow-wrap: anywhere;
+  }
+  .swb-file-list {
+    padding: 12px 10px;
+  }
+  .muze-solid-files-entry {
+    display: flex;
+    align-items: center;
+  }
   .swb-file-name {
-    display: block;
-    max-inline-size: min(16rem, 100%);
+    flex: 1;
+    justify-content: start;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    font-size: 0.8125rem;
+    text-align: start;
+    padding: 10px;
+  }
+  .muze-solid-files-entry-name {
+    min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    text-align: start;
   }
-  .swb-file-heading:first-child {
-    width: 45%;
+  .swb-file-name[aria-current='page'] {
+    background: var(--muze-files-selected);
   }
-  .swb-file-heading:nth-child(2) {
-    width: 15%;
+  .swb-file-name:hover {
+    background: var(--muze-files-hover);
   }
-  .swb-file-heading {
-    font-weight: 700;
+  .muze-solid-files-entry-more {
+    flex: none;
   }
-  [data-density='compact'] .swb-file-cell {
-    padding-block: var(--swb-files-space-tiny);
+  .muze-solid-files-entry-menu {
+    inline-size: min(18rem, calc(100vw - 16px));
   }
-  @media (max-width: 720px) {
-    .swb-file-list {
-      table-layout: fixed;
+  @media (min-width: 720px) and (hover: hover) and (pointer: fine) {
+    .muze-solid-files-entry-more {
+      opacity: 0;
     }
-    .swb-file-cell {
-      padding: var(--swb-files-space-tiny);
-      overflow-wrap: anywhere;
+    .muze-solid-files-entry:hover .muze-solid-files-entry-more,
+    .muze-solid-files-entry:focus-within .muze-solid-files-entry-more {
+      opacity: 1;
     }
-    .swb-file-heading:first-child {
-      width: 45%;
+  }
+  @media (max-width: 850px) {
+    .muze-solid-files-ancestor-path {
+      display: none;
     }
-    .swb-file-action {
-      padding-inline: var(--swb-files-space-tiny);
+    .muze-solid-files-ancestors {
+      display: inline-flex;
     }
   }
 }

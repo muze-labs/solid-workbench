@@ -1136,13 +1136,12 @@ try {
     await evaluate(`
       const provider = ${profileFrame};
       const edit = provider.document.querySelector('[data-simply-command=editProfile]');
-      const buttonColor = provider.getComputedStyle(edit).backgroundColor;
-      const surfaceColor = provider.getComputedStyle(provider.document.body).backgroundColor;
       return Boolean(edit.querySelector('svg use')) &&
-        buttonColor !== 'rgba(0, 0, 0, 0)' && buttonColor !== surfaceColor;
+        parseFloat(provider.getComputedStyle(edit).minHeight) >= 44 &&
+        edit.classList.contains('muze-solid-design-tool');
     `),
     true,
-    'Edit profile has an icon and a distinct button background'
+    'Edit profile uses the shared icon control with a 44px target'
   );
   await evaluate(profileFrame + '.solidProfile.host.message("");');
   await evaluate(
@@ -1554,7 +1553,7 @@ try {
     ),
     4
   );
-  await submit('.swb-saved-apps form', {
+  await submit('.muze-solid-catalog-manual-form', {
     name: 'Example app',
     url: 'https://example.org/app'
   });
@@ -1585,7 +1584,7 @@ try {
       webid: otherWebId,
       resource: launchResource
     });
-  await submit('.swb-saved-apps form', {
+  await submit('.muze-solid-catalog-manual-form', {
     name: 'Profile launch example',
     url: savedLaunchUrl
   });
@@ -1807,7 +1806,7 @@ try {
   );
   await wait('new URL(' + declaredLink + '.href).searchParams.has("webid")');
 
-  await submit('.swb-saved-apps form', {
+  await submit('.muze-solid-catalog-manual-form', {
     name: 'User query app',
     url: serverAppUrl,
     launchMode: 'query'
@@ -1845,7 +1844,7 @@ try {
   launchedPage = null;
   page = serverLauncher;
 
-  await submit('.swb-saved-apps form', {
+  await submit('.muze-solid-catalog-manual-form', {
     name: 'Anonymous query app',
     url: serverAppUrl,
     launchMode: 'query',
@@ -1934,7 +1933,7 @@ try {
   page = anonymousLauncher;
 
   const anonymousBase = base + '/server-app?view=plain#landing';
-  await submit('.swb-saved-apps form', {
+  await submit('.muze-solid-catalog-manual-form', {
     name: 'Anonymous no resource',
     url: anonymousBase,
     launchMode: 'query',
@@ -1981,7 +1980,7 @@ try {
   });
   await visit('files/');
   await wait(
-    'document.querySelector("tbody").textContent.includes("test.txt")'
+    'document.querySelector(".swb-file-list").textContent.includes("test.txt")'
   );
   await evaluate(
     'document.querySelector("[data-simply-command=remove]").click();'
@@ -1990,7 +1989,7 @@ try {
     'document.querySelector(".muze-solid-design-toast").textContent.includes("Marked deleted")'
   );
   await wait(
-    '!document.querySelector("tbody").textContent.includes("test.txt")'
+    '!document.querySelector(".swb-file-list").textContent.includes("test.txt")'
   );
   assert.equal(resources.get(base + '/storage/test.txt').body, 'file contents');
   assert.match(
@@ -2013,7 +2012,7 @@ try {
   await wait('window.solidContacts?.store');
   await wait('document.querySelector(".swb-person-list button")');
   await evaluate('document.querySelector(".swb-person-list button").click();');
-  await wait('!document.querySelector(".contact-actions .swb-actions").hidden');
+  await wait('!document.querySelector(".contact-actions .muze-solid-design-toolbar").hidden');
   await evaluate('document.querySelector(".contact-actions button").click();');
   await wait(
     'document.querySelector(".swb-contacts-list .swb-empty").textContent.includes("No contacts")'
@@ -2553,7 +2552,7 @@ catch (error) {
     }))
   );
   console.error(
-    await page.evaluate(() => document.querySelector('tbody')?.outerHTML)
+    await page.evaluate(() => document.querySelector('.swb-file-list')?.outerHTML)
   );
   throw error;
 }

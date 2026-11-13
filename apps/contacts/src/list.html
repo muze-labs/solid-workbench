@@ -3,35 +3,49 @@
     class="swb-contacts-list ds-panels-pane ds-panels-list swb-list-pane"
     aria-label="Contacts"
   >
-    <ul class="swb-person-list swb-contacts-people" data-simply-list="people">
-      <template
-        ><li class="swb-list-item">
-          <button
-            class="swb-contact-select swb-list-action"
-            data-simply-command="select"
-            data-simply-value=":value.id"
-          >
-            <span class="swb-person-avatar" aria-hidden="true"
-              ><svg class="ds-icon ds-icon-feather">
-                <use href="../assets/feather-icons.svg#user"></use></svg></span
-            ><span
-              data-simply-field="label"
-              data-simply-transform="escape_html"
-            ></span>
-          </button></li
-      ></template>
-    </ul>
-    <p
-      class="swb-empty"
-      data-simply-field="empty"
-      data-simply-transform="escape_html"
-    ></p>
+    <div class="swb-contacts-scroll">
+      <ul class="swb-person-list swb-contacts-people" data-simply-list="people">
+        <template
+          ><li class="swb-list-item">
+            <button
+              class="swb-contact-select swb-list-action"
+              data-simply-command="select"
+              data-simply-value=":value.id"
+            >
+              <span class="swb-person-avatar" aria-hidden="true"
+                ><svg class="ds-icon ds-icon-feather">
+                  <use
+                    href="../assets/feather-icons.svg#user"
+                  ></use></svg></span
+              ><span
+                data-simply-field="label"
+                data-simply-transform="escape_html"
+              ></span>
+            </button></li
+        ></template>
+      </ul>
+      <p
+        class="swb-empty"
+        data-simply-field="empty"
+        data-simply-transform="escape_html"
+      ></p>
+      <details class="swb-device-recovery">
+        <summary>Device data recovery</summary>
+        <p>
+          Import contacts saved by an earlier version on this device into this
+          address book. The previous copy is retained.
+        </p>
+        <button class="ds-button" data-simply-command="swb_recoverContacts">
+          Import previous device contacts
+        </button>
+      </details>
+    </div>
     <div
-      class="swb-contacts-toolbar swb-app-toolbar swb-list-toolbar"
-      role="toolbar"
+      class="swb-contacts-toolbar muze-solid-design-toolbar"
+      role="group"
       aria-label="Contact actions"
     >
-      <label class="swb-contact-search"
+      <label class="swb-contact-search muze-solid-design-toolbar-field"
         ><span class="swb-visually-hidden">Search contacts</span
         ><svg
           class="ds-icon ds-icon-feather swb-contact-search-icon"
@@ -39,7 +53,7 @@
         >
           <use href="../assets/feather-icons.svg#search"></use></svg
         ><input
-          class="swb-control swb-labeled-control swb-contact-search-input"
+          class="swb-control muze-solid-design-toolbar-input swb-contact-search-input"
           type="search"
           aria-label="Search contacts"
           placeholder="Search"
@@ -48,7 +62,7 @@
           data-simply-immediate="true"
       /></label>
       <button
-        class="ds-button ds-button-primary swb-icon-button swb-toolbar-button"
+        class="muze-solid-design-tool"
         type="button"
         data-simply-command="newContact"
         aria-label="Add contact"
@@ -59,7 +73,7 @@
         </svg>
       </button>
       <button
-        class="ds-button swb-icon-button swb-toolbar-button"
+        class="muze-solid-design-tool"
         type="button"
         data-simply-command="sync"
         aria-label="Sync with Solid"
@@ -70,16 +84,6 @@
         </svg>
       </button>
     </div>
-    <details class="swb-device-recovery">
-      <summary>Device data recovery</summary>
-      <p>
-        Import contacts saved by an earlier version on this device into this
-        address book. The previous copy is retained.
-      </p>
-      <button class="ds-button" data-simply-command="swb_recoverContacts">
-        Import previous device contacts
-      </button>
-    </details>
     <dialog
       data-simply-behavior="muzeSolidDesignDialog"
       class="ds-dialog new-contact-dialog muze-solid-design-dialog"

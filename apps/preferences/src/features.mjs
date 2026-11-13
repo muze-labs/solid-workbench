@@ -8,3 +8,5 @@ export { swbFilesSettings } from '../../files/src/settings-sections.mjs';
 export { swbProfileSettings } from '../../profile/src/settings-sections.mjs';
 
 export { swbProviderPreferences } from './components/providers.mjs';
+
+export { muzeSolidDesignToolbar } from '../../../packages/solid-design/src/features.mjs';
