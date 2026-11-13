@@ -2532,3 +2532,15 @@ is claimed. EVD185 retains evidence and limits; readable preview is restored.
 Cycle remains Active, with no acceptance/commit/integration/publication. The
 App Gallery roadmap lead is future research only. Preserve the unrelated
 priorities document and pre-existing roadmap additions.
+
+## CYC181 accepted for integration, 2026-11-13
+
+The maintainer says “accepted the cycle, commit, merge and push please”. ACC186
+accepts implementation 0bf0a7ae811a94fcfae9a564a94c0afef937658e and
+evidence 2ac0ce5e0d79d8c129c926717693ef25660aade2. CYC181 is Accepted, superseding
+earlier Active/pending notes. Current source/build and final catalog/styling
+checks pass; the known managed Presenter native-click failure and validator
+limitations remain explicitly accepted evidence qualifications. Direct normal
+merge into latest main and push of main/cycle are authorized after exact
+validation. Preserve unrelated presentation-link roadmap edits and the priorities
+document. App Gallery remains future investigation; no new cycle or publication.

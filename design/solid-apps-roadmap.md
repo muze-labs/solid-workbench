@@ -1920,5 +1920,6 @@ multiple sources, cached listings and the existing shortcut workflow. Suite
 apps and ordinary external app links are included without claiming ecosystem
 compatibility for external apps. DES183/IMP184/EVD185 retain design and evidence.
 This prioritizes the demo over the previously proposed broad resilience cycle;
-that stage remains retained. CYC181 is Active pending evaluation and human
-acceptance; no integration or publication is implied.
+that stage remains retained. CYC181 is Accepted on 2026-11-13 under ACC186;
+the documented managed Presenter native-click test limitation remains. Normal
+integration is authorized after validation; no publication is requested.
