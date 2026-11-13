@@ -1680,6 +1680,30 @@ icon, and add launch links from both suite and third-party entries. Add two
 independent catalog URLs and retain the other source when one is unavailable or
 removed. Ordinary external apps launch without requiring ecosystem cooperation.
 
+### Evaluate Solid App Gallery as a foundation
+
+Maintainer follow-up, 2026-11-13: investigate
+[Solid App Gallery](https://solid-app-gallery.mpeters.dev/) as a possible base
+for the app store, including reuse as a catalog/data source rather than only
+reuse of its interface. Inspect its maintained source, license, data model and
+hosting requirements before choosing an approach.
+
+Compare its existing support with the Workbench catalog workflows: independent,
+multiple sources; portable/static native RDF indexes and linked app manifests;
+names/icons, categories and More info text/screenshots; ordinary external launch
+links and optional capability declarations; simple manual-link addition; CORS,
+updates, duplicate handling and cached-source failure/reload. Assess phone and
+keyboard/assistive-technology use, download cost and whether useful operation
+would require a central service.
+
+Report what already fits, what additional metadata/APIs or behavior it would
+need, and whether direct reuse, an upstream extension or a small format bridge
+would be appropriate. Keep gallery discovery separate from provider selection
+and Pod permissions. This is a research item, not selection of a foundation or
+authorization to replace the current implementation. The site could not be read
+by the research tool during intake; no suitability or missing-feature claim is
+made yet.
+
 ## Source inspection and planning boundary
 
 The maintainer supplied the roadmap requirements directly. During the original
@@ -1886,3 +1910,15 @@ with composition-aware save/closure guards. Native Chrome composition and RDF
 reload tests accompany it; physical-device and manual AT review remain distinct.
 Replace the temporary local dependency with the published version after release.
 No publication or cycle acceptance is inferred.
+
+## Demo experience implementation cycle, 2026-11-13
+
+The maintainer confirms CYC181 for Presenter-style Files/Contacts controls,
+a bounded Preferences review and a first static catalog inside Workbench.
+The catalog uses independently hostable native Turtle indexes/manifests,
+multiple sources, cached listings and the existing shortcut workflow. Suite
+apps and ordinary external app links are included without claiming ecosystem
+compatibility for external apps. DES183/IMP184/EVD185 retain design and evidence.
+This prioritizes the demo over the previously proposed broad resilience cycle;
+that stage remains retained. CYC181 is Active pending evaluation and human
+acceptance; no integration or publication is implied.
