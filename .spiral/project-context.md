@@ -2461,3 +2461,94 @@ known Contacts browser assertion remains disclosed, and icon/favicon, window
 titles and blank-start/template choices remain roadmap follow-ups. Direct human
 review supplies acceptance and integration authority; no new cycle or npm
 publication is requested. Preserve the unrelated priorities document unchanged.
+
+## Demo experience cycle selected, 2026-11-13
+
+The maintainer prioritizes an upcoming demo: apply Presenter's toolbar/style
+language to Files and Contacts where useful, review Preferences and include a
+first static app store. After a concrete understanding/gap/scope checkpoint,
+they confirm “yes”. CYC181 is Active on verified
+`spiral/CYC-20261113-QG24H-181-demo-experience`, from accepted main 83ba355.
+SRC182/DES183/IMP184/EVD185 retain source, design, implementation and evaluation.
+This deliberately revises the proposed resilience-first priority. Broader
+resilience remains on the governing embedded-view roadmap. No commit, merge,
+publication or human acceptance is authorized. Preserve existing planning edits.
+
+CYC181 implementation is now evaluated for demo review: shared controls in Files,
+Contacts/shared Profile actions and Preferences; Workbench's static multi-source
+app catalog with native caches and ordinary shortcut addition. Check/build and
+all browser scenarios have passing results, with one full-command Presenter
+phone-click timeout and an unchanged successful isolated rerun explicitly kept
+in EVD185. Native folder creation required a narrow supported Metro options
+workaround for its reproduced empty-body request gap. No new transport/library
+patch or package version. Manual AT and physical-phone review remain unclaimed.
+CYC181 remains Active awaiting human review; no acceptance or delivery is inferred.
+
+## Files design correction evaluated, 2026-11-13
+
+The maintainer rejects the first-pass Files design mismatch and explicitly asks
+for the supplied study to be followed closely, also reporting disappearing
+location chrome when opening a view. The correction remains in CYC181 on its
+verified dedicated branch. The location row stays fixed above independently
+scrolling content; compact app actions, breadcrumbs and desktop/phone selected-
+file rows follow the study. Existing file operations, native data and guarded
+providers remain intact. Source/build and all twelve Chrome suites pass; EVD185
+retains native selection/wheel/Back focus, error retention and design comparison.
+No manual AT/physical-device certification or human acceptance is inferred.
+
+## Additional Files review corrections, 2026-11-13
+
+CYC181 corrects duplicate root projection, per-level location-menu indentation
+and .ttl negotiation via the existing Viewer Metro client (text/turtle rather
+than text/*). Phone visual/native checks and actual embedded/standalone HTTP
+header assertions pass, along with source/build and affected Chrome suites.
+EVD185 records a full-command limitation: managed-workspace transient timing
+passes on retry, but Presenter second-slide click fails in full and independent
+runs; no clean full-suite pass is claimed. Catalog/final styling pass separately.
+Cycle remains Active awaiting review; no commit/integration or acceptance.
+
+## Solid App Gallery roadmap lead, 2026-11-13
+
+The maintainer asks to add investigation of https://solid-app-gallery.mpeters.dev/
+as a suitable app-store base, or identify what it would additionally need. The
+existing decentralized-app-store roadmap now retains the lead and comparison
+criteria for current catalog, launch, mobile/accessibility, native data and
+recovery workflows. Direct site retrieval failed and search returned no result;
+no capability or suitability judgment is invented. This documentation-only
+addition does not select the gallery, replace CYC181 implementation, or authorize
+a new cycle, commit or publication. Current UI verification continues.
+
+## Catalog and Contacts refinement ready for review, 2026-11-13
+
+CYC181 now uses shared dialog styling for category list/details app discovery,
+inline manual-link entry, More info with plain text/optional screenshots and
+close-after-add; Contacts search/actions stay beneath its scrolling list. Final
+source/build and targeted Chrome scenarios pass. Native checks cover category
+keyboard navigation, More info focus, optional image requests, manual draft/error
+retention, close/reopen, duplicates, source/cache recovery and long-list bottom
+controls. The broad suite passes through Files views, then stops at the known
+Presenter managed native-click assertion; no clean uninterrupted full-suite pass
+is claimed. EVD185 retains evidence and limits; readable preview is restored.
+Cycle remains Active, with no acceptance/commit/integration/publication. The
+App Gallery roadmap lead is future research only. Preserve the unrelated
+priorities document and pre-existing roadmap additions.
+
+## CYC181 accepted for integration, 2026-11-13
+
+The maintainer says “accepted the cycle, commit, merge and push please”. ACC186
+accepts implementation 0bf0a7ae811a94fcfae9a564a94c0afef937658e and
+evidence 2ac0ce5e0d79d8c129c926717693ef25660aade2. CYC181 is Accepted, superseding
+earlier Active/pending notes. Current source/build and final catalog/styling
+checks pass; the known managed Presenter native-click failure and validator
+limitations remain explicitly accepted evidence qualifications. Direct normal
+merge into latest main and push of main/cycle are authorized after exact
+validation. Preserve unrelated presentation-link roadmap edits and the priorities
+document. App Gallery remains future investigation; no new cycle or publication.
+
+CYC181 delivery records exact accepted-product equivalence and prospective
+integration validation in EVD185. A delivery audit found two culture references
+in the first design commit using submodule instead of project coordinates; they
+are corrected prospectively without rewriting history. Current references pass;
+the two historical findings remain disclosed. Existing stock parser/base tooling
+and Presenter native-pointer limits are retained, not claimed resolved. No
+product behavior changed after acceptance.

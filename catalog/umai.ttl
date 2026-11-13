@@ -1,0 +1,8 @@
+@prefix schema: <https://schema.org/> .
+@prefix apps: <https://vocab.muze.nl/solid-apps#> .
+
+<> a schema:SoftwareApplication ;
+    schema:name "Umai" ;
+    schema:url <https://umai.noeldemartin.com/> ;
+    schema:image <external-app.svg> ;
+    apps:anonymousLaunch true .

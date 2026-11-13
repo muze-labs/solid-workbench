@@ -12,3 +12,7 @@ export {
 } from '../../../packages/solid-design/src/features.mjs';
 
 export { workspaceSettingsService } from './components/workspace-settings-service.mjs';
+
+export { muzeSolidDesignToolbar } from '../../../packages/solid-design/src/features.mjs';
+
+export { muzeSolidLauncherCatalog } from './components/catalog.mjs';

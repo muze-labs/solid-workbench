@@ -6,6 +6,7 @@ export const swbFileSharing = {
   styles: { 'swb-files-sharing': styles },
   commands: {
     swb_shareResource(_button, url) {
+      _button?.closest('[popover]')?.hidePopover();
       return this.runtime.host.run(() => this.actions.swb_chooseShareRecipient(url));
     },
     swb_changeShareRecipient() {

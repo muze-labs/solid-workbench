@@ -396,3 +396,29 @@ are registered in Preferences without including their editor in each host.
 Workbench settings can target an inactive workspace without switching apps.
 See [the Preferences package](packages/solid-preferences/README.md) for the
 contribution and persistence boundaries.
+
+## Add apps from a catalog
+
+Choose **Add apps** in Workbench, choose a category, browse or search, and choose
+**Add app**. Launch the saved shortcut from Workbench. The initial static
+catalog includes suite applications, Penny and Umai; external apps use their
+own sign-in. **Add a link manually** still accepts a URL or application manifest.
+
+Under **Catalog sources**, add independently hosted indexes or remove sources.
+Listings and source choices are saved on this device for the selected account;
+a failed refresh retains saved listings, and removing a source retains added
+shortcuts. Uncached manifests require a connection. Adding a shortcut does not
+install the application's code for offline use. See the [catalog guide](catalog/README.md)
+for publishing a source and adding app manifests.
+
+## Files navigation
+
+Files keeps New, Upload and Refresh beside its title. On a phone, Refresh is
+under More file actions. Use the folder breadcrumb or Edit folder address to
+choose an ancestor or enter a folder URL. Selecting a file keeps that location
+row visible; the file list and embedded content scroll independently.
+
+On a wide screen, the selected filename completes the path with Share, Download
+and Open in app at the right. On phones, these occupy a separate row with
+Back to files. Each file's Actions menu retains Share and conditional tombstone
+deletion, including folders. Content-specific controls belong to its viewer.

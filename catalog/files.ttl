@@ -1,0 +1,6 @@
+@prefix schema: <https://schema.org/> .
+<> a schema:SoftwareApplication ; schema:name "Files" ;
+   schema:url <../files/> ; schema:image <../files/icon.svg> .
+
+<> <https://vocab.muze.nl/capability#provides>
+   <https://vocab.muze.nl/capabilities/browse> .

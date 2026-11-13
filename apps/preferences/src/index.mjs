@@ -18,7 +18,10 @@ import {
 import { app } from '@muze-labs/simplyflow/app';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import { shell } from '@muze-labs/solid-app-ui';
-import { muzeSolidDesignListDetails } from '@muze-labs/solid-design';
+import {
+  muzeSolidDesignListDetails,
+  muzeSolidDesignToolbar
+} from '@muze-labs/solid-design';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import { editPreferencesCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { PreferenceDrafts } from '@muze-labs/solid-preferences/drafts.mjs';
@@ -46,6 +49,7 @@ const definition = {
   container: host.main,
   components: {
     muzeSolidDesignListDetails,
+    muzeSolidDesignToolbar,
     preferences,
     swbProviderPreferences,
     sections,

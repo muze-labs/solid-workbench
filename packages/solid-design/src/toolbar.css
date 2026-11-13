@@ -1,5 +1,6 @@
 @layer theme {
-  .muze-solid-design-toolbar {
+  .muze-solid-design-toolbar,
+  .muze-solid-design-tool {
     --muze-toolbar-background: var(--ds-color-background, Canvas);
     --muze-toolbar-color: var(--ds-color, CanvasText);
     --muze-toolbar-hover: color-mix(in srgb, currentColor 12%, transparent);
@@ -9,7 +10,8 @@
 @layer component {
   .muze-solid-design-toolbar {
     display: flex;
-    align-items: stretch;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 2px;
     padding: 4px;
     color: var(--muze-toolbar-color, CanvasText);
@@ -17,8 +19,11 @@
     max-inline-size: 100%;
     box-sizing: border-box;
   }
-  .muze-solid-design-tool {
+  /* Structural controls, such as phone-only Back, retain display ownership. */
+  :where(.muze-solid-design-tool) {
     display: inline-flex;
+  }
+  .muze-solid-design-tool {
     align-items: center;
     justify-content: center;
     gap: 6px;
@@ -59,5 +64,31 @@
     z-index: 5;
     box-shadow: 0 3px 12px #0004;
     width: max-content;
+  }
+}
+
+@layer component {
+  .muze-solid-design-toolbar-field {
+    display: flex;
+    align-items: center;
+    flex: 1 1 12rem;
+    gap: 8px;
+    min-inline-size: 0;
+    margin: 0;
+  }
+  .muze-solid-design-toolbar-input {
+    flex: 1;
+    min-inline-size: 0;
+    inline-size: 100%;
+    min-block-size: 44px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  .muze-solid-design-toolbar-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
   }
 }

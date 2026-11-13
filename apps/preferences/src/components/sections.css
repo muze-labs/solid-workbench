@@ -1,0 +1,18 @@
+@layer theme {
+  .muze-solid-preferences-navigation {
+    --muze-preferences-border: var(--ds-grey-medium, GrayText);
+  }
+}
+@layer page {
+  .muze-solid-preferences-navigation {
+    border-inline-end: 1px solid var(--muze-preferences-border, GrayText);
+  }
+  .muze-solid-preferences-settings {
+    min-inline-size: 0;
+  }
+  @media (max-width: 720px) {
+    .muze-solid-preferences-navigation {
+      border-inline-end: 0;
+    }
+  }
+}

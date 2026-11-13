@@ -1,3 +1,5 @@
+import { AppCatalog } from './catalog.mjs';
+import catalogSource from './catalog.mjs' with { type: 'text' };
 import { providerCapabilities } from '@muze-labs/solid-preferences/providers.mjs';
 import { viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
 import * as backgrounds from './backgrounds.mjs';
@@ -9,7 +11,8 @@ import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   muzeSolidDesignDialog,
   muzeSolidDesignListDetails,
-  muzeSolidDesignDropdown
+  muzeSolidDesignDropdown,
+  muzeSolidDesignToolbar
 } from '@muze-labs/solid-design';
 import shortcutSource from './shortcuts.mjs' with { type: 'text' };
 import accountTemplate from './account-view.html?template' with { type: 'text' };
@@ -52,6 +55,7 @@ import {
   launcherBackground,
   resourceSelection,
   shortcuts,
+  muzeSolidLauncherCatalog,
   lifecycle
 } from './features.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
@@ -68,6 +72,7 @@ const definition = {
   components: {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
+    muzeSolidDesignToolbar,
     muzeSolidDesignDropdown,
     workspaceControls,
     workspaceSettingsService,
@@ -75,9 +80,27 @@ const definition = {
     launcherBackground,
     resourceSelection,
     shortcuts,
+    muzeSolidLauncherCatalog,
     lifecycle
   },
   data: {
+    muzeSolidCatalogApps: [],
+    muzeSolidCatalogSources: [],
+    muzeSolidCatalogStatus: '',
+    muzeSolidCatalogCategories: [],
+    muzeSolidCatalogCategoryTitle: 'All apps',
+    muzeSolidCatalogAppsPanel: { hidden: null },
+    muzeSolidCatalogManualPanel: { hidden: '' },
+    muzeSolidCatalogSourcesPanel: { hidden: '' },
+    muzeSolidCatalogInfoPanel: { hidden: '' },
+    muzeSolidCatalogInfo: {
+      name: '',
+      text: '',
+      screenshot: { src: null, hidden: '' },
+      add: {}
+    },
+    muzeSolidCatalogEmpty: '',
+    muzeSolidCatalogBusy: { disabled: null },
     swb_background: { src: null, hidden: '' },
     swb_workspaceTitle: 'Solid Workbench',
     swb_workspaceMenu: [],
@@ -101,6 +124,7 @@ const definition = {
     profileLink: { href: '../profile/' }
   },
   api: {
+    AppCatalog,
     viewResourceCapability,
     providerCapabilities,
     backgrounds,
@@ -140,6 +164,16 @@ const ui = app(definition);
 exposeDefinition(ui, definition, sources);
 installEvents(ui);
 ui.definition.modules = {
+  catalog: {
+    source: catalogSource,
+    origin: 'apps/launcher/src/catalog.mjs',
+    dependencies: [
+      '@muze-labs/solid-app-data',
+      '@muze-labs/solid-app-data/state-rdf.mjs',
+      '@muze-labs/solid-workspace',
+      './manifests.mjs'
+    ]
+  },
   backgrounds: {
     source: backgroundSource,
     origin: 'apps/launcher/src/backgrounds.mjs',
@@ -148,7 +182,7 @@ ui.definition.modules = {
   manifests: {
     source: manifestSource,
     origin: 'apps/launcher/src/manifests.mjs',
-    dependencies: ['@muze-labs/solid-app-data']
+    dependencies: ['@muze-labs/solid-app-data', './shortcuts.mjs']
   },
   shortcuts: {
     source: shortcutSource,

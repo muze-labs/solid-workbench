@@ -1,8 +1,12 @@
+import resourceTemplate from '../resource.html' with { type: 'text' };
 import template from '../details.html' with { type: 'text' };
 import styles from './file-details.css' with { type: 'text' };
 
 export const muzeSolidFileDetails = {
-  templates: { 'muze-solid-file-details': template },
+  templates: {
+    'muze-solid-file-details': template,
+    'muze-solid-files-resource': resourceTemplate
+  },
   styles: { 'muze-solid-file-details': styles },
   events: {
     muzeSolidFilesDetailsFocus: {
@@ -11,7 +15,7 @@ export const muzeSolidFileDetails = {
         observer.observe(this.container, {
           subtree: true,
           attributes: true,
-          attributeFilter: ['hidden']
+          attributeFilter: ['hidden', 'data-muze-solid-files-detail']
         });
         return () => observer.disconnect();
       },
@@ -143,14 +147,24 @@ export const muzeSolidFileDetails = {
       };
     },
     muzeSolidFilesFocusDetails() {
+      // SimplyFlow applies panel visibility asynchronously. Focus only after
+      // the destination is visible, without scrolling the surrounding chrome.
+      if (this.runtime.focusList) {
+        const selected = this.container.querySelector(
+          '.swb-file-name[aria-current="page"]'
+        );
+        if (selected?.checkVisibility()) {
+          this.runtime.focusList = false;
+          selected.focus({ preventScroll: true });
+        }
+        return;
+      }
       if (!this.runtime.focusDetails) {
         return;
       }
-      const pane = this.container.querySelector('.muze-solid-files-details');
-      const control = pane.querySelector('.muze-solid-files-title');
+      const control = this.container.querySelector('.muze-solid-files-title');
       if (control.getClientRects().length && !control.closest('[hidden]')) {
         this.runtime.focusDetails = false;
-        pane.scrollIntoView({ block: 'start' });
         control.focus({ preventScroll: true });
       }
     },
@@ -158,11 +172,9 @@ export const muzeSolidFileDetails = {
       this.data.muzeSolidFilesLocation = {
         'data-muze-solid-files-detail': null
       };
-      const list = this.container.querySelector('.ds-panels-list');
-      list.scrollIntoView({ block: 'nearest' });
-      list
-        .querySelector('[aria-current="page"]')
-        ?.focus({ preventScroll: true });
+      this.runtime.focusDetails = false;
+      this.runtime.focusList = true;
+      this.actions.muzeSolidFilesFocusDetails();
     },
     async muzeSolidFilesSelectDetails(url) {
       const resource = this.actions.inside(url);
@@ -195,6 +207,7 @@ export const muzeSolidFileDetails = {
       this.data.muzeSolidFilesViewStatus = '';
       this.data.muzeSolidFilesRecovery = { hidden: '' };
       this.data.muzeSolidFilesLocation = { 'data-muze-solid-files-detail': '' };
+      this.runtime.focusList = false;
       this.runtime.focusDetails = true;
       this.actions.muzeSolidFilesFocusDetails();
       await this.actions.muzeSolidFilesOpenView();

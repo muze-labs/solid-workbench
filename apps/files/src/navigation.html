@@ -1,74 +1,80 @@
-<div data-simply-field="editing" data-simply-transform="attributes"
-  data-simply-attributes="hidden">
-  <p
-    class="swb-muted"
-    data-simply-field="editing"
-    data-simply-transform="attributes"
-    data-simply-attributes="hidden"
+<div style="display: contents">
+  <ul
+    class="swb-file-list"
+    aria-label="Files in this folder"
+    data-simply-list="entries"
   >
-    Deleted files are hidden; their contents remain in your storage.
-  </p>
-  <table class="swb-file-list">
-    <thead>
-      <tr>
-        <th class="swb-file-heading swb-file-cell">Name</th>
-        <th class="swb-file-heading swb-file-cell">Type</th>
-        <th class="swb-file-heading swb-file-cell">Actions</th>
-      </tr>
-    </thead>
-    <tbody data-simply-list="entries">
-      <template
-        ><tr>
-          <td class="swb-file-cell">
-            <button
-              class="ds-button swb-file-action swb-file-name"
-              data-simply-command="open"
-              data-simply-field="selected" data-simply-transform="attributes"
-              data-simply-attributes="aria-current title"
-              data-simply-value=":value.url"
-            >
-              <span
-                data-simply-field="name"
-                data-simply-transform="escape_html"
-              ></span>
-            </button>
-          </td>
-          <td
-            class="swb-file-cell"
-            data-simply-field="type"
+    <template
+      ><li class="muze-solid-files-entry">
+        <button
+          type="button"
+          class="muze-solid-design-tool swb-file-name"
+          data-simply-command="open"
+          data-simply-value=":value.url"
+          data-simply-field="selected"
+          data-simply-transform="attributes"
+          data-simply-attributes="aria-current title"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use
+              data-simply-field="icon"
+              data-simply-transform="attributes"
+              data-simply-attributes="href"
+            ></use>
+          </svg>
+          <span
+            class="muze-solid-files-entry-name"
+            data-simply-field="name"
             data-simply-transform="escape_html"
-          ></td>
-          <td class="swb-file-cell">
-            <button
-              class="ds-button swb-file-action"
-              data-simply-command="selectResource"
-              data-simply-value=":value.url"
-              hidden
-              data-simply-field="pick"
-              data-simply-transform="attributes"
-              data-simply-attributes="hidden"
-            >
-              Select
-            </button>
-            <button type="button" class="ds-button swb-file-action swb-share-button"
-              data-simply-command="swb_shareResource" data-simply-value=":value.url"
-              data-simply-field="edit" data-simply-transform="attributes"
-              data-simply-attributes="hidden">Share…</button>
-            <button
-              class="ds-button swb-file-action"
-              data-simply-command="remove"
-              data-simply-value=":value.url"
-              data-simply-field="edit"
-              data-simply-transform="attributes"
-              data-simply-attributes="hidden"
-            >
-              Delete
-            </button>
-          </td>
-        </tr></template
-      >
-    </tbody>
-  </table>
+          ></span>
+        </button>
+        <button
+          type="button"
+          class="muze-solid-design-tool muze-solid-files-entry-more"
+          data-simply-field="menuButton"
+          data-simply-transform="attributes"
+          data-simply-attributes="popovertarget aria-label"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#more-horizontal"></use>
+          </svg>
+        </button>
+        <div
+          class="muze-solid-files-entry-menu"
+          popover
+          data-simply-field="menu"
+          data-simply-transform="attributes"
+          data-simply-attributes="id"
+        >
+          <p
+            class="muze-solid-files-caption"
+            data-simply-field="name"
+            data-simply-transform="escape_html"
+          ></p>
+          <button
+            type="button"
+            class="muze-solid-design-tool muze-solid-files-folder-option swb-share-button"
+            data-simply-command="swb_shareResource"
+            data-simply-value=":value.url"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#share-2"></use></svg
+            >Share…
+          </button>
+          <button
+            type="button"
+            class="muze-solid-design-tool muze-solid-files-folder-option"
+            data-simply-command="remove"
+            data-simply-value=":value.url"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#trash-2"></use></svg
+            >Delete
+          </button>
+        </div>
+      </li></template
+    >
+  </ul>
   <p
     class="swb-empty"
     data-simply-field="empty"

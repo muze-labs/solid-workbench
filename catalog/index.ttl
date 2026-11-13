@@ -1,0 +1,71 @@
+@prefix schema: <https://schema.org/> .
+
+<> a schema:Collection ;
+    schema:name "Solid Workbench apps" ;
+    schema:hasPart <#contacts>, <#files>, <#profile>, <#presenter>, <#viewer>, <#preferences>, <#penny>, <#umai> .
+
+<#contacts> a schema:SoftwareApplication ;
+    schema:applicationCategory "People" ;
+    schema:text "Keep a private address book and view profiles inline. Contact edits stay on your device until you synchronize with your Solid Pod." ;
+    schema:name "Contacts" ;
+    schema:image <../contacts/icon.svg> ;
+    schema:description "People, contact details and private address books." ;
+    schema:subjectOf <contacts.ttl> .
+
+<#files> a schema:SoftwareApplication ;
+    schema:applicationCategory "Data" ;
+    schema:text "Browse folders on your Solid Pod. Open text and images in a compatible viewer, upload files, create folders and share resources." ;
+    schema:name "Files" ;
+    schema:image <../files/icon.svg> ;
+    schema:description "Browse your Pod and open files with a compatible viewer." ;
+    schema:subjectOf <files.ttl> .
+
+<#profile> a schema:SoftwareApplication ;
+    schema:applicationCategory "People" ;
+    schema:text "View or edit your own Solid profile, including your name and contact details." ;
+    schema:name "Profile" ;
+    schema:image <../profile/icon.svg> ;
+    schema:description "View and edit your Solid profile." ;
+    schema:subjectOf <profile.ttl> .
+
+<#presenter> a schema:SoftwareApplication ;
+    schema:screenshot <screenshots/presenter.png> ;
+    schema:applicationCategory "Productivity" ;
+    schema:text "Create slides with a background image and editable text, arrange thumbnails and present full screen. Drafts are kept locally and decks use native RDF." ;
+    schema:name "Presenter" ;
+    schema:image <../presenter/icon.svg> ;
+    schema:description "Create slides and present your ideas." ;
+    schema:subjectOf <presenter.ttl> .
+
+<#viewer> a schema:SoftwareApplication ;
+    schema:applicationCategory "Data" ;
+    schema:text "View text as source and display images. Other apps can open this viewer for their own resources." ;
+    schema:name "Resource Viewer" ;
+    schema:image <../viewer/icon.svg> ;
+    schema:description "View text and images, or edit text in its own app." ;
+    schema:subjectOf <viewer.ttl> .
+
+<#preferences> a schema:SoftwareApplication ;
+    schema:applicationCategory "Settings" ;
+    schema:text "Choose appearance and default apps, and configure application settings for this suite." ;
+    schema:name "Preferences" ;
+    schema:image <../preferences/icon.svg> ;
+    schema:description "Appearance, app settings and your default providers." ;
+    schema:subjectOf <preferences.ttl> .
+
+<#penny> a schema:SoftwareApplication ;
+    schema:applicationCategory "Data" ;
+    schema:text "An independent app for inspecting Solid Pod data. This shortcut opens Penny at its own website." ;
+    schema:name "Penny" ;
+    schema:image <external-app.svg> ;
+    schema:description "Inspect and edit Solid Pod data. Opens as an independent app." ;
+    schema:subjectOf <penny.ttl> .
+
+<#umai> a schema:SoftwareApplication ;
+    schema:applicationCategory "Productivity" ;
+    schema:text "An independent recipe manager. This shortcut opens Umai at its own website." ;
+    schema:name "Umai" ;
+    schema:image <external-app.svg> ;
+    schema:description "A local-first recipe manager. Opens as an independent app." ;
+    schema:subjectOf <umai.ttl> .
+

@@ -1,4 +1,5 @@
 import {
+  muzeSolidDesignToolbar,
   muzeSolidDesignDialog,
   muzeSolidDesignListDetails
 } from '@muze-labs/solid-design';
@@ -37,6 +38,7 @@ const host = shell({
 const definition = {
   container: host.main,
   components: {
+    muzeSolidDesignToolbar,
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
     ...profileComponents,

@@ -9,10 +9,10 @@ export const shortcuts = {
     'launcher-shortcuts': sourceLauncherShortcuts
   },
   commands: {
-    muzeSolidLauncherAddDialog() {
-      return this.actions.muzeSolidDesignOpenDialog(
-        this.container.querySelector('.muze-solid-launcher-add-dialog')
-      );
+    async muzeSolidLauncherAddDialog() {
+      await this.commands.call('muzeSolidCatalogOpen');
+      this.actions.muzeSolidCatalogSelectCategory('manual');
+      this.actions.muzeSolidCatalogFocusDetails();
     },
     swb_shortcutSettings(button) {
       return this.actions.muzeSolidDesignOpenDialog(
@@ -82,7 +82,7 @@ export const shortcuts = {
         manifest: form.elements.manifest.value.trim(),
         icon: form.elements.icon.value.trim()
       };
-      return this.runtime.host.run(async () => {
+      return this.actions.muzeSolidCatalogOperation(async () => {
         await this.actions.addShortcut(values);
         form.reset();
         await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
@@ -166,13 +166,14 @@ export const shortcuts = {
       mode,
       anonymous,
       manifest = '',
-      icon = ''
+      icon = '',
+      description
     }) {
       this.actions.swb_requireOwner();
       const override = icon;
       let manifestIcon = '';
       if (manifest) {
-        const description = await this.api.readApplicationManifest(
+        description ||= await this.api.readApplicationManifest(
           manifest,
           this.runtime.host.session
         );

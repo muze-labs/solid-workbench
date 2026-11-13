@@ -1,0 +1,31 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261113-QG24H-184 a sd:Implementation ;
+    dcterms:identifier "IMP-20261113-QG24H-184" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261113-QG24H-184.md" ;
+    sd:status sd:Active ;
+    sd:implementationLocation "apps/launcher/src/catalog.mjs" ;
+    sd:implementationLocation "apps/launcher/src/components/catalog.mjs" ;
+    sd:implementationLocation "packages/solid-design/src/toolbar.css" ;
+    sd:implementationLocation "apps/files/src" ;
+    sd:implementationLocation "apps/contacts/src" ;
+    sd:implementationLocation "apps/preferences/src" ;
+    sd:implementationLocation "packages/solid-profile/src/editor.html" ;
+    sd:implementationLocation "catalog" ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261113-QG24H-183 ;
+        sd:gitCommit "c211946ea04e268824abfd377a74799492b4daa0" ] ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:CYC-20261113-QG24H-181 ;
+        sd:gitCommit "ac08628c0b6709adc635129a8fc695df2f010dd9" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261112-QG24H-171 ;
+        sd:gitCommit "804f514d376218f040fc169422acf9bb74656179" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261112-QG24H-178 ;
+        sd:gitCommit "123a3fdd7d6995c2ac4d48ec93824130da37cc57" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261113-QG24H-183 ;
+        sd:gitCommit "c211946ea04e268824abfd377a74799492b4daa0" ] ;
+    sd:implementationChangeKind sd:MixedChange .

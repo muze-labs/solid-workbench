@@ -1,17 +1,28 @@
-<section class="swb-file-controls">
+<section
+  class="swb-file-controls"
+  data-simply-field="muzeSolidFilesLocation"
+  data-simply-transform="attributes"
+  data-simply-attributes="data-muze-solid-files-detail"
+>
+  <div class="muze-solid-files-context">
+    {{view:files-location:./location.html}}
+    {{view:muze-solid-files-resource:./resource.html}}
+  </div>
   {{view:files-picker:./picker.html}}
-  <div class="muze-solid-files-location"
-    data-simply-field="muzeSolidFilesLocation" data-simply-transform="attributes"
-    data-simply-attributes="data-muze-solid-files-detail">{{view:files-location:./location.html}}</div>
-  <div data-simply-field="editing" data-simply-transform="attributes" data-simply-attributes="hidden">
+  <div
+    class="muze-solid-files-browser-body"
+    data-simply-field="editing"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
     <div class="muze-solid-design-list-details muze-solid-files-layout">
-      <div class="ds-panels-list swb-list-pane">
-        {{view:files-editing:./editing.html}}
+      <div class="ds-panels-list swb-list-pane muze-solid-files-list-pane">
         {{view:files-navigation:./navigation.html}}
       </div>
       {{view:muze-solid-file-details:./details.html}}
     </div>
   </div>
+  {{view:files-editing:./editing.html}}
   {{view:swb-files-sharing:./sharing.html}}
   {{view:files-picker-actions:./picker-actions.html}}
 </section>

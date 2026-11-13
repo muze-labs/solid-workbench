@@ -1,0 +1,84 @@
+<div
+  class="muze-solid-files-resource"
+  role="group"
+  aria-label="Selected file and actions"
+  hidden
+  data-simply-field="muzeSolidFilesDetails"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+>
+  <button
+    type="button"
+    class="muze-solid-design-tool muze-solid-files-back"
+    data-simply-command="muzeSolidFilesBack"
+    aria-label="Back to files"
+    title="Back to files"
+  >
+    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#arrow-left"></use>
+    </svg>
+  </button>
+  <span class="muze-solid-files-filename-slash" aria-hidden="true">/</span>
+  <h2 class="muze-solid-files-heading">
+    <a
+      class="muze-solid-files-title"
+      rel="noopener"
+      data-simply-field="muzeSolidFilesStandalone"
+      data-simply-transform="attributes"
+      data-simply-attributes="href title"
+    >
+      <span
+        data-simply-field="muzeSolidFilesDetailName"
+        data-simply-transform="escape_html"
+      ></span>
+    </a>
+  </h2>
+  <button
+    type="button"
+    class="muze-solid-design-tool muze-solid-files-resource-edit"
+    popovertarget="muze-solid-files-location-sheet"
+    aria-label="Edit folder address"
+    title="Edit folder address"
+    data-muze-solid-files-edit-location
+  >
+    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#edit-2"></use>
+    </svg>
+  </button>
+  <button
+    type="button"
+    class="muze-solid-design-tool"
+    aria-label="Share file"
+    title="Share file"
+    data-simply-command="swb_shareResource"
+    data-simply-value-path="muzeSolidFilesDetailResource"
+  >
+    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#share-2"></use>
+    </svg>
+  </button>
+  <button
+    type="button"
+    class="muze-solid-design-tool"
+    aria-label="Download file"
+    title="Download file"
+    data-simply-command="downloadResource"
+    data-simply-value-path="muzeSolidFilesDetailResource"
+  >
+    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#download"></use>
+    </svg>
+  </button>
+  <a
+    class="muze-solid-design-tool"
+    target="_blank"
+    rel="noopener"
+    aria-label="Open in app"
+    title="Open in app"
+    data-simply-field="muzeSolidFilesStandalone"
+    data-simply-transform="attributes"
+    data-simply-attributes="href"
+    ><svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#external-link"></use></svg
+  ></a>
+</div>

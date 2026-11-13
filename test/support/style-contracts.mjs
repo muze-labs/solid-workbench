@@ -25,7 +25,7 @@ export async function checkZoomLayout(page, name) {
       const accountBox = account.getBoundingClientRect();
       const originalFocus = document.activeElement;
       const control = [...main.querySelectorAll('button, input, a[href]')].find(
-        (element) => !element.disabled && element.getClientRects().length
+        (element) => !element.disabled && element.checkVisibility()
       );
       let coreReachable = true;
       if (control) {
@@ -43,7 +43,11 @@ export async function checkZoomLayout(page, name) {
         pageFits: document.documentElement.scrollWidth <= innerWidth,
         mainAvailable: main.clientWidth > 0 && main.clientHeight > 0,
         titleClear:
-          !account.getClientRects().length || titleBox.top >= accountBox.bottom,
+          !account.getClientRects().length ||
+          titleBox.top >= accountBox.bottom ||
+          titleBox.bottom <= accountBox.top ||
+          titleBox.right <= accountBox.left ||
+          titleBox.left >= accountBox.right,
         coreReachable
       };
     });
@@ -61,9 +65,12 @@ export async function checkZoomLayout(page, name) {
     );
     if (process.env.SWB_VISUAL_DIR) {
       // Let the compositor repaint after the device-scale/viewport change.
-      await page.evaluate(() => new Promise((resolve) => {
-        requestAnimationFrame(() => requestAnimationFrame(resolve));
-      }));
+      await page.evaluate(
+        () =>
+          new Promise((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+          })
+      );
       const shot = await page.send('Page.captureScreenshot', { format: 'png' });
       await recordVisualStyles(page, name + '-zoom-equivalent', shot.data);
     }
@@ -92,7 +99,7 @@ export async function checkStyleContracts(page) {
       ...document.querySelectorAll(
         '.swb-app-content button, .swb-app-content input'
       )
-    ].find((element) => !element.disabled && element.getClientRects().length);
+    ].find((element) => !element.disabled && element.checkVisibility());
     let focusVisible = true;
     if (control) {
       control.focus({ preventScroll: true });
@@ -148,7 +155,8 @@ export async function checkStyleContracts(page) {
       finally {
         if (original === null) {
           layout.removeAttribute('style');
-        } else {
+        }
+        else {
           layout.setAttribute('style', original);
         }
       }
@@ -205,9 +213,11 @@ export async function checkPickerReflow(page) {
             control.bottom <= box.bottom + 1
           );
         }),
-        rowsClear: [...provider.document.querySelectorAll('tbody tr')].every(
-          (row) => row.getBoundingClientRect().bottom <= box.top + 1
-        ),
+        rowsClear:
+          provider.document
+            .querySelector('.swb-picker-request')
+            .getBoundingClientRect().bottom <=
+          box.top + 1,
         count: buttons.length
       };
     }

@@ -1,9 +1,12 @@
 import { describeRecipient } from '@muze-labs/solid-app-data/recipient.mjs';
-import { selectRecipientCapability, recipientId }
-  from '@muze-labs/solid-app-data/capabilities.mjs';
+import {
+  selectRecipientCapability,
+  recipientId
+} from '@muze-labs/solid-app-data/capabilities.mjs';
 import {
   muzeSolidDesignDialog,
-  muzeSolidDesignListDetails
+  muzeSolidDesignListDetails,
+  muzeSolidDesignToolbar
 } from '@muze-labs/solid-design';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import { app } from '@muze-labs/simplyflow/app';
@@ -33,7 +36,12 @@ import {
   profileSources
 } from '@muze-labs/solid-profile/view.mjs';
 import { writeDraft, readDraft } from '@muze-labs/solid-profile/state.mjs';
-import { contactList, contactEditing, contactSession, swbRecipientPicker } from './features.mjs';
+import {
+  contactList,
+  contactEditing,
+  contactSession,
+  swbRecipientPicker
+} from './features.mjs';
 import sources from './features.mjs?entries';
 
 const host = shell({
@@ -44,6 +52,7 @@ const definition = {
   components: {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
+    muzeSolidDesignToolbar,
     ...profileComponents,
     contactList,
     contactEditing,

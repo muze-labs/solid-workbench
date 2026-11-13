@@ -5,12 +5,17 @@ import { startChrome } from './support/chrome.mjs';
 import { independentViewPeer } from './support/independent-view-peer.mjs';
 let origin, other;
 let textReads = 0;
+const turtleAccepts = [];
 const longName =
   'A long filename that should remain readable through its tooltip while the list and the complete available details heading width stay inside the viewport '.repeat(
     3
   ) + '.txt';
 let textContent =
   '<script>this is plain text</script>\nHello from the resource.';
+textContent += Array.from(
+  { length: 120 },
+  (_, index) => String.fromCharCode(10) + 'A longer document line ' + index
+).join('');
 let unavailable = false;
 const writes = [];
 const server = createServer(async (request, response) => {
@@ -44,6 +49,14 @@ const server = createServer(async (request, response) => {
     }
     response.setHeader('Content-Type', 'text/plain');
     response.end(textContent);
+    return;
+  }
+  if (url.pathname === '/storage/source.ttl') {
+    const accept = request.headers.accept;
+    turtleAccepts.push(accept);
+    const turtle = accept === 'text/turtle';
+    response.setHeader('Content-Type', turtle ? 'text/turtle' : 'text/html');
+    response.end(turtle ? '<#me> <urn:label> "Native Turtle".' : '<html>HTML view</html>');
     return;
   }
   if (url.pathname === '/storage/image.png') {
@@ -97,7 +110,7 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 origin = 'http://127.0.0.1:' + server.address().port;
 await new Promise((resolve) => external.listen(0, '127.0.0.1', resolve));
 other = 'http://127.0.0.1:' + external.address().port;
-let chrome;
+let chrome, page;
 async function run(page, source) {
   return page.evaluate('async()=>{' + source + '}');
 }
@@ -129,11 +142,31 @@ async function click(page, command) {
       ').click()'
   );
 }
+async function nativeClick(page, selector) {
+  const point = await run(
+    page,
+    `const element=document.querySelector(${JSON.stringify(selector)});
+    const box=element.getBoundingClientRect();
+    return {x:box.x+box.width/2,y:box.y+box.height/2};`
+  );
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    ...point,
+    button: 'left',
+    clickCount: 1
+  });
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    ...point,
+    button: 'left',
+    clickCount: 1
+  });
+}
 const viewer =
   'document.querySelector(".muze-solid-files-frame").contentWindow.muzeSolidViewerApp';
 try {
   chrome = await startChrome(origin + '/seed', { allowPopups: true });
-  const page = await chrome.page();
+  page = await chrome.page();
   await page.ready();
   await page.send('Emulation.setDeviceMetricsOverride', {
     width: 390,
@@ -147,7 +180,6 @@ try {
   );
   await until(page, 'window.solidFiles?.ui.data.entries.length===4');
   await until(page, 'document.querySelector(".swb-file-name")');
-  await run(page, 'document.querySelector(".swb-file-name").focus()');
   await page.send('Network.enable');
   await page.send('Network.emulateNetworkConditions', {
     offline: false,
@@ -155,6 +187,18 @@ try {
     downloadThroughput: 50 * 1024,
     uploadThroughput: 25 * 1024
   });
+  const locationBefore = await run(
+    page,
+    `return document.querySelector('.muze-solid-files-location').getBoundingClientRect().top;`
+  );
+  await run(page, `document.querySelector('.swb-file-name').focus();`);
+  assert.equal(
+    await run(
+      page,
+      `return document.activeElement.classList.contains('swb-file-name');`
+    ),
+    true
+  );
   const started = Date.now();
   await page.send('Input.dispatchKeyEvent', {
     type: 'keyDown',
@@ -191,6 +235,32 @@ try {
   );
   await until(page, 'solidFiles.ui.runtime.resourceView?.support?.ready');
   const readyMilliseconds = Date.now() - started;
+  const locationAfter = await run(
+    page,
+    `const bar=document.querySelector('.muze-solid-files-location');
+    return { visible:bar.checkVisibility(), top:bar.getBoundingClientRect().top,
+      mainScroll:document.querySelector('.swb-suite-main').scrollTop };`
+  );
+  assert.equal(
+    locationAfter.visible,
+    true,
+    'Location remains visible after phone view selection'
+  );
+  assert.equal(
+    locationAfter.top,
+    locationBefore,
+    'Selection does not scroll the location row'
+  );
+  assert.equal(
+    locationAfter.mainScroll,
+    0,
+    'Only file/view content owns scrolling'
+  );
+  await writeFile(
+    '/tmp/files-location-after.json',
+    JSON.stringify(locationAfter)
+  );
+
   await until(
     page,
     'document.querySelector(".muze-solid-files-frame").getAttribute("aria-busy")==="false"'
@@ -198,6 +268,36 @@ try {
   assert.equal(
     await run(page, 'return solidFiles.ui.data.muzeSolidFilesViewStatus'),
     ''
+  );
+  const scrollPoint = await run(
+    page,
+    `const box=document.querySelector('.muze-solid-files-frame').getBoundingClientRect();
+    return { x:box.x+box.width/2, y:box.y+box.height/2 };`
+  );
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mouseWheel',
+    ...scrollPoint,
+    deltaX: 0,
+    deltaY: 1200
+  });
+  await until(
+    page,
+    `[...document.querySelector('.muze-solid-files-frame').contentDocument.querySelectorAll('*')].some(element=>element.scrollTop>0)`
+  );
+  assert.equal(
+    await run(
+      page,
+      `return document.querySelector('.muze-solid-files-location').getBoundingClientRect().top;`
+    ),
+    locationBefore,
+    'Scrolling the viewed file leaves location controls in place'
+  );
+  assert.equal(
+    await run(
+      page,
+      `return document.querySelector('.swb-suite-main').scrollTop;`
+    ),
+    0
   );
   assert.equal(
     await run(
@@ -212,7 +312,7 @@ try {
       `return [...document.querySelectorAll('.muze-solid-files-details button')]
     .filter(button=>button.checkVisibility()).map(button=>button.textContent.trim());`
     ),
-    ['Back to files']
+    []
   );
   assert.equal(
     await run(
@@ -304,6 +404,40 @@ try {
     downloadThroughput: -1,
     uploadThroughput: -1
   });
+  await run(page, `await ${viewer}.actions.muzeSolidViewerLoad(
+    location.origin + '/storage/source.ttl?revision=1#me');`);
+  assert.equal(await run(page, `return ${viewer}.data.muzeSolidViewerText;`),
+    '<#me> <urn:label> "Native Turtle".');
+  assert.equal(turtleAccepts.at(-1), 'text/turtle');
+  await run(page, `await ${viewer}.actions.muzeSolidViewerLoad(
+    location.origin + '/storage/note.txt');`);
+  await nativeClick(page, '[aria-label="Back to files"]');
+  await until(
+    page,
+    `document.activeElement.matches('.swb-file-name[aria-current="page"]')`
+  );
+  assert.equal(
+    await run(
+      page,
+      `return document.querySelector('.muze-solid-files-location').getBoundingClientRect().top;`
+    ),
+    locationBefore
+  );
+  const previousGeneration = await run(page, 'return solidFiles.ui.runtime.resourceView.generation');
+  await nativeClick(page, '.swb-file-name[aria-current="page"]');
+  await until(page, `solidFiles.ui.runtime.resourceView?.generation !== ${JSON.stringify(previousGeneration)} && solidFiles.ui.runtime.resourceView?.support?.ready && ${viewer}`);
+  assert.equal(
+    await run(
+      page,
+      `return document.querySelector('.muze-solid-files-location').getBoundingClientRect().top;`
+    ),
+    locationBefore,
+    'A native file click also retains the location row'
+  );
+  await writeFile(
+    '/tmp/files-design-phone-view.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+  );
   assert.match(
     await run(page, 'return ' + viewer + '.data.muzeSolidViewerText'),
     /<script>/
@@ -395,7 +529,7 @@ try {
   assert.equal(
     await run(
       page,
-      'return document.querySelector("[data-simply-command=browse]").checkVisibility()'
+      `return [...document.querySelectorAll('[aria-label="Edit folder address"]')].some(button=>button.checkVisibility())`
     ),
     true
   );
@@ -586,13 +720,14 @@ try {
       page,
       `const title=document.querySelector('.muze-solid-files-title');
       const row=[...document.querySelectorAll('.swb-file-name')].find(button=>button.title===${JSON.stringify(longName)});
-      const pane=document.querySelector('.muze-solid-files-details').getBoundingClientRect();
+      const pane=document.querySelector('.muze-solid-files-resource').getBoundingClientRect();
+      const rowText=row.querySelector('.muze-solid-files-entry-name');
       const bounds=title.getBoundingClientRect();
       return {title:title.title,row:row.title,titleText:title.textContent.trim(),
-        titleEllipsis:getComputedStyle(title).textOverflow,rowEllipsis:getComputedStyle(row).textOverflow,
-        titleClipped:title.scrollWidth>title.clientWidth,rowClipped:row.scrollWidth>row.clientWidth,
+        titleEllipsis:getComputedStyle(title).textOverflow,rowEllipsis:getComputedStyle(rowText).textOverflow,
+        titleClipped:title.scrollWidth>title.clientWidth,rowClipped:!row.checkVisibility() || rowText.scrollWidth>rowText.clientWidth,
         inside:bounds.width<=pane.width && bounds.right<=innerWidth+1,
-        fullWidth:bounds.width>=pane.width-2};`
+        fullWidth:bounds.width>40};`
     );
     assert.equal(names.title, longName);
     assert.equal(names.row, longName);
@@ -604,7 +739,10 @@ try {
       JSON.stringify({ width, ...names })
     );
   }
-  await until(page, 'getComputedStyle(document.querySelector(".muze-solid-files-frame")).opacity==="1"');
+  await until(
+    page,
+    'getComputedStyle(document.querySelector(".muze-solid-files-frame")).opacity==="1"'
+  );
   await writeFile(
     '/tmp/cyc168-long-filenames.png',
     Buffer.from(
@@ -678,7 +816,10 @@ try {
     page,
     'await solidFiles.ui.actions.muzeSolidFilesSelectDetails(location.origin+"/storage/image.png")'
   );
-  await until(page, 'document.querySelector("[data-simply-command=muzeSolidFilesDiscardView]").checkVisibility()');
+  await until(
+    page,
+    'document.querySelector("[data-simply-command=muzeSolidFilesDiscardView]").checkVisibility()'
+  );
   assert.equal(
     await run(page, 'return Boolean(solidFiles.ui.runtime.resourceView)'),
     true
@@ -710,6 +851,11 @@ try {
     page,
     'document.querySelector("[data-simply-command=preferences]").checkVisibility()'
   );
+  await run(page, `await muzeSolidViewerApp.actions.muzeSolidViewerLoad(
+    location.origin + '/storage/source.ttl');`);
+  assert.equal(await run(page, 'return muzeSolidViewerApp.data.muzeSolidViewerText;'),
+    '<#me> <urn:label> "Native Turtle".');
+  assert.equal(turtleAccepts.at(-1), 'text/turtle');
   console.log(
     'PASS: embedded viewer has only view-specific content; standalone account/preferences and request recovery remain available'
   );

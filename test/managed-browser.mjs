@@ -339,7 +339,7 @@ try {
   await connect(launcher, 'Launcher');
   await wait(launcher, 'window.solidLauncher.persistence.prepared');
   await authorizeWorkspace(launcher);
-  await submit(launcher, '.swb-saved-apps form', {
+  await submit(launcher, '.muze-solid-catalog-manual-form', {
     name: 'Managed Files',
     url: filesBase
   });
@@ -353,14 +353,14 @@ try {
   await connect(files, 'Files');
   await wait(
     files,
-    'document.querySelector("tbody").textContent.includes("notes")'
+    'document.querySelector(".swb-file-list").textContent.includes("notes")'
   );
   await submit(files, '.swb-file-controls form[data-simply-command=browse]', {
     url: base + '/storage/notes/'
   });
   await wait(
     files,
-    'document.querySelector("tbody").textContent.includes("note.ttl")'
+    'document.querySelector(".swb-file-list").textContent.includes("note.ttl")'
   );
   await evaluate(files, 'await window.solidFiles.host.managed.publish();');
   assert.equal(puts.length, 0, 'Live updates must not write the Pod.');
@@ -422,7 +422,7 @@ try {
   await wait(
     launcher,
     pickerWindow +
-      '.document.querySelector("tbody").textContent.includes("note.ttl")'
+      '.document.querySelector(".swb-file-list").textContent.includes("note.ttl")'
   );
   await launcher.send('Emulation.setDeviceMetricsOverride', {
     width: 390,
@@ -447,7 +447,7 @@ try {
   await evaluate(
     launcher,
     pickerWindow +
-      '.document.querySelector(".swb-file-list tbody tr [data-simply-command=selectResource]").click();'
+      '.document.querySelector(".swb-resource-choices [data-simply-command=selectResource]").click();'
   );
   await wait(
     launcher,
@@ -807,15 +807,15 @@ try {
   await wait(files, 'window.solidFiles.host.managed.ready');
   await wait(
     files,
-    'document.querySelector("tbody").textContent.includes("notes") || ' +
-      'document.querySelector("tbody").textContent.includes("note.ttl")'
+    'document.querySelector(".swb-file-list").textContent.includes("notes") || ' +
+      'document.querySelector(".swb-file-list").textContent.includes("note.ttl")'
   );
   await submit(files, '.swb-file-controls form[data-simply-command=browse]', {
     url: base + '/storage/notes/'
   });
   await wait(
     files,
-    'document.querySelector("tbody").textContent.includes("note.ttl")'
+    'document.querySelector(".swb-file-list").textContent.includes("note.ttl")'
   );
   await evaluate(files, 'await window.solidFiles.host.managed.publish();');
   await evaluate(

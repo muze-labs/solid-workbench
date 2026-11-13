@@ -1,3 +1,4 @@
+import styles from './sections.css' with { type: 'text' };
 import template from '../sections.html?template' with { type: 'text' };
 import { settingsSections as workbench } from '../../../launcher/src/settings-sections.mjs';
 import { settingsSections as contacts } from '../../../contacts/src/settings-sections.mjs';
@@ -19,6 +20,7 @@ const contributions = {
   viewer: []
 };
 export const sections = {
+  styles: { 'muze-solid-preferences-sections': styles },
   templates: { 'swb-preferences-sections': template },
   api: { common, contributions },
   events: {

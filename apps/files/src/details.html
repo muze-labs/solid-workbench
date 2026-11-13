@@ -1,43 +1,77 @@
-<section class="ds-panels-details swb-list-pane muze-solid-files-details"
-  aria-label="Resource details">
-  <button type="button" class="ds-button muze-solid-design-list-back"
-    data-simply-command="muzeSolidFilesBack">Back to files</button>
-  <div data-simply-field="muzeSolidFilesDetails" data-simply-transform="attributes"
-    data-simply-attributes="hidden" hidden>
-    <h2 class="muze-solid-files-heading">
-      <a class="muze-solid-files-title" rel="noopener"
-        data-simply-field="muzeSolidFilesStandalone" data-simply-transform="attributes"
-        data-simply-attributes="href title">
-        <span data-simply-field="muzeSolidFilesDetailName"
-          data-simply-transform="escape_html"></span>
-      </a>
-    </h2>
-    <p class="swb-capability-status" role="status"
+<section
+  class="ds-panels-details swb-list-pane muze-solid-files-details"
+  aria-label="Resource details"
+>
+  <div
+    class="muze-solid-files-detail-body"
+    data-simply-field="muzeSolidFilesDetails"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+    hidden
+  >
+    <p
+      class="swb-capability-status"
+      role="status"
       data-simply-field="muzeSolidFilesViewStatus"
-      data-simply-transform="escape_html"></p>
-    <div class="muze-solid-files-recovery" hidden
-      data-simply-field="muzeSolidFilesRecovery" data-simply-transform="attributes"
-      data-simply-attributes="hidden">
-      <button type="button" class="ds-button"
-        data-simply-command="muzeSolidFilesRetryView">Retry</button>
-      <button type="button" class="ds-button" data-simply-command="downloadResource"
-        data-simply-value-path="muzeSolidFilesDetailResource">Download</button>
+      data-simply-transform="escape_html"
+    ></p>
+    <div
+      class="muze-solid-files-recovery"
+      hidden
+      data-simply-field="muzeSolidFilesRecovery"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+    >
+      <button
+        type="button"
+        class="ds-button"
+        data-simply-command="muzeSolidFilesRetryView"
+      >
+        Retry
+      </button>
+      <button
+        type="button"
+        class="ds-button"
+        data-simply-command="downloadResource"
+        data-simply-value-path="muzeSolidFilesDetailResource"
+      >
+        Download
+      </button>
     </div>
-    <button type="button" class="ds-button" hidden
+    <button
+      type="button"
+      class="ds-button"
+      hidden
       data-simply-command="muzeSolidFilesDiscardView"
-      data-simply-field="muzeSolidFilesDiscard" data-simply-transform="attributes"
-      data-simply-attributes="hidden">Discard this view, including any unsaved changes</button>
+      data-simply-field="muzeSolidFilesDiscard"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+    >
+      Discard this view, including any unsaved changes
+    </button>
     <div class="muze-solid-ui-capability-stage muze-solid-files-view-stage">
-      <div class="muze-solid-ui-capability-loading swb-capability-status"
-        role="status" hidden data-simply-field="muzeSolidFilesLoading"
-        data-simply-transform="attributes" data-simply-attributes="hidden">
-        <span class="muze-solid-ui-capability-spinner" aria-hidden="true"></span>
+      <div
+        class="muze-solid-ui-capability-loading swb-capability-status"
+        role="status"
+        hidden
+        data-simply-field="muzeSolidFilesLoading"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <span
+          class="muze-solid-ui-capability-spinner"
+          aria-hidden="true"
+        ></span>
         <p>Loading view…</p>
       </div>
-      <iframe class="muze-solid-ui-capability-frame muze-solid-files-frame"
-        title="Selected resource viewer" hidden
-        data-simply-field="muzeSolidFilesFrame" data-simply-transform="attributes"
-        data-simply-attributes="src hidden inert aria-hidden aria-busy data-muze-solid-ui-loading"></iframe>
+      <iframe
+        class="muze-solid-ui-capability-frame muze-solid-files-frame"
+        title="Selected resource viewer"
+        hidden
+        data-simply-field="muzeSolidFilesFrame"
+        data-simply-transform="attributes"
+        data-simply-attributes="src hidden inert aria-hidden aria-busy data-muze-solid-ui-loading"
+      ></iframe>
     </div>
   </div>
 </section>

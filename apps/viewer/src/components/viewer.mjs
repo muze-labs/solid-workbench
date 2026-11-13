@@ -233,7 +233,10 @@ export const muzeSolidViewer = {
           this.api.requireOk(
             await client.get(url, {
               headers: {
-                Accept: 'text/*,image/png,image/jpeg,image/gif,image/webp'
+                // A text wildcard also permits a server's HTML view of RDF.
+                Accept: new URL(url).pathname.toLowerCase().endsWith('.ttl')
+                  ? 'text/turtle'
+                  : 'text/*,image/png,image/jpeg,image/gif,image/webp'
               }
             })
           );

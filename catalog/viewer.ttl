@@ -1,0 +1,8 @@
+@prefix schema: <https://schema.org/> .
+@prefix cap: <https://vocab.muze.nl/capability#> .
+<> a schema:SoftwareApplication ; schema:name "Resource Viewer" ;
+   schema:url <../viewer/> ; schema:image <../assets/feather-icons.svg#file> ;
+   cap:provides <https://vocab.muze.nl/capabilities/view-resource>,
+     <https://vocab.muze.nl/capabilities/view-text>,
+     <https://vocab.muze.nl/capabilities/create-text>,
+     <https://vocab.muze.nl/capabilities/edit-text> .

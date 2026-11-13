@@ -1,25 +1,78 @@
-@layer component {
+@layer page {
+  .muze-solid-files-browser-body {
+    flex: 1;
+    min-block-size: 0;
+    min-inline-size: 0;
+  }
   .muze-solid-files-layout {
-    min-height: 65vh;
-    align-items: start;
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    block-size: 100%;
+    min-block-size: 0;
+    gap: var(--swb-list-details-space, 16px);
+    overflow: hidden;
+    scroll-snap-type: none;
+    align-items: stretch;
+  }
+  .muze-solid-files-list-pane,
+  .muze-solid-files-details {
+    min-block-size: 0;
+    min-inline-size: 0;
+    block-size: 100%;
+    overflow: auto;
   }
   .muze-solid-files-details {
+    background: var(--muze-files-content, Canvas);
     overflow-wrap: anywhere;
   }
-  .muze-solid-files-heading {
+  .muze-solid-files-detail-body {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+    min-block-size: 0;
+  }
+  .muze-solid-files-resource {
+    display: flex;
+    flex: 1;
+    align-items: center;
     min-inline-size: 0;
-    max-inline-size: 100%;
+    padding-inline-end: 4px;
+  }
+  .muze-solid-files-heading {
+    flex: 1;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    min-inline-size: 0;
+    margin: 0;
+    padding-inline: 8px;
   }
   .muze-solid-files-title {
     display: block;
+    min-block-size: 44px;
+    line-height: 44px;
     max-inline-size: 100%;
     overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    color: inherit;
+    text-decoration: none;
+  }
+  .muze-solid-files-title:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+  .muze-solid-files-title:hover {
+    text-decoration: underline;
+  }
+  .muze-solid-files-resource-edit {
+    display: none;
+  }
+  .muze-solid-files-back {
+    display: none;
   }
   .muze-solid-files-view-stage {
-    height: 65vh;
-    min-height: 18rem;
+    flex: 1;
+    min-block-size: 0;
   }
   .muze-solid-files-frame {
     border: 0;
@@ -27,16 +80,47 @@
   .muze-solid-files-recovery {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  @media (max-width: 719px) {
-    .muze-solid-files-location[data-muze-solid-files-detail] {
-      display: none;
-    }
+    gap: 8px;
   }
   @media (min-width: 720px) {
+    .muze-solid-files-resource-edit {
+      display: inline-flex;
+    }
+    .swb-file-controls[data-muze-solid-files-detail]
+      .muze-solid-files-location-edit {
+      display: none;
+    }
+    .swb-file-controls[data-muze-solid-files-detail] {
+      --muze-files-location-max: 55%;
+    }
+  }
+  @media (max-width: 719px) {
+    .muze-solid-files-location {
+      flex-basis: 100%;
+    }
+    .muze-solid-files-resource {
+      display: var(--muze-files-resource-display, none);
+      flex-basis: 100%;
+    }
     .muze-solid-files-layout {
-      grid-template-columns: minmax(20rem, 40%) minmax(0, 1fr);
+      display: block;
+    }
+    .muze-solid-files-filename-slash {
+      display: none;
+    }
+    .muze-solid-files-back {
+      display: inline-flex;
+    }
+    .muze-solid-files-list-pane {
+      display: var(--muze-files-list-display, block);
+    }
+    .muze-solid-files-details {
+      display: var(--muze-files-detail-display, none);
+    }
+    .swb-file-controls[data-muze-solid-files-detail] {
+      --muze-files-resource-display: flex;
+      --muze-files-list-display: none;
+      --muze-files-detail-display: block;
     }
   }
 }

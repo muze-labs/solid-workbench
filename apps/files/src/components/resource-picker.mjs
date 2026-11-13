@@ -34,6 +34,9 @@ export const resourcePicker = {
     renderPicker() {
       const pending = this.runtime.pending;
       this.data.picker = { hidden: pending ? null : '' };
+      this.runtime.host.view.data.muzeSolidUiAppToolbar = {
+        hidden: pending || this.runtime.host.task ? '' : null
+      };
       this.data.editing = {
         hidden: pending || this.runtime.host?.task ? '' : null
       };

@@ -1,6 +1,6 @@
 import { composeTemplate, applicationTitle } from './templates.mjs';
 import { bundleApplications } from './bundle.mjs';
-import { mkdir, copyFile, writeFile, rm } from 'node:fs/promises';
+import { mkdir, copyFile, writeFile, rm, cp } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
@@ -108,7 +108,10 @@ await writeFile(
   path.join(root, 'www/index.html'),
   '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=workbench/"><a href="workbench/">Open Solid Workbench</a>'
 );
-console.log('Built all eight apps in www/');
+await cp(path.join(root, 'catalog'), path.join(root, 'www/catalog'), {
+  recursive: true
+});
+console.log('Built all eight apps and static catalog in www/');
 const outputs = Object.fromEntries(
   bundles
     .filter((item) => item.type === 'chunk')

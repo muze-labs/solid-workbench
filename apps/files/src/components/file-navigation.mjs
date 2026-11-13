@@ -8,7 +8,26 @@ export const fileNavigation = {
     'files-navigation': sourceFilesNavigation,
     'files-location': sourceFilesLocation
   },
+  events: {
+    muzeSolidFilesLocationResize: {
+      target() {
+        return window.visualViewport || window;
+      },
+      type: 'resize',
+      action: 'muzeSolidFilesPlaceLocation'
+    },
+    muzeSolidFilesLocationDisclosure: {
+      target() {
+        return this.container.querySelector('#muze-solid-files-location-sheet');
+      },
+      type: 'toggle',
+      action: 'muzeSolidFilesPlaceLocation'
+    }
+  },
   commands: {
+    muzeSolidFilesBrowseFolder(_button, url) {
+      return this.actions.operation(() => this.actions.browse(url));
+    },
     browse(form) {
       const url = form.elements.url.value;
       return this.actions.operation(() => this.actions.browse(url));
@@ -22,7 +41,8 @@ export const fileNavigation = {
         return this.runtime.host.run(() => this.actions.selectFile(url));
       }
       return this.runtime.host.run(() =>
-        this.actions.muzeSolidFilesSelectDetails(url));
+        this.actions.muzeSolidFilesSelectDetails(url)
+      );
     },
     up() {
       this.actions.operation(() =>
@@ -49,6 +69,66 @@ export const fileNavigation = {
     }
   },
   actions: {
+    muzeSolidFilesPlaceLocation(event) {
+      const sheet = this.container.querySelector(
+        '#muze-solid-files-location-sheet'
+      );
+      if (!sheet.matches(':popover-open')) {
+        return;
+      }
+      const button =
+        this.container.querySelector(
+          '[popovertarget="muze-solid-files-location-sheet"]:focus'
+        ) || this.container.querySelector('.muze-solid-files-current-folder');
+      this.data.muzeSolidFilesLocationPlacement = {
+        style: this.actions.muzeSolidDesignToolbarPlacement(
+          sheet,
+          button.getBoundingClientRect()
+        )
+      };
+      if (
+        event.type === 'toggle' &&
+        button.hasAttribute('data-muze-solid-files-edit-location')
+      ) {
+        const input = sheet.querySelector('[name=url]');
+        input.focus({ preventScroll: true });
+        input.select();
+      }
+    },
+    muzeSolidFilesRenderLocation(url) {
+      const folder = new URL(url);
+      const root = new URL(this.runtime.root);
+      const relative = folder.pathname.slice(root.pathname.length);
+      const segments = relative.split('/').filter(Boolean);
+      const ancestors = segments.length
+        ? [{
+            label: this.actions.decodeName(root.href) || root.host,
+            url: root.href
+          }]
+        : [];
+      let current = root.href;
+      for (const segment of segments.slice(0, -1)) {
+        current = new URL(segment + '/', current).href;
+        ancestors.push({
+          label: this.actions.decodeName(current),
+          url: current
+        });
+      }
+      this.data.muzeSolidFilesAncestors = ancestors;
+      const folders = [
+        ...ancestors,
+        { label: this.actions.decodeName(url) || folder.host, url }
+      ];
+      this.data.muzeSolidFilesFolders = folders.map((item, depth) => ({
+        ...item,
+        attributes: { style: '--muze-files-folder-depth:' + depth }
+      }));
+      this.data.muzeSolidFilesFolderName =
+        this.actions.decodeName(url) || folder.host;
+      this.data.muzeSolidFilesParent = {
+        disabled: url === root.href ? '' : null
+      };
+    },
     locationValue: function () {
       return (
         this.runtime.host.launch?.resource ||
@@ -67,7 +147,7 @@ export const fileNavigation = {
       return normalized;
     },
     browse: async function (url) {
-      if (!await this.actions.muzeSolidFilesReleaseView()) {
+      if (!(await this.actions.muzeSolidFilesReleaseView())) {
         return;
       }
       const session = this.runtime.host.requireSession();
@@ -91,6 +171,13 @@ export const fileNavigation = {
       }
       this.runtime.current = url;
       this.data.url = url;
+      this.actions.muzeSolidFilesRenderLocation(url);
+      const locationSheet = this.container.querySelector(
+        '#muze-solid-files-location-sheet'
+      );
+      if (locationSheet.matches(':popover-open')) {
+        locationSheet.hidePopover();
+      }
       this.runtime.files.state.data = this.api
         .from(entries)
         .select((entry) => ({
@@ -191,7 +278,19 @@ export const fileNavigation = {
       return !entry.deleted;
     },
     fileRow(entry, picking, selected) {
+      const menuId =
+        'muze-solid-files-entry-menu-' + encodeURIComponent(entry.url);
       return {
+        icon: {
+          href:
+            '../assets/feather-icons.svg#' +
+            (entry.type === 'folder' ? 'folder' : 'file-text')
+        },
+        menu: { id: menuId },
+        menuButton: {
+          popovertarget: menuId,
+          'aria-label': 'Actions for ' + entry.name
+        },
         selected: {
           'aria-current': selected === entry.url ? 'page' : null,
           title: entry.name

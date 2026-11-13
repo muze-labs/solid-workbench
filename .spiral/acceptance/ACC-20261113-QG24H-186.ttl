@@ -1,0 +1,13 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:ACC-20261113-QG24H-186 a sd:AcceptanceEvidence ;
+    dcterms:identifier "ACC-20261113-QG24H-186" ;
+    sd:repositoryPath ".spiral/acceptance/ACC-20261113-QG24H-186.md" ;
+    sd:status sd:Active ;
+    sd:accepts [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261113-QG24H-184 ;
+        sd:gitCommit "0bf0a7ae811a94fcfae9a564a94c0afef937658e" ] ;
+    sd:accepts [ a sd:ArtifactReference ;
+        sd:artifact project:EVD-20261113-QG24H-185 ;
+        sd:gitCommit "2ac0ce5e0d79d8c129c926717693ef25660aade2" ] .

@@ -8,3 +8,5 @@ export {
   muzeSolidDesignDropdown,
   muzeSolidDesignListDetails
 } from '../../../packages/solid-design/src/features.mjs';
+
+export { muzeSolidDesignToolbar } from '../../../packages/solid-design/src/features.mjs';
