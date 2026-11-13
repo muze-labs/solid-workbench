@@ -4,6 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { startChrome } from './support/chrome.mjs';
 import { independentViewPeer } from './support/independent-view-peer.mjs';
 let origin, other;
+let authoringRequests = 0;
 let textReads = 0;
 const turtleAccepts = [];
 const longName =
@@ -20,6 +21,11 @@ let unavailable = false;
 const writes = [];
 const server = createServer(async (request, response) => {
   const url = new URL(request.url, origin);
+  if (url.pathname.startsWith('/assets/authoring/')) {
+    authoringRequests += 1;
+    response.writeHead(404).end('Optional authoring sources unavailable');
+    return;
+  }
   if (!['GET', 'HEAD'].includes(request.method)) {
     writes.push(url.pathname);
   }
@@ -918,6 +924,7 @@ try {
     'PASS: managed Files routes views through Workbench and safely closes owned views'
   );
   assert.equal(writes.length, 0, 'Viewing does not write Pod resources');
+  assert.equal(authoringRequests, 0, 'Normal workflows never request authoring sources');
   console.log(
     'PASS: Files phone view, finite ready, text/image rendering, unsupported refusal, refresh preservation, appearance reset, independent guarded transition, rapid selection, scoped denial, disconnect/discard and standalone viewing.'
   );

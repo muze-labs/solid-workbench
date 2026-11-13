@@ -12,7 +12,7 @@ import {
   muzeSolidDesignListDetails,
   muzeSolidDesignToolbar
 } from '@muze-labs/solid-design';
-import fileDataSource from './data.mjs' with { type: 'text' };
+import fileDataSource from './data.mjs?source';
 import { listFolder, readDownload, uploadFiles } from './data.mjs';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import { model } from '@muze-labs/simplyflow/model';
@@ -126,7 +126,7 @@ const ui = app(definition);
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
   fileData: {
-    source: fileDataSource,
+    sourceUrl: fileDataSource,
     origin: 'apps/files/src/data.mjs',
     dependencies: [
       '@muze-labs/solid-app-data',

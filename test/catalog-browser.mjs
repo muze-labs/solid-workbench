@@ -4,11 +4,17 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { startChrome } from './support/chrome.mjs';
 
 let origin;
+let authoringRequests = 0;
 let unavailable = false;
 const requests = [];
 const handler = async (request, response) => {
   response.setHeader('Access-Control-Allow-Origin', '*');
   const url = new URL(request.url, origin);
+  if (url.pathname.startsWith('/assets/authoring/')) {
+    authoringRequests += 1;
+    response.writeHead(404).end('Optional authoring sources unavailable');
+    return;
+  }
   requests.push(url.pathname);
   response.setHeader('Cache-Control', 'no-store');
   if (url.pathname === '/other/index.ttl') {
@@ -512,6 +518,7 @@ try {
   }
   assert.ok(external, 'external app launches at its unchanged URL');
   await page.send('Target.closeTarget', { targetId: external.targetId });
+  assert.equal(authoringRequests, 0, 'Normal workflows never request authoring sources');
   console.log(
     'PASS: native catalog open/add/launch, duplicate prevention, two sources, search, cached failure/reload, phone/desktop/dark and Escape focus return.'
   );

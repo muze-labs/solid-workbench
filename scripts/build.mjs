@@ -171,6 +171,23 @@ function appSizes(suffix) {
   }
   return sizes;
 }
+// Optional data-only authoring modules are emitted for both executable variants.
+// Count each file once; they are not required imports of the normal app graph.
+const authoringFiles = new Map(
+  bundles
+    .filter(
+      (item) => item.type === 'asset' && item.fileName.startsWith('authoring/')
+    )
+    .map((item) => [item.fileName, item])
+);
+const authoring = {
+  automaticRequests: false,
+  files: [...authoringFiles].map(([fileName, item]) => ({
+    fileName: 'www/assets/' + fileName,
+    bytes: Buffer.byteLength(item.source),
+    gzipBytes: gzipSync(item.source, { level: 6 }).byteLength
+  }))
+};
 const sizes = appSizes('.min');
 const readableSizes = appSizes('');
 await writeFile(
@@ -181,6 +198,7 @@ await writeFile(
       node: process.versions.node,
       apps: sizes,
       readableApps: readableSizes,
+      authoring,
       servedVariant: readable ? 'readable' : 'minified'
     },
     null,
@@ -219,3 +237,11 @@ for (const [variant, report] of [
         .join(', ')
   );
 }
+
+console.log(
+  'Optional authoring sources: ' +
+    authoring.files.length +
+    ' files, ' +
+    authoring.files.reduce((sum, file) => sum + file.gzipBytes, 0) +
+    ' B gzip in total; none are automatic startup requests.'
+);

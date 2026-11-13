@@ -26,7 +26,7 @@ import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import { DeckDocument } from './deck-data.mjs';
-import deckSource from './deck-data.mjs' with { type: 'text' };
+import deckSource from './deck-data.mjs?source';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import { muzeSolidPresenter, muzeSolidPresenterRegions } from './features.mjs';
 import sources from './features.mjs?entries';
@@ -81,7 +81,7 @@ const ui = app(definition);
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
   deckData: {
-    source: deckSource,
+    sourceUrl: deckSource,
     origin: 'apps/presenter/src/deck-data.mjs',
     dependencies: [
       '@muze-labs/solid-app-data',

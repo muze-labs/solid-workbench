@@ -306,11 +306,13 @@ handles remain available. Each main app exposes:
 
 - `components`: original named SimplyFlow datasets, with templates, commands,
   actions and other entries belonging to each feature.
-- `definition.sources`: authored behavior source and source-file origins,
-  captured before minification. For example,
-  `muzeSolidContactsApp.definition.sources.contactList.actions.matchesPerson`.
-- `definition.modules`: readable app-owned data/launch helper modules and their
-  import dependencies where those helpers form a separate API boundary.
+- `definition.sources`: per-component URLs for optional, same-build authoring
+  modules. For example, `muzeSolidContactsApp.definition.sources.contactList.url`.
+  An explicit developer tool can import that URL and inspect its default export's
+  `actions.matchesPerson.source`, origin and line. Normal use never imports it.
+- `definition.modules`: app-owned API helper origins, dependencies and optional
+  `sourceUrl` references. Importing one explicitly returns the original source
+  string as data, without executing that source module.
 - `definition.overrides`: app-level entry sections supplied to SimplyFlow.
   Native SimplyFlow composition selects them over component defaults.
 - `definition.instances`: the account and Preferences app instances, each with
@@ -323,20 +325,27 @@ Editable functions use SimplyFlow's supplied `this`: `this.data`, `this.actions`
 `this.api`, `this.runtime` and `this.container`. Commands read UI input and perform
 native UI operations; named actions can be called with values and data API
 fixtures. Source reconstruction does not require the original module closure or
-bundler-local variable names. The build retains readable sources in production
-as well as readable bundles; source retention is included in the size budget.
+bundler-local variable names. The build emits authored sources in hashed
+`assets/authoring/` modules, outside the executable runtime graph. Runtime bundles contain source URLs, not duplicate
+authored behavior strings. A future IDE may load these files explicitly; there
+is no automatic loader or IDE UI. `size-report.json` reports full runtime graphs
+including auth callbacks and optional source-file costs separately. Source maps
+also remain separate; normal app startup does not fetch them.
 
 HTML remains in authored `.html` files. `{{view:name:./feature.html}}` wires a named
 view at build time to an ordinary SimplyFlow field/template binding. The generated
 page contains the template markup for useful View Source. Runtime template entries
 use `import template from './feature.html' with { type: 'text' }`. These text
 imports preserve the authored UTF-8 source, including its root wrapper. Styles
-and retained module sources also use text imports. Shared account/Preferences
+use text imports. Inspection-only API modules use explicit `?source` imports,
+which provide URLs instead of loading their source text. Shared account/Preferences
 imports explicitly request build-time composition with `?template` and the same
 text attribute; includes and app-specific placeholders are expanded there.
 Rollup and the Node test loader handle text imports for the supported runtimes.
-`?entries` imports capture authored named behavior and its origins. These build
-steps add no runtime renderer or second component merger.
+`?entries` extracts named behavior and origins into optional authoring assets
+and supplies component-keyed URL descriptors to the runtime. These build steps
+add no runtime renderer or second component merger. Keep authoring assets with
+their matching deployment; a missing old asset affects inspection, not normal use.
 
 Contacts search/sort, Files visibility/picker state, Launcher shortcut selection
 and profile detail lists use SimplyFlow models. jaqt expresses queries inside
@@ -345,10 +354,11 @@ source projections without replacing native RDF. Named predicates/comparators
 remain editable. Picker/provider and workspace object queries also reuse jaqt.
 
 `test/features.test.mjs` checks model refresh, draft/RDF preservation and Files
-failure contracts with data doubles. Browser checks also reconstruct retained
-production sources and wire the migrated Contacts list into a separate fixture
-host with a template override. Existing end-to-end and RDF preservation coverage
-remains in place. Fixtures do not establish credential-isolated IDE previews or
+failure contracts with data doubles. Browser checks first assert no authoring
+requests at startup, then explicitly load optional source data as a developer tool and reconstruct it in a separate
+fixture host with a template override. Separate normal-workflow fixtures deny
+authoring routes and verify core work proceeds without requesting them. Existing
+end-to-end and RDF preservation coverage remains in place. Fixtures do not establish credential-isolated IDE previews or
 live Solid OIDC behavior.
 
 The in-app IDE, persisted user edits, live template reapplication/reset controls

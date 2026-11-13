@@ -1,0 +1,30 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261113-QG24H-190 a sd:Implementation ;
+    dcterms:identifier "IMP-20261113-QG24H-190" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261113-QG24H-190.md" ;
+    sd:status sd:Active ;
+    sd:implementationLocation "scripts/templates.mjs", "scripts/bundle.mjs",
+        "scripts/build.mjs", "packages/solid-app-data/src/definition.mjs",
+        "apps/files/src/index.mjs", "apps/launcher/src/index.mjs",
+        "apps/presenter/src/index.mjs" ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261113-QG24H-189 ;
+        sd:gitCommit "fdfc48315ce478e0e2265e7c249fb66f48fd2182" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261113-QG24H-189 ;
+        sd:gitCommit "fdfc48315ce478e0e2265e7c249fb66f48fd2182" ] ;
+    sd:implementationChangeKind sd:MixedChange ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261108-QG24H-97 ;
+        sd:gitCommit "0702a85fe3ee5a228e1aa6aea5badc41e8646582" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261108-QG24H-109 ;
+        sd:gitCommit "0702a85fe3ee5a228e1aa6aea5badc41e8646582" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261107-0GSCX-2 ;
+        sd:gitCommit "0702a85fe3ee5a228e1aa6aea5badc41e8646582" ] ;
+    sd:constrainedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261107-QG24H-83 ;
+        sd:gitCommit "d552d08253837fffb4f8e63462855df0eb0cdb18" ] .
