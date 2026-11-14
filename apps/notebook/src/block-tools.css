@@ -1,0 +1,10 @@
+@layer component {
+  .muze-solid-notebook-block-tools {
+    /* Keep its box measurable so placement and reveal bind together. */
+    visibility: hidden;
+    z-index: 40;
+    max-inline-size: calc(100vw - 16px);
+    max-block-size: calc(100dvh - 16px);
+    overflow: auto;
+  }
+}

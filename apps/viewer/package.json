@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@muze-labs/cobalt-rich-text-note": "file:../../local-packages/muze-labs-cobalt-rich-text-note-0.1.1.tgz",
+    "@muze-labs/cobalt-rich-text-note": "0.1.1",
     "@muze-labs/simplyflow": "^0.10.4",
     "@muze-labs/simplyflow-events": "0.1.0",
     "@muze-labs/solid-app-data": "0.1.0",

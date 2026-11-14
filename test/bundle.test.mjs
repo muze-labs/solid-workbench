@@ -59,7 +59,8 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       'preferences',
       'account',
       'viewer',
-      'presenter'
+      'presenter',
+      'notebook'
     ];
     assert.deepEqual(
       [...chunks.keys()].sort(),
@@ -71,7 +72,8 @@ test('readable and minified apps preserve isolated module graphs', async () => {
           'shared/ui',
           'shared/profile',
           'shared/backgrounds',
-          'shared/cobalt'
+          'shared/cobalt',
+          'notebook/controller'
         ].map(filename)
       ].sort()
     );
@@ -161,9 +163,10 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       if (['launcher', 'preferences'].includes(name)) {
         required.push(filename('shared/backgrounds'));
       }
-      if (['presenter', 'viewer'].includes(name)) {
+      if (['presenter', 'viewer', 'notebook'].includes(name)) {
         required.push(filename('shared/cobalt'));
       }
+      if (name === 'notebook') { required.push(filename('notebook/controller')); }
       if (['contacts', 'profile'].includes(name)) {
         required.push(filename('shared/profile'));
       }

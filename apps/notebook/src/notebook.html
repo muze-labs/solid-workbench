@@ -1,0 +1,135 @@
+<div class="muze-solid-notebook-body">
+  <dialog
+    class="ds-dialog muze-solid-design-dialog muze-solid-notebook-document-dialog"
+    data-simply-behavior="muzeSolidDesignDialog"
+    aria-labelledby="muze-solid-notebook-document-heading"
+  >
+    <header class="muze-solid-design-dialog-header">
+      <h2 id="muze-solid-notebook-document-heading" class="swb-dialog-title">
+        Notebooks on this device
+      </h2>
+    </header>
+    <div class="muze-solid-design-dialog-content">
+      <ul
+        class="muze-solid-notebook-documents"
+        data-simply-list="muzeSolidNotebookDocuments"
+      >
+        <template
+          ><li>
+            <button
+              type="button"
+              class="muze-solid-design-tool"
+              data-simply-command="muzeSolidNotebookSelect"
+              data-simply-value=":value.id"
+              data-simply-field="title"
+              data-simply-transform="escape_html"
+            ></button></li
+        ></template>
+      </ul>
+      <p
+        role="status"
+        data-simply-field="muzeSolidNotebookStatus"
+        data-simply-transform="escape_html"
+      ></p>
+    </div>
+    <footer class="muze-solid-design-dialog-footer">
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidDesignCloseDialog"
+      >
+        Close
+      </button>
+    </footer>
+  </dialog>
+  <dialog
+    class="ds-dialog muze-solid-design-dialog muze-solid-notebook-link-dialog"
+    data-simply-behavior="muzeSolidDesignDialog"
+    aria-labelledby="muze-solid-notebook-link-heading"
+  >
+    <form class="swb-dialog-form" data-simply-command="muzeSolidNotebookLink">
+      <header class="muze-solid-design-dialog-header">
+        <h2 id="muze-solid-notebook-link-heading" class="swb-dialog-title">
+          Add link
+        </h2>
+      </header>
+      <div class="muze-solid-design-dialog-content">
+        <label
+          >Link address
+          <input
+            class="muze-solid-notebook-input"
+            type="url"
+            name="href"
+            required
+            autofocus
+            placeholder="https://example.org/"
+            data-simply-field="muzeSolidNotebookLinkDraft"
+            data-simply-transform="escape_html"
+          />
+        </label>
+        <p
+          role="status"
+          data-simply-field="muzeSolidNotebookStatus"
+          data-simply-transform="escape_html"
+        ></p>
+      </div>
+      <footer class="muze-solid-design-dialog-footer">
+        <button class="muze-solid-design-tool">Apply link</button>
+        <button
+          type="button"
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidDesignCloseDialog"
+        >
+          Cancel
+        </button>
+      </footer>
+    </form>
+  </dialog>
+  <section
+    id="muze-solid-notebook-status"
+    popover
+    class="muze-solid-notebook-status"
+    aria-labelledby="muze-solid-notebook-status-heading"
+  >
+    <h2 id="muze-solid-notebook-status-heading">Notebook status</h2>
+    <p
+      data-simply-field="muzeSolidNotebookStatusDisplay"
+      data-simply-transform="escape_html"
+    ></p>
+  </section>
+  <span
+    class="swb-visually-hidden"
+    role="status"
+    data-simply-field="muzeSolidNotebookAnnouncement"
+    data-simply-transform="escape_html"
+  ></span>
+  <div
+    data-simply-field="muzeSolidNotebookLocked"
+    data-simply-transform="attributes"
+    data-simply-attributes="inert"
+  >
+    <ol
+      class="muze-solid-notebook-blocks"
+      role="list"
+      data-simply-list="muzeSolidNotebookBlocks"
+    >
+      <template>
+        <li
+          data-simply-field="attributes"
+          data-simply-transform="attributes"
+          data-simply-attributes="data-block-id"
+        >
+          <div
+            class="muze-solid-notebook-editor"
+            contenteditable="true"
+            role="textbox"
+            aria-label="Rich text block"
+            aria-multiline="true"
+            title="Block tools: Ctrl+Space"
+            spellcheck="true"
+          ></div>
+        </li>
+      </template>
+    </ol>
+  </div>
+</div>

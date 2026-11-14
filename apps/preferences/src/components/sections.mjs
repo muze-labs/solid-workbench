@@ -17,6 +17,7 @@ const contributions = {
   files,
   profile,
   presenter: [],
+  notebook: [],
   viewer: []
 };
 export const sections = {

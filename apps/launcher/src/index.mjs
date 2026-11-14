@@ -121,6 +121,7 @@ const definition = {
     contactsLink: { href: '../contacts/' },
     filesLink: { href: '../files/' },
     presenterLink: { href: '../presenter/' },
+    notebookLink: { href: '../notebook/' },
     profileLink: { href: '../profile/' }
   },
   api: {

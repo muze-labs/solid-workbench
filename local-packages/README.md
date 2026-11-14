@@ -1,4 +1,7 @@
-# Temporary Cobalt build
+# Cobalt editor provenance
+
+The temporary-build details below are historical. Current app dependencies use
+the published package, as recorded in the CYC199 section.
 
 The maintainer explicitly requested “I'll publish later, use a local build for
 now” during Presenter cycle CYC-20261112-QG24H-175. This is a temporary exception
@@ -19,3 +22,12 @@ After the maintainer publishes the corresponding package, install that npm
 version in both app workspaces, update the lockfile, remove this tarball and
 note, and rerun the relevant checks. Retain the composition guards and tests.
 Do not silently fall back to published 0.1.0, which loses composition input.
+
+## Published editor adopted in CYC199
+
+The corresponding rich-text editor 0.1.1 is now published. Its complete dist
+contents were compared with the installed accepted local build and are identical.
+Presenter, Viewer and Notebook now declare the published npm version, and the
+lockfile resolves it from npm. The historical tarball is retained as provenance
+only and is no longer a runtime dependency; no new local-package exception is
+introduced by Notebook.

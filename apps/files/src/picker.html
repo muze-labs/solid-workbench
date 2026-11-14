@@ -6,7 +6,11 @@
     data-simply-transform="attributes"
     data-simply-attributes="hidden"
   >
-    <h2 class="swb-picker-title">Select a resource</h2>
+    <h2
+      class="swb-picker-title"
+      data-simply-field="muzeSolidFilesPickerTitle"
+      data-simply-transform="escape_html"
+    ></h2>
     <p class="swb-picker-description">
       Requested by
       <span
@@ -14,19 +18,42 @@
         data-simply-transform="escape_html"
       ></span>
     </p>
-    <p class="swb-picker-description">
-      Choose a file, or select the current folder.
-    </p>
+    <p
+      class="swb-picker-description"
+      data-simply-field="muzeSolidFilesPickerDescription"
+      data-simply-transform="escape_html"
+    ></p>
     <ul class="swb-resource-choices" data-simply-list="pickerEntries">
-      <template><li class="swb-resource-choice">
-        <button type="button" class="ds-button swb-picker-button"
-          data-simply-command="open" data-simply-value=":value.url">
-          <span data-simply-field="name" data-simply-transform="escape_html"></span>
-          <span data-simply-field="type" data-simply-transform="escape_html"></span>
-        </button>
-        <button type="button" class="ds-button swb-picker-button"
-          data-simply-command="selectResource" data-simply-value=":value.url">Select</button>
-      </li></template>
+      <template
+        ><li class="swb-resource-choice">
+          <button
+            type="button"
+            class="ds-button swb-picker-button"
+            data-simply-command="open"
+            data-simply-value=":value.url"
+          >
+            <span
+              data-simply-field="name"
+              data-simply-transform="escape_html"
+            ></span>
+            <span
+              data-simply-field="type"
+              data-simply-transform="escape_html"
+            ></span>
+          </button>
+          <button
+            type="button"
+            class="ds-button swb-picker-button"
+            data-simply-command="selectResource"
+            data-simply-value=":value.url"
+            data-simply-field="pickerSelect"
+            data-simply-transform="attributes"
+            data-simply-attributes="hidden"
+          >
+            Select
+          </button>
+        </li></template
+      >
     </ul>
   </section>
 </div>

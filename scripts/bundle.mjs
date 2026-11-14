@@ -12,7 +12,8 @@ const appNames = [
   'preferences',
   'account',
   'viewer',
-  'presenter'
+  'presenter',
+  'notebook'
 ];
 
 function entryOwners(id, getModuleInfo) {
@@ -53,6 +54,9 @@ function sharedChunk(id, { getModuleInfo }) {
   }
   if (/\/@muze-labs\/cobalt-(?:rich-text-note|note-core)\//.test(id)) {
     return 'shared/cobalt';
+  }
+  if (id.includes('/@muze-labs/cobalt-notebook/')) {
+    return 'notebook/controller';
   }
   if (id.includes('/node_modules/')) {
     if (

@@ -198,14 +198,17 @@ export async function checkPickerReflow(page) {
       const scroller = provider.document.querySelector('.swb-app-content');
       scroller.scrollTop = scroller.scrollHeight;
       const box = actions.getBoundingClientRect();
-      const buttons = [...actions.querySelectorAll('button')];
+      const buttons = [...actions.querySelectorAll('button')]
+        .filter((button) => button.checkVisibility());
+      const inputs = [...actions.querySelectorAll('input')]
+        .filter((input) => input.checkVisibility());
       return {
         visible:
           box.height > 0 &&
           box.top >= 0 &&
           box.bottom <= provider.innerHeight + 1,
-        contained: buttons.every((button) => {
-          const control = button.getBoundingClientRect();
+        contained: [...buttons, ...inputs].every((element) => {
+          const control = element.getBoundingClientRect();
           return (
             control.left >= box.left &&
             control.right <= box.right + 1 &&

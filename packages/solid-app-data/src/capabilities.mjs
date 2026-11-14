@@ -21,6 +21,27 @@ export const browseCapability = 'https://vocab.muze.nl/capabilities/browse';
 export const browseInput = Object.freeze({
   '@context': { '@vocab': 'https://vocab.muze.nl/capability#' }
 });
+export function browseRequest(input) {
+  if (
+    !input ||
+    typeof input !== 'object' ||
+    Array.isArray(input) ||
+    Object.keys(input).some(
+      (key) => !['@context', 'mode', 'suggestedName'].includes(key)
+    )
+  ) {
+    throw capabilityError('Unsupported resource selection request.', 'invalid');
+  }
+  const mode = input.mode === undefined ? 'resource' : input.mode;
+  if (
+    !['resource', 'open', 'save'].includes(mode) ||
+    (input.suggestedName !== undefined &&
+      (mode !== 'save' || typeof input.suggestedName !== 'string'))
+  ) {
+    throw capabilityError('Unsupported resource selection mode.', 'invalid');
+  }
+  return { mode, suggestedName: input.suggestedName ?? '' };
+}
 export function capabilityError(message, code = 'failed') {
   const error = new Error('capabilities: ' + message);
   error.code = code;

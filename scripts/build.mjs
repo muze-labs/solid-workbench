@@ -58,7 +58,8 @@ for (const name of [
   'preferences',
   'account',
   'viewer',
-  'presenter'
+  'presenter',
+  'notebook'
 ]) {
   const route = name === 'launcher' ? 'workbench' : name;
   const title = applicationTitle(name);
@@ -86,7 +87,9 @@ for (const name of [
     ? '<link rel="icon" href="favicon.ico" sizes="16x16 24x24 32x32 48x48">' +
       '<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">' +
       '<link rel="icon" href="icon.svg" type="image/svg+xml" sizes="any">'
-    : '';
+    : name === 'notebook'
+      ? '<link rel="icon" href="icon.svg" type="image/svg+xml">'
+      : '';
   for (const asset of assets) {
     await copyFile(
       path.join(root, `apps/${name}/src/${asset}`),
@@ -111,7 +114,7 @@ await writeFile(
 await cp(path.join(root, 'catalog'), path.join(root, 'www/catalog'), {
   recursive: true
 });
-console.log('Built all eight apps and static catalog in www/');
+console.log('Built all nine apps and static catalog in www/');
 const outputs = Object.fromEntries(
   bundles
     .filter((item) => item.type === 'chunk')
@@ -144,7 +147,8 @@ function appSizes(suffix) {
     'preferences',
     'account',
     'viewer',
-    'presenter'
+    'presenter',
+    'notebook'
   ]) {
     const files = importGraph(`www/assets/${name}/src/index${suffix}.js`);
     importGraph('www/assets/redirect' + suffix + '.js', files);
