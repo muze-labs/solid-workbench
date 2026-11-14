@@ -263,3 +263,67 @@ test('editor read and acknowledgement retain the existing owner boundary', async
     /unavailable/
   );
 });
+
+
+test('preparing an unstarted view prevents late delivery and allows release',
+  async (t) => {
+    const target = {
+      location: { origin: 'https://host.example' },
+      addEventListener() {}, removeEventListener() {}
+    };
+    const url = 'https://viewer.example/';
+    const broker = new WorkspaceBroker({ target,
+      embeddedProviders: [{ url, capability: viewResourceCapability }] });
+    t.after(() => broker.dispose());
+    const ticket = broker.beginEmbedded(url, viewResourceCapability,
+      'launcher', 'view');
+    const record = broker.instances.get(ticket.id);
+    record.capabilities = [viewResourceCapability];
+    let ready;
+    broker.whenReady = () => new Promise((resolve) => { ready = resolve; });
+    let deliveries = 0;
+    record.peer = { closed: false, close() {}, call: async () => {
+      deliveries++;
+      return { result: { ready: true } };
+    } };
+    const pending = broker.requestEmbedded(ticket.id, {});
+    assert.deepEqual(await broker.updateEmbeddedView(ticket.id,
+      { operation: 'prepare' }), { allowed: true, frozen: true });
+    ready(record);
+    await assert.rejects(pending, /prepared|cancelled/i);
+    assert.equal(deliveries, 0, 'No content reaches a prepared provider');
+    broker.endEmbedded(ticket.id);
+    assert.equal(broker.instances.has(ticket.id), false);
+  });
+
+
+test('a delivered view retains its provider close veto even without ready content',
+  async (t) => {
+    const target = {
+      location: { origin: 'https://host.example' },
+      addEventListener() {}, removeEventListener() {}
+    };
+    const url = 'https://viewer.example/';
+    const broker = new WorkspaceBroker({ target,
+      embeddedProviders: [{ url, capability: viewResourceCapability }] });
+    t.after(() => broker.dispose());
+    const ticket = broker.beginEmbedded(url, viewResourceCapability,
+      'launcher', 'view');
+    const record = broker.instances.get(ticket.id);
+    record.capabilities = [viewResourceCapability];
+    record.ready = true;
+    broker.whenReady = async () => record;
+    let prepares = 0;
+    record.peer = { closed: false, close() {}, call: async (method) => {
+      if (method === 'capability') {
+        return { error: { code: 'failed', message: 'Content failed to fit' } };
+      }
+      prepares++;
+      return { allowed: false, frozen: false, message: 'Keep the draft' };
+    } };
+    await assert.rejects(broker.requestEmbedded(ticket.id, {}), /failed to fit/);
+    assert.equal((await broker.updateEmbeddedView(ticket.id,
+      { operation: 'prepare' })).allowed, false);
+    assert.equal(prepares, 1);
+    assert(broker.instances.has(ticket.id));
+  });

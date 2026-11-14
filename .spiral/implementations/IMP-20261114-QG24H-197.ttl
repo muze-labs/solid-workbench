@@ -1,0 +1,15 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261114-QG24H-197 a sd:Implementation ;
+    dcterms:identifier "IMP-20261114-QG24H-197" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261114-QG24H-197.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261114-QG24H-196 ;
+        sd:gitCommit "04231a9a9af899c303928e8fc3aa05719d32db3a" ] ;
+    sd:implementationLocation "apps/presenter/src/components/regions.mjs",
+        "test/presenter-browser.mjs", "test/capabilities.test.mjs",
+        "test/embedded-view.test.mjs", "test/support/independent-view-peer.mjs",
+        "packages/solid-app-data/src/capabilities.mjs",
+        "packages/solid-app-data/src/workspace-broker.mjs" .

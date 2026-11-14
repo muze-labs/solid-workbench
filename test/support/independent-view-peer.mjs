@@ -1,7 +1,8 @@
 // Deliberately no Workbench library or framework: tests the wire contract.
 export function independentViewPeer(
   origin,
-  presentation = 'interactive-scroll'
+  presentation = 'interactive-scroll',
+  { startupError = '' } = {}
 ) {
   return `<!doctype html><meta name="viewport" content="width=device-width">
     <title>Independent guarded viewer</title>
@@ -63,8 +64,12 @@ export function independentViewPeer(
         port.postMessage({type:'reply',id:data.id,result});
       };
       port.start();
-      await send('register',{restoring:false,generation:'independent-view',
+      const startupError=${JSON.stringify(startupError)};
+      await send('register',{restoring:Boolean(startupError),generation:'independent-view',
         capabilities:['https://vocab.muze.nl/capabilities/view-resource']});
+      if(startupError){
+        await send('restore-error',{message:startupError});return;
+      }
       await send('ready',null);
       try {await send('embed-provider',{capability:'urn:sibling'});report({delegation:'unexpected'});}
       catch(error){report({delegation:error.code});}
