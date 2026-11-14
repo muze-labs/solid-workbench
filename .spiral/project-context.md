@@ -1,5 +1,173 @@
 # Solid Workbench project context
 
+## CYC199 accepted for integration, 2026-11-14
+
+The maintainer says “accepted, commit, merge and push please” after reviewing the
+Notebook and its H1, narrow account and in-place formatting corrections. ACC204
+accepts implementation a2fd9d96f59a8fd8943ae58005c0fd33027a9697
+and verification 750668cb84f2fe3b70b9169c0a47cff2c84dc5f6. CYC199 is Accepted,
+superseding earlier Active/pending statements. Direct normal merge into current
+main and pushing main/cycle are authorized after exact integration validation.
+Source/build and all thirteen Chrome suites pass; documented manual/device and
+stock-validator limits remain. Generic Preferences contributions and collection
+management remain future roadmap/design work. No new cycle, deployment or npm
+publication is requested. Preserve accepted behavior during delivery bookkeeping.
+
+## Notebook formatting flash correction evaluated, 2026-11-14
+
+The maintainer reports whole-app flashing on rich formatting. Native evidence in
+/tmp/notebook-format-before.log confirms selected-text Bold destroys all three
+editors and changes document/control locking through structural Project/Run.
+The local correction calls Cobalt's in-place controller API directly and reuses
+normal per-editor change/autosave, restoring the returned caret with operation/
+composition guards. The after probe retains all three editors/elements, destroys
+none and preserves text/focus. Source/build and all thirteen required Chrome
+suites pass, including native stable-formatting, actual scrolling-panel/caret,
+untouched DOM, enabled document controls and cache-failure/autosave/reload checks.
+EVD201 records before/after probes and final logs. The complete minified Notebook/
+callback graph is 137050 gzip B (+29 B), with no new dependency. CYC199 remains
+Active in Evaluate awaiting human review. No acceptance or integration authority
+is inferred; preserve all earlier cycle work.
+
+## Confirmed Cobalt H1 and narrow account correction, 2026-11-14
+
+The maintainer rejects the separate title field and confirms using the existing
+Cobalt editor on an H1 in the same notebook controller sequence. Enter splits
+the title at the caret into its prefix and a new first paragraph containing the
+formatted remainder. Arrows, Shift selection, clipboard, formatting, joins and
+IME reuse the actual Cobalt adapter; the textarea/mirror and custom cursor bridge
+are removed. A linked native title fragment retains annotations and synchronizes
+plain document metadata/browser-tab naming, with read-only fallback for older
+plain-title documents and preservation of unknown RDF. First-body New/Open focus
+remains, with title reachable by native cursor/Tab/touch. A split focus race is
+corrected by waiting for the operation to unlock and confirming native focus.
+
+The maintainer also reports the profile/connection status button disappearing at
+the narrowest width. Remove the shared compact header's 500px hiding rule. Native
+checks pass at 320/390/500/501px and desktop for visible 44px controls, keyboard
+reachability, pinned account corner and no horizontal overflow. The H1 keeps its
+native rich-editable heading semantics after a pinned ARIA-in-HTML review.
+Source/build, the complete targeted Notebook scenario and all thirteen required
+Chrome suites pass (exit 0). The complete Notebook/callback graph is 137021 gzip
+B. EVD201 records exact evidence, captures, bundle/cold costs and limits. CYC199 remains Active in Evaluate; no acceptance, commit,
+merge, push or publication is inferred.
+
+## Confirmed Notebook title block and account corner, 2026-11-14
+
+The maintainer confirms moving title editing into a dedicated content block above
+the notes. Header text is now Notebook; the document name remains the browser tab
+title. The wrapping native field autosaves existing title metadata locally, keeps
+body editors intact and enters the first note with Enter. New/Open keep first-note
+focus. The title's IME guards share document-transition protection; no new body
+block type or persistence format is introduced. Plain title focus hides rich-text
+tools, and returning to a note restores its content toolbar. A Notebook header grid
+keeps account controls in the top-right as tools wrap. Saved document/Pod state now
+uses check-circle, distinct from the account cloud. The Firefox explicit strong
+weight and approved note focus highlight are retained. Native title/IME/long-name/
+account/icon checks pass; EVD201 records final verification and manual limits.
+Final npm run check passes all 31 test files/both variants, and the full required
+Chrome run passes all thirteen suites uninterrupted (exit 0). EVD201 records
+precise runs, captures, native Firefox appearance and tooling/manual-review limits.
+The complete minified Notebook graph is 137369 gzip B, with no new dependency.
+Current cycle companions parse as native Turtle; no fresh SHACL pass is claimed.
+CYC199 remains Active in Evaluate, with nothing committed, merged or published.
+
+## Firefox Notebook emphasis correction, 2026-11-14
+
+The maintainer still sees strong markup without visual bold and identifies
+Firefox. Firefox 157.0.1 reproduces weight 400 under the editor's inherited 300;
+the earlier Chrome-only result at 700 did not cover this appearance gap. Notebook
+now sets strong to 700 in its own component CSS. Native Firefox button/Ctrl+B,
+text preservation and reload assertions pass, with visibly distinct before/after
+captures. The existing Chrome fixture now models relative strong weight in its
+reset layer so its visual regression covers this baseline. No new dependency,
+font download, shared typography change or permanent Firefox driver framework
+is added. EVD201 records the disposable Snap probe's cleanup limits separately
+from application assertions. CYC199 remains Active, uncommitted and in Evaluate.
+
+## Notebook contextual block tools, 2026-11-14
+
+The maintainer replaces permanent rich-text header tools with floating-by-default
+block tools. CYC199 now owns a separate contextual-toolbar feature and editable
+per-content-type definitions, initially rich text. Selection reveals controls
+without taking editor focus; Ctrl+Space enters them and Escape returns to editing.
+Dock/Float uses the existing header location, with active block/type and current
+formatting state determining its controls. File/document/status actions stay in
+the header. Docking is transient UI state; the focus highlight, native RDF and
+local recovery are retained. No new persisted block kind or dependency is added.
+
+The next review requests first-block focus on opening/New and clarifies Bold fails
+on selected existing text. Document transitions now focus the first editor after
+locks/dialogs clear. A traced pointer misses Bold because the visible toolbar
+moves before activation; hidden-box measurement now allows position and reveal
+to bind together. Native Shift+Arrow/button/Ctrl+B checks verify rendered weight
+and toggling, alongside opening/New/Recent focus. No font override is introduced.
+
+Final verification passes npm run check (31 source test files and both variants)
+and npm run test:browser (all thirteen suites, uninterrupted exit 0). EVD201
+records final runs, the first-displayed-block correction, native Bold weight 700,
+recovery/picker preservation and budgets. Notebook's complete minified graph is
+136681 gzip B; Notebook/Files/callback together are 151007 B. Nothing is committed,
+merged, pushed or published.
+
+Evaluation includes native phone/desktop selection, keyboard access, formatting
+in both placements, a fixture alternative type, preservation and reflow bounds.
+Reset and dismissal transition gaps found by probes are corrected; EVD201 records
+superseded failures and the final verification results. Physical mobile/manual
+AT and whole-app zoom certification are not claimed. CYC199 remains Active in
+Evaluate; no human acceptance or delivery authorization is inferred.
+
+## Notebook preferred file browsing evaluated, 2026-11-14
+
+The maintainer replaces Notebook Open/Save As URL entry with the preferred
+file-picker capability and requires new-file creation. CYC199 now invokes the
+existing browse capability through the shared presenter and user preferences.
+The experimental resource-picker contract adds open/save modes and a suggested
+filename; Files browses folders and selects a new destination without placeholder
+writes. Notebook owns native RDF creation and conditional saving. Device-only
+copies remain available through the clock tool. Save-mode controls derive from
+SimplyFlow model options; generic file/container selection remains supported.
+
+Final npm run check and all thirteen Chrome suites pass uninterrupted (exit 0),
+including real preferred-picker routing, nested-folder creation, cancellation,
+filename/path refusal, a concurrent destination collision, 320px/200% text reflow
+and existing capability clients. EVD201 records exact runs, size/transfer data and
+the superseded fixture failures. The approved focus highlight is unchanged.
+This supersedes the URL-dialog direction and final-suite limitations below.
+CYC199 remains Active in Evaluate awaiting human acceptance. Nothing is committed,
+merged, pushed or published; broader Preferences extensibility remains deferred.
+
+## Notebook review direction applied, 2026-11-14
+
+CYC199 remains Active on spiral/CYC-20261114-QG24H-199-notebook. The maintainer
+corrects the initial incomplete interaction integration, then explicitly directs
+Files-style header document/format tools, document-name heading/tab title with
+an edit button, no disclosures or structural/selection controls, Ctrl/Cmd+K link
+dialog and clickable save-status icons without persistent editor-area messages.
+They approve the current subtle focus highlight; preserve it. Open/Save As use
+native dialogs and retain local recovery copies alongside explicit Pod URLs.
+Shift+arrows/native touch selection and Enter/Delete/Backspace own block editing.
+
+Source/build checks and the final complete Notebook Chrome scenario pass,
+including real header activation, dialog focus/cancel, links, local documents,
+save conflicts and reload recovery. Phone/desktop images are inspected. The
+full browser command terminates with SIGTERM/143 before a suite result; do not
+claim a clean final thirteen-suite pass. EVD201 records exact runs and independent
+suite follow-up. Manual AT/physical-phone review and broader Preferences
+extensibility remain distinct. No human acceptance, commit or delivery authority
+is inferred from tests or the focus-highlight approval.
+
+## Preferences extensibility clarification, 2026-11-14
+
+During CYC199 Notebook review, the maintainer specifies that Preferences must
+support any app without a hardcoded app list, and app-specific sections must
+come from the app rather than Preferences itself. They permit deferring the
+refactor to the roadmap. The common/app-specific layout and current narrow
+Notebook admission repair do not establish generic app contribution support.
+The suite roadmap's "Any app context and app-provided sections" entry retains
+the requirement and evaluation criteria for a future cycle. No new cycle or
+generic product change is selected; CYC199 remains Active pending review.
+
 ## Greenfield API policy, confirmed 2026-11-12
 
 The maintainer confirms that no APIs have consumers outside this project.
@@ -2639,3 +2807,30 @@ previous Active/pending entries. Normal merge against current main and pushing
 main/cycle are authorized after exact integration validation. Existing manual
 AT/physical-device, real OIDC and stock-validator limits remain disclosed.
 No next cycle, npm publication or deployment is selected.
+
+
+## Notebook documents cycle ready for review, 2026-11-14
+
+The maintainer agrees to Notebook, confirms one document containing rich-text
+blocks, clarifies loading/saving different documents, then resumes implementation.
+CYC199 is isolated on spiral/CYC-20261114-QG24H-199-notebook from accepted main
+db0de64. SRC200/DES202/IMP203/EVD201 retain the confirmed gap, design and evidence.
+
+The app supports New/Open/Save/Save As, separate account-scoped native Turtle
+recovery copies, conditional Pod saving, ordered rich-text blocks, formatting and
+native/button split/join and boundary movement. It reuses published notebook
+controller 0.1.0 and editor 0.1.1 plus existing SimplyFlow/Metro/local/RDF helpers.
+The published editor runtime was compared with the accepted temporary build and
+is identical; Presenter/Viewer now also resolve the published dependency from npm.
+The controller stays outside other app graphs. Workbench and catalog expose
+Notebook, using supplied artwork.
+
+Source/build and a complete thirteen-suite browser run pass. A final Notebook-only
+navigation-order correction then passes source/build and extended native checks;
+EVD201 records the exact scope rather than claiming another uninterrupted full
+run afterward. Phone/desktop images were inspected. Native document/cache failure,
+unknown-RDF, conflict/no-ETag recovery and IME evidence remain distinguished from
+manual AT, physical-device and real-provider certification. Full minified graph
+is 130015 gzip B with auth callback; cold usable edit about 540 KB / 8 requests /
+11.2 s in the uncompressed slow fixture. CYC199 stays Active in Evaluate awaiting
+human acceptance; no commit, merge, push or publication authorized or performed.
