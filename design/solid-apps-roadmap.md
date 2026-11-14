@@ -43,6 +43,13 @@ for Files details, a future Solid Presenter app and later Launcher widgets.
 The staged proof below selects no next cycle or priority and does not establish
 final capability names or a complete Weblets protocol.
 
+Collection design intake, 2026-11-14: incorporate the
+[collection-based document-management design](solid-workbench-collections-design.md)
+as cross-app work supporting the personal-use foundation. The section below
+retains its launch, lifecycle and recovery requirements, distinguishes current
+behavior from future work, and keeps proposed decisions open. This addition
+selects no implementation cycle, first app or new delivery priority.
+
 This records suite-wide direction alongside the
 [capability-broker roadmap](solid-capability-broker-roadmap.md), which continues
 to govern broker implementation. The broker phases do not schedule every app
@@ -131,6 +138,12 @@ around that boundary. Choose the initial note types, persistence representation
 and editor integration during a future cycle. Follow the published-npm
 dependency policy; this roadmap does not add sibling repository links.
 
+Accepted baseline, 2026-11-14: CYC199 delivers separate Notebook documents,
+account-scoped local recovery, Cobalt rich-text/H1 editing and conditional Pod
+open/save through the preferred file picker. Portable collection files, default
+collection launch and shared document lifecycle are follow-up work under
+[collection-based document management](#collection-based-document-management).
+
 ### Solid Presenter
 
 Retain a separate presentation app owning decks, slide order, templates and
@@ -158,6 +171,119 @@ unavailable sources, offline caching and cyclic references. Linking must not
 imply write access or lose local edits when a remote source changes or becomes
 unreachable. This is an investigation item; inclusion semantics and UI remain
 to be designed, not a commitment to a particular implementation.
+
+## Collection-based document management
+
+Added at the maintainer's request on 2026-11-14 from the
+[collection-based document-management design](solid-workbench-collections-design.md).
+Applications should normally open a user-owned collection of independent document
+files, with creation, discovery and organisation available inside the app.
+Users can create and switch between multiple collections. The collection is
+itself a portable resource, usable by compatible standalone apps as well as
+Workbench. This is cross-app foundation work alongside the existing personal-app
+priorities; it does not change the governing broker phases or select a cycle.
+
+### Launch, representation and everyday work
+
+- An explicit resource opens first; otherwise open the app's default collection
+  from preferences. Initialise and record a default only when none is defined.
+  An unreadable default needs an access/recovery state, retaining its reference.
+  Ordinary collection switching updates `#resource`; Make default is explicit.
+  Browser navigation restores context, and direct document links remain valid
+  entry points without silent collection creation or import. Coordinate
+  collection-specific settings with the
+  [app-provided Preferences direction](#any-app-context-and-app-provided-sections).
+- Define a versioned native RDF/Turtle collection shape with stable collection
+  and membership identities, title, creation destination, member references,
+  basic grouping/ordering and cached display summaries. Keep document content
+  in its own files and authoritative document metadata with the document.
+  Display a useful list from the collection without fetching every member body;
+  preserve unknown properties, unsupported entries and original references.
+- New creates a separately identified file at the active collection's creation
+  destination and registers it. Open uses the existing preferred file-picker
+  capability and edits the selected resource in place; Add existing records a
+  reference. Keep opening, membership and adopting management as separate
+  explicit choices. Renaming or logical grouping preserves file identity.
+  Changes to the default collection or creation destination affect future work
+  without silently moving existing documents.
+- Refresh cached summaries after known edits, on opening and through explicit
+  refresh. Failed reads retain membership and an identifiable retry state.
+  Keep collection-specific labels and personal view state in their proper scope.
+  Collection membership and collection permissions confer no authority over a
+  member's content, access or lifecycle.
+
+### Shared lifecycle and recovery prerequisites
+
+The existing Files implementation writes a conditional tombstone to the
+advertised parent-container description and retains file bytes; physical moves
+are not implemented. The design's physical move/delete and resolution workflows
+require additional implementation and verification before being offered.
+Do not describe the current tombstone-only action as completed physical deletion.
+
+Use the shared lifecycle implementation for physical operations initiated by
+Files or any document app, following PDS Interop link metadata. Define supported
+metadata placement, parent/ancestor discovery and authoritative trust on target
+servers. Retain discoverable old-location metadata for moves/deletions. Resolve
+supported HTTP responses and RDF metadata with bounded traversal, cycle and
+multiple-destination handling, and distinct unavailable/deleted states. A failed
+read or 404 alone does not establish intentional deletion. Permanent forwarding
+may repair references; temporary forwarding retains the originating reference.
+Destructive requests must keep their verified target through redirect handling.
+
+Delete document in an app-managed collection deletes the underlying file and
+removes its active entry once the file outcome is confirmed. Offer Remove from
+collection for membership-only changes. Use clear confirmation of the file effect
+and any permanent/recoverable deletion promise. Verify permissions, versions,
+destination/recovery content and each physical outcome before reporting success.
+Keep incomplete marker/content outcomes visible. Recovery requires retained
+content and restores it before clearing final deletion state. Collection lifecycle
+stays distinct from workspace/shortcut removal.
+
+Document creation, collection registration, preferences and link metadata have
+no assumed shared transaction. Retain minimal durable operation intent and
+completed steps, excluding access tokens. Conditional writes and reconciliation
+must preserve unrelated edits and avoid duplicate files, membership loss or
+mutation of a newer replacement after a lost response. Reuse existing data,
+storage and Metro APIs; inspect their actual contracts before adding narrow
+collection, lifecycle or resolver integration. Broader transaction infrastructure
+and automatic global reference repair remain outside the first slice.
+
+### First slice and verification
+
+Confirm the open decisions below, then deliver one app with collection launch,
+creation/switching, default preferences, preferred picker integration, separate
+files, cached listing, basic grouping, conditional saves and the shared compliant
+move/delete/resolution path. Validate reuse with a second compatible app before
+claiming general interoperability. Keep collection data, document adapters,
+physical operations, resolution and preference/discovery responsibilities clear.
+The first app and implementation cycle remain to be selected.
+
+Apply the standing phone, accessibility, local-first and download guardrails.
+Loaded collection data, cached documents and pending operations need explicit
+offline/reload/reconnection behavior; uncached documents require access. Verify
+keyboard and assistive-technology completion of collection navigation and
+lifecycle feedback. Measure complete app/callback and collection transfer costs
+and time to a useful task; avoid collection rewrites on content keystrokes.
+
+Use the design's fourteen acceptance scenarios, including cross-device/second-app
+preservation, no replacement after a failed default read, edit-in-place picker
+opening, concurrent additions, unknown RDF, permission boundaries and failure
+injection at every multi-resource step. Cover old-URI resolution after moving,
+discoverable deletion metadata, untrusted/ambiguous redirects and recovery of
+actual content. Recheck relevant specification sections and server behavior
+before implementation; the linked design is a planning source, not proof of
+current protocol coverage.
+
+Open decisions remain the RDF vocabulary/shapes/versioning, the proposed
+managed-versus-linked lifecycle exception and transfer rules, collection discovery,
+preference predicates and selected-document URI parameter, server metadata
+placement, recovery-record storage/resumption and recoverable versus permanent
+deletion. Proposed collection/group deletion choices also need confirmation.
+Resolve the proposal to discover and offer existing collections before initial
+creation, including Type Indexes as a candidate convention for replacement apps.
+Pod-wide full-text search, catalogue sharding, general migration tooling and a
+universal trash service are deferred. Link-metadata compliance is part of the
+initial physical lifecycle work.
 
 ## Application icon family and favicons
 
