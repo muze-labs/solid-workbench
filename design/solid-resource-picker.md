@@ -13,6 +13,27 @@ downloaded or written. A URI grants no access. Files selects among resources
 actually listed by its authorized Solid session, within its configured root.
 The caller validates the result before replacing its field.
 
+Notebook review extension, 2026-11-14 (Active CYC199): optional `mode` narrows
+selection to `open` (an existing file) or `save` (a file destination). Omitted
+`mode`, or `resource`, retains existing file/container selection for current
+generic browse callers. Save requests may provide a string `suggestedName`.
+Unknown fields, modes and invalid hint types are refused, rather than silently
+turning a save request into generic browsing. The same preferred browse provider
+and private capability transport serve these modes; an unsupported provider
+must report failure, with the caller's document retained.
+
+Save mode offers folder navigation and a labelled filename field, allowing a
+new file to be named in the selected folder. It returns the destination `@id`
+without writing placeholder bytes or reserving the name. The caller owns content
+creation and must perform an appropriate conditional write; a listed name or a
+missing destination at picker time provides no concurrency guarantee. Notebook
+Save As refuses an existing destination and creates native RDF with its existing
+conditional document API. Cancellation never creates a file. Open mode navigates
+folders but only returns existing files; generic mode may still select a folder.
+Files retains its configured root and filename validation. This is an explicit
+experimental suite extension, not an external protocol requirement or claim that
+every independent browse provider already implements these modes.
+
 The companion recipient pilot is
 `https://vocab.muze.nl/capabilities/select-recipient`: one explicit selection
 returns an `@id` identifying the selected WebID or contact, not implied access

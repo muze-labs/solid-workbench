@@ -759,6 +759,38 @@ app-store listing or application icon. Earlier standalone-use descriptions above
 record the CYC106 design history; this clarification sets the intended
 presentation.
 
+### Any app context and app-provided sections
+
+Maintainer clarification, 2026-11-14, during Notebook review: Preferences must
+work with any app, without a hardcoded app allowlist. App-specific sections
+must be provided by the calling app rather than imported and maintained inside
+Preferences. The maintainer explicitly permits deferring this work to the
+roadmap instead of refactoring it in the current Notebook cycle.
+
+Current gap: Preferences validates callers against a fixed list and bundles
+section contributions from particular suite apps. Adding Notebook to that list
+repairs its immediate theme-dialog failure, but does not meet this extensibility
+requirement. The existing common/app-specific presentation is not evidence of
+independent app contribution support.
+
+In a future cycle, define the contribution contract through the existing
+capability and SimplyFlow composition mechanisms. Preferences owns common
+settings and the shared section-navigation shell; each app owns the definitions,
+templates and behavior of its specific sections. Adding an independent app or
+changing its sections must not require editing or rebuilding Preferences.
+An app supplying no specific sections must still be able to edit common
+preferences. Keep app identity separate from owner authorization; supporting
+arbitrary apps must retain owner and capability checks.
+
+Preserve profile-linked native RDF, unrelated settings, account/workspace scope,
+local drafts and conditional-save/conflict recovery. Verify an independently
+hosted app, an app with no contribution, rejected owner/capability contexts and
+immediate shared-theme propagation. Include unavailable contributions and
+offline/reconnection recovery, keyboard/phone section navigation and the
+download impact of loading only the relevant app's sections. The contribution
+transport and execution boundary remain design work; this entry selects no
+implementation cycle and does not claim the generic behavior is implemented.
+
 ### Apply shared preference changes across open apps
 
 Requested by the maintainer after CYC77 acceptance: when shared preferences
