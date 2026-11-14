@@ -147,6 +147,18 @@ A subsequent version should offer a template picker with a default set of
 templates. Keep the initial blank-slide flow usable without that picker;
 choose the initial template set and its offline availability during design.
 
+Investigate linking parts of a presentation (individual slides, groups of slides
+or slide content) or a whole presentation from another location, including a
+different storage Pod. Explore composing decks through native RDF references
+while preserving source identity. Decide whether links follow live changes,
+refer to a fixed version or allow an explicit local copy; clarify where edits
+are saved and how source attribution is shown. Assess authenticated and public
+reads through the existing Metro clients, permissions, relative resource links,
+unavailable sources, offline caching and cyclic references. Linking must not
+imply write access or lose local edits when a remote source changes or becomes
+unreachable. This is an investigation item; inclusion semantics and UI remain
+to be designed, not a commitment to a particular implementation.
+
 ## Application icon family and favicons
 
 Requested by the maintainer on 2026-11-09 and reaffirmed on 2026-11-12
