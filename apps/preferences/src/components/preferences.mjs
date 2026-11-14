@@ -136,6 +136,7 @@ export const preferences = {
           'files',
           'profile',
           'presenter',
+          'notebook',
           'viewer'
         ].includes(input.app)
       ) {

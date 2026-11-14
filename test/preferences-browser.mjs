@@ -589,6 +589,18 @@ try {
   );
   await wait('swbPreferencesApp.runtime.settings.pending().length===0');
   assert(body.includes('keep'));
+  await run('location.href="/notebook/";');
+  await wait('globalThis.muzeSolidNotebookApp?.runtime.documents');
+  await run('document.querySelector("[data-simply-command=preferences]").click()');
+  await wait('document.querySelector(".muze-solid-ui-capability-frame")?.contentWindow.swbPreferencesApp');
+  await wait('swbPreferencesApp.runtime.request && swbPreferencesApp.data.swb_app==="notebook"',true);
+  await change('theme','dark');
+  await wait('document.body.classList.contains("ds-darkmode")');
+  await change('theme','light');
+  await wait('swbPreferencesApp.runtime.settings.settings().theme==="light" && !swbPreferencesApp.runtime.localSaving',true);
+  await wait('document.body.classList.contains("ds-lightmode")');
+  assert.equal(await run('return swbPreferencesApp.runtime.request.input.owner===swbPreferencesApp.runtime.host.selectedWebId;',true),true);
+  console.log('PASS: Notebook opens owned Preferences and propagates light mode through the real embedded provider.');
   console.log(
     'PASS: independent embedded Preferences, app sections, immediate shared updates, repeated conditional saves, offline retention, draft reopen, conflicts, validator recovery phone focus, section arrows/activation, roving Tab stops, control handoff and native input keys.'
   );

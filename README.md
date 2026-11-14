@@ -18,14 +18,14 @@ npm run dev
 ```
 
 Open <http://127.0.0.1:4174/> or <http://127.0.0.1:4174/workbench/>.
-Solid Workbench links to Contacts, Files, Profile and Presenter.
+Solid Workbench links to Contacts, Files, Profile, Presenter and Notebook.
 The dev command builds once, then starts the server. Restart it after changing
 server code or response types; rebuilding `www/` alone does not reload the
 running server's configuration.
 Node 20.6 or newer is required for the build; the browser integration harness uses
 Node 22 or newer (native WebSocket) and `google-chrome` on PATH. Use localhost or
 HTTPS so browser storage, crypto and authentication work. Deploy `www/` as static
-files, preserving all eight app paths and `/redirect.html`. External dependencies
+files, preserving all nine app paths and `/redirect.html`. External dependencies
 come from npm; workspace links only connect packages inside this repository.
 
 Contacts and shortcuts work locally in IndexedDB before connecting. Enter a WebID
@@ -56,6 +56,7 @@ logout from these apps; the identity provider may retain its own login session.
 | Profile | Read a WebID profile, edit your connected profile, or edit a local contact using the same component as Contacts. |
 | Files | Browse folders, create folders, upload/download binary files, and mark resources deleted through link metadata. |
 | Presenter | Background and centered rich text, inline provider editing, thumbnails, native RDF autosave and conditional Pod saves, fullscreen presentation. |
+| Notebook | Ordered rich-text blocks; separate local recovery documents; New/Open/Save/Save As with conditional Pod writes. |
 | Resource Viewer | Standalone and embedded text/image viewing; independent text create/edit capabilities. |
 | Preferences | Dialog app for shared appearance, app settings and default providers. |
 | Account | Dialog app for WebID, connection status, connect/disconnect and browser logout; Workbench coordinates managed switching. |
@@ -92,11 +93,10 @@ Presenter. Presenter clears that draft only after confirming durable local deck
 storage. Images remain URL references, read through the provider's own connection.
 Loaded text remains editable offline; uncached images and provider code are not
 available offline. **View options** offers retry and provider recovery. Presenter
-exposes `muzeSolidPresenterApp` for inspection. The temporary local Cobalt 0.1.1
-build fixes composition input: committed IME text reaches the native fragment,
-and unfinished composition prevents slide closure or passive presentation.
-The maintainer has authorized this local package while npm publication is pending;
-see [local package provenance](local-packages/README.md). Cobalt still does not
+exposes `muzeSolidPresenterApp` for inspection. The published Cobalt 0.1.1 editor fixes composition input: committed IME text
+reaches the native fragment, and unfinished composition prevents slide closure
+or passive presentation. Its runtime matches the formerly authorized local build;
+see [package provenance](local-packages/README.md). Cobalt still does not
 supply undo/redo. Additional styling, physical-phone keyboards and manual
 assistive-technology review remain follow-up.
 
@@ -432,3 +432,51 @@ On a wide screen, the selected filename completes the path with Share, Download
 and Open in app at the right. On phones, these occupy a separate row with
 Back to files. Each file's Actions menu retains Share and conditional tombstone
 deletion, including folders. Content-specific controls belong to its viewer.
+
+## Notebook documents
+
+Open Notebook through Workbench or `/notebook/`. A notebook contains ordered
+rich-text notes with a Cobalt H1 title above them. The title wraps and autosaves
+locally, with the same selection, formatting and cursor movement as other notes.
+Enter in the title keeps the prefix as the title and puts the remainder in a new
+paragraph immediately below it, preserving formatting. Opening or
+creating a notebook focuses its first note. The header says Notebook and keeps
+the account menu at the top-right; the browser tab shows the document name.
+The header toolbar offers New, Open, Save and Save As. Open and Save As launch your preferred
+file picker through the capability API. Browse folders and choose a file to open;
+for Save As, enter a new filename in the chosen folder. The device-history button
+opens locally retained notebooks. Blocks have no numbering or borders;
+the current block has a subtle highlight with a keyboard focus indicator.
+The toolbar status icon distinguishes device-saved, Pod-synced, busy and attention
+states: a check-circle means the device and Pod copies are current, distinct from
+the account connection cloud. Click it for the exact message; routine status text
+takes no editor space.
+Enter splits at the caret into a new note; Shift+Enter inserts a line break.
+Ctrl+Enter also splits. Backspace at a note start and Delete at its end join
+adjacent notes. All four arrow keys move between notes, and Shift+arrows extend
+a selection across notes. Copy/cut/paste and formatting preserve rich text across
+that selection. Desktop pointer dragging also selects across notes; mobile
+selection uses the browser's native caret handles and selection menu. Escape
+clears a notebook selection. Block tools float by default: select text to show
+Bold, Italic, Underline and Link, or press Ctrl+Space to enter the toolbar at the
+caret. Escape closes it and returns to editing. Dock puts the tools in the header;
+Float returns to contextual display. Tools follow the focused block's content
+type and formatting state; docking resets to floating after reload. Ctrl+B
+toggles Bold on selected text. Ctrl+K
+(Cmd+K on macOS), or the Link tool, opens an address dialog; it links selected
+text or inserts a linked address at the caret. Finish IME composition before
+changing documents.
+
+New creates a separate document and keeps the previous local recovery copy.
+Use Notebooks on this device (the clock tool) to return to local documents, including unsaved
+ones. Signed-out and each account's drafts are separate. Loaded notebooks remain
+editable offline; a cold offline app load or an uncached Pod document requires
+network access.
+
+Connect to the matching account for Pod operations. Save updates the current
+file conditionally, or opens the picker if it has no Pod copy yet. Save As
+requires a new destination and preserves existing remote documents. A conflict
+keeps your local changes. Opening another document preserves the current local
+copy first. Concurrent editing in multiple tabs is not coordinated; code/image
+blocks and folders remain future work. Manual assistive-technology and physical
+phone keyboard review remain separate from browser-fixture checks.

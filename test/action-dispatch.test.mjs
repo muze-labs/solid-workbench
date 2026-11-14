@@ -1,6 +1,9 @@
 import { installEvents } from '@muze-labs/simplyflow-events';
 import { exposeDefinition } from '../packages/solid-app-data/src/definition.mjs';
 import { fileEditing } from '../apps/files/src/components/file-editing.mjs';
+import { fileNavigation } from '../apps/files/src/components/file-navigation.mjs';
+import { resourcePicker } from '../apps/files/src/components/resource-picker.mjs';
+import { httpUrl } from '../packages/solid-app-data/src/url.mjs';
 import { uploadFiles } from '../apps/files/src/data.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -15,6 +18,52 @@ function ownerFor(definitions, properties = {}) {
   owner.actions = actions({ app: owner, actions: { ...definitions } });
   return owner;
 }
+
+test('file picker returns a new destination while refusing collisions and path escapes', async () => {
+  const responses = [];
+  const owner = ownerFor(
+    {
+      child: fileNavigation.actions.child,
+      inside: fileNavigation.actions.inside,
+      finishSelection(response) {
+        responses.push(response);
+      }
+    },
+    {
+      runtime: {
+        root: 'https://pod.example/notes/',
+        current: 'https://pod.example/notes/',
+        pending: { selection: { mode: 'save' } },
+        host: { run: (work) => work() }
+      },
+      data: { entries: [] },
+      api: { httpUrl }
+    }
+  );
+  const form = { elements: { name: { value: 'Notes & ideas.ttl' } } };
+  await resourcePicker.commands.muzeSolidFilesChooseNewFile.call(owner, form);
+  assert.deepEqual(responses, [
+    {
+      result: {
+        '@id': 'https://pod.example/notes/Notes%20%26%20ideas.ttl'
+      }
+    }
+  ]);
+  for (const name of ['../escape.ttl', '.', 'a/b.ttl', 'a\\b.ttl', ' ']) {
+    form.elements.name.value = name;
+    await resourcePicker.commands.muzeSolidFilesChooseNewFile.call(owner, form);
+    assert.match(owner.data.muzeSolidFilesPickerStatus, /filename/);
+  }
+  form.elements.name.value = 'existing.ttl';
+  owner.data.entries = [{ url: 'https://pod.example/notes/existing.ttl' }];
+  await resourcePicker.commands.muzeSolidFilesChooseNewFile.call(owner, form);
+  assert.match(owner.data.muzeSolidFilesPickerStatus, /already exists/);
+  owner.runtime.pending.selection.mode = 'open';
+  form.elements.name.value = 'new.ttl';
+  await resourcePicker.commands.muzeSolidFilesChooseNewFile.call(owner, form);
+  assert.match(owner.data.muzeSolidFilesPickerStatus, /not requested/);
+  assert.equal(responses.length, 1);
+});
 
 test('existing account listeners use current actions once and stop after cleanup', (t) => {
   const target = new EventTarget();

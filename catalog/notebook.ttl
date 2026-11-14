@@ -1,0 +1,3 @@
+@prefix schema: <https://schema.org/> .
+<> a schema:SoftwareApplication; schema:name "Notebook";
+   schema:url <../notebook/>; schema:image <../notebook/icon.svg>.

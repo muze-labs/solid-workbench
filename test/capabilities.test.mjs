@@ -4,6 +4,7 @@ import {
   PortConnection,
   ManagedApp,
   capabilityError,
+  browseRequest,
   selectionUrl,
   serializable
 } from '../packages/solid-app-data/src/capabilities.mjs';
@@ -14,6 +15,21 @@ const restoration = (value) => ({
     '<urn:muze:solid-apps:state:root> <https://example.org/draft> "' +
     value +
     '" .'
+});
+
+test('resource picking distinguishes existing files and new save destinations', () => {
+  assert.deepEqual(browseRequest({}), { mode: 'resource', suggestedName: '' });
+  assert.deepEqual(browseRequest({ mode: 'open' }), {
+    mode: 'open', suggestedName: ''
+  });
+  assert.deepEqual(browseRequest({ mode: 'save', suggestedName: 'Notes.ttl' }), {
+    mode: 'save', suggestedName: 'Notes.ttl'
+  });
+  for (const request of [null, [], { mode: null }, { mode: 'delete' }, { write: true },
+    { mode: 'open', suggestedName: 'Notes.ttl' },
+    { mode: 'save', suggestedName: { path: 'Notes.ttl' } }]) {
+    assert.throws(() => browseRequest(request), (error) => error.code === 'invalid');
+  }
 });
 
 function pair(t, handle, options) {

@@ -1,0 +1,35 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261114-QG24H-203 a sd:Implementation ;
+    dcterms:identifier "IMP-20261114-QG24H-203" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261114-QG24H-203.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261114-QG24H-202 ;
+        sd:gitCommit "5a56300d605d184c6e07abaaf4483241378db426" ] ;
+    sd:implementationLocation "apps/notebook/src/component.mjs",
+        "apps/notebook/src/document.mjs", "apps/notebook/src/index.mjs",
+        "apps/notebook/src/interactions.mjs",
+        "apps/notebook/package.json", "package-lock.json",
+        "apps/notebook/src/block-tools.mjs", "apps/notebook/src/block-tools.html",
+        "apps/notebook/src/block-tools.css", "apps/notebook/src/rich-text-tools.mjs",
+        "apps/notebook/src/features.mjs", "apps/notebook/src/index.html",
+        "apps/notebook/src/title.mjs", "apps/notebook/src/title.html",
+        "apps/notebook/src/title.css",
+        "packages/solid-app-ui/src/account.html",
+        "packages/solid-app-ui/src/components/compact-header.css",
+        "apps/notebook/src/notebook.html", "apps/notebook/src/notebook.css",
+        "scripts/build.mjs", "scripts/bundle.mjs", "catalog/notebook.ttl",
+        "test/notebook.test.mjs", "test/notebook-browser.mjs",
+        "apps/preferences/src/components/preferences.mjs",
+        "apps/preferences/src/components/sections.mjs",
+        "apps/preferences/src/index.html", "test/preferences-browser.mjs",
+        "apps/files/src/components/resource-picker.mjs",
+        "apps/files/src/components/resource-picker.css",
+        "apps/files/src/components/file-navigation.mjs",
+        "apps/files/src/index.mjs", "apps/files/src/picker.html",
+        "apps/files/src/picker-actions.html",
+        "packages/solid-app-data/src/capabilities.mjs",
+        "test/action-dispatch.test.mjs", "test/capabilities.test.mjs",
+        "test/support/style-contracts.mjs", "design/solid-resource-picker.md" .

@@ -23,6 +23,7 @@ import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { shell } from '@muze-labs/solid-app-ui';
 import {
   browseCapability,
+  browseRequest,
   selectRecipientCapability
 } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { httpUrl } from '@muze-labs/solid-app-data';
@@ -84,6 +85,12 @@ const definition = {
     picker: { hidden: '' },
     editing: { hidden: host.task ? '' : null },
     requester: '',
+    muzeSolidFilesPickerTitle: 'Select a resource',
+    muzeSolidFilesPickerDescription: '',
+    muzeSolidFilesPickerSave: { hidden: '' },
+    muzeSolidFilesPickerFolder: { hidden: '' },
+    muzeSolidFilesPickerName: { value: '' },
+    muzeSolidFilesPickerStatus: '',
     pickerEntries: [],
     swb_shareVisible: { hidden: '' },
     swb_shareResource: '',
@@ -111,6 +118,7 @@ const definition = {
     apps,
     shell,
     browseCapability,
+    browseRequest,
     selectRecipientCapability,
     readRecipient,
     readProfile,

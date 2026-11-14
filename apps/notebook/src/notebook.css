@@ -1,0 +1,116 @@
+@layer theme {
+  .muze-solid-notebook {
+    --muze-notebook-surface: var(--ds-color-background, Canvas);
+    --muze-notebook-active: color-mix(in srgb, currentColor 4%, transparent);
+    --muze-notebook-focus: color-mix(in srgb, currentColor 35%, transparent);
+  }
+}
+@layer component {
+  .muze-solid-notebook {
+    max-width: 58rem;
+    margin-inline: auto;
+    padding: 12px;
+  }
+  .muze-solid-notebook-document-dialog,
+  .muze-solid-notebook-link-dialog {
+    inline-size: min(30rem, calc(100vw - 2rem));
+  }
+  .muze-solid-notebook-input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    font: inherit;
+  }
+  .muze-solid-notebook-blocks {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+  }
+  .muze-solid-notebook-editor {
+    min-height: 3rem;
+    padding: 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    border: 0;
+    background: transparent;
+  }
+  .muze-solid-notebook-editor:focus {
+    background: var(--muze-notebook-active);
+    outline: none;
+  }
+  .muze-solid-notebook-editor:focus-visible {
+    outline: 1px solid var(--muze-notebook-focus);
+    outline-offset: 2px;
+  }
+  .muze-solid-notebook-documents {
+    padding-inline-start: 1rem;
+  }
+  .muze-solid-notebook-status {
+    inset: 4rem 1rem auto auto;
+    margin: 0;
+    max-inline-size: min(28rem, calc(100vw - 2rem));
+    padding: 12px;
+    background: var(--muze-notebook-surface, Canvas);
+    color: inherit;
+    font: inherit;
+  }
+}
+
+@layer page {
+  :where(.swb-notebook)
+    .swb-suite-header[data-muze-solid-ui-header-layout='compact'] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+  }
+  :where(.swb-notebook) .swb-header-title {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  :where(.swb-notebook) .muze-solid-ui-app-toolbar {
+    grid-column: 2;
+    grid-row: 1;
+    min-inline-size: 0;
+    flex-wrap: wrap;
+  }
+  :where(.swb-notebook) .swb-account {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    justify-self: end;
+    margin-inline-start: 0;
+  }
+  :where(.swb-notebook) .swb-suite-status {
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 650px) {
+    :where(.swb-notebook)
+      .swb-suite-header[data-muze-solid-ui-header-layout='compact'] {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    :where(.swb-notebook) .muze-solid-ui-app-toolbar {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    :where(.swb-notebook) .swb-account {
+      grid-column: 2;
+    }
+  }
+}
+
+@layer component {
+  /* Firefox's relative UA weight resolves to 400 under inherited weight 300. */
+  .muze-solid-notebook-editor strong {
+    font-weight: 700;
+  }
+  /* Cobalt owns this inline selection markup inside the editor surface. */
+  .muze-solid-notebook-editor [data-cobalt-selection='true'] {
+    background: Highlight;
+    color: HighlightText;
+  }
+  .muze-solid-notebook-editor [data-cobalt-selection-active='false'] {
+    background: color-mix(in srgb, Highlight 30%, transparent);
+    color: inherit;
+  }
+}

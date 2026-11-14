@@ -1551,7 +1551,7 @@ try {
     await evaluate(
       'return document.querySelectorAll(".swb-app-grid a[href]").length;'
     ),
-    4
+    5
   );
   await submit('.muze-solid-catalog-manual-form', {
     name: 'Example app',

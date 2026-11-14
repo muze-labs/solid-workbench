@@ -2,7 +2,7 @@
 
 <> a schema:Collection ;
     schema:name "Solid Workbench apps" ;
-    schema:hasPart <#contacts>, <#files>, <#profile>, <#presenter>, <#viewer>, <#preferences>, <#penny>, <#umai> .
+    schema:hasPart <#contacts>, <#files>, <#profile>, <#presenter>, <#notebook>, <#viewer>, <#preferences>, <#penny>, <#umai> .
 
 <#contacts> a schema:SoftwareApplication ;
     schema:applicationCategory "People" ;
@@ -69,3 +69,11 @@
     schema:description "A local-first recipe manager. Opens as an independent app." ;
     schema:subjectOf <umai.ttl> .
 
+
+<#notebook> a schema:SoftwareApplication ;
+    schema:applicationCategory "Productivity" ;
+    schema:name "Notebook" ;
+    schema:image <../notebook/icon.svg> ;
+    schema:description "Write and save rich-text notebook documents." ;
+    schema:text "Keep ordered rich-text blocks in separate notebook documents, with local recovery and explicit Pod saving." ;
+    schema:subjectOf <notebook.ttl> .

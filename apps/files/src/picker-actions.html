@@ -5,9 +5,37 @@
   data-simply-transform="attributes"
   data-simply-attributes="hidden"
 >
+  <form
+    class="muze-solid-files-picker-save"
+    data-simply-command="muzeSolidFilesChooseNewFile"
+    data-simply-field="muzeSolidFilesPickerSave"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
+    <label class="muze-solid-files-picker-name-label"
+      >File name
+      <input
+        name="name"
+        class="muze-solid-files-picker-name"
+        required
+        autocomplete="off"
+        data-simply-field="muzeSolidFilesPickerName"
+        data-simply-transform="escape_html"
+      />
+    </label>
+    <button class="muze-solid-design-tool">Create file</button>
+    <p
+      role="status"
+      data-simply-field="muzeSolidFilesPickerStatus"
+      data-simply-transform="escape_html"
+    ></p>
+  </form>
   <button
     class="ds-button swb-picker-button"
     data-simply-command="selectFolder"
+    data-simply-field="muzeSolidFilesPickerFolder"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
   >
     Select current folder
   </button>

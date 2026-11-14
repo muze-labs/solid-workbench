@@ -31,10 +31,6 @@
   }
   @media (max-width: 500px) {
     :where([data-muze-solid-ui-header-layout='compact'])
-      .muze-solid-ui-account-status {
-      display: none;
-    }
-    :where([data-muze-solid-ui-header-layout='compact'])
       .muze-solid-design-tool {
       padding-inline: 6px;
     }

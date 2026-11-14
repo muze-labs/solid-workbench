@@ -9,10 +9,38 @@ export const resourcePicker = {
     'files-picker-actions': sourcePickerActions
   },
   commands: {
+    muzeSolidFilesChooseNewFile(form) {
+      let url;
+      try {
+        if (this.runtime.pending?.selection?.mode !== 'save') {
+          throw new Error('files: A save destination was not requested.');
+        }
+        url = this.actions.inside(
+          this.actions.child(form.elements.name.value.trim())
+        );
+        if (this.data.entries.some((entry) => entry.url === url)) {
+          throw new Error(
+            'files: That name already exists. Choose a new filename.'
+          );
+        }
+      }
+      catch (error) {
+        this.data.muzeSolidFilesPickerStatus = error.message;
+        return;
+      }
+      return this.runtime.host.run(() =>
+        this.actions.finishSelection({
+          result: { '@id': url }
+        })
+      );
+    },
     selectResource(_element, url) {
       return this.runtime.host.run(() => this.actions.selectFile(url));
     },
     selectFolder() {
+      if (this.runtime.pending?.selection?.mode !== 'resource') {
+        return;
+      }
       this.runtime.host.run(() =>
         this.actions.finishSelection({
           result: { '@id': this.actions.inside(this.runtime.current) }
@@ -41,14 +69,37 @@ export const resourcePicker = {
         hidden: pending || this.runtime.host?.task ? '' : null
       };
       this.data.swb_shareVisible = {
-        hidden: !pending && !this.runtime.host?.task && this.runtime.shareSelection ? null : ''
+        hidden:
+          !pending && !this.runtime.host?.task && this.runtime.shareSelection
+            ? null
+            : ''
       };
       this.data.requester = pending
         ? pending.requester.application + ' (' + pending.requester.origin + ')'
         : '';
+      const mode = pending?.selection?.mode || 'resource';
+      this.data.muzeSolidFilesPickerTitle =
+        mode === 'save'
+          ? 'Save a new file'
+          : mode === 'open'
+            ? 'Open a file'
+            : 'Select a resource';
+      this.data.muzeSolidFilesPickerDescription =
+        mode === 'save'
+          ? 'Choose a folder and enter a new filename.'
+          : mode === 'open'
+            ? 'Choose a file to open.'
+            : 'Choose a file, or select the current folder.';
+      this.data.muzeSolidFilesPickerSave = {
+        hidden: pending && mode === 'save' ? null : ''
+      };
+      this.data.muzeSolidFilesPickerFolder = {
+        hidden: pending && mode === 'resource' ? null : ''
+      };
       this.runtime.files.state.options.picker = Boolean(
         pending || this.runtime.host?.task
       );
+      this.runtime.files.state.options.pickerMode = mode;
     },
     finishSelection: async function (response) {
       if (!this.runtime.pending || this.runtime.selecting) {
@@ -78,20 +129,30 @@ export const resourcePicker = {
     },
     receiveBrowseRequest(event) {
       let error;
-      if (this.runtime.pending || this.runtime.selecting || this.runtime.sharing) {
+      let selection;
+      if (
+        this.runtime.pending ||
+        this.runtime.selecting ||
+        this.runtime.sharing
+      ) {
         error = {
           code: 'busy',
           message: 'Files is handling another selection.'
         };
       }
-      else if (
-        event.capability !== this.api.browseCapability ||
-        Object.keys(event.input).some((key) => key !== '@context')
-      ) {
+      else if (event.capability !== this.api.browseCapability) {
         error = {
           code: 'invalid',
           message: 'Unsupported selection request.'
         };
+      }
+      else {
+        try {
+          selection = this.api.browseRequest(event.input);
+        }
+        catch (failure) {
+          error = { code: 'invalid', message: failure.message };
+        }
       }
       if (error) {
         this.runtime.host.message(error);
@@ -100,7 +161,9 @@ export const resourcePicker = {
         );
         return;
       }
-      this.runtime.pending = event;
+      this.runtime.pending = { ...event, selection };
+      this.data.muzeSolidFilesPickerName = { value: selection.suggestedName };
+      this.data.muzeSolidFilesPickerStatus = '';
       this.actions.renderPicker();
       this.runtime.host.message(
         this.runtime.host.task
@@ -127,6 +190,12 @@ export const resourcePicker = {
         .toArray()[0];
       if (!selected) {
         throw new Error('files: Select a resource from the current folder.');
+      }
+      if (
+        selected.type === 'folder' &&
+        this.runtime.pending?.selection?.mode !== 'resource'
+      ) {
+        throw new Error('files: Open a folder to select a file inside it.');
       }
       return this.actions.finishSelection({
         result: { '@id': this.actions.inside(url) }

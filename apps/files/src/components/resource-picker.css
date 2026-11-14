@@ -9,6 +9,26 @@
   }
 }
 @layer component {
+  .muze-solid-files-picker-save {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 8px;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+  .muze-solid-files-picker-name-label {
+    flex: 1 1 10rem;
+    min-inline-size: 0;
+  }
+  .muze-solid-files-picker-name {
+    font: inherit;
+    max-inline-size: 100%;
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: 44px;
+    box-sizing: border-box;
+  }
   .swb-resource-choices {
     list-style: none;
     padding: 0;

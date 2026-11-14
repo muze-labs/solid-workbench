@@ -101,10 +101,12 @@ export const fileNavigation = {
       const relative = folder.pathname.slice(root.pathname.length);
       const segments = relative.split('/').filter(Boolean);
       const ancestors = segments.length
-        ? [{
-            label: this.actions.decodeName(root.href) || root.host,
-            url: root.href
-          }]
+        ? [
+            {
+              label: this.actions.decodeName(root.href) || root.host,
+              url: root.href
+            }
+          ]
         : [];
       let current = root.href;
       for (const segment of segments.slice(0, -1)) {
@@ -249,18 +251,21 @@ export const fileNavigation = {
 
     initializeFiles() {
       const owner = this;
-      const list = this.api.model({ data: [], options: { picker: false } });
+      const list = this.api.model({
+        data: [], options: { picker: false, pickerMode: 'resource' }
+      });
       list.addEffect(function () {
         return owner.api.effect(() => this.state.data);
       });
       list.addEffect(function (input) {
         return owner.api.effect(() => {
           const picking = this.state.options.picker;
+          const mode = this.state.options.pickerMode;
           const selected = this.state.options.selected;
           return owner.api
             .from(input.current)
             .where(owner.actions.visibleFile)
-            .select((entry) => owner.actions.fileRow(entry, picking, selected))
+            .select((entry) => owner.actions.fileRow(entry, picking, selected, mode))
             .toArray();
         });
       });
@@ -277,10 +282,17 @@ export const fileNavigation = {
     visibleFile(entry) {
       return !entry.deleted;
     },
-    fileRow(entry, picking, selected) {
+    fileRow(entry, picking, selected, mode = 'resource') {
       const menuId =
         'muze-solid-files-entry-menu-' + encodeURIComponent(entry.url);
       return {
+        pickerSelect: {
+          hidden:
+            entry.type === 'folder' &&
+            mode !== 'resource'
+              ? ''
+              : null
+        },
         icon: {
           href:
             '../assets/feather-icons.svg#' +
