@@ -2578,3 +2578,64 @@ The maintainer subsequently accepts CYC187 and explicitly requests commit,
 merge and push. ACC192 records exact implementation/evidence versions. CYC187
 is Accepted; earlier pending notes are superseded. Normal integration against
 latest main is authorized, with unrelated user planning excluded and preserved.
+
+
+## Presenter recovery cycle evaluated, 2026-11-14
+
+The maintainer confirms the proposed Presenter/embedded-view reliability cycle.
+CYC-20261114-QG24H-193 is isolated from main fd45bc3 on verified
+spiral/CYC-20261114-QG24H-193-presenter-reliability. SRC194/DES196/IMP197/EVD195
+retain scope, diagnosis, confirmation and evidence. A fast native probe identifies
+an initial-click test race: editor readiness precedes layout. The test now waits
+for positive visible bounds while retaining native pointer/focus assertions.
+
+A separate real editor reload -> Discard -> Retry restores saved text into an
+invisible iframe. After the maintainer confirms “Yes, fix this recovery gap”,
+Presenter clears inherited failure visibility only when the new provider confirms
+readiness. The new phone/desktop recovery regression fails before the product
+fix and passes afterward with preserved text and renewed native editing.
+
+Source/build checks and all twelve Chrome suites pass uninterrupted. Captures
+show restored focused editors; complete minified Presenter grows by two gzip
+bytes to 132605. Native RDF, provider/draft ownership, transport and dependencies
+are unchanged. Existing manual AT/physical-device, cold-offline and stock
+Spiral-validator limitations remain explicit. CYC193 is Active in Evaluate,
+ready for human review; no acceptance, commit, merge, push or publication inferred.
+
+
+CYC193 review then reports a navigation trap on an unavailable slide with expired
+credentials, persisting after login. A plain HTTP 401 image probe still permits
+navigation, while a provider pre-invocation restore-error reproduces the trap:
+leaving and Retry both fail prepare against an unready connection. EVD195 retains
+the distinction; this is not yet a reproduction of real OIDC expiry. Exact user
+message is requested. Product-gap confirmation for safe failed-startup release
+and retry is pending; earlier input/visibility fixes remain intact. CYC193 stays
+Active in review correction, superseding its previous readiness characterization.
+
+
+The maintainer identifies “Proxy object could not be cloned”, reproducible by
+Disconnect and switching slides, and confirms “Yes, fix failed-startup recovery”.
+CYC193 now serializes managed embedded input through the existing wire helper
+and freezes unstarted broker invocation during prepare, preventing delayed
+content dispatch after safe release. Started views retain provider-owned edit
+vetoes. Unit regressions cover real-channel proxy data, late readiness and
+post-delivery vetoes. The final full twelve-suite browser command passes,
+including an asserted disconnected managed session, slide switch/return/native
+edits and independent failed-startup navigation/restored-access Retry. Source/
+build and cycle SHACL pass. Complete minified Presenter is 132695 gzip B.
+No automatic login retry or real OIDC expiry certification is claimed. Refresh
+Workbench and Presenter to review both changed runtime boundaries. CYC193 is
+Active in Evaluate again, awaiting human acceptance; no commit or integration.
+
+
+## CYC193 accepted for integration, 2026-11-14
+
+After confirming that the reported problem is gone and reviewing the remaining
+cycle work, the maintainer says “accepted, commit, merge and push please”.
+ACC198 records human acceptance of implementation
+3901256556181e8d95b2227d47f8905471ec6d16 and verification
+89487bf5685403bbf080b94d743f82771598f10b. CYC193 is Accepted, superseding
+previous Active/pending entries. Normal merge against current main and pushing
+main/cycle are authorized after exact integration validation. Existing manual
+AT/physical-device, real OIDC and stock-validator limits remain disclosed.
+No next cycle, npm publication or deployment is selected.

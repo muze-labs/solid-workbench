@@ -6,6 +6,7 @@ import { startChrome } from './support/chrome.mjs';
 let origin, other;
 let deckText = '';
 let etag = '"1"';
+let providerStartupError = '';
 const writes = [];
 const server = createServer(async (request, response) => {
   const url = new URL(request.url, origin);
@@ -87,7 +88,9 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 origin = 'http://127.0.0.1:' + server.address().port;
 const external = createServer((_request, response) => {
   response.setHeader('Content-Type', 'text/html');
-  response.end(independentViewPeer(origin, 'passive-bounded'));
+  response.end(independentViewPeer(origin, 'passive-bounded', {
+    startupError: providerStartupError
+  }));
 });
 await new Promise((resolve) => external.listen(0, '127.0.0.1', resolve));
 other = 'http://127.0.0.1:' + external.address().port;
@@ -132,6 +135,16 @@ async function editText(page, index, text) {
   await until(
     page,
     `${editor}?.runtime.cobaltEditor && ${editor}.runtime.cobaltInput.id===${app}.runtime.deck.regions(${app}.runtime.selected)[0]?.id && [...${app}.runtime.views.values()].some(view=>view.support?.editable && view.frame.checkVisibility())`
+  );
+  // Provider readiness can precede the first layout of its editable field.
+  // Measuring it then gives a zero rectangle and taps the iframe's corner.
+  await until(
+    page,
+    `(()=>{
+      const field=${editor}.runtime.cobaltEditor.element;
+      const bounds=field.getBoundingClientRect();
+      return field.checkVisibility() && bounds.width>0 && bounds.height>0;
+    })()`
   );
   const point = await run(
     page,
@@ -194,6 +207,59 @@ async function editText(page, index, text) {
     `${app}.runtime.deck.regions(${app}.runtime.selected)[0]?.fragment.text===${JSON.stringify(text)}`
   );
 }
+async function recoverEditor(page, text, viewport) {
+  await run(
+    page,
+    `document.querySelector('[data-kind="text"] iframe').contentWindow.location.reload()`
+  );
+  await until(
+    page,
+    `/restarted|unavailable/.test(${app}.data.muzeSolidPresenterRegions[0].status)`
+  );
+  // A real size change exercises the disconnected provider's failed update.
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    ...viewport,
+    width: viewport.width + 1,
+    deviceScaleFactor: 1
+  });
+  await until(
+    page,
+    `document.querySelector('[data-kind="text"] iframe').style.visibility==='hidden'`
+  );
+  await click(page, 'muzeSolidPresenterDiscardRegion', 0);
+  await idle(page);
+  await click(page, 'muzeSolidPresenterRetryRegion', 0);
+  await idle(page);
+  await until(
+    page,
+    `${editor}?.runtime.cobaltEditor?.getText()===${JSON.stringify(text)}`
+  );
+  await run(
+    page,
+    `document.querySelector('.muze-solid-presenter-view-options summary').click()`
+  );
+  await until(
+    page,
+    `document.querySelector('[data-kind="text"] iframe').checkVisibility()`
+  );
+  await editText(page, 0, text + ' after recovery');
+  await editText(page, 0, text);
+  await writeFile(
+    viewport.mobile
+      ? '/tmp/presenter-recovered-phone.png'
+      : '/tmp/presenter-recovered-desktop.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+  );
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    ...viewport,
+    deviceScaleFactor: 1
+  });
+  console.log(
+    `Provider restart recovery preserved text and native ${
+      viewport.mobile ? 'touch' : 'mouse'
+    } editing.`
+  );
+}
 try {
   chrome = await startChrome(origin + '/seed', { allowPopups: true });
   const page = await chrome.page();
@@ -241,6 +307,11 @@ try {
     latency: 0,
     downloadThroughput: -1,
     uploadThroughput: -1
+  });
+  await recoverEditor(page, 'Our first deck', {
+    width: 390,
+    height: 844,
+    mobile: true
   });
   await run(page, `const ui=${editor};ui.runtime.cobaltEditor.focus(0,3);`);
   await until(page, `${editor}.data.muzeSolidCobaltTools.hidden===null`);
@@ -494,6 +565,11 @@ try {
     try{await ui.actions.muzeSolidCobaltOperation({operation:'acknowledge',generation:ui.runtime.viewGeneration,revision:NaN})}
     catch{rejected=true}if(!rejected)throw new Error('Invalid revision accepted');`
   );
+  await recoverEditor(page, 'Keep this draft', {
+    width: 1280,
+    height: 900,
+    mobile: false
+  });
   // Formatting is keyboard reachable; Escape dismisses without changing text.
   await run(
     page,
@@ -576,9 +652,30 @@ try {
     if(event.origin===${JSON.stringify(other)}&&event.data?.type==='fixture-report')presenterReports.push(event.data);
   });${app}.runtime.host.preferences.viewProvider={application:${JSON.stringify(other)},url:${JSON.stringify(other + '/')}};`
   );
+  providerStartupError = 'Sign in again to continue with Solid.';
   await click(page, 'muzeSolidPresenterUseProvider', 1);
   await idle(page);
+  await until(
+    page,
+    `${app}.data.muzeSolidPresenterRegions[1].status.includes('Sign in again')`
+  );
+  await click(page, 'muzeSolidPresenterSelect', 0);
+  await idle(page);
+  assert.equal(
+    await run(page, `return ${app}.data.muzeSolidPresenterPosition`),
+    '1 / 2'
+  );
+  await click(page, 'muzeSolidPresenterSelect', 1);
+  await idle(page);
+  providerStartupError = '';
+  await run(
+    page,
+    `${app}.runtime.host.view.actions.muzeSolidUiAuthenticationRestored()`
+  );
+  await click(page, 'muzeSolidPresenterRetryRegion', 1);
+  await idle(page);
   await until(page, 'presenterReports.some(r=>r.delegation==="denied")');
+  console.log('Failed startup permits slide navigation and retry after restored access.');
   await click(page, 'muzeSolidPresenterSelect', 0);
   await idle(page);
   assert.equal(
@@ -655,7 +752,22 @@ try {
     managedPage,
     `${app}?.runtime.host.managed?.ready && ${app}.runtime.host.selectedWebId===location.origin+'/profile#me'`
   );
+  await run(
+    managedPage,
+    `const ui=${app}.runtime.host.view;
+    await ui.commands.muzeSolidUiDisconnect.call(ui);`
+  );
+  assert.equal(
+    await run(managedPage, `return ${app}.runtime.host.session?.disconnected`),
+    true
+  );
+  await click(managedPage, 'muzeSolidPresenterSelect', 1);
+  await idle(managedPage);
+  await editText(managedPage, 0, 'Managed disconnected slide');
+  await click(managedPage, 'muzeSolidPresenterSelect', 0);
+  await idle(managedPage);
   await editText(managedPage, 0, 'Managed Presenter');
+  console.log('Managed Disconnect, slide switching and native editing passed.');
   // Exercise the native browser IME, then the real broker/local RDF save path.
   await run(
     managedPage,

@@ -268,6 +268,9 @@ export const muzeSolidPresenterRegions = {
             if (state.ready) {
               region.frame = {
                 ...region.frame,
+                // The replacement provider has confirmed a usable surface.
+                // Retire visibility left by the previous failed view update.
+                style: '',
                 'aria-busy': 'false',
                 tabindex: region.kind === 'text' ? '0' : '-1',
                 'aria-hidden': null,

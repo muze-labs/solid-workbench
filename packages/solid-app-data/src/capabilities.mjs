@@ -536,7 +536,7 @@ export class ManagedApp {
   requestEmbedded(id, input, options) {
     return this.peer.call(
       'embed-call',
-      { id, input },
+      { id, input: serializable(input) },
       { ...options, timeout: null }
     );
   }

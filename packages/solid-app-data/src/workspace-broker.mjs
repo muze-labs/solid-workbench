@@ -357,6 +357,8 @@ export class WorkspaceBroker {
     record.presentation = presentation;
     record.owner = requester;
     record.capability = capability;
+    record.invocationStarted = false;
+    record.invocationPrepared = false;
     return { id: record.entry.id, key: record.key };
   }
   embeddedRecord(id, requester) {
@@ -397,6 +399,9 @@ export class WorkspaceBroker {
   }
   async requestEmbedded(id, input, { requester = 'launcher', signal } = {}) {
     const record = this.embeddedRecord(id, requester);
+    if (record.invocationPrepared) {
+      throw capabilityError('View was prepared for closure.', 'cancelled');
+    }
     if (record.invoked) {
       throw capabilityError('This capability task is already running.', 'busy');
     }
@@ -413,11 +418,17 @@ export class WorkspaceBroker {
         requester === 'launcher'
           ? this.target.location.origin
           : new URL(this.instances.get(requester).entry.url).origin;
+      const content = serializable(input);
+      if (record.invocationPrepared) {
+        throw capabilityError('View was prepared for closure.', 'cancelled');
+      }
+      // From this point, a provider may own edits even if readiness fails.
+      record.invocationStarted = true;
       const response = await record.peer.call(
         'capability',
         {
           capability: record.capability,
-          input: serializable(input),
+          input: content,
           requester: { application: requester, origin }
         },
         { signal, timeout: null }
@@ -437,6 +448,12 @@ export class WorkspaceBroker {
 
   async updateEmbeddedView(id, input, requester = 'launcher') {
     const record = this.embeddedRecord(id, requester);
+    if (record.presentation === 'view' && input?.operation === 'prepare' &&
+        record.invocationStarted === false) {
+      // Freeze delivery as well as the empty view: startup may finish later.
+      record.invocationPrepared = true;
+      return { allowed: true, frozen: true };
+    }
     if (record.presentation !== 'view' || !record.ready || !record.peer ||
         record.peer.closed || !record.invoked) {
       throw capabilityError('View connection is unavailable.', 'disconnected');

@@ -583,3 +583,23 @@ test('disconnected embedded calls release their owner slot without replay',
     assert.equal(invocations, 1);
     broker.endEmbedded(next.id);
   });
+
+
+test('managed embedded calls transport reactive inputs as plain wire values',
+  async (t) => {
+    const { caller } = pair(t, async (method, input) => {
+      return { method, input };
+    });
+    const fragment = new Proxy({ text: 'Retain this text', annotations: [] }, {});
+    const app = { peer: caller };
+    const result = await ManagedApp.prototype.requestEmbedded.call(
+      app, 'view', { fragment }
+    );
+    assert.deepEqual(result, {
+      method: 'embed-call',
+      input: { id: 'view', input: {
+        fragment: { text: 'Retain this text', annotations: [] }
+      } }
+    });
+    assert.equal(fragment.text, 'Retain this text');
+  });
