@@ -1,5 +1,34 @@
 # Solid Workbench project context
 
+## CYC211 accepted for integration, 2026-11-15
+
+The maintainer says “accepted, commit, merge and push”. ACC216 accepts
+implementation 099ae37ff4487b2d4a68030d49a2cbe36cb80131 and verification
+b93520e81f3cbd316404d97d99e3a4feca926d69. CYC211 is Accepted, superseding earlier
+Active/pending statements below. Direct normal main merge and pushing both
+branches are authorized after exact latest-target integration validation. Final
+source/build and uninterrupted thirteen-suite Chrome checks pass; earlier timing,
+manual/provider and stock-validator qualifications remain retained. No new cycle,
+npm publication or deployment is selected.
+
+## Published stack adoption selected, 2026-11-15
+
+The maintainer confirms the concrete preflight scope with “yes”. CYC211 is
+Active on verified spiral/CYC-20261115-QG24H-211-published-stack-fixes,
+from clean accepted main 60b431a. SRC212/DES213/IMP214/EVD215 retain commitment,
+release inspection, design and evaluation. Consume published fixes, remove only
+proven redundant workarounds, preserve native RDF/recovery and run required
+checks. This continues the library-simplification priority; broader extraction
+remains future work. No commit, integration, publication or acceptance authorized.
+
+CYC211 is now Active in Evaluate, ready for review. Final source checks (34 test
+files), both builds and the complete thirteen-suite Chrome command pass. Files
+uses a normal zero-byte Turtle body; retain its explicit content type and the
+full-native-RDF preservation bridge for demonstrated remaining requirements.
+EVD215 retains the first run's known Workspace timeout, unchanged passing rerun,
+final uninterrupted pass, bundle/cold-task costs and scoped/adapted-versus-stock
+Spiral validation limits. No human acceptance or integration is inferred.
+
 ## CYC205 accepted for integration, 2026-11-15
 
 The maintainer accepts the current cycle and requests commit, merge and push.
