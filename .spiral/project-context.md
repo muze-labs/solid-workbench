@@ -1,5 +1,40 @@
 # Solid Workbench project context
 
+## CYC217 accepted for integration, 2026-11-15
+
+After reviewing the shared-owner changes and reuse, the maintainer says
+“accepted, commit, merge and push”. ACC222 accepts implementation
+238838aa7afe905c84d7d336ed45a2f246060150 and verification
+2ec4a17ce75532fcc59e6ab92219caa54786899f. CYC217 is Accepted, superseding earlier
+Active/pending statements below. Direct normal main merge and pushing both
+branches are authorized after exact latest-target integration validation. Final
+source/build and uninterrupted thirteen-suite Chrome checks pass; retain the
+measured download/request cost, manual/provider and stock-validator limits.
+No standalone package publication, deployment or next cycle is selected.
+
+## Shared document-session cycle selected, 2026-11-15
+
+The maintainer confirms the proposed shared save/recovery boundary with “yes”.
+CYC217 is Active on verified spiral/CYC-20261115-QG24H-217-document-sessions,
+from clean main 9f2ae84 after the requested Spiral core update. SRC218/DES219/
+IMP220/EVD221 retain scope, contract comparison, implementation and evaluation.
+Continue the high-priority library-simplification roadmap. Preserve app models,
+switching policies, native RDF and existing storage/recovery contracts; share
+conditional save and local-write ordering using published Workspace storage and
+existing Metro/document helpers. No new cycle acceptance, commit, publication,
+sibling work or UI redesign is authorized. Apply the proportional simplification
+review during evaluation, including cases where keeping app-specific code wins.
+
+CYC217 now enters Evaluate, remaining Active pending human acceptance. Shared
+DocumentSession owns save/acknowledgement and native recovery-write ordering in
+Notebook and Presenter; app models, storage schemas/keys and different creation/
+loading/switching policies stay explicit. Fourteen cross-app preservation cases
+also pass against the prior implementations. Final source checks (35 files),
+both builds and the uninterrupted thirteen-suite Chrome run pass. EVD221 retains
+cold-task/bundle costs (+783/+768 minified gzip bytes and one request for the two
+document apps), the proportional simplification review and scoped-versus-stock
+Spiral/manual/provider limits. No commit, integration or publication is performed.
+
 ## Spiral core updated before the next cycle, 2026-11-15
 
 After accepting CYC211, the maintainer requests updating Spiral core before
