@@ -1,14 +1,14 @@
 import template from './collections.html?template' with { type: 'text' };
 import styles from './collections.css' with { type: 'text' };
-import { muzeSolidCollectionBrowser }
-  from '@muze-labs/solid-app-ui/components/collection-browser.mjs';
+import { muzeSolidCollectionBrowser } from '@muze-labs/solid-app-ui/components/collection-browser.mjs';
 export const muzeSolidNotebookCollections = {
   templates: { 'muze-solid-notebook-collections': template },
   styles: { 'muze-solid-notebook-collections': styles },
   components: { muzeSolidCollectionBrowser },
   api: {
     muzeSolidCollectionBrowser: {
-      allLabel: 'All notebooks', newLabel: 'New notebook',
+      allLabel: 'All notebooks',
+      newLabel: 'New notebook',
       create: 'muzeSolidNotebookCollectionNew',
       select: 'muzeSolidNotebookCollectionSelect',
       project: 'muzeSolidNotebookProjectCollection',
@@ -488,10 +488,13 @@ export const muzeSolidNotebookCollections = {
             : 'synced'
       );
       requestAnimationFrame(() => {
-        if (document.activeElement === previousFocus ||
-          document.activeElement === document.body) {
-          this.container.querySelector('.muze-solid-collection-browser-details')
-            ?.scrollIntoView({block: 'nearest'});
+        if (
+          document.activeElement === previousFocus ||
+          document.activeElement === document.body
+        ) {
+          this.container
+            .querySelector('.muze-solid-collection-browser-details')
+            ?.scrollIntoView({ block: 'nearest' });
         }
       });
     },
@@ -580,7 +583,7 @@ export const muzeSolidNotebookCollections = {
     async muzeSolidNotebookInitializeCollections(owner) {
       this.runtime.collection = null;
       this.runtime.collectionUrl = '';
-      this.runtime.fileOperation = await new this.api.ResourceLifecycle({
+      this.runtime.fileOperation = await new this.api.CollectionFileOperation({
         owner,
         session: this.runtime.host.session
       }).open();
@@ -962,28 +965,21 @@ export const muzeSolidNotebookCollections = {
       await this.actions.muzeSolidNotebookFinishOperation();
     },
     async muzeSolidNotebookFinishOperation() {
-      const operation = this.runtime.fileOperation.pending;
-      if (!operation || operation.stage !== 'complete') {
+      const operation = await this.runtime.fileOperation.finish({
+        collection: this.runtime.collection,
+        openCollection: async (url) => {
+          await this.actions.muzeSolidNotebookUseCollection(url);
+          return this.runtime.collection;
+        },
+        applyLocal: (completed) =>
+          this.runtime.documents.applyFileOperation(
+            completed,
+            this.runtime.host.requireSession()
+          )
+      });
+      if (!operation) {
         return;
       }
-      if (this.runtime.collection?.url !== operation.collection) {
-        await this.actions.muzeSolidNotebookUseCollection(operation.collection);
-      }
-      if (operation.kind === 'move') {
-        await this.runtime.collection.repairReference(
-          operation.entry,
-          operation.target
-        );
-      }
-      else {
-        await this.runtime.collection.removeReference(operation.entry);
-      }
-      await this.runtime.collection.sync();
-      await this.runtime.documents.applyFileOperation(
-        operation,
-        this.runtime.host.requireSession()
-      );
-      await this.runtime.fileOperation.acknowledge();
       const dialog = this.container.querySelector(
         '.muze-solid-notebook-entry-dialog'
       );

@@ -45,8 +45,9 @@ function sharedChunk(id, { getModuleInfo }) {
       'document-collection-rdf.mjs',
       'collection-preference.mjs',
       'resource-lifecycle.mjs',
+      'collection-file-operation.mjs',
       'resource-resolution.mjs'
-    ].includes(path.basename(id))
+    ].includes(path.basename(id.replace(/\?source$/, '')))
   ) {
     return 'shared/document-collections';
   }

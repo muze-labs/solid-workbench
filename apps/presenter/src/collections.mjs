@@ -376,7 +376,7 @@ export const muzeSolidPresenterCollections = {
       });
       // Each app journals its own operation: opening Presenter must not replace
       // or adopt an unfinished Notebook operation for the same account.
-      this.runtime.fileOperation = await new this.api.ResourceLifecycle({
+      this.runtime.fileOperation = await new this.api.CollectionFileOperation({
         owner,
         session: this.runtime.host.session,
         store: this.api.local.indexedDB('solid-presenter-file-operation', {
@@ -1022,37 +1022,27 @@ export const muzeSolidPresenterCollections = {
       await this.actions.muzeSolidPresenterFinishFileOperation();
     },
     async muzeSolidPresenterFinishFileOperation() {
-      const operation = this.runtime.fileOperation.pending;
-      if (!operation || operation.stage !== 'complete') {
+      const operation = await this.runtime.fileOperation.finish({
+        collection: this.runtime.collection,
+        openCollection: async (url) => {
+          await this.actions.muzeSolidPresenterUseCollection(url);
+          return this.runtime.collection;
+        },
+        applyLocal: async (completed) => {
+          if (completed.kind === 'move') {
+            await this.runtime.decks.applyFileOperation(
+              completed,
+              this.runtime.host.requireSession()
+            );
+          }
+          else {
+            await this.actions.muzeSolidPresenterDiscardDeck(completed.source);
+          }
+        }
+      });
+      if (!operation) {
         return;
       }
-      if (operation.collection) {
-        if (this.runtime.collection?.url !== operation.collection) {
-          await this.actions.muzeSolidPresenterUseCollection(
-            operation.collection
-          );
-        }
-        if (operation.kind === 'move') {
-          await this.runtime.collection.repairReference(
-            operation.entry,
-            operation.target
-          );
-        }
-        else {
-          await this.runtime.collection.removeReference(operation.entry);
-        }
-        await this.runtime.collection.sync();
-      }
-      if (operation.kind === 'move') {
-        await this.runtime.decks.applyFileOperation(
-          operation,
-          this.runtime.host.requireSession()
-        );
-      }
-      else {
-        await this.actions.muzeSolidPresenterDiscardDeck(operation.source);
-      }
-      await this.runtime.fileOperation.acknowledge();
       this.data.muzeSolidPresenterUrl =
         this.runtime.deck.url || this.runtime.deck.target || '';
       await this.actions.muzeSolidPresenterCloseCollectionDialogs();

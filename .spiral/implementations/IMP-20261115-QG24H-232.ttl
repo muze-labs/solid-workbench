@@ -1,0 +1,22 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261115-QG24H-232 a sd:Implementation ;
+    dcterms:identifier "IMP-20261115-QG24H-232" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261115-QG24H-232.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261115-QG24H-225 ;
+        sd:gitCommit "650bbae2b22edd531ceed4b1db323ad35d67e902" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261115-QG24H-231 ;
+        sd:gitCommit "96fe2969ea88db825e912cebd70135281a1b1793" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261115-QG24H-226 ;
+        sd:gitCommit "2aca5cd6da62dfbcf6c87f1128bebbbade63f79b" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:SRC-20261115-QG24H-230 ;
+        sd:gitCommit "202b3e50beaf2dc03b0c67b2f9e856b889831a3d" ] ;
+    sd:implementationChangeKind sd:MixedChange ;
+    sd:implementationLocation "packages/solid-app-data/src/resource-lifecycle.mjs",
+        "apps/notebook/src/collections.mjs", "apps/presenter/src/collections.mjs" .
