@@ -4,11 +4,11 @@ import {
   named,
   literal,
   rdf,
-  xsd
+  xsd,
+  sameGraph
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { loadDocument, httpUrl } from '@muze-labs/solid-app-data';
-import { DocumentSession }
-  from '@muze-labs/solid-app-data/document-session.mjs';
+import { DocumentSession } from '@muze-labs/solid-app-data/document-session.mjs';
 import { from, asc } from '@muze-nl/jaqt';
 import {
   readFragment,
@@ -16,21 +16,24 @@ import {
 } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 
 export const presenter = 'https://vocab.muze.nl/presenter#';
-const localFields = ['remote', 'etag', 'dirty', 'missing'];
+const localFields = ['remote', 'etag', 'dirty', 'missing', 'target'];
 const cachePredicate = (field) => presenter + 'local-' + field;
 
 // Presenter policy over existing native graph, local Turtle and conditional
 // document APIs. Remote replica sync does not supply conditional writes.
 export class DeckDocument extends DocumentSession {
-  constructor({ owner = '', source, baselineFor } = {}) {
+  constructor({ owner = '', source, baselineFor, onPersist, isRemoved } = {}) {
     super({
       owner,
       messages: {
         account: 'presenter: Connect with this deck’s account before saving.',
         address: 'presenter: Use a deck document URL without a fragment.',
-        exists: 'presenter: A document already exists there. Open it or choose a new URL.'
+        exists:
+          'presenter: A document already exists there. Open it or choose a new URL.'
       }
     });
+    this.onPersist = onPersist;
+    this.isRemoved = isRemoved;
     this.source =
       source ||
       local.indexedDB('solid-presenter', {
@@ -66,6 +69,7 @@ export class DeckDocument extends DocumentSession {
       }
       this.root = roots[0].subject;
       this.url = this.cacheValue('remote');
+      this.target = this.cacheValue('target');
       this.etag = this.cacheValue('etag') || null;
       this.dirty = this.cacheValue('dirty') === 'true';
       this.missing = this.cacheValue('missing') === 'true';
@@ -74,6 +78,7 @@ export class DeckDocument extends DocumentSession {
     return this;
   }
   async create() {
+    this.requirePresent();
     if (this.dirty) {
       throw new Error('presenter: Save this deck before starting another.');
     }
@@ -86,6 +91,7 @@ export class DeckDocument extends DocumentSession {
     this.graph = candidate.graph;
     this.root = candidate.root;
     this.url = '';
+    this.target = '';
     this.etag = null;
     this.dirty = false;
     this.missing = false;
@@ -203,13 +209,24 @@ export class DeckDocument extends DocumentSession {
     writeFragment(this.graph, id, fragment);
     this.change(id, 'text', fragment.text);
   }
-  addSlide(layout = 'text') {
+  addSlide(layout = 'text', afterId = '') {
     if (!['text', 'image'].includes(layout)) {
       throw new Error('presenter: Choose a supported layout.');
     }
+    const slides = this.slides();
+    const previous = slides.find((slide) => slide.id === afterId);
+    if (afterId && !previous) {
+      throw new Error('presenter: The selected slide is unavailable.');
+    }
+    const position = previous
+      ? previous.position + 1
+      : Math.max(-1, ...slides.map((slide) => slide.position)) + 1;
+    for (const slide of slides) {
+      if (slide.position >= position) {
+        this.change(slide.id, 'position', slide.position + 1, 'integer');
+      }
+    }
     const id = 'urn:uuid:' + crypto.randomUUID();
-    const position =
-      Math.max(-1, ...this.slides().map((slide) => slide.position)) + 1;
     this.graph.add(this.root, presenter + 'slide', named(id));
     this.change(id, 'position', position, 'integer');
     this.change(id, 'layout', layout);
@@ -262,9 +279,15 @@ export class DeckDocument extends DocumentSession {
     }
     return graph;
   }
+  requirePresent() {
+    if (this.isRemoved?.()) {
+      throw new Error('presenter: This local deck has been deleted.');
+    }
+  }
   persist() {
     for (const [field, value] of Object.entries({
       remote: this.url || '',
+      target: this.target || '',
       etag: this.etag || '',
       dirty: String(Boolean(this.dirty)),
       missing: String(Boolean(this.missing))
@@ -272,9 +295,50 @@ export class DeckDocument extends DocumentSession {
       this.graph.set(this.root, cachePredicate(field), literal(value));
     }
     const text = this.graph.write();
-    return this.enqueueRecoveryWrite(() => this.source.save(text));
+    return this.enqueueRecoveryWrite(async () => {
+      this.requirePresent();
+      await this.source.save(text);
+      await this.onPersist?.(text);
+    });
+  }
+  async acknowledgeSave(saved, revision) {
+    this.target = '';
+    return super.acknowledgeSave(saved, revision);
+  }
+  async applyFileOperation(operation, session) {
+    this.requirePresent();
+    this.requireAccount(
+      session,
+      'presenter: Reconnect this deck’s account before repairing its address.'
+    );
+    if (![this.url, this.target].includes(operation.source)) {
+      return;
+    }
+    let remote;
+    let matches = false;
+    if (operation.kind === 'move') {
+      remote = await session.perform(() =>
+        loadDocument(session.client, operation.target, { redirect: 'error' })
+      );
+      const baseline = await this.baselineFor(operation.source).load();
+      matches =
+        (this.etag && this.etag === operation.etag) ||
+        (baseline && sameGraph(baseline, remote.source, operation.source));
+      if (matches && !remote.etag) {
+        await this.baselineFor(operation.target).save(remote.source);
+      }
+    }
+    this.url = remote ? operation.target : '';
+    this.missing = false;
+    this.target = '';
+    this.etag = matches ? remote.etag : null;
+    if (!matches) {
+      this.changed();
+    }
+    await this.persist();
   }
   async load(session, address) {
+    this.requirePresent();
     if (this.dirty) {
       throw new Error(
         'presenter: Save the local deck before opening another document.'
@@ -308,6 +372,7 @@ export class DeckDocument extends DocumentSession {
     this.graph = candidate.graph;
     this.root = candidate.root;
     this.url = document.url;
+    this.target = '';
     this.etag = document.etag;
     this.dirty = false;
     this.revision += 1;

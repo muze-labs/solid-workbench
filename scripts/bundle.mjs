@@ -36,11 +36,33 @@ function entryOwners(id, getModuleInfo) {
 }
 
 function sharedChunk(id, { getModuleInfo }) {
+  // Collection data and browsing belong to the document apps. Sharing their
+  // implementation must not add them to every account/app download graph.
+  if (
+    id.includes('/packages/solid-app-data/src/') &&
+    [
+      'document-collection.mjs',
+      'document-collection-rdf.mjs',
+      'collection-preference.mjs',
+      'resource-lifecycle.mjs',
+      'resource-resolution.mjs'
+    ].includes(path.basename(id))
+  ) {
+    return 'shared/document-collections';
+  }
+  if (
+    id.includes('/packages/solid-app-ui/src/') &&
+    id.includes('collection-browser')
+  ) {
+    return 'shared/collection-browser';
+  }
   // Only the two document apps need their shared save/recovery owner, including
   // its optional source descriptor. Keep that cost out of unrelated app graphs.
-  if (id.replace(/\?source$/, '').endsWith(
-    '/packages/solid-app-data/src/document-session.mjs'
-  )) {
+  if (
+    id
+      .replace(/\?source$/, '')
+      .endsWith('/packages/solid-app-data/src/document-session.mjs')
+  ) {
     return 'shared/document-session';
   }
   // Only Workbench and Preferences need workspace image storage. Sharing this

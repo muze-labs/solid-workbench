@@ -1,6 +1,10 @@
 import { render as renderCobalt } from '@muze-labs/cobalt-rich-text-note';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
-import { createSolidMetroClient, requireOk } from '@muze-labs/solid-app-data';
+import {
+  createSolidMetroClient,
+  requireOk,
+  loadDocument
+} from '@muze-labs/solid-app-data';
 import { app } from '@muze-labs/simplyflow/app';
 import { model } from '@muze-labs/simplyflow/model';
 import { effect } from '@muze-labs/simplyflow/state';
@@ -12,7 +16,16 @@ import {
   viewResourceCapability
 } from '@muze-labs/solid-app-data/embedded-view.mjs';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
-import { browseCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
+import {
+  browseCapability,
+  selectionUrl
+} from '@muze-labs/solid-app-data/capabilities.mjs';
+import { local } from '@muze-labs/solid-workspace';
+import { DocumentCollection } from '@muze-labs/solid-app-data/document-collection.mjs';
+import { CollectionPreference } from '@muze-labs/solid-app-data/collection-preference.mjs';
+import { ResourceLifecycle } from '@muze-labs/solid-app-data/resource-lifecycle.mjs';
+import { resolveResource } from '@muze-labs/solid-app-data/resource-resolution.mjs';
+import { readLaunchContext } from '@muze-labs/solid-app-data/launch.mjs';
 import {
   viewTextCapability,
   createTextCapability,
@@ -25,14 +38,19 @@ import { httpUrl } from '@muze-labs/solid-app-data';
 import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
-import { DocumentSession }
-  from '@muze-labs/solid-app-data/document-session.mjs';
-import documentSessionSource
-  from '../../../packages/solid-app-data/src/document-session.mjs?source';
+import { DocumentSession } from '@muze-labs/solid-app-data/document-session.mjs';
+import documentSessionSource from '../../../packages/solid-app-data/src/document-session.mjs?source';
+import { PresenterDecks } from './deck-drafts.mjs';
+import draftsSource from './deck-drafts.mjs?source';
 import { DeckDocument } from './deck-data.mjs';
 import deckSource from './deck-data.mjs?source';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
-import { muzeSolidPresenter, muzeSolidPresenterRegions } from './features.mjs';
+import {
+  muzeSolidPresenter,
+  muzeSolidPresenterRegions,
+  muzeSolidPresenterCollections,
+  muzeSolidCollectionBrowser
+} from './features.mjs';
 import sources from './features.mjs?entries';
 const host = shell({
   acceptLaunch: true,
@@ -40,8 +58,22 @@ const host = shell({
 });
 const definition = {
   container: host.main.querySelector('.muze-solid-presenter'),
-  components: { muzeSolidPresenter, muzeSolidPresenterRegions },
+  components: {
+    muzeSolidPresenter,
+    muzeSolidPresenterRegions,
+    muzeSolidPresenterCollections,
+    muzeSolidCollectionBrowser
+  },
   data: {
+    muzeSolidPresenterOverviewVisibility: { hidden: null },
+    muzeSolidPresenterEditorVisibility: { hidden: '' },
+    muzeSolidPresenterCollectionMode: {
+      'data-muze-solid-presenter-collection-mode': 'overview'
+    },
+    muzeSolidPresenterCollectionMessage: 'Opening deck collections…',
+    muzeSolidPresenterOperationVisibility: { hidden: '' },
+    muzeSolidCollectionEntries: [],
+    muzeSolidCollectionCategories: [],
     muzeSolidPresenterEmpty: { hidden: null },
     muzeSolidPresenterBusy: { disabled: null },
     muzeSolidPresenterTitle: '',
@@ -56,6 +88,14 @@ const definition = {
     muzeSolidPresenterMode: { 'data-muze-solid-presenting': null }
   },
   api: {
+    local,
+    loadDocument,
+    DocumentCollection,
+    CollectionPreference,
+    ResourceLifecycle,
+    resolveResource,
+    readLaunchContext,
+    selectionUrl,
     DocumentSession,
     renderCobalt,
     validateFragment,
@@ -66,6 +106,7 @@ const definition = {
     from,
     asc,
     DeckDocument,
+    PresenterDecks,
     EmbeddedView,
     WorkspaceBroker,
     viewResourceCapability,
@@ -89,6 +130,11 @@ ui.definition.modules = {
     sourceUrl: documentSessionSource,
     origin: 'packages/solid-app-data/src/document-session.mjs',
     dependencies: ['@muze-labs/solid-app-data']
+  },
+  deckDrafts: {
+    sourceUrl: draftsSource,
+    origin: 'apps/presenter/src/deck-drafts.mjs',
+    dependencies: ['@muze-labs/solid-app-data', '@muze-labs/solid-workspace']
   },
   deckData: {
     sourceUrl: deckSource,

@@ -267,3 +267,54 @@ test('formatted slide text survives native reload without replacing unrelated RD
   );
   assert.equal(reopened.graph.write(), before);
 });
+
+test('insert after selection preserves identities, contents and native order through reload', async () => {
+  const source = local.memory('insert-after');
+  const deck = await new DeckDocument({ source, owner }).open();
+  const first = deck.addSlide('text');
+  const last = deck.addSlide('image');
+  const text = deck.regions(last)[0];
+  deck.editText(text.id, { text: 'Retain this edit', annotations: [] });
+  deck.graph.add(named(last), 'urn:unknown:term', literal('keep'));
+  deck.graph.add(
+    named('urn:unrelated'),
+    'urn:unknown:term',
+    literal('also keep')
+  );
+  const middle = deck.addSlide('text', first);
+  const order = (document) =>
+    document
+      .slides()
+      .sort((a, b) => a.position - b.position)
+      .map((slide) => slide.id);
+  assert.deepEqual(order(deck), [first, middle, last]);
+  deck.moveSlide(middle, 1);
+  assert.deepEqual(order(deck), [first, last, middle]);
+  deck.moveSlide(middle, -1);
+  assert.deepEqual(order(deck), [first, middle, last]);
+  await deck.persist();
+  const reopened = await new DeckDocument({ source, owner }).open();
+  assert.deepEqual(order(reopened), [first, middle, last]);
+  assert.equal(reopened.regions(last)[0].fragment.text, 'Retain this edit');
+  assert.equal(
+    reopened.graph.one(named(last), 'urn:unknown:term', 'string').value,
+    'keep'
+  );
+  assert.equal(
+    reopened.graph.one(named('urn:unrelated'), 'urn:unknown:term', 'string')
+      .value,
+    'also keep'
+  );
+  const appended = reopened.addSlide('image', last);
+  assert.deepEqual(order(reopened), [first, middle, last, appended]);
+  const before = reopened.graph.write();
+  assert.throws(
+    () => reopened.addSlide('text', 'urn:missing'),
+    /selected slide is unavailable/
+  );
+  assert.equal(
+    reopened.graph.write(),
+    before,
+    'Missing anchor leaves all native data intact'
+  );
+});

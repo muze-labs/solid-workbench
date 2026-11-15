@@ -1,0 +1,217 @@
+<section
+  class="muze-solid-presenter-collections-overview"
+  data-simply-field="muzeSolidPresenterOverviewVisibility"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+  aria-label="Deck collection"
+>
+  {{view:muze-solid-collection-browser:../../../packages/solid-app-ui/src/collection-browser.html}}
+</section>
+<dialog
+  class="ds-dialog muze-solid-design-dialog muze-solid-presenter-collection-dialog"
+  data-simply-behavior="muzeSolidDesignDialog"
+  aria-labelledby="muze-solid-presenter-collection-heading"
+>
+  <header class="muze-solid-design-dialog-header">
+    <h2
+      id="muze-solid-presenter-collection-heading"
+      tabindex="-1"
+      class="swb-dialog-title"
+    >
+      Deck collections
+    </h2>
+    <button
+      type="button"
+      class="ds-button muze-solid-design-dialog-close"
+      data-simply-command="muzeSolidDesignCloseDialog"
+      aria-label="Close dialog"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#x"></use>
+      </svg>
+    </button>
+  </header>
+  <div class="muze-solid-design-dialog-content">
+    <div class="muze-solid-presenter-collection-tools">
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterCreateCollection"
+      >
+        Create collection
+      </button>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterOpenCollection"
+      >
+        Open collection
+      </button>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterDefaultCollection"
+      >
+        Make default
+      </button>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterSyncCollection"
+      >
+        Sync / Retry
+      </button>
+    </div>
+    <label
+      >Collection name
+      <input
+        data-simply-field="muzeSolidPresenterCollectionName"
+        data-simply-transform="attributes"
+        data-simply-attributes="value"
+        data-simply-command="muzeSolidPresenterRenameCollection"
+      />
+    </label>
+    <form
+      class="muze-solid-presenter-collection-form"
+      data-simply-command="muzeSolidPresenterCollectionGroup"
+    >
+      <label>New category<input name="title" required /></label>
+      <button class="muze-solid-design-tool" type="submit">Add category</button>
+    </form>
+    <button
+      class="muze-solid-design-tool"
+      data-simply-command="muzeSolidPresenterCollectionAdd"
+    >
+      Add existing deck
+    </button>
+    <ul
+      class="muze-solid-collection-browser-entries"
+      data-simply-list="muzeSolidCollectionManagementEntries"
+    >
+      <template
+        ><li>
+          <button
+            class="muze-solid-design-tool"
+            data-simply-command="muzeSolidPresenterCollectionEntry"
+            data-simply-value=":value.id"
+            data-simply-field="actionAttributes"
+            data-simply-transform="attributes"
+            data-simply-attributes="aria-label"
+          >
+            <span
+              data-simply-field="title"
+              data-simply-transform="escape_html"
+            ></span>
+          </button></li
+      ></template>
+    </ul>
+    <section
+      data-simply-field="muzeSolidPresenterOperationVisibility"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+      aria-label="Recorded file operation"
+    >
+      <p
+        data-simply-field="muzeSolidPresenterOperationMessage"
+        data-simply-transform="escape_html"
+      ></p>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterOperationRetry"
+      >
+        Retry file operation
+      </button>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterOperationCancel"
+      >
+        Stop operation, retain files
+      </button>
+    </section>
+  </div>
+</dialog>
+<dialog
+  class="ds-dialog muze-solid-design-dialog muze-solid-presenter-entry-dialog"
+  data-simply-behavior="muzeSolidDesignDialog"
+  aria-labelledby="muze-solid-presenter-entry-heading"
+>
+  <header class="muze-solid-design-dialog-header">
+    <h2
+      id="muze-solid-presenter-entry-heading"
+      tabindex="-1"
+      class="swb-dialog-title"
+      data-simply-field="muzeSolidPresenterEntryTitle"
+      data-simply-transform="escape_html"
+    ></h2>
+    <button
+      type="button"
+      class="ds-button muze-solid-design-dialog-close"
+      data-simply-command="muzeSolidDesignCloseDialog"
+      aria-label="Close dialog"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#x"></use>
+      </svg>
+    </button>
+  </header>
+  <div class="muze-solid-design-dialog-content">
+    <p
+      data-simply-field="muzeSolidPresenterEntryUrl"
+      data-simply-transform="escape_html"
+    ></p>
+    <label
+      >Category
+      <select
+        data-simply-command="muzeSolidPresenterEntryGroup"
+        data-simply-list="muzeSolidCollectionEntryGroups"
+      >
+        <template
+          ><option
+            data-simply-field="option"
+            data-simply-transform="attributes"
+            data-simply-attributes="value label"
+          ></option
+        ></template>
+      </select>
+    </label>
+    <button
+      class="muze-solid-design-tool"
+      data-simply-command="muzeSolidPresenterClearGroups"
+    >
+      Clear categories
+    </button>
+    <div class="muze-solid-presenter-collection-tools">
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterRemoveReference"
+      >
+        Remove from collection
+      </button>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterMoveDeck"
+      >
+        Move file
+      </button>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterDeleteDeck"
+      >
+        Permanently delete file
+      </button>
+    </div>
+    <p>
+      Removing a link leaves the source file intact. Confirmed deletion removes
+      the deck and its local drafts and previews. There is no recovery copy.
+    </p>
+  </div>
+</dialog>
+
+<section
+  id="muze-solid-presenter-status"
+  popover
+  class="muze-solid-presenter-status-popover"
+  aria-labelledby="muze-solid-presenter-status-heading"
+>
+  <h2 id="muze-solid-presenter-status-heading">Presenter status</h2>
+  <p
+    data-simply-field="muzeSolidPresenterStatusDisplay"
+    data-simply-transform="escape_html"
+  ></p>
+</section>

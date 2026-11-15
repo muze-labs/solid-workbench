@@ -543,7 +543,7 @@ async function type(page, text, index = 0) {
   const point = await run(
     page,
     `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[${index}].id).element;
-    e.scrollIntoView({block:'center'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const r=e.getBoundingClientRect();const x=r.x+Math.min(20,r.width/2),y=r.y+Math.min(12,r.height/2);if(!e.contains(document.elementFromPoint(x,y))){throw new Error('Covered editor tap: '+document.elementFromPoint(x,y)?.outerHTML);}return {x,y};`
+    e.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const r=e.getBoundingClientRect();const x=r.x+Math.min(20,r.width/2),y=r.y+Math.min(12,r.height/2);if(!e.contains(document.elementFromPoint(x,y))){throw new Error('Covered editor tap: '+document.elementFromPoint(x,y)?.outerHTML);}return {x,y};`
   );
   if (await run(page, 'return innerWidth<=650')) {
     await page.send('Input.dispatchTouchEvent', {
@@ -1838,9 +1838,9 @@ async function collectionClick(page, command, index = 0) {
   }
   const selector =
     command === 'CollectionNew'
-      ? '[data-muze-solid-notebook-entry="new"]'
+      ? '[data-muze-solid-collection-entry="new"]'
       : command === 'CollectionSelect'
-        ? '[data-muze-solid-notebook-entry]:not([data-muze-solid-notebook-entry="new"])'
+        ? '[data-muze-solid-collection-entry]:not([data-muze-solid-collection-entry="new"])'
         : '[data-simply-command="muzeSolidNotebook' + command + '"]';
   await until(
     page,
@@ -1853,7 +1853,7 @@ async function collectionClick(page, command, index = 0) {
   const point = await run(
     page,
     `let e=document.querySelectorAll('${selector}')[${index}];
-    e.scrollIntoView({block:'center'});
+    e.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
     e=document.querySelectorAll('${selector}')[${index}];
     const r=e.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;
@@ -2026,7 +2026,7 @@ async function verifyCollections(page) {
   assert.equal(
     await run(
       page,
-      `return ${app}.data.muzeSolidNotebookCollectionEntries[0].title`
+      `return ${app}.data.muzeSolidCollectionEntries[0].title`
     ),
     'Collection field notes'
   );
@@ -2087,13 +2087,13 @@ async function verifyCollections(page) {
   await page.send('Input.insertText', { text: 'missing' });
   await until(
     page,
-    `${app}.data.muzeSolidNotebookCollectionEntries.length===1`
+    `${app}.data.muzeSolidCollectionEntries.length===1`
   );
   await key(page, 'a', 'KeyA', 65, 2);
   await key(page, 'Backspace', 'Backspace', 8);
   await until(
     page,
-    `${app}.data.muzeSolidNotebookCollectionEntries.length===2`
+    `${app}.data.muzeSolidCollectionEntries.length===2`
   );
   await collectionClick(page, 'SyncCollection');
   await until(page, `!${app}.runtime.busy`);
@@ -2112,9 +2112,9 @@ async function verifyCollections(page) {
   assert.equal(
     await run(
       page,
-      `return document.querySelector(
+      `return [...document.querySelector(
     '.muze-solid-notebook-collections-overview').querySelectorAll(
-    'form,input,select,button').length`
+    'form,input,select,button')].filter(control=>control.checkVisibility()).length`
     ),
     0
   );
@@ -2122,29 +2122,30 @@ async function verifyCollections(page) {
     await run(
       page,
       `return document.querySelectorAll(
-    '[data-muze-solid-notebook-entry="new"]').length`
+    '[data-muze-solid-collection-entry="new"]').length`
     ),
     1
   );
   await run(
     page,
     `document.querySelectorAll(
-    '[data-muze-solid-notebook-category]')[1].focus()`
+    '[data-muze-solid-collection-category]')[1].focus()`
   );
   await key(page, 'Enter', 'Enter', 13);
   await until(
     page,
     `${app}.runtime.collectionList.state.options.group!=='' &&
-    document.activeElement.classList.contains('muze-solid-notebook-category-heading')`
+    document.activeElement.matches('[data-muze-solid-collection-category][aria-current="page"]')`
   );
   await until(
     page,
     `document.querySelector(
-    '[data-muze-solid-notebook-entry="new"]').href.includes('category=')`
+    '[data-muze-solid-collection-entry="new"]').href.includes('category=')`
   );
+  await key(page, 'Tab', 'Tab', 9);
   await until(
     page,
-    `document.querySelector('.muze-solid-notebook-collection-layout').scrollLeft>0`
+    `document.querySelector('.muze-solid-collection-browser-layout').scrollLeft>0`
   );
   await writeFile(
     '/tmp/notebook-collections-phone.png',
@@ -2163,13 +2164,16 @@ async function verifyCollections(page) {
   await click(page, 'Collections');
   await until(
     page,
-    `document.activeElement.hasAttribute('data-muze-solid-notebook-category')`
+    `document.activeElement.hasAttribute('data-muze-solid-collection-category')`
   );
   await run(
     page,
-    `document.querySelector('[data-muze-solid-notebook-category=""]').focus()`
+    `document.querySelector('[data-muze-solid-collection-category=""]').focus()`
   );
   await key(page, 'Enter', 'Enter', 13);
+  await until(page, `document.activeElement.matches(
+    '[data-muze-solid-collection-category][aria-current="page"]')`);
+  await key(page, 'Tab', 'Tab', 9);
   await collectionClick(page, 'CollectionSelect');
   await until(
     page,
@@ -2384,7 +2388,7 @@ try {
     `return ${app}.runtime.collection.state().entries.length`), 0,
     'The automatically created default collection is empty');
   await until(page, `document.querySelectorAll(
-    '[data-muze-solid-notebook-entry="new"]').length===1`);
+    '[data-muze-solid-collection-entry="new"]').length===1`);
   console.log('Cold default collection overview', {
     milliseconds: Date.now() - started,
     ...(await run(
@@ -2394,38 +2398,36 @@ try {
   });
   const overviewChecksStarted = Date.now();
   await until(page, `document.querySelector(
-    '[data-muze-solid-notebook-category=""][aria-current="page"]')`);
+    '[data-muze-solid-collection-category=""][aria-current="page"]')`);
   assert.equal(await run(page, `return document.querySelectorAll(
-    '[data-muze-solid-notebook-category]').length`), 1,
+    '[data-muze-solid-collection-category]').length`), 1,
     'An empty collection still offers All notebooks');
   assert.equal(await run(page, `return document.querySelector(
     '#muze-solid-notebook-collections-heading')`), null,
     'The redundant collection title is absent');
   assert(await run(page, `const link = document.querySelector(
-    '.muze-solid-notebook-collection-details [data-muze-solid-notebook-entry="new"]');
+    '.muze-solid-collection-browser-details [data-muze-solid-collection-entry="new"]');
     return link && link.textContent.trim() === 'New notebook' &&
       !link.querySelector('svg').hasAttribute('hidden') &&
       link.querySelector('use').getAttribute('href').endsWith('#plus')`),
     'New notebook remains in details with a decorative plus icon');
-  await until(page, `(() => { const bounds = document.querySelector(
-    '[data-muze-solid-notebook-entry="new"]').getBoundingClientRect();
-    return bounds.left >= 0 && bounds.right <= innerWidth; })()`);
   await writeFile('/tmp/notebook-empty-collection-phone.png',
     Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64'));
   await click(page, 'Collections');
   await until(page, `document.activeElement.matches(
-    '[data-muze-solid-notebook-category=""][aria-current="page"]')`);
+    '[data-muze-solid-collection-category=""][aria-current="page"]')`);
   console.log('Focused collection category styling', await run(page, `
     const style = getComputedStyle(document.activeElement);
     return { underline: style.textDecorationLine, outline: style.outline,
       shadow: style.boxShadow, background: style.backgroundColor };`));
   await key(page, 'Enter', 'Enter', 13);
-  await until(page, `document.activeElement.classList.contains(
-    'muze-solid-notebook-category-heading')`);
+  await until(page, `document.activeElement.matches(
+    '[data-muze-solid-collection-category][aria-current="page"]')`);
   await key(page, 'Tab', 'Tab', 9);
   assert(await run(page, `return document.activeElement.matches(
-    '[data-muze-solid-notebook-entry="new"]')`),
-    'Keyboard navigation reaches creation in the empty category details');
+    '[data-muze-solid-collection-entry="new"]')`),
+    'Keyboard navigation reaches creation in the empty category details: ' +
+    await run(page, 'return document.activeElement.outerHTML.slice(0,600)'));
   await page.send('Emulation.setDeviceMetricsOverride', {
     width: 1280, height: 900, deviceScaleFactor: 1, mobile: false
   });

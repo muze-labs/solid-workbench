@@ -1,3 +1,16 @@
-<section class="muze-solid-presenter">
-  {{view:muze-solid-presenter:./presenter.html}}
+<section
+  class="muze-solid-presenter"
+  data-simply-field="muzeSolidPresenterCollectionMode"
+  data-simply-transform="attributes"
+  data-simply-attributes="data-muze-solid-presenter-collection-mode"
+>
+  {{view:muze-solid-presenter-collections:./collections.html}}
+  <div
+    class="muze-solid-presenter-editor"
+    data-simply-field="muzeSolidPresenterEditorVisibility"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
+    {{view:muze-solid-presenter:./presenter.html}}
+  </div>
 </section>

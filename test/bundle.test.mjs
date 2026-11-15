@@ -74,6 +74,8 @@ test('readable and minified apps preserve isolated module graphs', async () => {
           'shared/backgrounds',
           'shared/cobalt',
           'shared/document-session',
+          'shared/document-collections',
+          'shared/collection-browser',
           'notebook/controller'
         ].map(filename)
       ].sort()
@@ -170,6 +172,8 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       if (name === 'notebook') { required.push(filename('notebook/controller')); }
       if (['presenter', 'notebook'].includes(name)) {
         required.push(filename('shared/document-session'));
+        required.push(filename('shared/document-collections'));
+        required.push(filename('shared/collection-browser'));
       }
       if (['contacts', 'profile'].includes(name)) {
         required.push(filename('shared/profile'));

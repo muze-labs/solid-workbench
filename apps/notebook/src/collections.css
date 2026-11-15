@@ -25,6 +25,7 @@
     display: contents;
   }
   .muze-solid-notebook-collections-overview {
+    --muze-solid-collection-active: var(--muze-notebook-active);
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -35,32 +36,6 @@
   }
   .muze-solid-notebook-collections-overview[hidden] {
     display: none;
-  }
-  .muze-solid-notebook-collection-layout {
-    flex: 1;
-    min-block-size: 0;
-    min-inline-size: 0;
-  }
-  .muze-solid-notebook-collection-link {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    gap: 6px;
-    padding: 10px;
-    font-size: 0.8125rem;
-    text-decoration: none;
-    white-space: normal;
-    color: inherit;
-    overflow-wrap: anywhere;
-  }
-  .muze-solid-notebook-collection-link[aria-current='page'] {
-    font-weight: 700;
-    background: var(--muze-notebook-active);
-  }
-  .muze-solid-notebook-collection-entries {
-    padding: 0;
-    margin: 0;
-    list-style: none;
   }
   .muze-solid-notebook-collection-dialog,
   .muze-solid-notebook-entry-dialog {

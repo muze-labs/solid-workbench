@@ -39,7 +39,8 @@ import {
   muzeSolidNotebookBlockTools,
   muzeSolidNotebookRichTextTools,
   muzeSolidNotebookInteractions,
-  muzeSolidNotebookCollections
+  muzeSolidNotebookCollections,
+  muzeSolidCollectionBrowser
 } from './features.mjs';
 import sources from './features.mjs?entries';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
@@ -55,7 +56,8 @@ const definition = {
     muzeSolidNotebookBlockTools,
     muzeSolidNotebookRichTextTools,
     muzeSolidNotebookInteractions,
-    muzeSolidNotebookCollections
+    muzeSolidNotebookCollections,
+    muzeSolidCollectionBrowser
   },
   data: {
     muzeSolidNotebookTitleAttributes: {},
@@ -70,11 +72,11 @@ const definition = {
     muzeSolidNotebookOverviewVisibility: { hidden: null },
     muzeSolidNotebookMode: { 'data-muze-solid-notebook-mode': 'overview' },
     muzeSolidNotebookEditorVisibility: { hidden: '' },
-    muzeSolidNotebookCollectionEntries: [],
-    muzeSolidNotebookCollectionManagementEntries: [],
-    muzeSolidNotebookCategories: [],
-    muzeSolidNotebookCollectionGroups: [],
-    muzeSolidNotebookEntryGroups: [],
+    muzeSolidCollectionEntries: [],
+    muzeSolidCollectionManagementEntries: [],
+    muzeSolidCollectionCategories: [],
+    muzeSolidCollectionGroups: [],
+    muzeSolidCollectionEntryGroups: [],
     muzeSolidNotebookCollectionVisibility: { hidden: '' },
     muzeSolidNotebookOperationVisibility: { hidden: '' },
     muzeSolidNotebookBusy: { disabled: null },

@@ -1,10 +1,21 @@
 import template from './collections.html?template' with { type: 'text' };
 import styles from './collections.css' with { type: 'text' };
-import { muzeSolidDesignListDetails } from '@muze-labs/solid-design';
+import { muzeSolidCollectionBrowser }
+  from '@muze-labs/solid-app-ui/components/collection-browser.mjs';
 export const muzeSolidNotebookCollections = {
   templates: { 'muze-solid-notebook-collections': template },
   styles: { 'muze-solid-notebook-collections': styles },
-  components: { muzeSolidDesignListDetails },
+  components: { muzeSolidCollectionBrowser },
+  api: {
+    muzeSolidCollectionBrowser: {
+      allLabel: 'All notebooks', newLabel: 'New notebook',
+      create: 'muzeSolidNotebookCollectionNew',
+      select: 'muzeSolidNotebookCollectionSelect',
+      project: 'muzeSolidNotebookProjectCollection',
+      route: 'muzeSolidNotebookCollectionRoute',
+      link: 'muzeSolidNotebookCollectionLink'
+    }
+  },
   events: {
     muzeSolidNotebookEntryClose: {
       target() {
@@ -29,29 +40,6 @@ export const muzeSolidNotebookCollections = {
       return this.actions.muzeSolidDesignOpenDialog(
         this.container.querySelector('.muze-solid-notebook-collection-dialog')
       );
-    },
-    muzeSolidNotebookCollectionChoose(element, id) {
-      if (id === 'new') {
-        return this.commands.call('muzeSolidNotebookCollectionNew', element);
-      }
-      return this.commands.call(
-        'muzeSolidNotebookCollectionSelect',
-        element,
-        id
-      );
-    },
-    muzeSolidNotebookChooseCategory(element, id) {
-      this.runtime.collectionList.state.options.group = id;
-      this.actions.muzeSolidNotebookProjectCollection();
-      this.actions.muzeSolidNotebookCollectionRoute();
-      requestAnimationFrame(() => {
-        this.container
-          .querySelector('.muze-solid-notebook-collection-details')
-          .scrollIntoView({ block: 'nearest' });
-        this.container
-          .querySelector('.muze-solid-notebook-category-heading')
-          .focus({ preventScroll: true });
-      });
     },
     async muzeSolidNotebookCollections() {
       if (this.runtime.busy) {
@@ -467,7 +455,7 @@ export const muzeSolidNotebookCollections = {
                 '#muze-solid-notebook-collection-options-heading'
               )
             : this.container.querySelector(
-                '.muze-solid-notebook-category-heading'
+                '.muze-solid-collection-browser-categories [aria-current="page"]'
               ));
         target.focus();
       });
@@ -500,13 +488,10 @@ export const muzeSolidNotebookCollections = {
             : 'synced'
       );
       requestAnimationFrame(() => {
-        if (
-          document.activeElement === previousFocus ||
-          document.activeElement === document.body
-        ) {
-          this.container
-            .querySelector('.muze-solid-notebook-category-heading')
-            .focus();
+        if (document.activeElement === previousFocus ||
+          document.activeElement === document.body) {
+          this.container.querySelector('.muze-solid-collection-browser-details')
+            ?.scrollIntoView({block: 'nearest'});
         }
       });
     },
@@ -604,128 +589,9 @@ export const muzeSolidNotebookCollections = {
         app: 'urn:muze:solid-app:notebook',
         session: this.runtime.host.session
       });
-      if (!this.runtime.collectionList) {
-        const projection = this.api.model({
-          data: [],
-          options: { search: '', group: '' }
-        });
-        const api = this.api;
-        projection.addEffect(function () {
-          return api.effect(() => this.state.data);
-        });
-        projection.addEffect(function (input) {
-          return api.effect(() => {
-            const search = this.state.options.search.toLocaleLowerCase();
-            const group = this.state.options.group;
-            return input.current
-              .filter(
-                (entry) =>
-                  !entry.deleted &&
-                  (!group || entry.groups.includes(group)) &&
-                  entry.title.toLocaleLowerCase().includes(search)
-              )
-              .sort((a, b) => a.title.localeCompare(b.title));
-          });
-        });
-        this.runtime.collectionList = projection;
-        this.api.effect(() => {
-          this.data.muzeSolidNotebookCollectionManagementEntries =
-            projection.view.current;
-          const category = projection.state.options.group;
-          const entries = projection.view.current.map((entry) => ({
-            ...entry,
-            iconAttributes: { hidden: '' },
-            linkAttributes: {
-              href: this.actions.muzeSolidNotebookCollectionLink(
-                entry.document,
-                false,
-                category
-              ),
-              'data-muze-solid-notebook-entry': entry.id
-            }
-          }));
-          this.data.muzeSolidNotebookCollectionEntries = [
-            ...entries,
-            {
-              id: 'new',
-              title: 'New notebook',
-              iconAttributes: { hidden: null },
-              linkAttributes: {
-                href: this.actions.muzeSolidNotebookCollectionLink(
-                  '',
-                  true,
-                  category
-                ),
-                'data-muze-solid-notebook-entry': 'new'
-              }
-            }
-          ];
-        });
-      }
-      if (!this.runtime.collectionGroups) {
-        const groups = this.api.model({ data: [], options: {} });
-        const api = this.api;
-        groups.addEffect(function () {
-          return api.effect(() => this.state.data);
-        });
-        groups.addEffect(function (input) {
-          return api.effect(() =>
-            input.current
-              .filter((group) => !group.deleted)
-              .sort((a, b) => a.title.localeCompare(b.title))
-          );
-        });
-        this.runtime.collectionGroups = groups;
-        this.api.effect(() => {
-          const selected = this.runtime.collectionList.state.options.group;
-          const options = groups.view.current.map((group) => ({
-            option: {
-              value: group.id,
-              label: group.title
-            }
-          }));
-          this.data.muzeSolidNotebookCollectionGroups = [
-            {
-              option: {
-                value: '',
-                label: 'All groups',
-                selected: selected ? null : ''
-              }
-            },
-            ...options.map((group) => ({
-              option: {
-                ...group.option,
-                selected: group.option.value === selected ? '' : null
-              }
-            }))
-          ];
-          this.data.muzeSolidNotebookEntryGroups = [
-            { option: { value: '', label: 'Choose group' } },
-            ...options
-          ];
-          const categories = [
-            { id: '', title: 'All notebooks' },
-            ...groups.view.current
-          ];
-          this.data.muzeSolidNotebookCategories = categories.map(
-            (category) => ({
-              ...category,
-              attributes: {
-                href: this.actions.muzeSolidNotebookCollectionLink(
-                  '',
-                  false,
-                  category.id
-                ),
-                'aria-current': category.id === selected ? 'page' : null,
-                'data-muze-solid-notebook-category': category.id
-              }
-            })
-          );
-          this.data.muzeSolidNotebookCategoryTitle =
-            categories.find((category) => category.id === selected)?.title ||
-            'All notebooks';
-        });
-      }
+      const browser = this.actions.muzeSolidCollectionInitialize();
+      this.runtime.collectionList = browser.entries;
+      this.runtime.collectionGroups = browser.groups;
       const launch = this.runtime.host.launch?.resource;
       if (launch) {
         const address = new URLSearchParams(location.hash.slice(1));
@@ -863,7 +729,7 @@ export const muzeSolidNotebookCollections = {
     },
     muzeSolidNotebookShowCategories() {
       const category = this.container.querySelector(
-        '.muze-solid-notebook-categories a[aria-current="page"]'
+        '.muze-solid-collection-browser-categories a[aria-current="page"]'
       );
       if (category && !category.closest('[hidden]')) {
         this.commands.call('muzeSolidDesignShowList', category);

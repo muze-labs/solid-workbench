@@ -54,9 +54,11 @@ const server = createServer(async (request, response) => {
       }
       deckText = Buffer.concat(body).toString();
       response.writeHead(201, { ETag: etag }).end();
-    } else if (!deckText) {
+    }
+    else if (!deckText) {
       response.writeHead(404).end();
-    } else {
+    }
+    else {
       response
         .writeHead(200, { 'Content-Type': 'text/turtle', ETag: etag })
         .end(deckText);
@@ -80,7 +82,8 @@ const server = createServer(async (request, response) => {
             : 'text/html'
     );
     response.end(data);
-  } catch {
+  }
+  catch {
     response.writeHead(404).end();
   }
 });
@@ -88,9 +91,11 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 origin = 'http://127.0.0.1:' + server.address().port;
 const external = createServer((_request, response) => {
   response.setHeader('Content-Type', 'text/html');
-  response.end(independentViewPeer(origin, 'passive-bounded', {
-    startupError: providerStartupError
-  }));
+  response.end(
+    independentViewPeer(origin, 'passive-bounded', {
+      startupError: providerStartupError
+    })
+  );
 });
 await new Promise((resolve) => external.listen(0, '127.0.0.1', resolve));
 other = 'http://127.0.0.1:' + external.address().port;
@@ -169,7 +174,8 @@ async function editText(page, index, text) {
       type: 'touchEnd',
       touchPoints: []
     });
-  } else {
+  }
+  else {
     for (const type of ['mousePressed', 'mouseReleased']) {
       await page.send('Input.dispatchMouseEvent', {
         type,
@@ -287,6 +293,8 @@ try {
     'localStorage.setItem("solid-apps.webId", location.origin+"/profile#me");location.href="/presenter/"'
   );
   await until(page, app);
+  await click(page, 'muzeSolidCollectionChoose');
+  await idle(page);
   await click(page, 'muzeSolidUiAppAction', 0);
   await idle(page);
   await editText(page, 0, 'Our first deck');
@@ -406,6 +414,271 @@ try {
   assert.equal(
     await run(page, `return ${app}.data.muzeSolidPresenterPosition`),
     '1 / 2'
+  );
+  const originalOrder = await run(
+    page,
+    `return ${app}.runtime.slides.view.current.map(slide=>slide.id)`
+  );
+  const originalSelected = await run(page, `return ${app}.runtime.selected`);
+  await click(page, 'muzeSolidUiAppAction', 0);
+  await until(
+    page,
+    `${app}.runtime.deck.slides().length===3 && !${app}.runtime.busy`
+  );
+  const inserted = await run(page, `return ${app}.runtime.selected`);
+  assert.deepEqual(
+    await run(
+      page,
+      `return ${app}.runtime.slides.view.current.map(slide=>slide.id)`
+    ),
+    [originalOrder[0], inserted, originalOrder[1]],
+    'New slide follows the current slide'
+  );
+  await until(
+    page,
+    `!document.querySelector('.muze-solid-presenter-controls').disabled &&
+    !document.querySelector('[data-muze-solid-action="add"]').disabled`
+  );
+  await run(
+    page,
+    `globalThis.muzeSolidMoveContinuity={
+    buttons:[...document.querySelectorAll('.muze-solid-presenter-slide-button')],
+    frames:[...${app}.runtime.views.values()].map(view=>view.frame),
+    disabling:[]};
+    globalThis.muzeSolidMoveObserver=new MutationObserver(records=>{
+      for(const record of records){
+        if(record.target.matches('.muze-solid-presenter-controls, .muze-solid-ui-app-toolbar button')){
+          globalThis.muzeSolidMoveContinuity.disabling.push(record.target.tagName);
+        }
+      }
+    });
+    globalThis.muzeSolidMoveObserver.observe(document.querySelector('#app'),{
+      subtree:true,attributes:true,attributeFilter:['disabled']});`
+  );
+  for (const [offset, position] of [
+    [1, '3 / 3'],
+    [-1, '2 / 3']
+  ]) {
+    await run(
+      page,
+      `document.querySelector('[data-simply-command="muzeSolidPresenterMove"][data-simply-value="'+${offset}+'"]').focus()`
+    );
+    for (const type of ['keyDown', 'keyUp']) {
+      await page.send('Input.dispatchKeyEvent', {
+        type,
+        key: 'Enter',
+        code: 'Enter',
+        windowsVirtualKeyCode: 13,
+        ...(type === 'keyDown' ? { text: '\r' } : {})
+      });
+    }
+    await until(
+      page,
+      `${app}.data.muzeSolidPresenterPosition===${JSON.stringify(position)} && !${app}.runtime.busy`
+    );
+    await until(
+      page,
+      `document.activeElement.matches('[data-simply-command="muzeSolidPresenterMove"]')`
+    );
+    assert.equal(await run(page, `return ${app}.runtime.selected`), inserted);
+    assert.equal(
+      await run(
+        page,
+        `return globalThis.muzeSolidMoveContinuity.buttons.every(button=>
+      button.isConnected && [...document.querySelectorAll('.muze-solid-presenter-slide-button')].includes(button))`
+      ),
+      true,
+      'Reordering retains every thumbnail button'
+    );
+    assert.equal(
+      await run(
+        page,
+        `return globalThis.muzeSolidMoveContinuity.frames.every(frame=>
+      frame.isConnected && [...${app}.runtime.views.values()].some(view=>view.frame===frame))`
+      ),
+      true,
+      'Reordering retains the existing editor frames'
+    );
+
+    assert.equal(
+      await run(
+        page,
+        `return document.activeElement.matches('[data-simply-command="muzeSolidPresenterMove"]')`
+      ),
+      true,
+      'Native keyboard move retains focus on its control'
+    );
+    assert.equal(
+      await run(page, `return document.activeElement.textContent.trim()`),
+      offset === 1 ? 'Move later' : 'Move earlier'
+    );
+    assert.match(
+      await run(page, `return ${app}.data.muzeSolidPresenterStatus`),
+      /Slide position: [23] of 3/
+    );
+  }
+  await run(page, 'globalThis.muzeSolidMoveObserver.disconnect()');
+  assert.deepEqual(
+    await run(page, 'return globalThis.muzeSolidMoveContinuity.disabling'),
+    [],
+    'Moving never toggles disabled styling on the editor or toolbar'
+  );
+  await writeFile(
+    '/tmp/presenter-slide-order-phone.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+  );
+  const extraSlides = await run(
+    page,
+    `const ids=[];
+    for(let index=0;index<4;index++){ids.push(${app}.runtime.deck.addSlide('image'));}
+    await ${app}.actions.muzeSolidPresenterPersist();return ids`
+  );
+  assert.equal(
+    await run(
+      page,
+      `const strip=document.querySelector('.muze-solid-presenter-filmstrip');
+    return strip.scrollWidth>strip.clientWidth`
+    ),
+    true,
+    'The phone fixture really overflows'
+  );
+  const selectedInView = `(()=>{
+    const button=document.querySelector('.muze-solid-presenter-slide-button[aria-current="true"]');
+    const strip=document.querySelector('.muze-solid-presenter-filmstrip');
+    const rect=button.getBoundingClientRect(), bounds=strip.getBoundingClientRect();
+    return rect.left>=Math.max(0,bounds.left)-1 &&
+      rect.right<=Math.min(innerWidth,bounds.right)+1;
+  })()`;
+  await until(
+    page,
+    `!document.querySelector('[data-simply-command="muzeSolidPresenterSelect"]').matches(':disabled')`
+  );
+  await click(page, 'muzeSolidPresenterSelect', 6);
+  await idle(page);
+  const beforeLastAdd = await run(page, `return ${app}.runtime.selected`);
+  await run(
+    page,
+    `document.querySelector('.muze-solid-presenter-slide-button[aria-current="true"]').scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'})`
+  );
+  await until(
+    page,
+    `!document.querySelector('[data-muze-solid-action="add"]').matches(':disabled')`
+  );
+  await click(page, 'muzeSolidUiAppAction', 0);
+  await until(
+    page,
+    `${app}.runtime.deck.slides().length===8 && !${app}.runtime.busy`
+  );
+  assert.equal(
+    await run(page, `return ${app}.data.muzeSolidPresenterPosition`),
+    '8 / 8'
+  );
+  assert.equal(
+    await run(page, `return ${selectedInView}`),
+    true,
+    'Add reveals the new selected slide beyond the previously visible last slide'
+  );
+  await writeFile(
+    '/tmp/presenter-slide-add-scroll-phone.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+  );
+  await until(
+    page,
+    `!document.querySelector('[data-simply-command="muzeSolidPresenterRemove"]').matches(':disabled')`
+  );
+  await click(page, 'muzeSolidPresenterRemove');
+  await until(
+    page,
+    `${app}.runtime.deck.slides().length===7 && !${app}.runtime.busy`
+  );
+  assert.equal(
+    await run(page, `return ${app}.runtime.selected`),
+    beforeLastAdd,
+    'Removing the last slide selects its immediate predecessor'
+  );
+  assert.equal(
+    await run(page, `return ${app}.data.muzeSolidPresenterPosition`),
+    '7 / 7'
+  );
+  assert.equal(
+    await run(page, `return ${selectedInView}`),
+    true,
+    'The predecessor remains visible after removing the last slide'
+  );
+  await until(
+    page,
+    `!document.querySelector('[data-simply-command="muzeSolidPresenterSelect"]').matches(':disabled')`
+  );
+  await click(page, 'muzeSolidPresenterSelect', 1);
+  await until(
+    page,
+    `${app}.runtime.selected===${JSON.stringify(inserted)} && !${app}.runtime.busy`
+  );
+  let slideIndex = 1;
+  for (const offset of [1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1]) {
+    await until(
+      page,
+      `!document.querySelector('[data-simply-command="muzeSolidPresenterMove"][data-simply-value="'+${offset}+'"]').matches(':disabled')`
+    );
+    await click(page, 'muzeSolidPresenterMove', offset < 0 ? 0 : 1);
+    slideIndex += offset;
+    await until(
+      page,
+      `${app}.data.muzeSolidPresenterPosition===${JSON.stringify(String(slideIndex + 1) + ' / 7')} && !${app}.runtime.busy`
+    );
+    assert.equal(await run(page, `return ${app}.runtime.selected`), inserted);
+    assert.equal(
+      await run(page, `return ${selectedInView}`),
+      true,
+      'Moving a slide keeps its thumbnail inside the overflowing phone filmstrip: ' +
+        JSON.stringify(
+          await run(
+            page,
+            `const button=document.querySelector('.muze-solid-presenter-slide-button[aria-current="true"]');
+          const strip=document.querySelector('.muze-solid-presenter-filmstrip');
+          return {offset:${offset},rect:button.getBoundingClientRect().toJSON(),strip:strip.getBoundingClientRect().toJSON(),
+            scrollLeft:strip.scrollLeft,width:strip.clientWidth,scrollWidth:strip.scrollWidth,
+            viewport:innerWidth,documentScroll:document.documentElement.scrollLeft,position:${app}.data.muzeSolidPresenterPosition}`
+          )
+        )
+    );
+  }
+  await writeFile(
+    '/tmp/presenter-slide-scroll-phone.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+  );
+  await run(
+    page,
+    `for(const id of ${JSON.stringify(extraSlides)}){${app}.runtime.deck.removeSlide(id);}
+    await ${app}.actions.muzeSolidPresenterPersist()`
+  );
+  await until(
+    page,
+    `!document.querySelector('[data-simply-command="muzeSolidPresenterRemove"]').matches(':disabled')`
+  );
+  await click(page, 'muzeSolidPresenterRemove');
+  await until(
+    page,
+    `${app}.runtime.deck.slides().length===2 && !${app}.runtime.busy`
+  );
+  assert.deepEqual(
+    await run(
+      page,
+      `return ${app}.runtime.slides.view.current.map(slide=>slide.id)`
+    ),
+    originalOrder
+  );
+  assert.equal(
+    await run(page, `return ${app}.runtime.selected`),
+    originalSelected,
+    'Removing the first slide selects the first remaining slide'
+  );
+  assert.equal(
+    await run(
+      page,
+      `return ${app}.runtime.deck.regions(${app}.runtime.selected)[0].fragment.text`
+    ),
+    'Second slide'
   );
   await run(
     page,
@@ -675,7 +948,9 @@ try {
   await click(page, 'muzeSolidPresenterRetryRegion', 1);
   await idle(page);
   await until(page, 'presenterReports.some(r=>r.delegation==="denied")');
-  console.log('Failed startup permits slide navigation and retry after restored access.');
+  console.log(
+    'Failed startup permits slide navigation and retry after restored access.'
+  );
   await click(page, 'muzeSolidPresenterSelect', 0);
   await idle(page);
   assert.equal(
@@ -744,14 +1019,21 @@ try {
     await run(managedPage, 'return document.body.innerText'),
     /different WebID/
   );
+  const managedReload = managedPage.once('Page.loadEventFired');
   await run(
     managedPage,
     `localStorage.setItem('solid-apps.webId',location.origin+'/profile#me');location.reload()`
   );
+  await managedReload;
   await until(
     managedPage,
-    `${app}?.runtime.host.managed?.ready && ${app}.runtime.host.selectedWebId===location.origin+'/profile#me'`
+    `${app}?.runtime.host.managed?.ready && !${app}.runtime.busy && ${app}.runtime.host.session && ${app}.runtime.host.selectedWebId===location.origin+'/profile#me'`
   );
+  await run(
+    managedPage,
+    `document.querySelector('[data-muze-solid-action="muzeSolidPresenterCurrentDeck"]').click()`
+  );
+  await idle(managedPage);
   await run(
     managedPage,
     `const ui=${app}.runtime.host.view;
@@ -890,7 +1172,8 @@ try {
   console.log(
     'Presenter inline formatting, dock/float, image selection, thumbnails, native reload, conditional conflict, keyboard presentation and loaded-offline autosave passed.'
   );
-} finally {
+}
+finally {
   await chrome?.close();
   await new Promise((resolve) => server.close(resolve));
   await new Promise((resolve) => external.close(resolve));
