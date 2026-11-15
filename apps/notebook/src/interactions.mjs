@@ -11,6 +11,7 @@ export const muzeSolidNotebookInteractions = {
           'copy',
           'cut',
           'paste',
+          'click',
           'mousedown',
           'mousemove',
           'mouseup',
@@ -46,8 +47,17 @@ export const muzeSolidNotebookInteractions = {
       if (!controller) {
         return;
       }
+      if (event.type === 'click') {
+        return this.actions.muzeSolidNotebookFocusBelow(event);
+      }
       const field = event.target.closest?.('.muze-solid-notebook-editor');
       const inside = field && this.container.contains(field);
+      if (event.type === 'mousedown') {
+        this.runtime.notebookPress = {
+          x: event.clientX,
+          y: event.clientY
+        };
+      }
       if (['mousedown', 'mousemove', 'mouseup'].includes(event.type)) {
         return this.actions.muzeSolidNotebookPointer(event, inside);
       }
@@ -477,6 +487,50 @@ export const muzeSolidNotebookInteractions = {
         event.stopPropagation();
         this.actions.muzeSolidNotebookReport(error.message);
       }
+    },
+    muzeSolidNotebookFocusBelow(event) {
+      if (
+        event.button !== 0 ||
+        this.runtime.busy ||
+        this.data.muzeSolidNotebookOverviewVisibility.hidden !== ''
+      ) {
+        return;
+      }
+      const target = event.target;
+      const main = this.container.closest('main');
+      if (
+        !main?.contains(target) ||
+        target.closest(
+          'a, button, input, select, textarea, dialog, [popover], ' +
+            '[contenteditable], [inert]'
+        )
+      ) {
+        return;
+      }
+      const row = this.actions.muzeSolidNotebookRows().at(-1);
+      const editor = this.runtime.editors.get(row?.id);
+      if (!editor || editor.isComposing()) {
+        return;
+      }
+      const bounds = editor.element.getBoundingClientRect();
+      if (
+        event.clientY < bounds.bottom ||
+        event.clientX < bounds.left ||
+        event.clientX > bounds.right
+      ) {
+        return;
+      }
+      // A drag ending below the document must retain its text selection.
+      const press = this.runtime.notebookPress;
+      if (
+        !press ||
+        Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5
+      ) {
+        return;
+      }
+      this.runtime.controller.clearSelection();
+      this.runtime.active = row.id;
+      editor.focus(editor.getLength());
     },
     muzeSolidNotebookPointer(event, inside) {
       const controller = this.runtime.controller;

@@ -25,6 +25,19 @@ const url = 'https://pod.example/settings/preferences.ttl';
 const graph = (text) =>
   oldm.context({ prefixes }).parse(text, url, 'text/turtle');
 
+test('published writer retains shared cycles when an editable property is cleared', async () => {
+  const source = '<#root> <urn:left> _:shared; <urn:right> _:shared; ' +
+    '<urn:editable> "remove". _:shared <urn:loop> _:shared; ' +
+    '<urn:unknown> "01"^^<http://www.w3.org/2001/XMLSchema#integer>.';
+  const document = graph(source);
+  document.get(url + '#root')[document.propertyName('urn:editable')] = [];
+  const expected = new StateGraph(source, url);
+  expected.quads = expected.quads.filter(
+    (quad) => quad.predicate.id !== 'urn:editable'
+  );
+  assert(sameGraph(await document.write(), expected.write(), url));
+});
+
 test('sparse profiles render without required names or WebIDs', () => {
   const g = graph('<#person> a <http://xmlns.com/foaf/0.1/Person>.');
   const person = g.get(url + '#person');

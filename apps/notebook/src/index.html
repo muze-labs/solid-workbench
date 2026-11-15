@@ -1,7 +1,15 @@
-<section data-notebook-app>
-  {{view:muze-solid-notebook-block-tools:./block-tools.html}}
-  <div class="muze-solid-notebook">
-    {{view:muze-solid-notebook-title:./title.html}}
-    {{view:muze-solid-notebook:./notebook.html}}
+<section class="muze-solid-notebook-application" data-notebook-app>
+  <div
+    class="muze-solid-notebook-mode"
+    data-simply-field="muzeSolidNotebookMode"
+    data-simply-transform="attributes"
+    data-simply-attributes="data-muze-solid-notebook-mode"
+  >
+    {{view:muze-solid-notebook-collections:./collections.html}}
+    {{view:muze-solid-notebook-block-tools:./block-tools.html}}
+    <div class="muze-solid-notebook muze-solid-notebook-editor-container">
+      {{view:muze-solid-notebook-title:./title.html}}
+      {{view:muze-solid-notebook:./notebook.html}}
+    </div>
   </div>
 </section>

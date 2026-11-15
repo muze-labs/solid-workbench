@@ -1,14 +1,21 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile, writeFile } from 'node:fs/promises';
+import {
+  StateGraph,
+  named
+} from '../packages/solid-app-data/src/state-rdf.mjs';
 import { startChrome } from './support/chrome.mjs';
 import { checkPickerReflow } from './support/style-contracts.mjs';
 let origin;
 const pods = new Map();
 const writes = [];
+const resourceReads = [];
 let authoringRequests = 0;
 let preferredPickerVisits = 0;
 let measuredFirstSave = false;
+let savedPreferences = '';
+let preferencesVersion = 0;
 const server = createServer(async (request, response) => {
   const url = new URL(request.url, origin);
   response.setHeader('Cache-Control', 'no-store');
@@ -24,16 +31,39 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (url.pathname === '/prefs') {
-    response.writeHead(200, { 'Content-Type': 'text/turtle', ETag: '"prefs"' });
-    response.end(`<${origin}/prefs#solid-apps>
+    const etag = preferencesVersion
+      ? '"prefs-' + preferencesVersion + '"'
+      : '"prefs"';
+    if (request.method === 'PUT') {
+      if (request.headers['if-match'] !== etag) {
+        response.writeHead(412).end();
+        return;
+      }
+      const chunks = [];
+      for await (const chunk of request) {
+        chunks.push(chunk);
+      }
+      savedPreferences = Buffer.concat(chunks).toString();
+      preferencesVersion++;
+      response
+        .writeHead(200, { ETag: '"prefs-' + preferencesVersion + '"' })
+        .end();
+      return;
+    }
+    response.writeHead(200, { 'Content-Type': 'text/turtle', ETag: etag });
+    response.end(
+      savedPreferences ||
+        `<${origin}/prefs#solid-apps>
       <https://vocab.muze.nl/capability#registry> <${origin}/prefs#providers>.
       <${origin}/prefs#providers> <http://www.w3.org/2000/01/rdf-schema#member> <${origin}/prefs#picker>.
       <${origin}/prefs#picker> <https://vocab.muze.nl/capability#provides> <https://vocab.muze.nl/capabilities/browse>;
       <https://vocab.muze.nl/capability#application> <${origin}/preferred-files/#app>;
-      <https://schema.org/url> <${origin}/preferred-files/>.`);
+      <https://schema.org/url> <${origin}/preferred-files/>.`
+    );
     return;
   }
   if (url.pathname.startsWith('/storage/') && url.pathname.endsWith('/')) {
+    response.setHeader('Link', '<.meta>; rel="describedby"');
     const children = [...pods.keys()].filter(
       (path) =>
         path.startsWith(url.pathname) &&
@@ -57,7 +87,19 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (url.pathname.startsWith('/storage/')) {
+    if (request.method === 'GET') {
+      resourceReads.push(url.pathname);
+    }
     const prior = pods.get(url.pathname);
+    if (request.method === 'DELETE') {
+      if (!prior || request.headers['if-match'] !== prior.etag) {
+        response.writeHead(412).end();
+        return;
+      }
+      pods.delete(url.pathname);
+      response.writeHead(204).end();
+      return;
+    }
     if (request.method === 'PUT') {
       const chunks = [];
       for await (const chunk of request) {
@@ -127,7 +169,8 @@ const server = createServer(async (request, response) => {
             : 'text/html'
     );
     response.end(bytes);
-  } catch {
+  }
+  catch {
     response.writeHead(404).end();
   }
 });
@@ -295,7 +338,8 @@ async function documentOperation(page, operation, path) {
       Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
     );
     await pickerClick(page, '[data-simply-command=selectResource]', index);
-  } else {
+  }
+  else {
     if (!measuredFirstSave) {
       measuredFirstSave = true;
       console.log(
@@ -446,7 +490,7 @@ async function openLocalDocument(page, id) {
     `(()=>{
     const rows=${app}.runtime.documentsList.view.current;
     const index=rows.findIndex(item=>item.id===${JSON.stringify(id)});
-    const buttons=document.querySelectorAll('.muze-solid-notebook-documents button');
+    const buttons=document.querySelectorAll('.muze-solid-notebook-document-dialog .muze-solid-notebook-documents button');
     return index>=0 && buttons.length===rows.length && buttons[index].textContent===rows[index].title;
   })()`
   );
@@ -458,10 +502,10 @@ async function openLocalDocument(page, id) {
   const point = await run(
     page,
     `const index=${app}.runtime.documentsList.view.current.findIndex(item=>item.id===${JSON.stringify(id)});
-    let button=document.querySelectorAll('.muze-solid-notebook-documents button')[index];
+    let button=document.querySelectorAll('.muze-solid-notebook-document-dialog .muze-solid-notebook-documents button')[index];
     button.scrollIntoView({block:'nearest'});
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-    button=document.querySelectorAll('.muze-solid-notebook-documents button')[index];
+    button=document.querySelectorAll('.muze-solid-notebook-document-dialog .muze-solid-notebook-documents button')[index];
     const r=button.getBoundingClientRect();
     const target=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
     if(!button.contains(target)){
@@ -499,18 +543,20 @@ async function type(page, text, index = 0) {
   const point = await run(
     page,
     `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[${index}].id).element;
-    e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect();return {x:r.x+20,y:r.y+20};`
+    e.scrollIntoView({block:'center'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const r=e.getBoundingClientRect();const x=r.x+Math.min(20,r.width/2),y=r.y+Math.min(12,r.height/2);if(!e.contains(document.elementFromPoint(x,y))){throw new Error('Covered editor tap: '+document.elementFromPoint(x,y)?.outerHTML);}return {x,y};`
   );
   if (await run(page, 'return innerWidth<=650')) {
     await page.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints: [point]
     });
+    await new Promise((resolve) => setTimeout(resolve, 60));
     await page.send('Input.dispatchTouchEvent', {
       type: 'touchEnd',
       touchPoints: []
     });
-  } else {
+  }
+  else {
     for (const event of ['mousePressed', 'mouseReleased']) {
       await page.send('Input.dispatchMouseEvent', {
         type: event,
@@ -520,6 +566,10 @@ async function type(page, text, index = 0) {
       });
     }
   }
+  await until(
+    page,
+    `document.activeElement===${app}.runtime.editors.get(${app}.runtime.blocks.view.current[${index}].id).element`
+  );
   await page.send('Input.dispatchKeyEvent', {
     type: 'keyDown',
     key: 'a',
@@ -993,6 +1043,25 @@ async function verifyNotebookInteractions(page) {
   await key(page, 'Enter', 'Enter', 13);
   await until(page, `${app}.runtime.editors.size===3 && !${app}.runtime.busy`);
   await type(page, 'Beta', 1);
+  await caret(page, 0, 0);
+  const belowLastBlock = await run(page, `
+    const editor = ${app}.runtime.editors.get(
+      ${app}.runtime.blocks.view.current[1].id);
+    const bounds = editor.element.getBoundingClientRect();
+    return { x: bounds.left + bounds.width / 2, y: bounds.bottom + 30 };`);
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed', ...belowLastBlock, button: 'left', clickCount: 1
+  });
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased', ...belowLastBlock, button: 'left', clickCount: 1
+  });
+  await until(page, `(() => {
+    const editor = ${app}.runtime.editors.get(
+      ${app}.runtime.blocks.view.current[1].id);
+    return document.activeElement === editor.element &&
+      editor.getSelection()?.start === editor.getLength() &&
+      editor.getSelection()?.end === editor.getLength();
+  })()`);
   await caret(page, 1, 4);
   await key(page, 'Enter', 'Enter', 13, 8);
   await until(
@@ -1702,13 +1771,578 @@ async function verifyNotebookLinks(page) {
   );
 }
 
+async function openCollectionOptions(page) {
+  const opened = await run(
+    page,
+    `return document.querySelector('.muze-solid-notebook-collection-dialog').open`
+  );
+  if (!opened) {
+    await click(page, 'CollectionTools');
+    await until(
+      page,
+      `document.querySelector('.muze-solid-notebook-collection-dialog').open`
+    );
+  }
+  await until(
+    page,
+    `!document.querySelector(
+    '.muze-solid-notebook-collection-dialog').getAnimations().some(
+    animation=>animation.playState==='running')`
+  );
+}
+async function closeCollectionOptions(page) {
+  const point = await run(
+    page,
+    `const dialog=document.querySelector(
+    '.muze-solid-notebook-collection-dialog');
+    const button=dialog.querySelector('.muze-solid-design-dialog-close');
+    const rect=button.getBoundingClientRect();
+    const header=dialog.querySelector('header').getBoundingClientRect();
+    if(rect.right<header.right-40 || rect.top>header.bottom){
+      throw new Error('Collection close control must be at the top right');
+    }
+    return {x:rect.x+rect.width/2,y:rect.y+rect.height/2};`
+  );
+  for (const type of ['mousePressed', 'mouseReleased']) {
+    await page.send('Input.dispatchMouseEvent', {
+      type,
+      ...point,
+      button: 'left',
+      clickCount: 1
+    });
+  }
+  await until(
+    page,
+    `!document.querySelector('.muze-solid-notebook-collection-dialog').open`
+  );
+}
+async function collectionClick(page, command, index = 0) {
+  const options = [
+    'CreateCollection',
+    'OpenCollection',
+    'DefaultCollection',
+    'SyncCollection',
+    'CollectionEntry'
+  ];
+  if (options.includes(command)) {
+    await openCollectionOptions(page);
+  }
+  if (['CollectionNew', 'CollectionSelect'].includes(command)) {
+    const opened = await run(
+      page,
+      `return document.querySelector('.muze-solid-notebook-collection-dialog').open`
+    );
+    if (opened) {
+      await closeCollectionOptions(page);
+    }
+  }
+  const selector =
+    command === 'CollectionNew'
+      ? '[data-muze-solid-notebook-entry="new"]'
+      : command === 'CollectionSelect'
+        ? '[data-muze-solid-notebook-entry]:not([data-muze-solid-notebook-entry="new"])'
+        : '[data-simply-command="muzeSolidNotebook' + command + '"]';
+  await until(
+    page,
+    `!${app}.runtime.busy && document.querySelectorAll('${selector}')[${index}]?.checkVisibility()`
+  );
+  await until(
+    page,
+    `!document.querySelectorAll('${selector}')[${index}].closest('dialog')?.getAnimations().some(animation=>animation.playState==='running')`
+  );
+  const point = await run(
+    page,
+    `let e=document.querySelectorAll('${selector}')[${index}];
+    e.scrollIntoView({block:'center'});
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    e=document.querySelectorAll('${selector}')[${index}];
+    const r=e.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;
+    if(!e.contains(document.elementFromPoint(x,y))){throw new Error('Covered collection control: '+e.outerHTML+' by '+document.elementFromPoint(x,y)?.outerHTML);}
+    return {x,y};`
+  );
+  for (const type of ['mousePressed', 'mouseReleased']) {
+    await page.send('Input.dispatchMouseEvent', {
+      type,
+      ...point,
+      button: 'left',
+      clickCount: 1
+    });
+  }
+}
+async function collectionSaveChoice(page, command, name) {
+  await collectionClick(page, command);
+  await pickerReady(page);
+  assert.equal(
+    await pickerRun(page, 'return location.pathname'),
+    '/preferred-files/'
+  );
+  await pickerRun(
+    page,
+    'document.querySelector(".muze-solid-files-picker-name").focus()'
+  );
+  await key(page, 'a', 'KeyA', 65, 2);
+  await page.send('Input.insertText', { text: name });
+  await pickerClick(page, '.muze-solid-files-picker-save button');
+  await until(
+    page,
+    `!${app}.runtime.host.view.runtime.muzeSolidUiCall && !${app}.runtime.busy`
+  );
+}
+async function verifyCollections(page) {
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 1,
+    mobile: true
+  });
+  pods.set('/storage/.meta', {
+    text: '<urn:other> <urn:keep> "foreign".',
+    etag: '"metadata"'
+  });
+  await key(page, 'Escape', 'Escape', 27);
+  await until(
+    page,
+    `document.querySelector('.muze-solid-notebook-collections-overview').hidden`
+  );
+  await click(page, 'Collections');
+  await until(
+    page,
+    `!document.querySelector('.muze-solid-notebook-collections-overview').hidden`
+  );
+  await collectionSaveChoice(page, 'CreateCollection', 'collection.ttl');
+  await until(page, `${app}.runtime.collection?.state().title==='Notebooks'`);
+  const collectionUrl = origin + '/storage/collection.ttl';
+  assert.equal(
+    await run(page, `return ${app}.runtime.collection.url`),
+    collectionUrl
+  );
+  assert(
+    !pods.has('/storage/collection.ttl'),
+    'Creation starts as a local collection'
+  );
+  await openCollectionOptions(page);
+  await run(
+    page,
+    `document.querySelector(
+    '[data-simply-command="muzeSolidNotebookRenameCollection"]').focus()`
+  );
+  await key(page, 'a', 'KeyA', 65, 2);
+  await page.send('Input.insertText', { text: 'Field' });
+  await page.send('Input.insertText', { text: ' notebooks' });
+  await until(
+    page,
+    `${app}.runtime.collection.state().title==='Field notebooks' &&
+    !${app}.runtime.collectionEdit`
+  );
+  assert(
+    await run(
+      page,
+      `return document.activeElement.dataset.simplyCommand===
+    'muzeSolidNotebookRenameCollection' && document.activeElement.value==='Field notebooks'`
+    ),
+    await run(page, 'return document.activeElement.outerHTML')
+  );
+  assert.equal(
+    await run(
+      page,
+      `return [...document.querySelectorAll(
+    '.muze-solid-notebook-collection-dialog button')].some(button=>
+    /^(Done|Close)$/.test(button.textContent.trim()))`
+    ),
+    false
+  );
+  await collectionClick(page, 'DefaultCollection');
+  await until(page, `!${app}.runtime.busy && !${app}.runtime.collection.dirty`);
+  assert(pods.has('/storage/collection.ttl'));
+  assert(savedPreferences.includes('defaultCollection'));
+  assert.equal(
+    new StateGraph(savedPreferences, origin + '/prefs').one(
+      named('urn:muze:solid-app:notebook'),
+      'https://vocab.muze.nl/collections#defaultCollection',
+      'iri'
+    ).id,
+    collectionUrl
+  );
+  assert(
+    savedPreferences.includes('preferred-files'),
+    'App preference preserves the preferred picker'
+  );
+  await collectionClick(page, 'CollectionNew');
+  await until(
+    page,
+    `${app}.runtime.documents.target && document.querySelector('.muze-solid-notebook-collections-overview').hidden`
+  );
+  await until(
+    page,
+    `!${app}.runtime.focusFirst && document.activeElement===${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id)?.element`
+  );
+  let draft = await run(page, `return ${app}.runtime.documents.target`);
+  assert.equal(
+    await run(
+      page,
+      `return ${app}.runtime.collection.state().entries[0].managed`
+    ),
+    true
+  );
+  await run(
+    page,
+    `${app}.runtime.editors.get(${app}.runtime.documents.root.id).focus(0)`
+  );
+  await key(page, 'a', 'KeyA', 65, 2);
+  await page.send('Input.insertText', { text: 'Collection field notes' });
+  await until(
+    page,
+    `${app}.runtime.documents.title==='Collection field notes'`
+  );
+  await type(page, 'Collection body');
+  await click(page, 'Save');
+  await until(
+    page,
+    `${app}.runtime.documents.url===${JSON.stringify(draft)} && !${app}.runtime.busy`
+  );
+  assert(pods.has(new URL(draft).pathname));
+  assert.equal(
+    await run(
+      page,
+      `return ${app}.runtime.collection.state().entries[0].title`
+    ),
+    'Collection field notes'
+  );
+  const memberReads = resourceReads.filter(
+    (path) => path === new URL(draft).pathname
+  ).length;
+  const overviewNavigation = await run(page, 'return performance.timeOrigin');
+  await run(page, 'location.href="/notebook/"');
+  await until(
+    page,
+    `performance.timeOrigin!==${overviewNavigation} && ${app}?.runtime.collection?.url===${JSON.stringify(collectionUrl)} && !${app}.runtime.busy`
+  );
+  assert(
+    await run(
+      page,
+      `return !document.querySelector('.muze-solid-notebook-collections-overview').hidden`
+    )
+  );
+  assert.equal(
+    await run(
+      page,
+      `return ${app}.data.muzeSolidNotebookCollectionEntries[0].title`
+    ),
+    'Collection field notes'
+  );
+  assert.equal(
+    resourceReads.filter((path) => path === new URL(draft).pathname).length,
+    memberReads,
+    'Overview does not fetch member bodies'
+  );
+  await run(
+    page,
+    `await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`
+  );
+  await writeFile(
+    '/tmp/notebook-default-overview-phone.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+  );
+  await click(page, 'Collections');
+  await openCollectionOptions(page);
+  await run(
+    page,
+    `document.querySelector('[data-simply-command="muzeSolidNotebookCollectionCreateGroup"] input').focus()`
+  );
+  await page.send('Input.insertText', { text: 'Work' });
+  await key(page, 'Enter', 'Enter', 13);
+  await until(
+    page,
+    `${app}.runtime.collection.state().groups.length===1 && !${app}.runtime.busy`
+  );
+  assert.equal(
+    await run(page, `return ${app}.data.muzeSolidNotebookStatusKind`),
+    'local'
+  );
+  await collectionClick(page, 'CollectionEntry');
+  await run(
+    page,
+    `document.querySelector('.muze-solid-notebook-entry-dialog select').focus()`
+  );
+  await until(
+    page,
+    `document.querySelector('.muze-solid-notebook-entry-dialog select').options.length===2`
+  );
+  await key(page, 'End', 'End', 35);
+  await until(
+    page,
+    `${app}.runtime.collection.state().entries[0].groups.length===1 && !${app}.runtime.busy`
+  );
+  await key(page, 'Escape', 'Escape', 27);
+  await until(
+    page,
+    `!document.querySelector('.muze-solid-notebook-entry-dialog').open`
+  );
+  await until(
+    page,
+    `document.activeElement?.dataset.simplyCommand==='muzeSolidNotebookCollectionEntry'`
+  );
+  const search = '[data-simply-command="muzeSolidNotebookCollectionFilter"]';
+  await run(page, `document.querySelector('${search}').focus()`);
+  await page.send('Input.insertText', { text: 'missing' });
+  await until(
+    page,
+    `${app}.data.muzeSolidNotebookCollectionEntries.length===1`
+  );
+  await key(page, 'a', 'KeyA', 65, 2);
+  await key(page, 'Backspace', 'Backspace', 8);
+  await until(
+    page,
+    `${app}.data.muzeSolidNotebookCollectionEntries.length===2`
+  );
+  await collectionClick(page, 'SyncCollection');
+  await until(page, `!${app}.runtime.busy`);
+  const ax = await page.send('Accessibility.getFullAXTree');
+  assert(
+    ax.nodes.some(
+      (n) => n.role?.value === 'searchbox' && n.name?.value === 'Find notebook'
+    )
+  );
+  assert(
+    await run(page, `return document.documentElement.scrollWidth<=innerWidth`)
+  );
+  await writeFile('/tmp/notebook-collection-options-phone.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64'));
+  await closeCollectionOptions(page);
+  assert.equal(
+    await run(
+      page,
+      `return document.querySelector(
+    '.muze-solid-notebook-collections-overview').querySelectorAll(
+    'form,input,select,button').length`
+    ),
+    0
+  );
+  assert.equal(
+    await run(
+      page,
+      `return document.querySelectorAll(
+    '[data-muze-solid-notebook-entry="new"]').length`
+    ),
+    1
+  );
+  await run(
+    page,
+    `document.querySelectorAll(
+    '[data-muze-solid-notebook-category]')[1].focus()`
+  );
+  await key(page, 'Enter', 'Enter', 13);
+  await until(
+    page,
+    `${app}.runtime.collectionList.state.options.group!=='' &&
+    document.activeElement.classList.contains('muze-solid-notebook-category-heading')`
+  );
+  await until(
+    page,
+    `document.querySelector(
+    '[data-muze-solid-notebook-entry="new"]').href.includes('category=')`
+  );
+  await until(
+    page,
+    `document.querySelector('.muze-solid-notebook-collection-layout').scrollLeft>0`
+  );
+  await writeFile(
+    '/tmp/notebook-collections-phone.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+  );
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 1280, height: 900, deviceScaleFactor: 1, mobile: false
+  });
+  await run(page, `await new Promise(resolve=>
+    requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
+  await writeFile('/tmp/notebook-collections-desktop.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64'));
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 390, height: 844, deviceScaleFactor: 1, mobile: true
+  });
+  await click(page, 'Collections');
+  await until(
+    page,
+    `document.activeElement.hasAttribute('data-muze-solid-notebook-category')`
+  );
+  await run(
+    page,
+    `document.querySelector('[data-muze-solid-notebook-category=""]').focus()`
+  );
+  await key(page, 'Enter', 'Enter', 13);
+  await collectionClick(page, 'CollectionSelect');
+  await until(
+    page,
+    `document.querySelector('.muze-solid-notebook-collections-overview').hidden`
+  );
+  await type(page, ' offline edit');
+  await run(page, `await ${app}.runtime.documents.queue`);
+  await page.send('Network.emulateNetworkConditions', {
+    offline: true,
+    latency: 0,
+    downloadThroughput: -1,
+    uploadThroughput: -1
+  });
+  // Cached app assets are disabled by this fixture. Intercept only the app's
+  // remote data requests instead, retaining a real page reload of the code.
+  await page.send('Network.emulateNetworkConditions', {
+    offline: false,
+    latency: 0,
+    downloadThroughput: -1,
+    uploadThroughput: -1
+  });
+  await page.send('Network.setBlockedURLs', {
+    urls: [origin + '/storage/*', origin + '/prefs']
+  });
+  const before = await run(page, 'return performance.timeOrigin');
+  await page.send('Page.reload');
+  await until(
+    page,
+    `performance.timeOrigin!==${before} && ${app}?.runtime.collection?.state().entries.length===1`
+  );
+  await until(
+    page,
+    `${app}.runtime.documents.blocks().some(b=>b.fragment.text.includes('offline edit'))`
+  );
+  assert.equal(await run(page, `return ${app}.runtime.documents.url`), draft);
+  await page.send('Network.setBlockedURLs', { urls: [] });
+  await click(page, 'Save');
+  await until(page, `!${app}.runtime.busy && !${app}.runtime.documents.dirty`);
+  await click(page, 'Collections');
+  await collectionSaveChoice(page, 'CreateCollection', 'other-collection.ttl');
+  assert.equal(
+    await run(page, `return ${app}.runtime.collection.state().entries.length`),
+    0
+  );
+  assert.equal(
+    new StateGraph(savedPreferences, origin + '/prefs').one(
+      named('urn:muze:solid-app:notebook'),
+      'https://vocab.muze.nl/collections#defaultCollection',
+      'iri'
+    ).id,
+    collectionUrl,
+    'Switching does not change the default'
+  );
+  await collectionClick(page, 'OpenCollection');
+  await pickerReady(page);
+  const index = await pickerRun(
+    page,
+    `return solidFiles.ui.data.pickerEntries.findIndex(e=>e.url===${JSON.stringify(collectionUrl)})`
+  );
+  await pickerClick(page, '[data-simply-command=selectResource]', index);
+  await until(
+    page,
+    `${app}?.runtime.collection?.url===${JSON.stringify(collectionUrl)} && !${app}.runtime.busy`
+  );
+  assert.equal(
+    await run(page, `return ${app}.runtime.collection.state().entries.length`),
+    1
+  );
+  await run(page, 'history.back()');
+  await until(
+    page,
+    `${app}?.runtime.collection?.url===location.origin+'/storage/other-collection.ttl' && !${app}.runtime.busy`
+  );
+  assert(
+    await run(
+      page,
+      `return !document.querySelector('.muze-solid-notebook-collections-overview').hidden`
+    )
+  );
+  await run(page, 'history.forward()');
+  await until(
+    page,
+    `${app}?.runtime.collection?.url===${JSON.stringify(collectionUrl)} && !${app}.runtime.busy`
+  );
+  assert.equal(
+    await run(page, `return ${app}.runtime.collection.state().entries.length`),
+    1
+  );
+  await collectionClick(page, 'CollectionEntry');
+  const movedDialog = page
+    .once('Page.javascriptDialogOpening')
+    .then(async () => {
+      await page.send('Page.handleJavaScriptDialog', { accept: true });
+    });
+  const oldDraft = draft;
+  await collectionSaveChoice(page, 'CollectionMove', 'moved-notebook.ttl');
+  await movedDialog;
+  await until(
+    page,
+    `!${app}.runtime.busy && !${app}.runtime.fileOperation.pending`
+  );
+  draft = origin + '/storage/moved-notebook.ttl';
+  assert(!pods.has(new URL(oldDraft).pathname));
+  assert(pods.has(new URL(draft).pathname));
+  assert.equal(await run(page, `return ${app}.runtime.documents.url`), draft);
+  assert.equal(
+    await run(
+      page,
+      `return ${app}.runtime.collection.state().entries[0].document`
+    ),
+    draft
+  );
+  await collectionClick(page, 'CollectionEntry');
+  const accepted = page.once('Page.javascriptDialogOpening').then(async () => {
+    await page.send('Page.handleJavaScriptDialog', { accept: true });
+  });
+  await collectionClick(page, 'CollectionDelete');
+  await accepted;
+  await until(
+    page,
+    `!${app}.runtime.busy && !${app}.runtime.fileOperation.pending`
+  );
+  assert(!pods.has(new URL(draft).pathname));
+  assert.equal(
+    await run(page, `return ${app}.runtime.documents.url`),
+    '',
+    'Deleted file cannot be revived by ordinary Save'
+  );
+  assert.equal(
+    await run(
+      page,
+      `return ${app}.runtime.collection.state().entries[0].deleted`
+    ),
+    true
+  );
+  assert(pods.get('/storage/.meta').text.includes('deleted'));
+  const savedCollection = pods.get('/storage/collection.ttl');
+  const writesBeforeMissing = writes.length;
+  const preferenceBeforeMissing = savedPreferences;
+  pods.delete('/storage/collection.ttl');
+  const missingNavigation = await run(page, 'return performance.timeOrigin');
+  await run(page, 'location.href="/notebook/"');
+  await until(
+    page,
+    `performance.timeOrigin!==${missingNavigation} && ${app}?.runtime.collection?.error?.status===404 && !${app}.runtime.busy`
+  );
+  assert.equal(
+    await run(page, `return ${app}.runtime.collection.url`),
+    collectionUrl
+  );
+  assert.equal(
+    writes.length,
+    writesBeforeMissing,
+    'Unavailable default is never recreated'
+  );
+  assert.equal(savedPreferences, preferenceBeforeMissing);
+  pods.set('/storage/collection.ttl', savedCollection);
+  await collectionClick(page, 'SyncCollection');
+  await until(page, `!${app}.runtime.busy && !${app}.runtime.collection.error`);
+
+  assert.deepEqual(await run(page, 'return window.notebookErrors'), []);
+  console.log(
+    'PASS: collection preferred picker, explicit default, managed creation, grouping/filtering, cached offline selection/reload, switching without changing default, permanent deletion and retained local draft.'
+  );
+}
+
 try {
   chrome = await startChrome(origin + '/seed', { allowPopups: true });
   const page = await chrome.page();
   await page.ready();
   await page.send('Page.addScriptToEvaluateOnNewDocument', {
     source:
-      'window.notebookErrors=[];addEventListener("error",event=>notebookErrors.push(event.error?.stack||event.message));'
+      'window.notebookErrors=[];const originalError=console.error;console.error=(...args)=>{notebookErrors.push(args.map(x=>x?.stack||String(x)).join(" "));originalError(...args)};addEventListener("error",event=>notebookErrors.push(event.error?.stack||event.message));'
   });
   await page.send('Emulation.setDeviceMetricsOverride', {
     width: 390,
@@ -1719,23 +2353,95 @@ try {
   await page.send('Network.enable');
   await page.send('Network.emulateNetworkConditions', {
     offline: false,
-    latency: 150,
-    downloadThroughput: 50 * 1024,
-    uploadThroughput: 25 * 1024
+    latency: process.argv.includes('--collections-only') ? 0 : 150,
+    downloadThroughput: process.argv.includes('--collections-only')
+      ? -1
+      : 50 * 1024,
+    uploadThroughput: process.argv.includes('--collections-only')
+      ? -1
+      : 25 * 1024
   });
   const started = Date.now();
   await run(
     page,
     'localStorage.setItem("solid-apps.webId",location.origin+"/profile#me");location.href="/notebook/"'
   );
-  await until(page, `${app}?.runtime.editors.size===2`);
   await until(
     page,
-    `document.activeElement===${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id).element`
+    `${app}?.runtime.collection?.state().title==='Notebooks' && !${app}.runtime.busy`
   );
+  assert(
+    await run(
+      page,
+      `return !document.querySelector('.muze-solid-notebook-collections-overview').hidden`
+    )
+  );
+  assert(
+    savedPreferences.includes('defaultCollection'),
+    'Startup creates and records a missing default'
+  );
+  assert.equal(await run(page,
+    `return ${app}.runtime.collection.state().entries.length`), 0,
+    'The automatically created default collection is empty');
+  await until(page, `document.querySelectorAll(
+    '[data-muze-solid-notebook-entry="new"]').length===1`);
+  console.log('Cold default collection overview', {
+    milliseconds: Date.now() - started,
+    ...(await run(
+      page,
+      `const entries=[...performance.getEntriesByType('navigation'),...performance.getEntriesByType('resource')];return {bytes:entries.reduce((sum,item)=>sum+item.transferSize,0),requests:entries.length}`
+    ))
+  });
+  const overviewChecksStarted = Date.now();
+  await until(page, `document.querySelector(
+    '[data-muze-solid-notebook-category=""][aria-current="page"]')`);
+  assert.equal(await run(page, `return document.querySelectorAll(
+    '[data-muze-solid-notebook-category]').length`), 1,
+    'An empty collection still offers All notebooks');
+  assert.equal(await run(page, `return document.querySelector(
+    '#muze-solid-notebook-collections-heading')`), null,
+    'The redundant collection title is absent');
+  assert(await run(page, `const link = document.querySelector(
+    '.muze-solid-notebook-collection-details [data-muze-solid-notebook-entry="new"]');
+    return link && link.textContent.trim() === 'New notebook' &&
+      !link.querySelector('svg').hasAttribute('hidden') &&
+      link.querySelector('use').getAttribute('href').endsWith('#plus')`),
+    'New notebook remains in details with a decorative plus icon');
+  await until(page, `(() => { const bounds = document.querySelector(
+    '[data-muze-solid-notebook-entry="new"]').getBoundingClientRect();
+    return bounds.left >= 0 && bounds.right <= innerWidth; })()`);
+  await writeFile('/tmp/notebook-empty-collection-phone.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64'));
+  await click(page, 'Collections');
+  await until(page, `document.activeElement.matches(
+    '[data-muze-solid-notebook-category=""][aria-current="page"]')`);
+  console.log('Focused collection category styling', await run(page, `
+    const style = getComputedStyle(document.activeElement);
+    return { underline: style.textDecorationLine, outline: style.outline,
+      shadow: style.boxShadow, background: style.backgroundColor };`));
+  await key(page, 'Enter', 'Enter', 13);
+  await until(page, `document.activeElement.classList.contains(
+    'muze-solid-notebook-category-heading')`);
+  await key(page, 'Tab', 'Tab', 9);
+  assert(await run(page, `return document.activeElement.matches(
+    '[data-muze-solid-notebook-entry="new"]')`),
+    'Keyboard navigation reaches creation in the empty category details');
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 1280, height: 900, deviceScaleFactor: 1, mobile: false
+  });
+  await run(page, `await new Promise(resolve=>
+    requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
+  await writeFile('/tmp/notebook-empty-collection-desktop.png',
+    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64'));
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 390, height: 844, deviceScaleFactor: 1, mobile: true
+  });
+  const overviewChecksElapsed = Date.now() - overviewChecksStarted;
+  const initialLocal = await run(page, `return ${app}.runtime.documents.id`);
+  await openLocalDocument(page, initialLocal);
   await type(page, 'First notebook');
   console.log('Cold usable Notebook', {
-    milliseconds: Date.now() - started,
+    milliseconds: Date.now() - started - overviewChecksElapsed,
     ...(await run(
       page,
       `const e=[...performance.getEntriesByType('navigation'),...performance.getEntriesByType('resource')];return {bytes:e.reduce((sum,x)=>sum+x.transferSize,0),requests:e.length};`
@@ -1747,280 +2453,306 @@ try {
     downloadThroughput: -1,
     uploadThroughput: -1
   });
-  await verifyNotebookChrome(page);
-  await verifyTitleCursor(page);
-  await verifyTitleSplit(page);
-  await verifyNotebookBold(page);
-  await verifyFormattingStability(page);
-  await verifyBlockTools(page);
-  await verifyNotebookLinks(page);
-  const composingId = await run(page, `return ${app}.runtime.documents.id`);
-  await run(
-    page,
-    `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id);e.focus(0);`
-  );
-  await page.send('Input.imeSetComposition', {
-    text: '日',
-    selectionStart: 1,
-    selectionEnd: 1
-  });
-  // Keep provisional IME focus: a real pointer blur can commit composition
-  // before the command, which correctly permits the document transition.
-  await run(
-    page,
-    `document.querySelector('[data-muze-solid-action="muzeSolidNotebookNew"]').click()`
-  );
-  assert.equal(
-    await run(page, `return ${app}.runtime.documents.id`),
-    composingId
-  );
-  assert(
+  if (!process.argv.includes('--collections-only')) {
+    await verifyNotebookChrome(page);
+    await verifyTitleCursor(page);
+    await verifyTitleSplit(page);
+    await verifyNotebookBold(page);
+    await verifyFormattingStability(page);
+    await verifyBlockTools(page);
+    await verifyNotebookLinks(page);
+    const composingId = await run(page, `return ${app}.runtime.documents.id`);
     await run(
       page,
-      `return ${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id).isComposing()`
-    )
-  );
-  await page.send('Input.imeSetComposition', {
-    text: '',
-    selectionStart: 0,
-    selectionEnd: 0
-  });
-  await verifyNotebookInteractions(page);
-  const firstId = await run(page, `return ${app}.runtime.documents.id`);
-  await caret(
-    page,
-    0,
+      `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id);e.focus(0);`
+    );
+    await page.send('Input.imeSetComposition', {
+      text: '日',
+      selectionStart: 1,
+      selectionEnd: 1
+    });
+    // Keep provisional IME focus: a real pointer blur can commit composition
+    // before the command, which correctly permits the document transition.
     await run(
       page,
-      `return ${app}.runtime.blocks.view.current[0].fragment.text.length`
-    )
-  );
-  await key(page, 'Enter', 'Enter', 13);
-  await until(page, `${app}.runtime.editors.size===3 && !${app}.runtime.busy`);
-  await type(page, 'Second block', 1);
-  await caret(page, 1, 0);
-  await key(page, 'Backspace', 'Backspace', 8);
-  await until(page, `${app}.runtime.editors.size===2`);
-  assert.match(
+      `document.querySelector('[data-muze-solid-action="muzeSolidNotebookNew"]').click()`
+    );
+    assert.equal(
+      await run(page, `return ${app}.runtime.documents.id`),
+      composingId
+    );
+    assert(
+      await run(
+        page,
+        `return ${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id).isComposing()`
+      )
+    );
+    await page.send('Input.imeSetComposition', {
+      text: '',
+      selectionStart: 0,
+      selectionEnd: 0
+    });
+    await verifyNotebookInteractions(page);
+    const firstId = await run(page, `return ${app}.runtime.documents.id`);
+    await caret(
+      page,
+      0,
+      await run(
+        page,
+        `return ${app}.runtime.blocks.view.current[0].fragment.text.length`
+      )
+    );
+    await key(page, 'Enter', 'Enter', 13);
+    await until(
+      page,
+      `${app}.runtime.editors.size===3 && !${app}.runtime.busy`
+    );
+    await type(page, 'Second block', 1);
+    await caret(page, 1, 0);
+    await key(page, 'Backspace', 'Backspace', 8);
+    await until(page, `${app}.runtime.editors.size===2`);
+    assert.match(
+      await run(
+        page,
+        `return ${app}.runtime.blocks.view.current[0].fragment.text`
+      ),
+      /First notebook.*Second block/s
+    );
     await run(
       page,
-      `return ${app}.runtime.blocks.view.current[0].fragment.text`
-    ),
-    /First notebook.*Second block/s
-  );
-  await run(
-    page,
-    `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id);e.focus(5);${app}.runtime.range={start:5,end:5};`
-  );
-  await caret(page, 0, 5);
-  await key(page, 'Enter', 'Enter', 13);
-  await until(page, `${app}.runtime.editors.size===3`);
-  await documentOperation(page, 'Save', '/storage/first.ttl');
-  await until(
-    page,
-    `document.querySelector('[data-muze-solid-action="muzeSolidNotebookStatus"] use').getAttribute('href').endsWith('#check-circle')`
-  );
-  assert.equal(writes[0]['if-none-match'], '*');
-  assert(pods.get('/storage/first.ttl').text.includes('First'));
-  await verifyPickerPreservation(page);
-  await click(page, 'New');
-  assert.equal(await run(page, 'return document.title'), 'Untitled notebook');
-  await type(page, 'Different document');
-  await documentOperation(page, 'SaveAs', '/storage/second.ttl');
-  assert.equal(pods.size, 2);
-  await documentOperation(page, 'SaveAs', '/storage/projects/third.ttl');
-  assert.match(
-    pods.get('/storage/projects/third.ttl').text,
-    /Different document/
-  );
-  await verifySaveDestinationRace(page);
-  await documentOperation(page, 'Open', '/storage/first.ttl');
-  await until(page, `${app}.runtime.editors.size===3`);
-  assert.equal(
-    await run(page, 'return document.title'),
-    'Field notes <2026> & ideas'
-  );
-  assert.match(
-    await run(
+      `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id);e.focus(5);${app}.runtime.range={start:5,end:5};`
+    );
+    await caret(page, 0, 5);
+    await key(page, 'Enter', 'Enter', 13);
+    await until(page, `${app}.runtime.editors.size===3`);
+    await documentOperation(page, 'Save', '/storage/first.ttl');
+    await until(
       page,
-      `return ${app}.runtime.blocks.view.current[0].fragment.text`
-    ),
-    /First/
-  );
-  await type(page, 'Conflict retained');
-  pods.get('/storage/first.ttl').etag = '"changed"';
-  await click(page, 'Save');
-  await until(
-    page,
-    `document.querySelector('[data-muze-solid-action="muzeSolidNotebookStatus"] use').getAttribute('href').endsWith('#alert-triangle')`
-  );
-  assert.match(
-    await run(page, `return ${app}.data.muzeSolidNotebookStatus`),
-    /changed|412/i
-  );
-  await click(page, 'New');
-  await openLocalDocument(page, firstId);
-  await until(page, `${app}.runtime.documents.id===${JSON.stringify(firstId)}`);
-  await page.send('Network.emulateNetworkConditions', {
-    offline: true,
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1
-  });
-  await type(page, 'Offline recovery');
-  await page.send('Network.emulateNetworkConditions', {
-    offline: false,
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1
-  });
-  const previousPage = await run(page, 'return performance.timeOrigin');
-  await run(page, 'location.reload()');
-  await until(
-    page,
-    `performance.timeOrigin!==${previousPage} && ${app}?.runtime.editors.size>0`
-  );
-  await until(
-    page,
-    `${app}?.runtime.documents.blocks().some(b=>b.fragment.text==='Offline recovery')`
-  );
-  assert.equal(
-    await run(page, 'return document.title'),
-    'Field notes <2026> & ideas'
-  );
-  const blockCount = await run(page, `return ${app}.runtime.editors.size`);
-  await run(
-    page,
-    `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id);e.focus(e.getLength());`
-  );
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyDown',
-    key: 'Enter',
-    code: 'Enter',
-    modifiers: 2,
-    windowsVirtualKeyCode: 13
-  });
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyUp',
-    key: 'Enter',
-    code: 'Enter',
-    modifiers: 2,
-    windowsVirtualKeyCode: 13
-  });
-  await until(
-    page,
-    `${app}.runtime.editors.size===${blockCount + 1} && !${app}.runtime.busy`
-  );
-  await until(
-    page,
-    `(()=>{const e=${app}.runtime.editors.get(${app}.runtime.active);return e && e.element===document.activeElement && !e.element.closest('[inert]');})()`
-  );
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyDown',
-    key: 'ArrowLeft',
-    code: 'ArrowLeft',
-    windowsVirtualKeyCode: 37
-  });
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyUp',
-    key: 'ArrowLeft',
-    code: 'ArrowLeft',
-    windowsVirtualKeyCode: 37
-  });
-  await until(
-    page,
-    `${app}.runtime.active===${app}.runtime.blocks.view.current[0].id`
-  );
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyDown',
-    key: 'ArrowRight',
-    code: 'ArrowRight',
-    windowsVirtualKeyCode: 39
-  });
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyUp',
-    key: 'ArrowRight',
-    code: 'ArrowRight',
-    windowsVirtualKeyCode: 39
-  });
-  await until(
-    page,
-    `${app}.runtime.active===${app}.runtime.blocks.view.current[1].id`
-  );
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyDown',
-    key: 'Backspace',
-    code: 'Backspace',
-    windowsVirtualKeyCode: 8
-  });
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'keyUp',
-    key: 'Backspace',
-    code: 'Backspace',
-    windowsVirtualKeyCode: 8
-  });
-  await until(
-    page,
-    `${app}.runtime.editors.size===${blockCount} && !${app}.runtime.busy`
-  );
-  await run(page, 'scrollTo(0,0)');
-  await writeFile(
-    '/tmp/notebook-phone.png',
-    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
-  );
-  assert.equal(authoringRequests, 0);
-  assert.deepEqual(await run(page, 'return window.notebookErrors'), []);
-  assert(preferredPickerVisits >= 7);
-  assert(
-    await run(page, 'return document.documentElement.scrollWidth<=innerWidth')
-  );
-  const ax = await page.send('Accessibility.getFullAXTree');
-  assert(
-    ax.nodes.some(
-      (n) =>
-        n.role?.value === 'heading' &&
-        n.name?.value === 'Notebook title' &&
-        n.properties?.some(
-          (property) =>
-            property.name === 'editable' && property.value.value === 'richtext'
+      `document.querySelector('[data-muze-solid-action="muzeSolidNotebookStatus"] use').getAttribute('href').endsWith('#check-circle')`
+    );
+    assert.equal(writes[0]['if-none-match'], '*');
+    assert(pods.get('/storage/first.ttl').text.includes('First'));
+    await verifyPickerPreservation(page);
+    await click(page, 'New');
+    assert.equal(await run(page, 'return document.title'), 'Untitled notebook');
+    await type(page, 'Different document');
+    await documentOperation(page, 'SaveAs', '/storage/second.ttl');
+    assert.equal(
+      [...pods.values()].filter((item) =>
+        new StateGraph(item.text, origin + '/storage/').quads.some(
+          (q) => q.object.id === 'https://vocab.muze.nl/notebook#Notebook'
         )
-    )
-  );
-  assert(
-    ax.nodes.some(
-      (n) => n.role?.value === 'textbox' && n.name?.value === 'Rich text block'
-    )
-  );
-  await page.send('Emulation.setDeviceMetricsOverride', {
-    width: 1280,
-    height: 900,
-    deviceScaleFactor: 1,
-    mobile: false
-  });
-  await run(
-    page,
-    "document.body.classList.remove('ds-darkmode-auto');document.body.classList.add('ds-lightmode')"
-  );
-  await run(
-    page,
-    `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id);e.focus(0,Math.min(5,e.getLength()))`
-  );
-  await until(
-    page,
-    `document.querySelector('.muze-solid-notebook-block-tools').checkVisibility({visibilityProperty:true})`
-  );
-  await run(
-    page,
-    `await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`
-  );
-  await writeFile(
-    '/tmp/notebook-desktop.png',
-    Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
-  );
-  console.log(
-    'PASS: Notebook native editing, blocks, separate documents, New/Open/Save As, conditional conflict, local offline reload and optional-source isolation.'
-  );
-} finally {
+      ).length,
+      2
+    );
+    await documentOperation(page, 'SaveAs', '/storage/projects/third.ttl');
+    assert.match(
+      pods.get('/storage/projects/third.ttl').text,
+      /Different document/
+    );
+    await verifySaveDestinationRace(page);
+    await documentOperation(page, 'Open', '/storage/first.ttl');
+    await until(page, `${app}.runtime.editors.size===3`);
+    assert.equal(
+      await run(page, 'return document.title'),
+      'Field notes <2026> & ideas'
+    );
+    assert.match(
+      await run(
+        page,
+        `return ${app}.runtime.blocks.view.current[0].fragment.text`
+      ),
+      /First/
+    );
+    await type(page, 'Conflict retained');
+    pods.get('/storage/first.ttl').etag = '"changed"';
+    await click(page, 'Save');
+    await until(
+      page,
+      `document.querySelector('[data-muze-solid-action="muzeSolidNotebookStatus"] use').getAttribute('href').endsWith('#alert-triangle')`
+    );
+    assert.match(
+      await run(page, `return ${app}.data.muzeSolidNotebookStatus`),
+      /changed|412/i
+    );
+    await click(page, 'New');
+    await openLocalDocument(page, firstId);
+    await until(
+      page,
+      `${app}.runtime.documents.id===${JSON.stringify(firstId)}`
+    );
+    await page.send('Network.emulateNetworkConditions', {
+      offline: true,
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1
+    });
+    await type(page, 'Offline recovery');
+    await page.send('Network.emulateNetworkConditions', {
+      offline: false,
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1
+    });
+    const previousPage = await run(page, 'return performance.timeOrigin');
+    await run(page, 'location.reload()');
+    await until(
+      page,
+      `performance.timeOrigin!==${previousPage} && ${app}?.runtime.editors.size>0`
+    );
+    await until(
+      page,
+      `${app}?.runtime.documents.blocks().some(b=>b.fragment.text==='Offline recovery')`
+    );
+    assert.equal(
+      await run(page, 'return document.title'),
+      'Field notes <2026> & ideas'
+    );
+    await until(
+      page,
+      `!${app}.runtime.busy && ${app}.data.muzeSolidNotebookEditorVisibility.hidden===null && !${app}.runtime.focusFirst`
+    );
+    const blockCount = await run(page, `return ${app}.runtime.editors.size`);
+    const firstLength = await run(
+      page,
+      `return ${app}.runtime.documents.blocks().find(b=>b.position===0).fragment.text.length`
+    );
+    await caret(page, 0, firstLength);
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Enter',
+      code: 'Enter',
+      modifiers: 2,
+      windowsVirtualKeyCode: 13
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Enter',
+      code: 'Enter',
+      modifiers: 2,
+      windowsVirtualKeyCode: 13
+    });
+    await until(
+      page,
+      `${app}.runtime.editors.size===${blockCount + 1} && !${app}.runtime.busy`
+    );
+    await until(
+      page,
+      `(()=>{const e=${app}.runtime.editors.get(${app}.runtime.active);return e && e.element===document.activeElement && !e.element.closest('[inert]');})()`
+    );
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'ArrowLeft',
+      code: 'ArrowLeft',
+      windowsVirtualKeyCode: 37
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'ArrowLeft',
+      code: 'ArrowLeft',
+      windowsVirtualKeyCode: 37
+    });
+    await until(
+      page,
+      `${app}.runtime.active===${app}.runtime.blocks.view.current[0].id`
+    );
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'ArrowRight',
+      code: 'ArrowRight',
+      windowsVirtualKeyCode: 39
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'ArrowRight',
+      code: 'ArrowRight',
+      windowsVirtualKeyCode: 39
+    });
+    await until(
+      page,
+      `${app}.runtime.active===${app}.runtime.blocks.view.current[1].id`
+    );
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Backspace',
+      code: 'Backspace',
+      windowsVirtualKeyCode: 8
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Backspace',
+      code: 'Backspace',
+      windowsVirtualKeyCode: 8
+    });
+    await until(
+      page,
+      `${app}.runtime.editors.size===${blockCount} && !${app}.runtime.busy`
+    );
+    await run(page, 'scrollTo(0,0)');
+    await writeFile(
+      '/tmp/notebook-phone.png',
+      Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+    );
+    assert.equal(authoringRequests, 0);
+    assert.deepEqual(await run(page, 'return window.notebookErrors'), []);
+    assert(preferredPickerVisits >= 7);
+    assert(
+      await run(page, 'return document.documentElement.scrollWidth<=innerWidth')
+    );
+    const ax = await page.send('Accessibility.getFullAXTree');
+    assert(
+      ax.nodes.some(
+        (n) =>
+          n.role?.value === 'heading' &&
+          n.name?.value === 'Notebook title' &&
+          n.properties?.some(
+            (property) =>
+              property.name === 'editable' &&
+              property.value.value === 'richtext'
+          )
+      )
+    );
+    assert(
+      ax.nodes.some(
+        (n) =>
+          n.role?.value === 'textbox' && n.name?.value === 'Rich text block'
+      )
+    );
+    await page.send('Emulation.setDeviceMetricsOverride', {
+      width: 1280,
+      height: 900,
+      deviceScaleFactor: 1,
+      mobile: false
+    });
+    await run(
+      page,
+      "document.body.classList.remove('ds-darkmode-auto');document.body.classList.add('ds-lightmode')"
+    );
+    await run(
+      page,
+      `const e=${app}.runtime.editors.get(${app}.runtime.blocks.view.current[0].id);e.focus(0,Math.min(5,e.getLength()))`
+    );
+    await until(
+      page,
+      `document.querySelector('.muze-solid-notebook-block-tools').checkVisibility({visibilityProperty:true})`
+    );
+    await run(
+      page,
+      `await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`
+    );
+    await writeFile(
+      '/tmp/notebook-desktop.png',
+      Buffer.from((await page.send('Page.captureScreenshot')).data, 'base64')
+    );
+  }
+  await verifyCollections(page);
+  if (!process.argv.includes('--collections-only')) {
+    console.log(
+      'PASS: Notebook native editing, blocks, separate documents, New/Open/Save As, conditional conflict, local offline reload and optional-source isolation.'
+    );
+  }
+}
+finally {
   await chrome?.close();
   await new Promise((resolve) => server.close(resolve));
 }

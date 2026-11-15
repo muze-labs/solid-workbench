@@ -8,6 +8,16 @@
       <h2 id="muze-solid-notebook-document-heading" class="swb-dialog-title">
         Notebooks on this device
       </h2>
+      <button
+        type="button"
+        class="ds-button muze-solid-design-dialog-close"
+        data-simply-command="muzeSolidDesignCloseDialog"
+        aria-label="Close dialog"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#x"></use>
+        </svg>
+      </button>
     </header>
     <div class="muze-solid-design-dialog-content">
       <ul
@@ -32,15 +42,6 @@
         data-simply-transform="escape_html"
       ></p>
     </div>
-    <footer class="muze-solid-design-dialog-footer">
-      <button
-        type="button"
-        class="muze-solid-design-tool"
-        data-simply-command="muzeSolidDesignCloseDialog"
-      >
-        Close
-      </button>
-    </footer>
   </dialog>
   <dialog
     class="ds-dialog muze-solid-design-dialog muze-solid-notebook-link-dialog"
@@ -52,6 +53,16 @@
         <h2 id="muze-solid-notebook-link-heading" class="swb-dialog-title">
           Add link
         </h2>
+        <button
+          type="button"
+          class="ds-button muze-solid-design-dialog-close"
+          data-simply-command="muzeSolidDesignCloseDialog"
+          aria-label="Close dialog"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#x"></use>
+          </svg>
+        </button>
       </header>
       <div class="muze-solid-design-dialog-content">
         <label
@@ -75,13 +86,6 @@
       </div>
       <footer class="muze-solid-design-dialog-footer">
         <button class="muze-solid-design-tool">Apply link</button>
-        <button
-          type="button"
-          class="muze-solid-design-tool"
-          data-simply-command="muzeSolidDesignCloseDialog"
-        >
-          Cancel
-        </button>
       </footer>
     </form>
   </dialog>
@@ -104,32 +108,38 @@
     data-simply-transform="escape_html"
   ></span>
   <div
-    data-simply-field="muzeSolidNotebookLocked"
+    data-simply-field="muzeSolidNotebookEditorVisibility"
     data-simply-transform="attributes"
-    data-simply-attributes="inert"
+    data-simply-attributes="hidden"
   >
-    <ol
-      class="muze-solid-notebook-blocks"
-      role="list"
-      data-simply-list="muzeSolidNotebookBlocks"
+    <div
+      data-simply-field="muzeSolidNotebookLocked"
+      data-simply-transform="attributes"
+      data-simply-attributes="inert"
     >
-      <template>
-        <li
-          data-simply-field="attributes"
-          data-simply-transform="attributes"
-          data-simply-attributes="data-block-id"
-        >
-          <div
-            class="muze-solid-notebook-editor"
-            contenteditable="true"
-            role="textbox"
-            aria-label="Rich text block"
-            aria-multiline="true"
-            title="Block tools: Ctrl+Space"
-            spellcheck="true"
-          ></div>
-        </li>
-      </template>
-    </ol>
+      <ol
+        class="muze-solid-notebook-blocks"
+        role="list"
+        data-simply-list="muzeSolidNotebookBlocks"
+      >
+        <template>
+          <li
+            data-simply-field="attributes"
+            data-simply-transform="attributes"
+            data-simply-attributes="data-block-id"
+          >
+            <div
+              class="muze-solid-notebook-editor"
+              contenteditable="true"
+              role="textbox"
+              aria-label="Rich text block"
+              aria-multiline="true"
+              title="Block tools: Ctrl+Space"
+              spellcheck="true"
+            ></div>
+          </li>
+        </template>
+      </ol>
+    </div>
   </div>
 </div>

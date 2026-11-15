@@ -1,0 +1,32 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261114-QG24H-209 a sd:Implementation ;
+    dcterms:identifier "IMP-20261114-QG24H-209" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261114-QG24H-209.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261114-QG24H-207 ;
+        sd:gitCommit "ef92bda2d462f6a49ec9949b7fe403affa2c68bf" ] ;
+    sd:implementationLocation "apps/notebook/src/interactions.mjs",
+        "apps/notebook/src/notebook.css",
+        "apps/files/src/components/file-editing.mjs", "package-lock.json",
+        "packages/solid-app-data/package.json",
+        "packages/solid-app-data/src/state-rdf.mjs", "test/data.test.mjs",
+        "apps/notebook/src/collections.mjs",
+        "apps/notebook/src/collections.html", "apps/notebook/src/collections.css",
+        "apps/notebook/src/component.mjs", "apps/notebook/src/document.mjs",
+        "apps/notebook/src/index.mjs", "apps/notebook/src/features.mjs",
+        "apps/notebook/src/index.html", "apps/notebook/src/title.html",
+        "apps/notebook/src/notebook.html",
+        "packages/solid-app-data/src/document-collection-rdf.mjs",
+        "packages/solid-app-data/src/document-collection.mjs",
+        "packages/solid-app-data/src/collection-preference.mjs",
+        "packages/solid-app-data/src/resource-lifecycle.mjs",
+        "packages/solid-app-data/src/resource-resolution.mjs",
+        "packages/solid-app-data/src/index.mjs",
+        "packages/solid-app-data/src/link-metadata.mjs",
+        "packages/solid-design/src/components/dialog.mjs",
+        "test/document-collection.test.mjs", "test/resource-lifecycle.test.mjs",
+        "test/notebook.test.mjs", "test/notebook-browser.mjs",
+        "test/bundle.test.mjs", "design/portable-collections-format.md" .

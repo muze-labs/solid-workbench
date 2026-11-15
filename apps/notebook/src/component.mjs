@@ -35,7 +35,7 @@ export const muzeSolidNotebook = {
           subtree: true,
           childList: true,
           attributes: true,
-          attributeFilter: ['data-block-id', 'inert']
+          attributeFilter: ['data-block-id', 'inert', 'hidden']
         });
         notify();
         return () => {
@@ -77,18 +77,20 @@ export const muzeSolidNotebook = {
   },
   commands: {
     muzeSolidNotebookNew() {
-      return this.actions.muzeSolidNotebookRun(async () => {
-        await this.actions.muzeSolidNotebookFlush();
-        await this.runtime.documents.create();
-        this.actions.muzeSolidNotebookProject({ focusFirst: true });
-      });
+      return this.actions.muzeSolidNotebookRun(() =>
+        this.actions.muzeSolidNotebookCreateDocument()
+      );
     },
     async muzeSolidNotebookSelect(element, id) {
       const dialog = element?.closest('dialog');
       const selected = await this.actions.muzeSolidNotebookRun(async () => {
         await this.actions.muzeSolidNotebookFlush();
         await this.runtime.documents.select(id);
+        this.runtime.collection = null;
+        this.runtime.collectionUrl = '';
+        this.actions.muzeSolidNotebookDocumentRoute();
         this.actions.muzeSolidNotebookProject({ focusFirst: true });
+        this.actions.muzeSolidNotebookShowEditor();
       });
       if (selected && dialog) {
         await this.actions.muzeSolidDesignCloseDialog(dialog);
@@ -99,7 +101,7 @@ export const muzeSolidNotebook = {
       return this.actions.muzeSolidNotebookPickDocument('open');
     },
     muzeSolidNotebookSave() {
-      if (!this.runtime.documents.url) {
+      if (!this.runtime.documents.url && !this.runtime.documents.target) {
         return this.actions.muzeSolidNotebookPickDocument('save');
       }
       return this.actions.muzeSolidNotebookSave(false);
@@ -155,6 +157,18 @@ export const muzeSolidNotebook = {
     }
   },
   actions: {
+    async muzeSolidNotebookCreateDocument() {
+      await this.actions.muzeSolidNotebookFlush();
+      if (this.runtime.documents.owner && !this.runtime.collection) {
+        await this.actions.muzeSolidNotebookEnsureDefaultCollection();
+      }
+      await this.runtime.documents.create();
+      await this.actions.muzeSolidNotebookCollectionCreateDraft();
+      this.actions.muzeSolidNotebookProject({ focusFirst: true });
+      this.actions.muzeSolidNotebookShowEditor();
+      this.actions.muzeSolidNotebookDocumentRoute();
+    },
+
     muzeSolidNotebookRestoreLinkFocus() {
       const target = this.runtime.linkTarget;
       const editor = this.runtime.editors.get(target?.id);
@@ -175,6 +189,8 @@ export const muzeSolidNotebook = {
         ['New', 'New', 'file-plus', 'New notebook'],
         ['Open', 'Open', 'folder', 'Open notebook'],
         ['Recent', '', 'clock', 'Notebooks on this device'],
+        ['Collections', 'Collections', 'book-open', 'Notebook collections'],
+        ['CollectionTools', '', 'more-vertical', 'Collection options'],
         ['Save', 'Save', 'save', 'Save notebook'],
         ['SaveAs', 'Save As', 'copy', 'Save notebook as'],
         ['Status', '', 'loader', 'Notebook status']
@@ -270,32 +286,47 @@ export const muzeSolidNotebook = {
       this.eventBindings.start();
       await host.ready;
       await this.actions.muzeSolidNotebookAccount();
-      if (
-        host.launch?.resource &&
-        this.runtime.documents.url !== host.launch.resource
-      ) {
-        await this.actions.muzeSolidNotebookRun(async () => {
-          await this.runtime.documents.load(
-            host.requireSession(),
-            host.launch.resource
-          );
-          this.actions.muzeSolidNotebookProject({ focusFirst: true });
-        });
-      }
     },
     async muzeSolidNotebookAccount() {
       const owner = this.runtime.host.selectedWebId || '';
       if (this.runtime.documents?.owner === owner) {
+        for (const item of [
+          'collection',
+          'fileOperation',
+          'collectionPreference'
+        ]) {
+          if (this.runtime[item]) {
+            this.runtime[item].session = this.runtime.host.session;
+          }
+        }
         return;
       }
       if (this.runtime.documents) {
         await this.actions.muzeSolidNotebookFlush();
       }
       const documents = await new this.api.NotebookDocuments({ owner }).open();
+      if (owner !== (this.runtime.host.selectedWebId || '')) {
+        return;
+      }
       this.runtime.documents = documents;
       this.actions.muzeSolidNotebookProject({ focusFirst: true });
+      this.runtime.collectionRouteMode = 'replace';
+      try {
+        await this.actions.muzeSolidNotebookRun(() =>
+          this.actions.muzeSolidNotebookInitializeCollections(owner)
+        );
+      }
+      finally {
+        this.runtime.collectionRouteMode = 'push';
+      }
     },
     muzeSolidNotebookProject({ focusFirst = false } = {}) {
+      if (
+        this.container.contains(document.activeElement) &&
+        document.activeElement.matches('.muze-solid-notebook-editor')
+      ) {
+        document.activeElement.blur();
+      }
       this.actions.muzeSolidNotebookResetTools();
       this.runtime.controller.clearSelection();
       for (const editor of this.runtime.editors.values()) {
@@ -355,10 +386,19 @@ export const muzeSolidNotebook = {
         ordered.push(editor);
       }
       this.runtime.controller.setAdapters(ordered);
+      if (this.data.muzeSolidNotebookOverviewVisibility.hidden !== '') {
+        return;
+      }
       this.actions.muzeSolidNotebookScheduleTools();
       if (this.runtime.focusFirst && ordered.length) {
         // The model's displayed order can differ from native RDF subject order.
         const firstBody = this.runtime.blocks.view.current[0]?.id;
+        if (
+          (this.runtime.documents.blocks().length && !firstBody) ||
+          (firstBody && !this.runtime.editors.has(firstBody))
+        ) {
+          return;
+        }
         const first = (
           this.runtime.editors.get(firstBody) || ordered[0]
         ).element.closest('[data-block-id]');
@@ -368,6 +408,7 @@ export const muzeSolidNotebook = {
         const editor = this.runtime.editors.get(this.runtime.focusBlock.id);
         if (
           editor &&
+          editor.element.checkVisibility({ visibilityProperty: true }) &&
           !this.runtime.busy &&
           !editor.element.closest('[inert]') &&
           !this.container.querySelector('dialog[open]')
@@ -385,6 +426,10 @@ export const muzeSolidNotebook = {
       const row = event.target.closest('[data-block-id]');
       if (row) {
         this.runtime.active = row.dataset.blockId;
+        if (this.runtime.focusFirst && !this.runtime.busy) {
+          this.runtime.focusFirst = false;
+          this.runtime.focusBlock = null;
+        }
       }
     },
     muzeSolidNotebookSelection() {
@@ -458,48 +503,18 @@ export const muzeSolidNotebook = {
         const host = this.runtime.host;
         const session = host.requireSession();
         const documents = this.runtime.documents;
-        let broker = host.managed?.ready ? host.managed : null;
-        if (!broker) {
-          this.runtime.pickerBroker ||= new this.api.WorkspaceBroker({
-            resolveProvider: (capability) =>
-              capability === this.api.browseCapability
-                ? host.preferences.browseProvider?.url
-                : undefined,
-            embeddedProviders: [
-              {
-                capability: this.api.browseCapability,
-                url: new URL('../files/', location.href).href
-              }
-            ]
-          });
-          broker = this.runtime.pickerBroker;
-        }
-        const provider = await broker.embeddedProvider(
-          this.api.browseCapability
-        );
-        const previous = host.capabilityBroker;
-        const input = { mode };
+        let suggestedName = '';
         if (mode === 'save') {
           const title =
             documents.title.replaceAll('/', '-').replaceAll('\\', '-').trim() ||
             'notebook';
-          input.suggestedName = /\.ttl$/i.test(title) ? title : title + '.ttl';
+          suggestedName = /\.ttl$/i.test(title) ? title : title + '.ttl';
         }
-        let result;
-        if (broker.target) {
-          host.capabilityBroker = broker;
-        }
-        try {
-          result = await host.muzeSolidUiInvoke(
-            this.api.browseCapability,
-            this.api.launchUrl(provider, { webId: documents.owner }),
-            input,
-            mode === 'open' ? 'Open notebook' : 'Save notebook as'
-          );
-        }
-        finally {
-          host.capabilityBroker = previous;
-        }
+        const url = await this.actions.muzeSolidNotebookChooseResource(
+          mode,
+          suggestedName,
+          mode === 'open' ? 'Open notebook' : 'Save notebook as'
+        );
         if (
           documents !== this.runtime.documents ||
           documents.owner !== host.selectedWebId ||
@@ -509,20 +524,25 @@ export const muzeSolidNotebook = {
             'notebook: Account changed; selection was not applied.'
           );
         }
-        const url = this.api.selectionUrl(result);
         if (new URL(url).pathname.endsWith('/')) {
           throw new Error('notebook: Choose a notebook file, not a folder.');
         }
         if (mode === 'open') {
           await documents.load(session, url);
+          await this.actions.muzeSolidNotebookUpdateCollectionEntry('', false);
         }
         else {
+          const reserved = documents.target;
           await documents.save(session, url, true);
+          await this.actions.muzeSolidNotebookUpdateCollectionEntry(reserved);
         }
         this.actions.muzeSolidNotebookProject({ focusFirst: mode === 'open' });
+        this.actions.muzeSolidNotebookDocumentRoute();
+        this.actions.muzeSolidNotebookShowEditor();
       });
     },
     async muzeSolidNotebookFlush() {
+      await this.runtime.collectionEdit;
       if (!this.runtime.documents) {
         return;
       }
@@ -571,8 +591,10 @@ export const muzeSolidNotebook = {
         this.data.muzeSolidNotebookLocked = { inert: null };
         this.runtime.busy = false;
         this.data.muzeSolidNotebookBusy = { disabled: null };
-        for (const tool of this.runtime.host.view.data.muzeSolidUiAppTools) {
-          tool.attributes.disabled = null;
+        this.actions.muzeSolidNotebookUpdateDocumentTools();
+        if (this.runtime.pendingNavigation) {
+          this.runtime.pendingNavigation = false;
+          this.actions.muzeSolidNotebookNavigate();
         }
       }
     },
@@ -581,9 +603,11 @@ export const muzeSolidNotebook = {
         await this.actions.muzeSolidNotebookFlush();
         await this.runtime.documents.save(
           this.runtime.host.requireSession(),
-          this.runtime.documents.url,
-          asNew
+          this.runtime.documents.url || this.runtime.documents.target,
+          asNew || !this.runtime.documents.url
         );
+        await this.actions.muzeSolidNotebookUpdateCollectionEntry();
+        this.actions.muzeSolidNotebookDocumentRoute();
         this.actions.muzeSolidNotebookStatus();
       });
     },
