@@ -118,12 +118,9 @@ export const fileEditing = {
       };
     },
     async makeFolder(name) {
-      // Chrome still locks the empty-body stream during Metro/Solid request
-      // composition. A Turtle comment is an empty graph with replayable data.
       await this.runtime.host
         .requireSession()
         .solid.createContainer(this.actions.child(name) + '/', {
-          body: '# Empty container description.\n',
           headers: { 'Content-Type': 'text/turtle' }
         });
       await this.actions.browse(this.runtime.current);
