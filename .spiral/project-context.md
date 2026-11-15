@@ -1,5 +1,35 @@
 # Solid Workbench project context
 
+## CYC229 accepted for integration, 2026-11-15
+
+The maintainer says “accepted, commit, merge and push please”. ACC234 accepts
+IMP232@9458add13400749de4a7295ee04ea670c005af28 and
+EVD233@d37497339cc3d07ed28f24aa6738b4581e9b339d. CYC229 is Accepted,
+superseding earlier Active/pending notes. The exact tested product is unchanged.
+Direct normal merge into latest main and push of both branches are authorized
+after prospective integration validation. Existing stock-validator and manual/
+live-provider limits remain disclosed. No next cycle/publication/deployment is
+selected. Preserve the unrelated icon archive outside delivery.
+
+## Resource-operation boundary selected, 2026-11-15
+
+After CYC223 delivery on main 8be2995, the maintainer confirms the proposed next
+cycle with “yes”. CYC229 is Active on verified
+spiral/CYC-20261115-QG24H-229-resource-operation-boundary. Continue the high-priority
+library simplification after DocumentSession and shared browser: separate generic
+physical operation intent from native collection association and common finish/
+acknowledgement ordering. Prove Notebook and Presenter while preserving their
+retained-draft versus purge policies, same-source journal recovery, conditional
+operations and Files' tombstone-only contract. SRC230/DES231/IMP232/EVD233 retain
+scope and evidence. No publication, drag/drop, new app, commit or delivery is
+selected; preserve the unrelated icon archive.
+
+CYC229 source/build, operation contracts and all fourteen Chrome suites pass.
+During evaluation the maintainer reports that Collections does not leave the
+selected deck and Present shows ordinary editing content fullscreen. The maintainer confirms a Firefox hard reload fixes both; the exact cache cause
+is unverified and no speculative product correction is made. CYC229 is ready for
+review in Evaluate, remaining Active. No acceptance or delivery is inferred.
+
 ## Presenter collections cycle selected, 2026-11-15
 
 The maintainer agrees to the proposed Presenter collections scope including the
