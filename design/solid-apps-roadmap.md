@@ -12,7 +12,8 @@ Status: maintainer-requested direction, recorded 2026-11-01, with subsequent
 refinements below. Work is selected through future implementation cycles; this
 update selects no next cycle. The maintainer places a second, virtual-company
 stage after the current suite work. Items within each stage remain grouped by
-subject, not priority. All conversation and project documentation should use
+subject; explicit priority decisions are called out separately below. All
+conversation and project documentation should use
 English. Earlier refinements come from
 [SRC31](../.spiral/sources/SRC-20261101-QG24H-31.md). The moldable-app additions
 follow the maintainer's 2026-11-07 request and the linked design; no new
@@ -109,6 +110,109 @@ cannot meet these constraints, redesign, split or defer it rather than silently
 waive them. This agreement does not start a cycle, implement offline/sync/PWA
 support or certify the accessibility/performance of existing apps.
 
+## High priority: library boundaries and simplification
+
+Maintainer priority decision, 2026-11-15: add the
+[library boundaries and simplification review](reviews/Solid-Workbench-Library-Boundaries-Review.md)
+as a **high-priority follow-up** in the personal-use foundation. Consider this
+work early when selecting the next cycle. This is an explicit priority change;
+the review's individual extraction proposals and APIs remain subject to design
+and evidence. It does not accept or merge the active Notebook collections cycle.
+
+The review applies *Programming for Wizards* to the current working tree and
+installed Muze libraries. Prioritize reducing assumptions and coordination in
+callers, preserving native data and keeping apps independently useful. Package
+count and moving code between files are not measures of success.
+
+The recommended starting points are preservation-safe RDF contracts in OLDM /
+oldm-shape and a document-session boundary proved with Notebook and Presenter.
+Reuse and extend Solid Workspace's existing responsibilities before introducing
+another library. Remaining candidates are resumable resource operations, a
+capability participation SDK, shared collection browsing, app-provided
+Preferences sections and selection-toolbar components.
+
+The separate [SimplyFlow lifecycle and composition design](simplyflow-lifecycle-composition-design.md)
+develops the runtime part of this high-priority review. Its proposed starting
+points are app-owned subscription/cleanup and supported inspection/replacement
+of effective definitions. Other candidates are scoped template lookup, optional
+include/drag-drop services, reuse of SimplyEdit's editor interfaces, and an
+evidence-gated investigation of stable array keys. These are design candidates,
+not additional APIs already available in Workbench or an approved feature bundle.
+
+For each selected slice:
+
+- Confirm its concrete behavioral gap, owner and contract before implementation.
+- Demonstrate reuse with meaningful consumers and remove the displaced caller
+  coordination only after preservation and recovery checks pass.
+- Retain distinct membership removal, tombstone and physical deletion semantics;
+  preserve account isolation, conditional saves and native unknown RDF.
+- Keep app-owned behavior in editable SimplyFlow components and measure the
+  complete download graph, cold core task and applicable phone/accessibility
+  workflows.
+
+The review records two bounded RDF preservation probes and proposed verification;
+it is not evidence that any extraction is implemented. Follow the governing
+[capability-broker roadmap](solid-capability-broker-roadmap.md), the
+[collection design](solid-workbench-collections-design.md), and the existing
+[app-provided Preferences direction](#any-app-context-and-app-provided-sections).
+New packages stay experimental until separately reviewed for publication. This
+documentation update selects no implementation cycle or library release.
+
+### Confirmed library issues and release follow-ups
+
+Maintainer request, 2026-11-15: track the following issues alongside the
+[library review](reviews/Solid-Workbench-Library-Boundaries-Review.md).
+
+- **oldm-shape: preserve additional RDF types.** `toOldm()` currently replaces
+  an existing resource's types with the shape's declared type. Ensure that type
+  is present without deleting other types during ordinary field updates; make
+  replacement explicit. Verify extra types, unrelated predicates and repeated
+  updates. Prioritize this data-preservation gap when selecting library work.
+- **Solid Workspace: classify HTTP errors consistently.** Status extraction
+  currently reads `error.cause.status` but misses direct `error.status`, causing
+  401/403/412/503 errors to appear offline. Cover both forms, distinguish
+  authentication, conflicts and other HTTP failures, and retain the original
+  error for recovery. Do not change retry or overwrite policy implicitly.
+- **Metro: release and adopt the empty-body replay fix.** The fix and regression
+  checks are prepared on `fix/empty-body-replay`, including request/response
+  composition, explicit overrides and bodyless statuses. After publication,
+  update Workbench and remove its dummy folder-description body only after the
+  real Chrome folder workflow passes with that release.
+- **OLDM: preserve incoming unattached anonymous data.** The current writer still
+  omits anonymous components unreachable from named subjects. Avoid this pattern
+  in new app data: name standalone records or link anonymous structures from a
+  named owner. Preserve existing foreign statements or explicitly refuse an
+  unsupported edit; do not silently drop them. Retain the raw-graph bridge until
+  the public library contract covers that preservation requirement.
+
+The existing SimplyFlow lifecycle/composition work remains a separate design
+and simplification proposal, not a newly confirmed rendering bug. These entries
+do not authorize additional library implementations or publication.
+
+## Cross-app CSS consistency and vertical rhythm
+
+Maintainer request, 2026-11-15: review CSS and class names across the apps,
+identify common use cases, and extract shared component classes where they
+remove duplication. Apply the same styling rules and visual language throughout
+the suite, using the existing Files list–details and Notebook focus treatments
+as concrete comparison points.
+
+- Inventory repeated controls, list–details rows, toolbars, dialogs, selection
+  and focus states; distinguish shared component responsibilities from app layout.
+- Reuse the existing design primitives and prefixed component classes. Consolidate
+  equivalent rules rather than adding wrappers or another styling system.
+- Check vertical rhythm: text line height, heading and paragraph margins,
+  row spacing, panel gaps and control alignment. Fix inconsistent spacing where
+  a shared rule or removal of an override suffices, without extra complexity.
+- Follow the [browser styling guide](Browser-Styling-Guide-for-AI.md): predictable
+  layers, flat selectors, component-owned tokens and explicit theme adapters.
+- Verify representative phone and desktop views, long content, themes and
+  keyboard focus. Preserve accessible targets and app-specific interactions;
+  record reduced duplication and any intentionally different treatment.
+
+This is planned review and simplification work, not approval for a suite-wide
+restyle in the active Notebook collections cycle.
+
 ## Applications
 
 ### Zett
@@ -184,6 +288,14 @@ Workbench. This is cross-app foundation work alongside the existing personal-app
 priorities; it does not change the governing broker phases or select a cycle.
 
 ### Launch, representation and everyday work
+
+- Collection overviews contain only document cards or list entries and one New
+  document link. Put all extra forms/actions in dialogs and global actions in the
+  app toolbar. Create an empty default when none is defined. For categories/tags,
+  use the shared list–details view: categories/tags in the list and matching
+  documents in details. This maintainer-confirmed rule applies across apps.
+  Dialogs use the shared top-right close button, omit dismissal-only Done buttons
+  and apply metadata edits immediately.
 
 - An explicit resource opens first; otherwise open the app's default collection
   from preferences. Initialise and record a default only when none is defined.
@@ -469,6 +581,39 @@ usable without the IDE and retain the complete-app download budget.
 These are future roadmap items, not a selected cycle or instructions to perform
 the review's proposed refactors now. The runtime IDE, override persistence,
 marketplace and live template updates remain separately scoped future work.
+
+### SimplyFlow lifecycle and composition follow-up
+
+Maintainer-requested design intake, 2026-11-15: retain the separate
+[SimplyFlow review and potential changes](simplyflow-lifecycle-composition-design.md)
+under the high-priority library-boundaries work. It distinguishes Workbench's
+installed SimplyFlow/app versions from the newer local library implementation
+and keeps runtime/IDE responsibilities separate.
+
+- Give app-level extensions a subscription/disposal contract so they need not
+  wrap `destroy()`. Build on the accepted separate events experiment; core
+  promotion or a new plugin framework is not presumed.
+- Expose effective definitions and origins, define reversible live overrides,
+  and offer an explicit current-action reference for long-lived callbacks.
+  Verify existing instances, failure recovery and unaffected UI; keep IDE
+  storage, authoring downloads and marketplace behavior outside the runtime.
+- Resolve template references within an explicit owning scope. Verify multiple
+  app instances rather than relying only on globally unique names.
+- Allow omission of runtime includes and independently loadable drag/drop
+  support while preserving the no-build convenience path. Measure downloaded
+  code as well as active observers/listeners.
+- Investigate SimplyEdit's existing toolbar/selection and engine interfaces
+  before adding a new editor component package. Keep Cobalt/native-data and
+  Notebook interaction contracts intact.
+- Defer stable array keys until a comparison with existing keyed-object binding
+  demonstrates a useful simplification and correct rebinding.
+
+The separate [Bindary review](simplyflow-bindary-review.md) supplies related
+text/HTML, typed-editing and scheduling proposals. Share evidence for overlapping
+list-identity work without treating either review as approval of the other's
+full scope. Scope upstream changes separately, preserve the accepted app
+behavior, and consume published dependencies. This entry selects no cycle,
+release, runtime IDE or change to the build-time composition decision below.
 
 ### Deferred: runtime template composition
 
