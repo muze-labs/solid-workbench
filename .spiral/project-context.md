@@ -1,5 +1,28 @@
 # Solid Workbench project context
 
+## Spiral core updated before the next cycle, 2026-11-15
+
+After accepting CYC211, the maintainer requests updating Spiral core before
+starting the next cycle. CYC211 is delivered on main at 785902b, with its accepted
+product and verification unchanged. The clean .spiral-core submodule advances
+from 3c93481336d0e771110a9437c6039df6d7ce078b to upstream main
+b3c1bceb3a5a9d93c08797d12bfb5ff7ba144fc3.
+
+The inspected upstream delta adds a proportionate simplification review at
+Evaluate, connected planning prompts and template fields, plus removes an
+OS-specific .gitignore entry. No runtime, build, npm dependency, test or executable
+validator implementation changes are included. Record this as documentation/
+process maintenance under the documentation-only exception; Git history supplies
+provenance. No new product cycle is selected. Apply the new review prospectively:
+justify retained complexity, record no-change or a bounded simplification, and
+retain broader candidates for explicit future cycle selection. State modelling
+is optional. Do not invent a past review or reopen CYC211 acceptance.
+
+Culture and warning profile texts and executable CLI/ontology files are unchanged;
+existing pinned adoption and causal references remain valid. The known stock
+validator parser-base limitation is unaffected. This update is included in the
+maintainer's requested delivery, without deployment or upstream-core edits.
+
 ## CYC211 accepted for integration, 2026-11-15
 
 The maintainer says “accepted, commit, merge and push”. ACC216 accepts
