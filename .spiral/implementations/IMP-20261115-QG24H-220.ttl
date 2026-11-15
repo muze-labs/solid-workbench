@@ -1,0 +1,40 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261115-QG24H-220 a sd:Implementation ;
+    dcterms:identifier "IMP-20261115-QG24H-220" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261115-QG24H-220.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261115-QG24H-219 ;
+        sd:gitCommit "53c4acf973309ce718088624aceadb9b81627553" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261115-QG24H-219 ;
+        sd:gitCommit "53c4acf973309ce718088624aceadb9b81627553" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261114-QG24H-207 ;
+        sd:gitCommit "ef92bda2d462f6a49ec9949b7fe403affa2c68bf" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261112-QG24H-177 ;
+        sd:gitCommit "84c32fbf3f59e4f00e5e9295e5ebf9b9e9dd24bd" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261114-QG24H-209 ;
+        sd:gitCommit "abd3b9a9a2cd0c5d9512ab9fff588320ce64afb2" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261112-QG24H-178 ;
+        sd:gitCommit "123a3fdd7d6995c2ac4d48ec93824130da37cc57" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:EVD-20261115-QG24H-215 ;
+        sd:gitCommit "21856a97e71f187875aa21e3bd36d09ebfdae043" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261113-QG24H-190 ;
+        sd:gitCommit "26e53d742156321e0005f94dd60b614d5b69972c" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261113-QG24H-189 ;
+        sd:gitCommit "fdfc48315ce478e0e2265e7c249fb66f48fd2182" ] ;
+    sd:implementationChangeKind sd:BehaviorPreservingChange ;
+    sd:implementationLocation "packages/solid-app-data/src/document-session.mjs",
+        "apps/notebook/src/document.mjs", "apps/presenter/src/deck-data.mjs",
+        "apps/notebook/src/index.mjs", "apps/presenter/src/index.mjs",
+        "scripts/bundle.mjs", "test/bundle.test.mjs",
+        "test/document-session.test.mjs" .

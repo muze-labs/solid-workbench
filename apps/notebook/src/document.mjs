@@ -11,7 +11,9 @@ import {
   readFragment,
   writeFragment
 } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
-import { loadDocument, saveDocument, httpUrl } from '@muze-labs/solid-app-data';
+import { loadDocument, httpUrl } from '@muze-labs/solid-app-data';
+import { DocumentSession }
+  from '@muze-labs/solid-app-data/document-session.mjs';
 import { resolveResource } from '@muze-labs/solid-app-data/resource-resolution.mjs';
 
 export const notebook = 'https://vocab.muze.nl/notebook#';
@@ -19,17 +21,24 @@ const registryRoot = named('urn:muze:solid-notebook:library');
 const fields = ['url', 'etag', 'dirty', 'target', 'alias'];
 
 // App policy only: native graphs, local sources and HTTP remain library-owned.
-export class NotebookDocuments {
+export class NotebookDocuments extends DocumentSession {
   constructor({ owner = '', store } = {}) {
-    this.owner = owner;
+    super({
+      owner,
+      requestOptions: { redirect: 'error' },
+      keepBaselineWithETag: true,
+      messages: {
+        account: 'notebook: Connect with this notebook’s account first.',
+        address: 'notebook: Use a document URL without a fragment.',
+        exists: 'notebook: A file exists there. Choose another filename in Save As.'
+      }
+    });
     this.store =
       store ||
       ((id) =>
         local.indexedDB('solid-notebook', {
           key: owner + '\n' + id
         }));
-    this.queue = Promise.resolve();
-    this.revision = 0;
   }
   async open() {
     this.index = new StateGraph(await this.store('index').load());
@@ -162,10 +171,6 @@ export class NotebookDocuments {
   changeTitle(value) {
     this.edit(this.root.id, { text: value, annotations: [] });
   }
-  changed() {
-    this.dirty = true;
-    this.revision++;
-  }
   edit(id, fragment) {
     if (id === this.root.id) {
       this.titleFragment();
@@ -278,74 +283,29 @@ export class NotebookDocuments {
     }
     this.index.set(registryRoot, notebook + 'selected', named(id));
     const index = this.index.write();
-    this.queue = this.queue
-      .catch(() => {})
-      .then(async () => {
-        await this.store(id).save(source);
-        await this.store('index').save(index);
-      });
-    return this.queue;
+    return this.enqueueRecoveryWrite(async () => {
+      await this.store(id).save(source);
+      await this.store('index').save(index);
+    });
   }
-  session(session) {
-    if (!session || session.webId !== this.owner) {
-      throw new Error('notebook: Connect with this notebook’s account first.');
-    }
+  baselineFor() {
+    return this.store('baseline:' + this.id);
   }
-  async save(session, address, asNew = false) {
-    this.session(session);
-    const url = httpUrl(address);
-    if (new URL(url).hash) {
-      throw new Error('notebook: Use a document URL without a fragment.');
-    }
-    await this.persist();
-    const revision = this.revision;
-    const pendingKey = 'pending:' + this.id + ':' + url;
-    const graph = this.content();
-    let document;
-    if (!asNew && this.url === url) {
-      document = {
-        url,
-        graph,
-        etag: this.etag,
-        missing: false,
-        source: (await this.store('baseline:' + this.id).load()) || undefined
-      };
-    }
-    else {
-      document = await session.perform(() =>
-        loadDocument(session.client, url, {
-          allowMissing: true,
-          redirect: 'error'
-        })
-      );
-      const pending = await this.store(pendingKey).load();
-      if (
-        !document.missing &&
-        !(pending && sameGraph(pending, document.source, url))
-      ) {
-        throw new Error(
-          'notebook: A file exists there. Choose another filename in Save As.'
-        );
-      }
-      document.graph = graph;
-    }
-    await this.store(pendingKey).save(graph.write());
-    const saved = await session.perform(() =>
-      saveDocument(session.client, document, { redirect: 'error' })
-    );
+  creationFor(url) {
+    return this.store('pending:' + this.id + ':' + url);
+  }
+  savedCopy(url, asNew) {
     if (asNew && url !== this.url) {
       this.graph.set(this.root, notebook + 'local-alias');
     }
-    await this.store('baseline:' + this.id).save(saved.source);
-    await this.store(pendingKey).save('');
-    this.url = url;
+  }
+  async acknowledgeSave(saved, revision) {
     this.target = '';
-    this.etag = saved.etag;
-    this.dirty = revision !== this.revision;
-    await this.persist();
+    // Notebook's existing save API resolves without returning a remote record.
+    await super.acknowledgeSave(saved, revision);
   }
   async load(session, address) {
-    this.session(session);
+    this.requireAccount(session);
     await this.persist();
     const revision = this.revision;
     let document;

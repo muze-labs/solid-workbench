@@ -25,6 +25,10 @@ import { httpUrl } from '@muze-labs/solid-app-data';
 import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import { DocumentSession }
+  from '@muze-labs/solid-app-data/document-session.mjs';
+import documentSessionSource
+  from '../../../packages/solid-app-data/src/document-session.mjs?source';
 import { DeckDocument } from './deck-data.mjs';
 import deckSource from './deck-data.mjs?source';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
@@ -52,6 +56,7 @@ const definition = {
     muzeSolidPresenterMode: { 'data-muze-solid-presenting': null }
   },
   api: {
+    DocumentSession,
     renderCobalt,
     validateFragment,
     createSolidMetroClient,
@@ -80,6 +85,11 @@ const definition = {
 const ui = app(definition);
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
+  documentSession: {
+    sourceUrl: documentSessionSource,
+    origin: 'packages/solid-app-data/src/document-session.mjs',
+    dependencies: ['@muze-labs/solid-app-data']
+  },
   deckData: {
     sourceUrl: deckSource,
     origin: 'apps/presenter/src/deck-data.mjs',

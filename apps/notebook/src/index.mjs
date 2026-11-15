@@ -22,6 +22,10 @@ import {
   selectionUrl
 } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import { DocumentSession }
+  from '@muze-labs/solid-app-data/document-session.mjs';
+import documentSessionSource
+  from '../../../packages/solid-app-data/src/document-session.mjs?source';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 import { NotebookDocuments } from './document.mjs';
 import { DocumentCollection } from '@muze-labs/solid-app-data/document-collection.mjs';
@@ -83,6 +87,7 @@ const definition = {
     }
   },
   api: {
+    DocumentSession,
     model,
     effect,
     signal,
@@ -110,6 +115,11 @@ const definition = {
 const ui = app(definition);
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
+  documentSession: {
+    sourceUrl: documentSessionSource,
+    origin: 'packages/solid-app-data/src/document-session.mjs',
+    dependencies: ['@muze-labs/solid-app-data']
+  },
   documents: {
     sourceUrl: documentSource,
     origin: 'apps/notebook/src/document.mjs',
