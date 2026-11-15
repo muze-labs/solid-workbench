@@ -10,6 +10,6 @@
     "@muze-labs/solid-app-data": "0.1.0",
     "@muze-labs/solid-app-ui": "0.1.0",
     "@muze-labs/solid-design": "0.1.0",
-    "@muze-labs/solid-workspace": "^0.2.1"
+    "@muze-labs/solid-workspace": "^0.2.2"
   }
 }

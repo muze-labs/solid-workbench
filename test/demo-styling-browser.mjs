@@ -25,6 +25,15 @@ const server = createServer(async (request, response) => {
     assert.equal(request.headers['if-none-match'], '*');
     assert.match(request.headers.link, /BasicContainer/);
     assert.equal(request.headers['content-type'], 'text/turtle');
+    const chunks = [];
+    for await (const chunk of request) {
+      chunks.push(chunk);
+    }
+    assert.equal(
+      Buffer.concat(chunks).byteLength,
+      0,
+      'Metro replays the normal empty container body without a dummy comment'
+    );
     if (url.pathname.includes('/Unavailable/')) {
       response.writeHead(503).end('Unavailable');
       return;

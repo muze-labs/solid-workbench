@@ -1,0 +1,30 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261115-QG24H-214 a sd:Implementation ;
+    dcterms:identifier "IMP-20261115-QG24H-214" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261115-QG24H-214.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261115-QG24H-213 ;
+        sd:gitCommit "073b9f31f40531718dfa038f604f57392364a36f" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261115-QG24H-213 ;
+        sd:gitCommit "073b9f31f40531718dfa038f604f57392364a36f" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261114-QG24H-207 ;
+        sd:gitCommit "ef92bda2d462f6a49ec9949b7fe403affa2c68bf" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261114-QG24H-209 ;
+        sd:gitCommit "abd3b9a9a2cd0c5d9512ab9fff588320ce64afb2" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:EVD-20261114-QG24H-208 ;
+        sd:gitCommit "d4b4f149ccea76223717de213aae3b0e9d0d1182" ] ;
+    sd:implementationChangeKind sd:MixedChange ;
+    sd:implementationLocation "package-lock.json",
+        "apps/files/src/components/file-editing.mjs",
+        "packages/solid-app-data/package.json",
+        "apps/launcher/package.json", "apps/notebook/package.json",
+        "apps/presenter/package.json", "apps/viewer/package.json",
+        "packages/solid-preferences/package.json",
+        "test/published-stack.test.mjs", "test/demo-styling-browser.mjs" .
