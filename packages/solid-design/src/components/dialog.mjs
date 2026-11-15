@@ -1,10 +1,16 @@
 import styles from '../dialog.css' with { type: 'text' };
 
 export const muzeSolidDesignDialog = {
+  api: { muzeSolidDesignDialogClosing: new WeakMap() },
   styles: { 'muze-solid-design-dialog': styles },
   behaviors: {
     muzeSolidDesignDialog(dialog) {
       const cancel = (event) => {
+        // A nested app and its shell can both compose this behavior. Let the
+        // first handler own cancellation, including its pending close animation.
+        if (event.defaultPrevented) {
+          return;
+        }
         event.preventDefault();
         this.actions.muzeSolidDesignCloseDialog(dialog);
       };
@@ -24,6 +30,13 @@ export const muzeSolidDesignDialog = {
   },
   actions: {
     muzeSolidDesignOpenDialog(dialog) {
+      // Lifecycle belongs to the element even when two composed apps use it.
+      const pending = this.api.muzeSolidDesignDialogClosing.get(dialog);
+      if (pending) {
+        return pending.then(() =>
+          this.actions.muzeSolidDesignOpenDialog(dialog)
+        );
+      }
       if (dialog.open) {
         return;
       }
@@ -34,8 +47,7 @@ export const muzeSolidDesignDialog = {
       if (!dialog.open) {
         return Promise.resolve();
       }
-      this.runtime.muzeSolidDesignClosing ||= new WeakMap();
-      const closing = this.runtime.muzeSolidDesignClosing;
+      const closing = this.api.muzeSolidDesignDialogClosing;
       if (closing.has(dialog)) {
         return closing.get(dialog);
       }

@@ -1,0 +1,91 @@
+@layer page {
+  .swb-notebook:has([data-muze-solid-notebook-mode='overview']) {
+    --swb-main-display: flex;
+    --swb-main-overflow: hidden;
+    --swb-main-padding: 0;
+    --swb-content-flex: 1;
+    --swb-content-min-height: 0;
+    --swb-content-overflow: hidden;
+  }
+}
+@layer component {
+  .muze-solid-notebook-application:has(
+    [data-muze-solid-notebook-mode='overview']
+  ),
+  .muze-solid-notebook-mode[data-muze-solid-notebook-mode='overview'] {
+    block-size: 100%;
+    min-block-size: 0;
+  }
+  .muze-solid-notebook-mode[data-muze-solid-notebook-mode='overview'] {
+    display: flex;
+    flex-direction: column;
+  }
+  .muze-solid-notebook-mode[data-muze-solid-notebook-mode='overview']
+    > .muze-solid-notebook-editor-container {
+    display: contents;
+  }
+  .muze-solid-notebook-collections-overview {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-block-size: 0;
+    inline-size: 100%;
+    max-inline-size: 80rem;
+    box-sizing: border-box;
+  }
+  .muze-solid-notebook-collections-overview[hidden] {
+    display: none;
+  }
+  .muze-solid-notebook-collection-layout {
+    flex: 1;
+    min-block-size: 0;
+    min-inline-size: 0;
+  }
+  .muze-solid-notebook-collection-link {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 6px;
+    padding: 10px;
+    font-size: 0.8125rem;
+    text-decoration: none;
+    white-space: normal;
+    color: inherit;
+    overflow-wrap: anywhere;
+  }
+  .muze-solid-notebook-collection-link[aria-current='page'] {
+    font-weight: 700;
+    background: var(--muze-notebook-active);
+  }
+  .muze-solid-notebook-collection-entries {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .muze-solid-notebook-collection-dialog,
+  .muze-solid-notebook-entry-dialog {
+    inline-size: min(42rem, calc(100vw - 2rem));
+    overflow-wrap: anywhere;
+  }
+  .muze-solid-notebook-collections-content {
+    display: grid;
+    gap: 12px;
+  }
+  .muze-solid-notebook-collection-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-block: 12px;
+  }
+  .muze-solid-notebook-collection-form {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-block: 12px;
+  }
+  .muze-solid-notebook-collection-form label {
+    flex: 1 1 12rem;
+    min-inline-size: 0;
+  }
+}

@@ -13,7 +13,10 @@ import {
 import { NotebookController } from '@muze-labs/cobalt-notebook';
 import { shell } from '@muze-labs/solid-app-ui';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
-import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
+import {
+  launchUrl,
+  readLaunchContext
+} from '@muze-labs/solid-app-data/launch.mjs';
 import {
   browseCapability,
   selectionUrl
@@ -21,13 +24,18 @@ import {
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 import { NotebookDocuments } from './document.mjs';
+import { DocumentCollection } from '@muze-labs/solid-app-data/document-collection.mjs';
+import { CollectionPreference } from '@muze-labs/solid-app-data/collection-preference.mjs';
+import { ResourceLifecycle } from '@muze-labs/solid-app-data/resource-lifecycle.mjs';
+import { resolveResource } from '@muze-labs/solid-app-data/resource-resolution.mjs';
 import documentSource from './document.mjs?source';
 import {
   muzeSolidNotebook,
   muzeSolidNotebookTitle,
   muzeSolidNotebookBlockTools,
   muzeSolidNotebookRichTextTools,
-  muzeSolidNotebookInteractions
+  muzeSolidNotebookInteractions,
+  muzeSolidNotebookCollections
 } from './features.mjs';
 import sources from './features.mjs?entries';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
@@ -42,7 +50,8 @@ const definition = {
     muzeSolidNotebookTitle,
     muzeSolidNotebookBlockTools,
     muzeSolidNotebookRichTextTools,
-    muzeSolidNotebookInteractions
+    muzeSolidNotebookInteractions,
+    muzeSolidNotebookCollections
   },
   data: {
     muzeSolidNotebookTitleAttributes: {},
@@ -54,6 +63,16 @@ const definition = {
     muzeSolidNotebookAnnouncement: '',
     muzeSolidNotebookBlocks: [],
     muzeSolidNotebookDocuments: [],
+    muzeSolidNotebookOverviewVisibility: { hidden: null },
+    muzeSolidNotebookMode: { 'data-muze-solid-notebook-mode': 'overview' },
+    muzeSolidNotebookEditorVisibility: { hidden: '' },
+    muzeSolidNotebookCollectionEntries: [],
+    muzeSolidNotebookCollectionManagementEntries: [],
+    muzeSolidNotebookCategories: [],
+    muzeSolidNotebookCollectionGroups: [],
+    muzeSolidNotebookEntryGroups: [],
+    muzeSolidNotebookCollectionVisibility: { hidden: '' },
+    muzeSolidNotebookOperationVisibility: { hidden: '' },
     muzeSolidNotebookBusy: { disabled: null },
     muzeSolidNotebookLocked: { inert: null },
     muzeSolidNotebookBlockTools: [],
@@ -70,8 +89,13 @@ const definition = {
     editCobalt,
     NotebookController,
     NotebookDocuments,
+    DocumentCollection,
+    CollectionPreference,
+    ResourceLifecycle,
+    resolveResource,
     WorkspaceBroker,
     launchUrl,
+    readLaunchContext,
     browseCapability,
     selectionUrl,
     defaultRegistry,

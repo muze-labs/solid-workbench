@@ -264,3 +264,227 @@ test('no-ETag baseline survives reload and refuses unsafe subsequent saves', asy
   assert.equal(condition['If-Match'], '"safe"');
   assert.equal(reopened.dirty, false);
 });
+
+test('file lifecycle repairs cached addresses and deletion retains local text without reviving the old file', async () => {
+  const store = stores();
+  const documents = await new NotebookDocuments({ owner, store }).open();
+  const source = 'https://pod.example/notes/source.ttl';
+  const target = 'https://pod.example/notes/moved.ttl';
+  documents.url = source;
+  documents.etag = '"one"';
+  documents.edit(documents.blocks()[0].id, text('Preserve my local draft'));
+  await documents.persist();
+  const session = {
+    webId: owner,
+    perform: (work) => work(),
+    client: {
+      get: async () =>
+        new Response(documents.content().write(), {
+          headers: { ETag: '"target"' }
+        })
+    }
+  };
+  await documents.applyFileOperation(
+    { kind: 'move', source, target, etag: '"one"' },
+    session
+  );
+  assert.equal(documents.url, target);
+  assert.equal(documents.etag, '"target"');
+  assert.equal(documents.dirty, true);
+  assert.equal(documents.hasCached(source), true);
+  const reopened = await new NotebookDocuments({ owner, store }).open();
+  assert.equal(reopened.url, target);
+  await reopened.applyFileOperation(
+    { kind: 'delete', source: target },
+    session
+  );
+  assert.equal(reopened.url, '');
+  assert.equal(reopened.target, '');
+  assert.equal(reopened.blocks()[0].fragment.text, 'Preserve my local draft');
+  const again = await new NotebookDocuments({ owner, store }).open();
+  assert.equal(again.url, '');
+  assert.equal(again.dirty, true);
+});
+
+test('direct forwarding uses the resolved RDF base and retains a native offline alias', async () => {
+  const store = stores();
+  const documents = await new NotebookDocuments({ owner, store }).open();
+  const origin = 'https://pod.example';
+  const source = origin + '/notes/old.ttl';
+  const target = origin + '/notes/new.ttl';
+  const content =
+    '@prefix n: <https://vocab.muze.nl/notebook#>. <#note> a n:Notebook; n:title "Forwarded"; n:block <#body>. <#body> n:kind "cobalt.rich-text"; n:position 0; <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "Retained".';
+  const session = {
+    webId: owner,
+    perform: (work) => work(),
+    client: {
+      head: async () =>
+        new Response(null, { headers: { Link: '<.meta>; rel="describedby"' } }),
+      get: async (url, options) => {
+        assert.equal(options.redirect, 'error');
+        if (url === source) {
+          throw new TypeError('fixture: redirect rejected');
+        }
+        return new Response(
+          url === target
+            ? content
+            : url === origin + '/notes/.meta'
+              ? `<${source}> <https://purl.org/pdsinterop/link-metadata#redirectPermanent> <${target}>.`
+              : '',
+          { headers: { ETag: '"target"' } }
+        );
+      }
+    }
+  };
+  await documents.load(session, source);
+  assert.equal(documents.root.id, target + '#note');
+  assert.equal(documents.url, target);
+  assert(!documents.content().write().includes('local-alias'));
+  const reopened = await new NotebookDocuments({ owner, store }).open();
+  await reopened.create();
+  await reopened.openCached(null, source);
+  assert.equal(reopened.url, target);
+  assert.equal(reopened.title, 'Forwarded');
+  assert.equal(reopened.blocks()[0].fragment.text, 'Retained');
+});
+
+test('older recovery copies keep their own baseline when a newer copy is opened', async () => {
+  const store = stores();
+  const documents = await new NotebookDocuments({ owner, store }).open();
+  const url = 'https://pod.example/notes/baselines.ttl';
+  const initial = documents.content().write();
+  let remote = initial;
+  let etag = null;
+  let puts = 0;
+  const session = {
+    webId: owner,
+    perform: (work) => work(),
+    client: {
+      get: async () =>
+        new Response(remote, { headers: etag ? { ETag: etag } : {} }),
+      put: async (address, options) => {
+        puts++;
+        remote = options.body;
+        return new Response(null, {
+          status: 200,
+          headers: { ETag: '"saved"' }
+        });
+      }
+    }
+  };
+  await documents.load(session, url);
+  const older = documents.id;
+  documents.edit(documents.blocks()[0].id, text('My retained local changes'));
+  await documents.persist();
+  remote = initial.replace('Untitled notebook', 'Changed by another writer');
+  etag = '"newer"';
+  await documents.load(session, url);
+  await documents.select(older);
+  await assert.rejects(
+    () => documents.save(session, url),
+    (error) => error.code === 'document_conflict'
+  );
+  assert.equal(puts, 0);
+  assert(remote.includes('Changed by another writer'));
+  assert.equal(
+    documents.blocks()[0].fragment.text,
+    'My retained local changes'
+  );
+});
+
+test('moving a newer file cannot give an older recovery copy permission to overwrite it', async () => {
+  const store = stores();
+  const documents = await new NotebookDocuments({ owner, store }).open();
+  const source = 'https://pod.example/notes/source-version.ttl';
+  const target = 'https://pod.example/notes/target-version.ttl';
+  let remote = documents.content().write();
+  let etag = '"old"';
+  let puts = 0;
+  const session = {
+    webId: owner,
+    perform: (work) => work(),
+    client: {
+      get: async () => new Response(remote, { headers: { ETag: etag } }),
+      put: async () => {
+        puts++;
+        return new Response(null, { status: 200 });
+      }
+    }
+  };
+  await documents.load(session, source);
+  const older = documents.id;
+  documents.edit(documents.blocks()[0].id, text('Retain older local edits'));
+  await documents.persist();
+  remote = remote.replace('Untitled notebook', 'Newer remote version');
+  etag = '"current"';
+  await documents.load(session, source);
+  etag = '"target"';
+  await documents.applyFileOperation(
+    { kind: 'move', source, target, etag: '"current"' },
+    session
+  );
+  assert.equal(documents.etag, '"target"');
+  await documents.select(older);
+  assert.equal(documents.url, target);
+  assert.equal(documents.etag, null);
+  assert.equal(documents.dirty, true);
+  await assert.rejects(
+    () => documents.save(session, target),
+    (error) => error.code === 'document_conflict'
+  );
+  assert.equal(puts, 0);
+  assert.equal(documents.blocks()[0].fragment.text, 'Retain older local edits');
+});
+
+test('an unconfirmed creation belongs to its recovery copy, not any notebook choosing that URL', async () => {
+  const documents = await new NotebookDocuments({
+    owner,
+    store: stores()
+  }).open();
+  documents.changeTitle('First notebook');
+  const first = documents.id;
+  const url = 'https://pod.example/notes/unconfirmed.ttl';
+  let remote = '';
+  let loseResponse = true;
+  let puts = 0;
+  const session = {
+    webId: owner,
+    perform: (work) => work(),
+    client: {
+      get: async () =>
+        new Response(remote || null, {
+          status: remote ? 200 : 404,
+          headers: { ETag: '"one"' }
+        }),
+      put: async (address, options) => {
+        puts++;
+        remote = options.body;
+        if (loseResponse) {
+          loseResponse = false;
+          throw new Error('fixture: response lost');
+        }
+        return new Response(null, {
+          status: 200,
+          headers: { ETag: '"saved"' }
+        });
+      }
+    }
+  };
+  await assert.rejects(
+    () => documents.save(session, url, true),
+    (error) => error.code === 'save_unconfirmed'
+  );
+  const savedFirst = remote;
+  await documents.create();
+  documents.changeTitle('Unrelated notebook');
+  await assert.rejects(
+    () => documents.save(session, url, true),
+    /file exists/i
+  );
+  assert.equal(puts, 1);
+  assert.equal(remote, savedFirst);
+  await documents.select(first);
+  await documents.save(session, url, true);
+  assert.equal(documents.url, url);
+  assert.equal(documents.title, 'First notebook');
+});

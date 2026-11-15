@@ -4,17 +4,19 @@ import {
   named,
   literal,
   rdf,
-  xsd
+  xsd,
+  sameGraph
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import {
   readFragment,
   writeFragment
 } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 import { loadDocument, saveDocument, httpUrl } from '@muze-labs/solid-app-data';
+import { resolveResource } from '@muze-labs/solid-app-data/resource-resolution.mjs';
 
 export const notebook = 'https://vocab.muze.nl/notebook#';
 const registryRoot = named('urn:muze:solid-notebook:library');
-const fields = ['url', 'etag', 'dirty'];
+const fields = ['url', 'etag', 'dirty', 'target', 'alias'];
 
 // App policy only: native graphs, local sources and HTTP remain library-owned.
 export class NotebookDocuments {
@@ -61,6 +63,8 @@ export class NotebookDocuments {
       this.graph = graph;
       this.root = root;
       this.url = graph.one(root, notebook + 'local-url', 'string')?.value || '';
+      this.target =
+        graph.one(root, notebook + 'local-target', 'string')?.value || '';
       this.etag =
         graph.one(root, notebook + 'local-etag', 'string')?.value || null;
       this.dirty =
@@ -74,6 +78,7 @@ export class NotebookDocuments {
       graph: this.graph,
       root: this.root,
       url: this.url,
+      target: this.target,
       etag: this.etag,
       dirty: this.dirty,
       revision: this.revision,
@@ -234,6 +239,7 @@ export class NotebookDocuments {
         literal('Untitled notebook')
       );
       this.url = '';
+      this.target = '';
       this.etag = null;
       this.add();
     });
@@ -248,6 +254,7 @@ export class NotebookDocuments {
   persist() {
     for (const [field, value] of Object.entries({
       url: this.url || '',
+      target: this.target || '',
       etag: this.etag || '',
       dirty: String(this.dirty)
     })) {
@@ -257,6 +264,18 @@ export class NotebookDocuments {
     const id = this.id;
     this.index.add(registryRoot, notebook + 'document', named(id));
     this.index.set(named(id), notebook + 'title', literal(this.title));
+    this.index.set(
+      named(id),
+      notebook + 'url',
+      literal(this.url || this.target || '')
+    );
+    this.index.set(named(id), notebook + 'alias');
+    for (const alias of this.graph.values(
+      this.root,
+      notebook + 'local-alias'
+    )) {
+      this.index.add(named(id), notebook + 'alias', alias);
+    }
     this.index.set(registryRoot, notebook + 'selected', named(id));
     const index = this.index.write();
     this.queue = this.queue
@@ -280,6 +299,7 @@ export class NotebookDocuments {
     }
     await this.persist();
     const revision = this.revision;
+    const pendingKey = 'pending:' + this.id + ':' + url;
     const graph = this.content();
     let document;
     if (!asNew && this.url === url) {
@@ -288,25 +308,38 @@ export class NotebookDocuments {
         graph,
         etag: this.etag,
         missing: false,
-        source: (await this.store('baseline:' + url).load()) || undefined
+        source: (await this.store('baseline:' + this.id).load()) || undefined
       };
     }
     else {
       document = await session.perform(() =>
-        loadDocument(session.client, url, { allowMissing: true })
+        loadDocument(session.client, url, {
+          allowMissing: true,
+          redirect: 'error'
+        })
       );
-      if (!document.missing) {
+      const pending = await this.store(pendingKey).load();
+      if (
+        !document.missing &&
+        !(pending && sameGraph(pending, document.source, url))
+      ) {
         throw new Error(
           'notebook: A file exists there. Choose another filename in Save As.'
         );
       }
       document.graph = graph;
     }
+    await this.store(pendingKey).save(graph.write());
     const saved = await session.perform(() =>
-      saveDocument(session.client, document)
+      saveDocument(session.client, document, { redirect: 'error' })
     );
-    await this.store('baseline:' + url).save(saved.source);
+    if (asNew && url !== this.url) {
+      this.graph.set(this.root, notebook + 'local-alias');
+    }
+    await this.store('baseline:' + this.id).save(saved.source);
+    await this.store(pendingKey).save('');
     this.url = url;
+    this.target = '';
     this.etag = saved.etag;
     this.dirty = revision !== this.revision;
     await this.persist();
@@ -315,9 +348,30 @@ export class NotebookDocuments {
     this.session(session);
     await this.persist();
     const revision = this.revision;
-    const document = await session.perform(() =>
-      loadDocument(session.client, address)
-    );
+    let document;
+    try {
+      document = await session.perform(() =>
+        loadDocument(session.client, address, { redirect: 'error' })
+      );
+    }
+    catch (originalError) {
+      let resolution;
+      try {
+        resolution = await session.perform(
+          () => resolveResource(session.client, address),
+          { interactive: false }
+        );
+      }
+      catch {
+        throw originalError;
+      }
+      if (resolution.status !== 'available' || resolution.current === address) {
+        throw originalError;
+      }
+      document = await session.perform(() =>
+        loadDocument(session.client, resolution.current, { redirect: 'error' })
+      );
+    }
     const graph = new StateGraph(document.source, document.url);
     const root = this.validate(graph);
     if (revision !== this.revision) {
@@ -325,16 +379,131 @@ export class NotebookDocuments {
         'notebook: Your edits changed while opening. They are retained.'
       );
     }
-    await this.store('baseline:' + document.url).save(document.source);
-    // New recovery identity even for copies with the same native RDF root.
+    // Each recovery copy keeps the exact native source it was based on.
+    const id = 'urn:uuid:' + crypto.randomUUID();
+    await this.store('baseline:' + id).save(document.source);
     await this.activate(() => {
-      this.id = 'urn:uuid:' + crypto.randomUUID();
+      this.id = id;
       this.graph = graph;
       this.root = root;
       this.url = document.url;
+      this.target = '';
       this.etag = document.etag;
       this.dirty = false;
       this.revision++;
     });
+    if (document.url !== address) {
+      await this.rememberReference(address);
+    }
+  }
+  cachedEntry(address) {
+    return this.entries().find(
+      (entry) =>
+        this.index.one(named(entry.id), notebook + 'url', 'string')?.value ===
+          address ||
+        this.index
+          .values(named(entry.id), notebook + 'alias')
+          .some((alias) => alias.id === address)
+    );
+  }
+  async openCached(session, address) {
+    if (this.url === address || this.target === address) {
+      return;
+    }
+    const cached = this.cachedEntry(address);
+    if (cached) {
+      await this.select(cached.id);
+    }
+    else {
+      await this.load(session, address);
+    }
+  }
+  hasCached(address) {
+    return (
+      this.url === address ||
+      this.target === address ||
+      Boolean(this.cachedEntry(address))
+    );
+  }
+  async rememberReference(address) {
+    address = httpUrl(address);
+    if (
+      address === this.url ||
+      this.graph
+        .values(this.root, notebook + 'local-alias')
+        .some((alias) => alias.id === address)
+    ) {
+      return;
+    }
+    this.graph.add(
+      this.root,
+      notebook + 'local-alias',
+      named(httpUrl(address))
+    );
+    await this.persist();
+  }
+  async applyFileOperation(operation, session) {
+    let remote;
+    if (operation.kind === 'move') {
+      remote = await session.perform(
+        () =>
+          loadDocument(session.client, operation.target, { redirect: 'error' }),
+        { interactive: false }
+      );
+    }
+    for (const entry of this.entries()) {
+      const url = this.index.one(
+        named(entry.id),
+        notebook + 'url',
+        'string'
+      )?.value;
+      if (url !== operation.source) {
+        continue;
+      }
+      const graph =
+        entry.id === this.id
+          ? this.graph
+          : new StateGraph(await this.store(entry.id).load());
+      const root = this.validate(graph);
+      const baseline = await this.store('baseline:' + entry.id).load();
+      const previousEtag = graph.one(
+        root,
+        notebook + 'local-etag',
+        'string'
+      )?.value;
+      const matches =
+        remote &&
+        ((previousEtag && previousEtag === operation.etag) ||
+          (baseline && sameGraph(baseline, remote.source, operation.source)));
+      const nextEtag = matches ? remote.etag : null;
+      const needsReview = operation.kind === 'move' && !matches;
+      if (matches) {
+        await this.store('baseline:' + entry.id).save(remote.source);
+      }
+      const nextUrl = operation.kind === 'move' ? operation.target : '';
+      if (operation.kind === 'move') {
+        graph.add(root, notebook + 'local-alias', named(operation.source));
+      }
+      graph.set(root, notebook + 'local-url', literal(nextUrl));
+      graph.set(root, notebook + 'local-target', literal(''));
+      graph.set(root, notebook + 'local-etag', literal(nextEtag || ''));
+      if (operation.kind === 'delete' || needsReview) {
+        graph.set(root, notebook + 'local-dirty', literal('true'));
+      }
+      await this.store(entry.id).save(graph.write());
+      this.index.set(named(entry.id), notebook + 'url', literal(nextUrl));
+      for (const alias of graph.values(root, notebook + 'local-alias')) {
+        this.index.add(named(entry.id), notebook + 'alias', alias);
+      }
+      if (entry.id === this.id) {
+        this.url = nextUrl;
+        this.target = '';
+        this.etag = nextEtag;
+        if (operation.kind === 'delete' || needsReview) {
+          this.changed();
+        }
+      }
+    }
+    await this.persist();
   }
 }

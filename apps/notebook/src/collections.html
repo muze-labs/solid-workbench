@@ -1,0 +1,347 @@
+<section
+  class="muze-solid-notebook muze-solid-notebook-collections-overview"
+  data-simply-field="muzeSolidNotebookOverviewVisibility"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+  aria-label="Notebook collection"
+>
+  <div
+    class="muze-solid-design-list-details muze-solid-notebook-collection-layout"
+  >
+    <nav
+      class="ds-panels-pane ds-panels-list swb-list-pane muze-solid-notebook-categories"
+      aria-label="Notebook categories"
+    >
+      <ul
+        class="muze-solid-notebook-collection-entries"
+        data-simply-list="muzeSolidNotebookCategories"
+      >
+        <template
+          ><li>
+            <a
+              class="muze-solid-design-tool muze-solid-notebook-collection-link"
+              data-simply-command="muzeSolidNotebookChooseCategory"
+              data-simply-value=":value.id"
+              data-simply-field="attributes"
+              data-simply-transform="attributes"
+              data-simply-attributes="href,aria-current,data-muze-solid-notebook-category"
+            >
+              <span
+                data-simply-field="title"
+                data-simply-transform="escape_html"
+              ></span>
+            </a></li
+        ></template>
+      </ul>
+    </nav>
+    <section
+      class="ds-panels-pane ds-panels-details swb-list-pane muze-solid-notebook-collection-details"
+      aria-labelledby="muze-solid-notebook-category-heading"
+    >
+      <h2
+        id="muze-solid-notebook-category-heading"
+        tabindex="-1"
+        class="muze-solid-notebook-category-heading"
+        data-simply-field="muzeSolidNotebookCategoryTitle"
+        data-simply-transform="escape_html"
+      ></h2>
+      <ul
+        class="muze-solid-notebook-collection-entries"
+        data-simply-list="muzeSolidNotebookCollectionEntries"
+      >
+        <template
+          ><li>
+            <a
+              class="muze-solid-design-tool muze-solid-notebook-collection-link"
+              data-simply-command="muzeSolidNotebookCollectionChoose"
+              data-simply-value=":value.id"
+              data-simply-field="linkAttributes"
+              data-simply-transform="attributes"
+              data-simply-attributes="href,data-muze-solid-notebook-entry"
+            >
+              <svg
+                class="ds-icon ds-icon-feather"
+                aria-hidden="true"
+                data-simply-field="iconAttributes"
+                data-simply-transform="attributes"
+                data-simply-attributes="hidden"
+              >
+                <use href="../assets/feather-icons.svg#plus"></use>
+              </svg>
+              <span
+                data-simply-field="title"
+                data-simply-transform="escape_html"
+              ></span>
+            </a></li
+        ></template>
+      </ul>
+    </section>
+  </div>
+</section>
+<dialog
+  class="ds-dialog muze-solid-design-dialog muze-solid-notebook-collection-dialog"
+  data-simply-behavior="muzeSolidDesignDialog"
+  aria-labelledby="muze-solid-notebook-collection-options-heading"
+>
+  <header class="muze-solid-design-dialog-header">
+    <h2
+      id="muze-solid-notebook-collection-options-heading"
+      tabindex="-1"
+      class="swb-dialog-title"
+    >
+      Collection options
+    </h2>
+    <button
+      type="button"
+      class="ds-button muze-solid-design-dialog-close"
+      data-simply-command="muzeSolidDesignCloseDialog"
+      aria-label="Close dialog"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#x"></use>
+      </svg>
+    </button>
+  </header>
+  <div
+    class="muze-solid-design-dialog-content muze-solid-notebook-collections-content"
+  >
+    <p
+      data-simply-field="muzeSolidNotebookCollectionMessage"
+      data-simply-transform="escape_html"
+      role="status"
+    ></p>
+    <div
+      class="muze-solid-notebook-collection-tools"
+      role="group"
+      aria-label="Collection operations"
+    >
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidNotebookCreateCollection"
+      >
+        Create collection
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidNotebookOpenCollection"
+      >
+        Open collection
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidNotebookDefaultCollection"
+      >
+        Make default
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidNotebookSyncCollection"
+      >
+        Sync / retry
+      </button>
+    </div>
+    <section
+      data-simply-field="muzeSolidNotebookCollectionVisibility"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+    >
+      <label
+        >Find notebook
+        <input
+          type="search"
+          class="muze-solid-notebook-input"
+          data-simply-command="muzeSolidNotebookCollectionFilter"
+          data-simply-immediate="true"
+          data-simply-field="muzeSolidNotebookCollectionSearch"
+          data-simply-transform="escape_html"
+      /></label>
+      <label
+        >Collection title
+        <input
+          name="title"
+          required
+          class="muze-solid-notebook-input"
+          data-simply-command="muzeSolidNotebookRenameCollection"
+          data-simply-immediate="true"
+          data-simply-field="muzeSolidNotebookCollectionName"
+          data-simply-transform="escape_html"
+        />
+      </label>
+      <div class="muze-solid-notebook-collection-tools">
+        <button
+          type="button"
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidNotebookCollectionAdd"
+        >
+          Add existing file
+        </button>
+        <button
+          type="button"
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidNotebookCollectionAddCurrent"
+        >
+          Add current notebook
+        </button>
+        <button
+          type="button"
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidNotebookCollectionDestination"
+        >
+          Creation folder
+        </button>
+      </div>
+      <form
+        data-simply-command="muzeSolidNotebookCollectionCreateGroup"
+        class="muze-solid-notebook-collection-form"
+      >
+        <label
+          >New category
+          <input name="title" required class="muze-solid-notebook-input"
+        /></label>
+        <button class="muze-solid-design-tool">Add category</button>
+      </form>
+      <h3>Documents in this view</h3>
+      <ul
+        class="muze-solid-notebook-collection-entries"
+        data-simply-list="muzeSolidNotebookCollectionManagementEntries"
+      >
+        <template
+          ><li>
+            <button
+              type="button"
+              class="muze-solid-design-tool"
+              data-simply-command="muzeSolidNotebookCollectionEntry"
+              data-simply-value=":value.id"
+              data-simply-field="actionAttributes"
+              data-simply-transform="attributes"
+              data-simply-attributes="aria-label"
+            >
+              <span
+                data-simply-field="title"
+                data-simply-transform="escape_html"
+              ></span>
+            </button></li
+        ></template>
+      </ul>
+    </section>
+    <section
+      data-simply-field="muzeSolidNotebookOperationVisibility"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden"
+      aria-label="Recorded file operation"
+    >
+      <p
+        data-simply-field="muzeSolidNotebookOperationMessage"
+        data-simply-transform="escape_html"
+      ></p>
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidNotebookOperationRetry"
+      >
+        Retry file operation
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidNotebookOperationCancel"
+      >
+        Stop operation, retain files
+      </button>
+    </section>
+  </div>
+</dialog>
+<dialog
+  class="ds-dialog muze-solid-design-dialog muze-solid-notebook-entry-dialog"
+  data-simply-behavior="muzeSolidDesignDialog"
+  aria-labelledby="muze-solid-notebook-entry-heading"
+>
+  <header class="muze-solid-design-dialog-header">
+    <h2
+      id="muze-solid-notebook-entry-heading"
+      class="swb-dialog-title"
+      data-simply-field="muzeSolidNotebookEntryTitle"
+      data-simply-transform="escape_html"
+    ></h2>
+    <button
+      type="button"
+      class="ds-button muze-solid-design-dialog-close"
+      data-simply-command="muzeSolidDesignCloseDialog"
+      aria-label="Close dialog"
+    >
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#x"></use>
+      </svg>
+    </button>
+  </header>
+  <div
+    class="muze-solid-design-dialog-content muze-solid-notebook-collections-content"
+  >
+    <p
+      data-simply-field="muzeSolidNotebookEntryUrl"
+      data-simply-transform="escape_html"
+    ></p>
+    <label
+      >Add to category
+      <select
+        name="group"
+        data-simply-command="muzeSolidNotebookCollectionAssignGroup"
+        class="muze-solid-notebook-input"
+        data-simply-list="muzeSolidNotebookEntryGroups"
+      >
+        <template
+          ><option
+            data-simply-field="option"
+            data-simply-transform="attributes"
+            data-simply-attributes="value,label,selected"
+          ></option
+        ></template></select
+    ></label>
+
+    <button
+      type="button"
+      class="muze-solid-design-tool"
+      data-simply-command="muzeSolidNotebookCollectionRefresh"
+    >
+      Reload file (retain local drafts)
+    </button>
+
+    <button
+      type="button"
+      class="muze-solid-design-tool"
+      data-simply-command="muzeSolidNotebookCollectionClearGroups"
+    >
+      Clear all groups
+    </button>
+    <button
+      type="button"
+      class="muze-solid-design-tool"
+      data-simply-command="muzeSolidNotebookCollectionRemove"
+    >
+      Remove from collection (keep file)
+    </button>
+    <button
+      type="button"
+      class="muze-solid-design-tool"
+      data-simply-command="muzeSolidNotebookCollectionMove"
+    >
+      Move file…
+    </button>
+    <button
+      type="button"
+      class="muze-solid-design-tool"
+      data-simply-command="muzeSolidNotebookCollectionDelete"
+    >
+      Permanently delete file…
+    </button>
+    <p
+      role="status"
+      data-simply-field="muzeSolidNotebookCollectionMessage"
+      data-simply-transform="escape_html"
+    ></p>
+  </div>
+</dialog>

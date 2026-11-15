@@ -35,11 +35,16 @@
     border: 0;
     background: transparent;
   }
-  .muze-solid-notebook-editor:focus {
+  .muze-solid-notebook-editor:focus,
+  .muze-solid-notebook-collection-link:focus,
+  .muze-solid-notebook-category-heading:focus {
     background: var(--muze-notebook-active);
     outline: none;
+    box-shadow: none;
   }
-  .muze-solid-notebook-editor:focus-visible {
+  .muze-solid-notebook-editor:focus-visible,
+  .muze-solid-notebook-collection-link:focus-visible,
+  .muze-solid-notebook-category-heading:focus-visible {
     outline: 1px solid var(--muze-notebook-focus);
     outline-offset: 2px;
   }

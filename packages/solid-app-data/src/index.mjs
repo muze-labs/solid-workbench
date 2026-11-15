@@ -40,9 +40,14 @@ export function requireOk(response) {
   }
   return response;
 }
-export async function loadDocument(client, url, { allowMissing = false } = {}) {
+export async function loadDocument(
+  client,
+  url,
+  { allowMissing = false, redirect } = {}
+) {
   url = documentUrl(url);
   const response = await client.get(url, {
+    ...(redirect ? { redirect } : {}),
     headers: { Accept: 'text/turtle' }
   });
   if (allowMissing && response.status === 404) {
@@ -76,14 +81,14 @@ function documentError(code, message, cause) {
   error.code = code;
   return error;
 }
-function strongETag(value) {
+export function strongETag(value) {
   // HTTP opaque tags exclude quotes and control characters; weak tags cannot
   // protect an If-Match write.
   return (
     typeof value === 'string' && /^"[\x21\x23-\x7e\x80-\xff]*"$/.test(value)
   );
 }
-async function documentForSave(client, document) {
+async function documentForSave(client, document, options) {
   if (document.missing || strongETag(document.etag)) {
     return document;
   }
@@ -93,7 +98,7 @@ async function documentForSave(client, document) {
       'This server supplied no ETag. Safe editing requires a conditional write.'
     );
   }
-  const remote = await loadDocument(client, document.url);
+  const remote = await loadDocument(client, document.url, options);
   if (!sameGraph(document.source, remote.source, document.url)) {
     throw documentError(
       'document_conflict',
@@ -108,12 +113,13 @@ async function documentForSave(client, document) {
   }
   return { ...document, etag: remote.etag };
 }
-export async function saveDocument(client, document) {
-  document = await documentForSave(client, document);
+export async function saveDocument(client, document, options = {}) {
+  document = await documentForSave(client, document, options);
   const source = await document.graph.write();
   let response;
   try {
     response = await client.put(document.url, {
+      ...(options.redirect ? { redirect: options.redirect } : {}),
       body: source,
       headers: {
         'Content-Type': 'text/turtle',
@@ -307,12 +313,14 @@ export async function connectSession(
       const authorized = createSolidMetroClient(base, {
         ...options,
         client: transport,
-        authorize_callback: (url) => options.authorize_callback(url, completion),
+        authorize_callback: (url) =>
+          options.authorize_callback(url, completion),
         force_authorization: forceAuthorization
       });
       try {
         const response = await recoverRequest(request, (retry) =>
-          authorized.fetch(retry));
+          authorized.fetch(retry)
+        );
         completeAuthorization();
         return response;
       }
@@ -354,8 +362,9 @@ export async function connectSession(
       many(valueAt(profile.profile, prefixes.pim + 'preferencesFile'))[0]
     ),
     get hasStoredAuthorization() {
-      return Boolean(oauth.tokens.get('access_token') ||
-        oauth.tokens.get('refresh_token'));
+      return Boolean(
+        oauth.tokens.get('access_token') || oauth.tokens.get('refresh_token')
+      );
     },
     get hasUsableAccessToken() {
       const token = oauth.tokens.get('access_token');

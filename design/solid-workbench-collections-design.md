@@ -44,6 +44,26 @@ A collection may contain references outside its default storage destination. Mem
 
 ## 4. Launch and navigation
 
+### Collection overview UI
+
+Maintainer clarification, 14 November 2026: the app opens to the contents of its
+default collection as a list or cards. The overview contains document entries and
+exactly one additional entry: a link to create a new document in that collection.
+Do not put management forms, filters, action buttons or settings into the overview.
+Extra interaction belongs in dialogs; global actions belong in the app toolbar.
+
+If no default collection exists, create an empty default. A defined but unreadable
+collection is retained for recovery rather than replaced. If a collection has
+categories or tags, use the shared list–details presentation: categories/tags in
+the list pane and matching document entries in the details pane. Keep an accessible
+keyboard and phone route between the panes. This rule applies across collection-
+based apps, including compatible standalone applications.
+
+Collection dialogs follow the shared layout: a top-right close button, no
+dismissal-only Done buttons. Metadata edits apply immediately and save locally;
+closing a dialog is not an Apply operation. Substantive creation, movement and
+deletion remain explicit operations.
+
 ### Launch precedence
 
 1. If the app URI supplies `resource`, open that resource.
@@ -52,7 +72,9 @@ A collection may contain references outside its default storage destination. Mem
 
 A default that cannot currently be read is not an undefined default. Show an access, connection or missing-resource state; do not silently create a replacement collection or overwrite the preference.
 
-**Proposed:** before creating the initial collection, discover suitable existing collections and offer selection when needed. This prevents a replacement app from creating an empty collection beside the user’s existing work. Type Indexes provide a relevant discovery convention [2]; discovery is separate from the default preference.
+When no default is defined, initialise an empty default collection without a setup
+form. Discovery and selection of other collections remain explicit toolbar/dialog
+actions; they do not interrupt this initial empty overview.
 
 ### Switching collections
 

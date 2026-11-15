@@ -118,8 +118,8 @@ export const fileEditing = {
       };
     },
     async makeFolder(name) {
-      // Metro's empty-string body loses its replayable data when the Solid
-      // API composes the request. A Turtle comment is still an empty graph.
+      // Chrome still locks the empty-body stream during Metro/Solid request
+      // composition. A Turtle comment is an empty graph with replayable data.
       await this.runtime.host
         .requireSession()
         .solid.createContainer(this.actions.child(name) + '/', {

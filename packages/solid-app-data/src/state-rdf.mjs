@@ -56,8 +56,9 @@ export function sameTerm(left, right) {
   return Boolean(left && right && termText(left) === termText(right));
 }
 
-// Keep raw triples authoritative: the object-graph writer expands shared blank
-// nodes and recurses on cycles. Compact spelling never changes these raw terms.
+// Keep raw triples authoritative: OLDM's object writer preserves reachable
+// cycles, but omits anonymous components not reached from a named subject.
+// Compact spelling never changes these raw terms.
 export class StateGraph {
   constructor(text = '', base = stateRoot) {
     try {

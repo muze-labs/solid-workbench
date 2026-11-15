@@ -16,7 +16,8 @@ export function parentContainer(resourceUrl) {
   url.pathname = url.pathname.replace(/\/$/, '').replace(/[^/]*$/, '');
   return url.href;
 }
-export function descriptionLink(header, base) {
+export function descriptionLink(header, base, { strict = false } = {}) {
+  const targets = new Set();
   // Link relation tokens are case-insensitive; relative targets resolve at the response URL.
   for (const match of (header || '').matchAll(/<([^>]+)>\s*((?:;[^,]*)?)/g)) {
     const rel = match[2].match(/;\s*rel\s*=\s*(?:"([^"]*)"|([^;\s]+))/i);
@@ -26,18 +27,35 @@ export function descriptionLink(header, base) {
         .split(/\s+/)
         .some((v) => ['describedby', 'describes'].includes(v.toLowerCase()))
     ) {
-      return httpUrl(match[1], base);
+      const target = httpUrl(match[1], base);
+      if (!strict) {
+        return target;
+      }
+      targets.add(target);
     }
   }
-  return null;
+  if (strict && targets.size > 1) {
+    throw new Error('link-metadata: Ambiguous folder description links.');
+  }
+  return [...targets][0] || null;
 }
-export async function loadContainerMetadata(client, container) {
-  const response = requireOk(await client.head(container));
+export async function loadContainerMetadata(client, container, options = {}) {
+  const response = requireOk(
+    await client.head(container, {
+      ...(options.redirect ? { redirect: options.redirect } : {})
+    })
+  );
   const url = descriptionLink(
     response.headers.get('Link'),
-    response.url || container
+    response.url || container,
+    options
   );
-  return url ? loadDocument(client, url, { allowMissing: true }) : null;
+  return url
+    ? loadDocument(client, url, {
+        ...options,
+        allowMissing: true
+      })
+    : null;
 }
 export function linkState(document, uri) {
   const node = document?.graph.get(uri);

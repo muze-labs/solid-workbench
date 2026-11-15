@@ -155,7 +155,7 @@ test('readable and minified apps preserve isolated module graphs', async () => {
     );
     assert.equal(
       moduleOwners.get(root + 'packages/solid-app-data/src/link-metadata.mjs'),
-      filename('files/src/index')
+      filename('shared/data')
     );
     for (const name of apps) {
       const imports = chunks.get(filename(name + '/src/index')).imports;

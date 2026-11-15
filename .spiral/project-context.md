@@ -1,5 +1,112 @@
 # Solid Workbench project context
 
+## CYC205 accepted for integration, 2026-11-15
+
+The maintainer accepts the current cycle and requests commit, merge and push.
+ACC210 accepts implementation abd3b9a9a2cd0c5d9512ab9fff588320ce64afb2 and evidence
+d4b4f149ccea76223717de213aae3b0e9d0d1182, including the requested roadmap follow-ups.
+CYC205 is Accepted, superseding earlier Active/pending entries below. Direct
+normal merge to latest main and push are authorized after exact integration
+validation. Retain the documented browser continuation and remaining library/
+manual-validation limitations. The sibling Metro fix remains uncommitted and
+unpublished; no new cycle, deployment or npm publication is selected.
+
+## Metro empty-body fix prepared separately, 2026-11-15
+
+The maintainer authorizes the follow-up Metro fix. The clean sibling checkout
+now holds request/response empty-body replay corrections, regressions and rebuilt
+browser artifacts on `fix/empty-body-replay`. All 917 library checks, both builds,
+Chrome before/after regression and actual configured Solid-client empty folder
+creation pass. Nothing is committed or published; Workbench retains its npm
+release and workaround until a released fix is adopted. EVD208 records evidence.
+
+A bounded remaining-gap review reconfirms oldm-shape extra-type loss and Solid
+Workspace direct HTTP-error misclassification. These remain separate from the
+Metro fix. The maintainer identifies unattached anonymous nodes as a pattern
+to avoid for newly authored data, separate from preserving foreign input.
+
+## Published OLDM and Metro adopted, 2026-11-15
+
+At the maintainer's request, CYC205 consumes npm oldm-turtle 0.4.4, Metro/core
+0.9.3, OAuth2 0.9.5 and OIDC 0.9.6. Removed both ArrayBuffer conversions from
+initial/resumed lifecycle copies. The raw RDF writer and collection preservation
+bridge remain because unconnected anonymous components still disappear on an
+OLDM object-graph write. The Files empty-folder comment body also remains:
+removing it passed Node HTTP but failed Chrome with a locked request stream.
+
+All 274 source tests and both builds pass. The first eleven full browser suites
+pass; after restoring the folder workaround, demo-styling and the complete
+Notebook scenario pass as a continuation. EVD208 contains logs and limitations;
+no uninterrupted full-command pass is claimed. Notebook/callback is 152564 gzip
+bytes minified. CYC205 remains Active on its matching branch, with all earlier
+uncommitted work preserved. No Git commit or publication is performed.
+
+## Notebook list and background-click refinements, 2026-11-15
+
+CYC205 now uses non-underlined shared controls for collection rows, Files row
+spacing/type, and Notebook's subtle selection/focus treatment. Clicking below
+the final notebook block focuses it at its end; controls and selection drags
+are excluded. Source/build and a complete Notebook Chrome run pass. The required
+full run passes twelve suites then hits the recurring native Bold pointer
+assertion; an unchanged rerun stops with DevTools “Promise was collected”.
+EVD208 records the exact evidence without claiming an uninterrupted full pass.
+Complete minified Notebook/callback is 152307 gzip bytes. The roadmap separately
+records the requested cross-app CSS/class consolidation and vertical-rhythm
+review. CYC205 remains Active; no acceptance, commit or publication is inferred.
+
+## Notebook category overview correction, 2026-11-15
+
+At the maintainer's request, CYC205 removes the redundant collection heading,
+always offers All notebooks selected by default, and places the single New
+notebook link with a plus icon in details. The shared list–details layout now
+also applies to empty collections. Phone startup exposes creation in details;
+Collections returns to categories. Native data and lifecycle semantics remain.
+
+All 33 source test files and both builds pass; focused collection checks and
+inspected phone/desktop captures confirm the change. The required full Chrome
+command passes its first twelve scenarios then fails a Notebook cross-note Bold
+pointer assertion; an unchanged complete Notebook rerun passes. EVD208 retains
+that qualification, not an uninterrupted full-suite pass. Complete minified
+Notebook/callback is 151939 gzip bytes. CYC205 remains Active in Evaluate,
+awaiting acceptance, with no commit, merge, push or publication performed.
+
+## Notebook collections ready for review, 2026-11-14
+
+CYC205 is Active in Evaluate on the matching dedicated branch. Notebook opens its
+native default collection overview; an undefined connected-account default is
+created empty with conditional preference publication. Document links plus one
+New link form the overview, categories use shared list–details, and global actions
+live in the toolbar. Shared dialogs have top-right close buttons and immediate
+local metadata saves. The collection design and roadmap retain these cross-app
+rules. Independent documents, managed creations/linked additions, grouping,
+conditional permanent operations and native owner-scoped recovery are implemented.
+Files' tombstone-only delete still retains bytes.
+
+Source/build and the complete affected Notebook Chrome suite pass. The required
+full browser command and continuation encounter Workbench conflict-count and
+diagnostics-opening assertions; each passes unchanged on rerun. EVD208 records
+that qualification, previous passing evidence for byte-identical non-Notebook
+assets, preservation regressions, independent RDF reading, viewport/keyboard
+checks and deployment/AT limits. Notebook is 152072 gzip B including callback;
+slow uncompressed default overview takes 14.957 s / 710010 B / 17 entries.
+Five cycle companions pass SHACL; the draft evidence awaits actual committed
+implementation identity before a VerificationEvidence binding can be added.
+Ready for human review, with no acceptance, commit, merge, push or publication.
+
+## Notebook collections cycle selected, 2026-11-14
+
+The maintainer confirms Notebook as the first collection app after the design
+is incorporated into the roadmap in c200cb7. CYC205 is Active on verified
+spiral/CYC-20261114-QG24H-205-notebook-collections from that clean main baseline.
+SRC206 retains the confirmed goal and explicit lifecycle decisions: created
+files managed, additions linked; first release uses confirmed permanent deletion.
+No recovery-copy/trash promise. Collection/default/URI/data-shape and server
+lifecycle contracts are being established before product changes. Reuse existing
+Muze APIs and native RDF, with lifecycle scope explicit rather than silently
+changing Files' tombstone-only deletion. The cycle continues the personal-app
+foundation; no commit/integration/publication authority is inferred. Preserve
+accepted Cobalt title, in-place formatting and narrow header behavior.
+
 ## CYC199 accepted for integration, 2026-11-14
 
 The maintainer says “accepted, commit, merge and push please” after reviewing the
