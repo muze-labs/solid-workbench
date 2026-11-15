@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { local } from '@muze-labs/solid-workspace';
+import { CollectionFileOperation } from '../packages/solid-app-data/src/collection-file-operation.mjs';
+import { DocumentCollection } from '../packages/solid-app-data/src/document-collection.mjs';
+import { NotebookDocuments } from '../apps/notebook/src/document.mjs';
+import { PresenterDecks } from '../apps/presenter/src/deck-drafts.mjs';
 import { ResourceLifecycle } from '../packages/solid-app-data/src/resource-lifecycle.mjs';
 import { resolveResource } from '../packages/solid-app-data/src/resource-resolution.mjs';
 import {
@@ -304,4 +308,460 @@ test('weak validators, structured references and ambiguous descriptions refuse r
   );
   assert(ambiguous.files.has(source));
   assert(!ambiguous.requests.some((request) => request.method === 'DELETE'));
+});
+
+const operationRoot = named('urn:muze:solid-apps:file-operation');
+const operationNamespace = 'https://vocab.muze.nl/collections#';
+const collectionUrl = origin + '/storage/collection.ttl';
+const memberId = collectionUrl + '#member';
+const owner = origin + '/profile#me';
+function memoryStores() {
+  const sources = new Map();
+  return (id) => {
+    if (!sources.has(id)) {
+      sources.set(id, local.memory(id));
+    }
+    return sources.get(id);
+  };
+}
+function collectionOperation(server, store) {
+  return new CollectionFileOperation({ owner, session: server.session, store });
+}
+
+test('generic operation context preserves native foreign RDF through failed replies and stage writes', async () => {
+  const server = fixture();
+  const store = local.memory('native-context');
+  const operation = await server.operation(store).open();
+  const context = new StateGraph(
+    '<urn:caller> <urn:job> "caller-owned"; a <urn:ExtraType>; <urn:cycle> _:loop. _:loop <urn:next> _:loop. _:unattached <urn:note> "retain anonymous".'
+  );
+  server.lose('DELETE');
+  await assert.rejects(
+    operation.begin({ kind: 'delete', source, confirmed: true, context }),
+    /response lost/
+  );
+  assert.equal(operation.pending.stage, 'deleting');
+  assert.equal(Object.hasOwn(operation.pending, 'collection'), false);
+  assert.equal(Object.hasOwn(operation.pending, 'entry'), false);
+  const reopened = await server.operation(store).open();
+  await reopened.retry();
+  assert.equal(reopened.pending.stage, 'complete');
+  assert.equal(
+    reopened.graph.one(named('urn:caller'), 'urn:job', 'string').value,
+    'caller-owned'
+  );
+  assert.equal(
+    reopened.graph.one(
+      named('urn:caller'),
+      'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+      'iri'
+    ).id,
+    'urn:ExtraType'
+  );
+  assert(reopened.graph.write().includes('retain anonymous'));
+  assert(reopened.graph.write().includes('urn:next'));
+  assert.equal(
+    server.requests.filter((request) => request.method === 'DELETE').length,
+    1
+  );
+  await reopened.acknowledge();
+  assert.equal(await store.load(), '');
+  const nextSource = origin + '/storage/next.ttl';
+  server.put(nextSource, turtle);
+  await reopened.begin({ kind: 'delete', source: nextSource, confirmed: true });
+  assert.equal(
+    reopened.graph.values(named('urn:caller'), 'urn:job').length,
+    0,
+    'Acknowledgement does not leak context into the next operation'
+  );
+});
+
+test('context and operation intent commit together; failed persistence or conflicting context never removes bytes', async () => {
+  const server = fixture();
+  const memory = local.memory('atomic-context');
+  const store = {
+    load: () => memory.load(),
+    save: async () => {
+      throw new Error('fixture: journal write failed');
+    }
+  };
+  const operation = await collectionOperation(server, store).open();
+  await assert.rejects(
+    operation.begin({
+      kind: 'delete',
+      source,
+      confirmed: true,
+      collection: collectionUrl,
+      entry: memberId
+    }),
+    /journal write failed/
+  );
+  assert.equal(operation.pending, null);
+  assert.equal(await memory.load(), '');
+  assert(server.files.has(source));
+  assert(!server.requests.some((request) => request.method === 'DELETE'));
+  const context = new StateGraph('');
+  context.set(operationRoot, operationNamespace + 'stage', literal('complete'));
+  await assert.rejects(
+    server
+      .operation()
+      .begin({ kind: 'delete', source, confirmed: true, context }),
+    /Context cannot replace/
+  );
+  assert(server.files.has(source));
+  assert(!server.requests.some((request) => request.method === 'DELETE'));
+});
+
+test('an existing native collection journal completes without replaying physical removal', async () => {
+  const server = fixture();
+  const store = local.memory('legacy-native-operation');
+  await store.save(String.raw`<urn:muze:solid-apps:file-operation>
+    <${operationNamespace}kind> "delete";
+    <${operationNamespace}source> <${source}>;
+    <${operationNamespace}etag> "\"v1\"";
+    <${operationNamespace}digest> "${'0'.repeat(64)}";
+    <${operationNamespace}stage> "complete";
+    <${operationNamespace}collection> <${collectionUrl}>;
+    <${operationNamespace}entry> <${memberId}>;
+    <urn:unrelated> "keep".`);
+  const operation = await collectionOperation(server, store).open();
+  assert.equal(operation.pending.collection, collectionUrl);
+  assert.equal(operation.pending.entry, memberId);
+  const steps = [];
+  await operation.finish({
+    openCollection: async (url) => {
+      assert.equal(url, collectionUrl);
+      return {
+        removeReference: async (id) => {
+          assert.equal(id, memberId);
+          steps.push('membership');
+        },
+        sync: async () => steps.push('sync')
+      };
+    },
+    applyLocal: async (completed) => {
+      assert.equal(completed.source, source);
+      steps.push('local');
+    }
+  });
+  assert.deepEqual(steps, ['membership', 'sync', 'local']);
+  assert.equal(await store.load(), '');
+  assert.equal(server.requests.length, 0);
+});
+
+for (const failure of ['open', 'membership', 'sync', 'local', 'acknowledge']) {
+  test(
+    'completion remains recoverable across ' + failure + ' failure and reload',
+    async () => {
+      const server = fixture();
+      const memory = local.memory('finish-' + failure);
+      let failing = true;
+      const store = {
+        load: () => memory.load(),
+        save: async (value) => {
+          if (failing && failure === 'acknowledge' && !value) {
+            throw new Error('fixture: acknowledge failed');
+          }
+          await memory.save(value);
+        }
+      };
+      let operation = await collectionOperation(server, store).open();
+      await operation.begin({
+        kind: 'delete',
+        source,
+        confirmed: true,
+        collection: collectionUrl,
+        entry: memberId
+      });
+      const steps = [];
+      const step = async (name) => {
+        steps.push(name);
+        if (failing && name === failure) {
+          throw new Error('fixture: ' + name + ' failed');
+        }
+      };
+      const collection = {
+        url: collectionUrl,
+        removeReference: async (id) => {
+          assert.equal(id, memberId);
+          await step('membership');
+        },
+        sync: () => step('sync')
+      };
+      const complete = () =>
+        operation.finish({
+          openCollection: async () => {
+            await step('open');
+            return collection;
+          },
+          applyLocal: () => step('local')
+        });
+      await assert.rejects(complete(), new RegExp(failure + ' failed'));
+      assert.equal(operation.pending.stage, 'complete');
+      assert((await memory.load()).includes(memberId));
+      if (['open', 'membership', 'sync'].includes(failure)) {
+        assert(!steps.includes('local'));
+      }
+      failing = false;
+      operation = await collectionOperation(server, store).open();
+      const requests = server.requests.length;
+      await operation.retry();
+      await complete();
+      assert.equal(operation.pending, null);
+      assert.equal(await memory.load(), '');
+      assert.equal(
+        server.requests.length,
+        requests,
+        'Complete retries never repeat destructive HTTP'
+      );
+      assert.equal(
+        server.requests.filter((request) => request.method === 'DELETE').length,
+        1
+      );
+    }
+  );
+}
+
+test('associated operation stays journaled across offline metadata, authentication failure and reconnection', async () => {
+  const server = fixture();
+  const store = local.memory('reconnect-operation');
+  let operation = await collectionOperation(server, store).open();
+  server.fail(origin + '/storage/.meta');
+  await assert.rejects(
+    operation.begin({
+      kind: 'delete',
+      source,
+      confirmed: true,
+      collection: collectionUrl,
+      entry: memberId
+    }),
+    /confirm|offline/
+  );
+  assert.equal(operation.pending.stage, 'removed');
+  const get = server.session.client.get;
+  server.session.client.get = async () => new Response(null, { status: 401 });
+  operation = await collectionOperation(server, store).open();
+  await assert.rejects(operation.retry(), /401/);
+  assert.equal(operation.pending.collection, collectionUrl);
+  server.session.client.get = get;
+  server.fail('');
+  await operation.retry();
+  await operation.finish({
+    collection: {
+      url: collectionUrl,
+      removeReference: async () => {},
+      sync: async () => {}
+    },
+    applyLocal: async () => {}
+  });
+  assert.equal(operation.pending, null);
+  assert.equal(
+    server.requests.filter((request) => request.method === 'DELETE').length,
+    1
+  );
+});
+
+test('completion refuses another account and incomplete collection associations without clearing intent', async () => {
+  const server = fixture();
+  const store = local.memory('owned-operation');
+  const operation = await collectionOperation(server, store).open();
+  await operation.begin({ kind: 'delete', source, confirmed: true });
+  const other = await new CollectionFileOperation({
+    owner: 'https://other.example/#me',
+    session: server.session,
+    store
+  }).open();
+  let applied = false;
+  await assert.rejects(
+    other.finish({
+      applyLocal: async () => {
+        applied = true;
+      }
+    }),
+    /account/
+  );
+  assert.equal(applied, false);
+  assert.equal(other.pending.stage, 'complete');
+  const before = await store.load();
+  const graph = new StateGraph(before);
+  graph.set(
+    operationRoot,
+    operationNamespace + 'collection',
+    named(collectionUrl)
+  );
+  await store.save(graph.write());
+  const broken = await collectionOperation(server, store).open();
+  await assert.rejects(broken.retry(), /Incomplete collection association/);
+  assert((await store.load()).includes(collectionUrl));
+});
+
+for (const app of ['notebook', 'presenter']) {
+  for (const kind of ['move', 'delete']) {
+    test(
+      'shared completion keeps ' +
+        app +
+        ' ' +
+        kind +
+        ' recovery policy with real native stores and collection sync',
+      async () => {
+        const server = fixture();
+        server.files.delete(source);
+        const store = memoryStores();
+        let documents;
+        let decks;
+        let options;
+        if (app === 'notebook') {
+          documents = await new NotebookDocuments({ owner, store }).open();
+          documents.changeTitle('Retained notebook');
+          documents.edit(documents.blocks()[0].id, {
+            text: 'Preserve this local text',
+            annotations: []
+          });
+          await documents.save(server.session, source);
+          await documents.persist();
+        }
+        else {
+          options = {
+            owner,
+            store,
+            baselineFor: (address) => store('baseline:' + address)
+          };
+          decks = await new PresenterDecks(options).open();
+          decks.current.change(
+            decks.current.root.id,
+            'title',
+            'Delete this deck'
+          );
+          decks.current.addSlide();
+          await decks.current.save(server.session, source);
+          await decks.current.persist();
+        }
+        const removedId = decks?.activeId;
+        const collection = await new DocumentCollection({
+          owner,
+          url: collectionUrl,
+          session: server.session,
+          store: store('collection')
+        }).open({
+          create: { title: 'Documents', destination: origin + '/storage/' }
+        });
+        const entry = await collection.addDocument({
+          document: source,
+          title: app,
+          kind: app,
+          managed: true
+        });
+        await collection.sync();
+        const operation = await collectionOperation(
+          server,
+          store('operation')
+        ).open();
+        await operation.begin({
+          kind,
+          target: kind === 'move' ? target : '',
+          source,
+          confirmed: true,
+          collection: collectionUrl,
+          entry
+        });
+        await operation.finish({
+          collection,
+          applyLocal: (completed) =>
+            app === 'notebook'
+              ? documents.applyFileOperation(completed, server.session)
+              : kind === 'move'
+                ? decks.applyFileOperation(completed, server.session)
+                : decks.discard(completed.source)
+        });
+        assert.equal(operation.pending, null);
+        assert(!server.files.has(source));
+        const membership = collection
+          .state()
+          .entries.find((value) => value.id === entry);
+        if (kind === 'move') {
+          assert.equal(membership.document, target);
+          assert.equal(membership.deleted, false);
+        }
+        else {
+          assert(membership.deleted);
+        }
+        if (app === 'notebook') {
+          const reopened = await new NotebookDocuments({ owner, store }).open();
+          assert.equal(reopened.url, kind === 'move' ? target : '');
+          assert.equal(
+            reopened.blocks()[0].fragment.text,
+            'Preserve this local text'
+          );
+          assert.equal(reopened.dirty, kind === 'delete');
+        }
+        else {
+          const reopened = await new PresenterDecks(options).open();
+          if (kind === 'move') {
+            assert.equal(reopened.current.url, target);
+            assert.equal(reopened.find(target).id, removedId);
+            assert.equal(reopened.current.title, 'Delete this deck');
+            assert.equal(reopened.current.dirty, false);
+          }
+          else {
+            assert.equal(await store(removedId).load(), '');
+            assert.equal(reopened.find(source), undefined);
+            assert.equal(reopened.entries().length, 0);
+          }
+        }
+      }
+    );
+  }
+}
+
+test('cancelling a pending copy retains the source and clears native context before reuse', async () => {
+  const server = fixture();
+  const store = local.memory('cancel-context');
+  const operation = await server.operation(store).open();
+  const context = new StateGraph(
+    '<urn:caller> <urn:job> "do not carry forward".'
+  );
+  server.fail(target);
+  await assert.rejects(
+    operation.begin({ kind: 'move', source, target, confirmed: true, context }),
+    /offline/
+  );
+  assert.equal(operation.pending.stage, 'copying');
+  await operation.cancel();
+  assert(server.files.has(source));
+  assert.equal(await store.load(), '');
+  server.fail('');
+  await operation.begin({ kind: 'delete', source, confirmed: true });
+  assert.equal(
+    operation.graph.values(named('urn:caller'), 'urn:job').length,
+    0
+  );
+});
+
+test('unfinished physical work cannot trigger local completion or journal acknowledgement', async () => {
+  const server = fixture();
+  const store = local.memory('not-yet-complete');
+  const operation = await collectionOperation(server, store).open();
+  server.fail(target);
+  await assert.rejects(
+    operation.begin({
+      kind: 'move',
+      source,
+      target,
+      confirmed: true,
+      collection: collectionUrl,
+      entry: memberId
+    }),
+    /offline/
+  );
+  const before = await store.load();
+  let applied = false;
+  const result = await operation.finish({
+    applyLocal: async () => {
+      applied = true;
+    }
+  });
+  assert.equal(result, null);
+  assert.equal(applied, false);
+  assert.equal(await store.load(), before);
+  assert(server.files.has(source));
 });

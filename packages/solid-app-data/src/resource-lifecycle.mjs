@@ -14,11 +14,9 @@ const fields = [
   'digest',
   'targetDigest',
   'targetEtag',
-  'stage',
-  'collection',
-  'entry'
+  'stage'
 ];
-const links = new Set(['source', 'target', 'collection', 'entry']);
+const links = new Set(['source', 'target']);
 function file(value) {
   const url = new URL(httpUrl(value));
   if (url.hash || url.search || url.pathname.endsWith('/')) {
@@ -86,9 +84,11 @@ export class ResourceLifecycle {
     this.store =
       store || local.indexedDB('solid-file-operation', { key: owner });
     this.pending = null;
+    this.graph = new StateGraph('');
   }
   async open() {
     const graph = new StateGraph(await this.store.load());
+    this.graph = graph;
     if (graph.quads.length) {
       this.pending = Object.fromEntries(
         fields.map((field) => [
@@ -123,10 +123,28 @@ export class ResourceLifecycle {
     }
     return this;
   }
-  async record(changes) {
+  // Caller-owned native RDF shares the durable intent write, without teaching
+  // this engine how to interpret that context.
+  async record(changes, context = null) {
     const next = { ...this.pending, ...changes };
-    const graph = new StateGraph('');
+    const graph = this.graph.clone();
+    if (context) {
+      for (const quad of context.clone().quads) {
+        if (
+          quad.subject.termType === root.termType &&
+          quad.subject.id === root.id &&
+          quad.predicate.id.startsWith(ns) &&
+          fields.includes(quad.predicate.id.slice(ns.length))
+        ) {
+          throw new Error(
+            'resource-lifecycle: Context cannot replace operation state.'
+          );
+        }
+        graph.add(quad.subject, quad.predicate.id, quad.object);
+      }
+    }
     for (const field of fields) {
+      graph.set(root, ns + field);
       if (next[field]) {
         graph.set(
           root,
@@ -136,6 +154,7 @@ export class ResourceLifecycle {
       }
     }
     await this.store.save(graph.write());
+    this.graph = graph;
     this.pending = next;
   }
   requireSession() {
@@ -151,8 +170,7 @@ export class ResourceLifecycle {
     source,
     target = '',
     confirmed = false,
-    collection = '',
-    entry = ''
+    context = null
   }) {
     if (!confirmed || !['move', 'delete'].includes(kind)) {
       throw new Error('resource-lifecycle: Explicit confirmation is required.');
@@ -195,16 +213,17 @@ export class ResourceLifecycle {
             'resource-lifecycle: The source file is unavailable.'
           );
         }
-        await this.record({
-          kind,
-          source,
-          target,
-          collection,
-          entry,
-          etag: content.etag,
-          digest: content.digest,
-          stage: 'prepared'
-        });
+        await this.record(
+          {
+            kind,
+            source,
+            target,
+            etag: content.etag,
+            digest: content.digest,
+            stage: 'prepared'
+          },
+          context
+        );
       },
       { interactive: false }
     );
@@ -395,6 +414,7 @@ export class ResourceLifecycle {
       );
     }
     await this.store.save('');
+    this.graph = new StateGraph('');
     this.pending = null;
   }
   async cancel() {
@@ -410,6 +430,7 @@ export class ResourceLifecycle {
     // Cancellation retains both files. It never tries to roll back a copy by
     // issuing another destructive request.
     await this.store.save('');
+    this.graph = new StateGraph('');
     this.pending = null;
   }
 }

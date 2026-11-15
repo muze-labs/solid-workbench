@@ -160,6 +160,17 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       moduleOwners.get(root + 'packages/solid-app-data/src/link-metadata.mjs'),
       filename('shared/data')
     );
+    for (const suffix of ['', '?source']) {
+      assert.equal(
+        moduleOwners.get(
+          root +
+            'packages/solid-app-data/src/collection-file-operation.mjs' +
+            suffix
+        ),
+        filename('shared/document-collections'),
+        'Collection operation and optional-source descriptor stay document-only'
+      );
+    }
     for (const name of apps) {
       const imports = chunks.get(filename(name + '/src/index')).imports;
       const required = [data.fileName, ui.fileName];

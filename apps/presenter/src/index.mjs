@@ -24,6 +24,8 @@ import { local } from '@muze-labs/solid-workspace';
 import { DocumentCollection } from '@muze-labs/solid-app-data/document-collection.mjs';
 import { CollectionPreference } from '@muze-labs/solid-app-data/collection-preference.mjs';
 import { ResourceLifecycle } from '@muze-labs/solid-app-data/resource-lifecycle.mjs';
+import { CollectionFileOperation } from '@muze-labs/solid-app-data/collection-file-operation.mjs';
+import collectionOperationSource from '../../../packages/solid-app-data/src/collection-file-operation.mjs?source';
 import { resolveResource } from '@muze-labs/solid-app-data/resource-resolution.mjs';
 import { readLaunchContext } from '@muze-labs/solid-app-data/launch.mjs';
 import {
@@ -93,6 +95,7 @@ const definition = {
     DocumentCollection,
     CollectionPreference,
     ResourceLifecycle,
+    CollectionFileOperation,
     resolveResource,
     readLaunchContext,
     selectionUrl,
@@ -126,6 +129,11 @@ const definition = {
 const ui = app(definition);
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
+  collectionFileOperation: {
+    sourceUrl: collectionOperationSource,
+    origin: 'packages/solid-app-data/src/collection-file-operation.mjs',
+    dependencies: ['@muze-labs/solid-app-data']
+  },
   documentSession: {
     sourceUrl: documentSessionSource,
     origin: 'packages/solid-app-data/src/document-session.mjs',

@@ -83,3 +83,30 @@ preserves issuer discovery/client registration, other accounts and user data.
 This bridge uses the issuer + WebID scope of the published Metro-OIDC version.
 It does not revoke tokens or end the provider's own login session. The owning UI
 removes its remembered WebID and reloads to discard connected resource handles.
+
+
+`ResourceLifecycle` owns confirmed physical file operations, validators/digests,
+conditional copy/removal, advertised parent metadata and durable retry stages.
+`begin({ kind, source, target, confirmed, context })` accepts an optional native
+`StateGraph` context. Its statements are committed with the prepared operation
+in the same local source, then preserved through all stages; they cannot replace
+engine-owned state. `graph` exposes the native journal; `pending` projects only
+physical operation fields. Acknowledge/cancel clears both intent and context
+only after storage confirms the clear. Same-instance app command guards still
+serialize operations; no cross-tab lock or new synchronization engine is added.
+
+`CollectionFileOperation` owns the collection association and completion bridge.
+It accepts the same constructor options, including the app/account's existing
+journal source. `begin` additionally takes `collection` and `entry` (both or
+neither), using existing native predicates so unfinished journals remain usable.
+After `begin`/`retry`, call
+`finish({ collection, openCollection, applyLocal })`. It acts only after physical
+completion, opens the associated collection if needed, repairs/removes membership,
+syncs it, awaits the app's local repair/disposal callback, then acknowledges.
+Any failure leaves completed physical intent available for reconciliation retry.
+A completed retry does not repeat the destructive request. The app keeps its
+confirmation, dirty guards, editor/view lifecycle, dialogs and local retention
+policy; Notebook retains drafts and Presenter purges deleted copies. Standalone
+files omit membership while still requiring local reconciliation. Files'
+tombstone-only deletion remains a separate contract. These are private suite
+integration APIs, not a new published package or a changed protocol version.
