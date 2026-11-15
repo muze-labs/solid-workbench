@@ -1,0 +1,142 @@
+<div
+  class="muze-solid-design-list-details muze-solid-collection-browser-layout"
+  data-simply-field="muzeSolidCollectionAppearance"
+  data-simply-transform="attributes"
+  data-simply-attributes="data-layout"
+>
+  <nav
+    class="ds-panels-pane ds-panels-list swb-list-pane muze-solid-collection-browser-categories"
+    aria-label="Categories"
+  >
+    <ul
+      class="muze-solid-collection-browser-entries"
+      data-simply-list="muzeSolidCollectionCategories"
+    >
+      <template
+        ><li>
+          <a
+            class="muze-solid-design-tool muze-solid-collection-browser-link"
+            data-simply-command="muzeSolidCollectionCategory"
+            data-simply-value=":value.id"
+            data-simply-field="attributes"
+            data-simply-transform="attributes"
+            data-simply-attributes="href,aria-current,data-muze-solid-collection-category"
+          >
+            <span
+              data-simply-field="title"
+              data-simply-transform="escape_html"
+            ></span>
+          </a></li
+      ></template>
+    </ul>
+  </nav>
+  <section
+    class="ds-panels-pane ds-panels-details swb-list-pane muze-solid-collection-browser-details"
+    aria-labelledby="muze-solid-collection-browser-heading"
+  >
+    <h2
+      id="muze-solid-collection-browser-heading"
+      class="muze-solid-collection-browser-heading"
+      data-simply-field="muzeSolidCollectionCategoryTitle"
+      data-simply-transform="escape_html"
+    ></h2>
+    <ul
+      class="muze-solid-collection-browser-entries"
+      data-simply-list="muzeSolidCollectionEntries"
+    >
+      <template
+        ><li class="muze-solid-collection-browser-item">
+          <a
+            class="muze-solid-design-tool muze-solid-collection-browser-link"
+            data-simply-command="muzeSolidCollectionChoose"
+            data-simply-value=":value.id"
+            data-simply-field="linkAttributes"
+            data-simply-transform="attributes"
+            data-simply-attributes="href,data-muze-solid-collection-entry,aria-label"
+          >
+            <svg
+              class="ds-icon ds-icon-feather muze-solid-collection-browser-new-icon"
+              aria-hidden="true"
+              data-simply-field="iconAttributes"
+              data-simply-transform="attributes"
+              data-simply-attributes="hidden"
+            >
+              <use href="../assets/feather-icons.svg#plus"></use>
+            </svg>
+            <span
+              class="muze-solid-collection-browser-preview"
+              aria-hidden="true"
+              data-simply-field="previewVisibility"
+              data-simply-transform="attributes"
+              data-simply-attributes="hidden"
+            >
+              <img
+                class="muze-solid-collection-browser-preview-image"
+                alt=""
+                data-simply-field="previewImage"
+                data-simply-transform="attributes"
+                data-simply-attributes="src hidden"
+              />
+              <span
+                class="muze-solid-collection-browser-preview-title"
+                data-simply-field="previewTitle"
+                data-simply-transform="escape_html"
+              ></span>
+              <span
+                class="muze-solid-collection-browser-preview-body"
+                data-simply-field="previewBody"
+                data-simply-transform="escape_html"
+              ></span>
+            </span>
+            <span
+              class="muze-solid-collection-browser-local-status"
+              role="img"
+              hidden
+              data-simply-field="localStatusAttributes"
+              data-simply-transform="attributes"
+              data-simply-attributes="hidden title aria-label"
+            >
+              <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                <use
+                  data-simply-field="localStatusIcon"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="href"
+                ></use>
+              </svg>
+            </span>
+            <span
+              class="muze-solid-collection-browser-title"
+              data-simply-field="title"
+              data-simply-transform="escape_html"
+            ></span>
+            <span
+              class="muze-solid-collection-browser-detail"
+              data-simply-field="detail"
+              data-simply-transform="escape_html"
+            ></span>
+          </a>
+          <div
+            class="muze-solid-collection-browser-overlay"
+            hidden
+            data-simply-field="entryActionVisibility"
+            data-simply-transform="attributes"
+            data-simply-attributes="hidden"
+          >
+            <button
+              type="button"
+              class="muze-solid-design-tool muze-solid-collection-browser-delete"
+              data-simply-command="muzeSolidCollectionEntryAction"
+              data-simply-value=":value.id"
+              data-simply-field="entryActionAttributes"
+              data-simply-transform="attributes"
+              data-simply-attributes="aria-label title disabled"
+            >
+              <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                <use href="../assets/feather-icons.svg#trash-2"></use>
+              </svg>
+            </button>
+          </div></li
+      ></template>
+    </ul>
+  </section>
+</div>

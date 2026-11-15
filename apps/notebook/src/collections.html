@@ -5,78 +5,7 @@
   data-simply-attributes="hidden"
   aria-label="Notebook collection"
 >
-  <div
-    class="muze-solid-design-list-details muze-solid-notebook-collection-layout"
-  >
-    <nav
-      class="ds-panels-pane ds-panels-list swb-list-pane muze-solid-notebook-categories"
-      aria-label="Notebook categories"
-    >
-      <ul
-        class="muze-solid-notebook-collection-entries"
-        data-simply-list="muzeSolidNotebookCategories"
-      >
-        <template
-          ><li>
-            <a
-              class="muze-solid-design-tool muze-solid-notebook-collection-link"
-              data-simply-command="muzeSolidNotebookChooseCategory"
-              data-simply-value=":value.id"
-              data-simply-field="attributes"
-              data-simply-transform="attributes"
-              data-simply-attributes="href,aria-current,data-muze-solid-notebook-category"
-            >
-              <span
-                data-simply-field="title"
-                data-simply-transform="escape_html"
-              ></span>
-            </a></li
-        ></template>
-      </ul>
-    </nav>
-    <section
-      class="ds-panels-pane ds-panels-details swb-list-pane muze-solid-notebook-collection-details"
-      aria-labelledby="muze-solid-notebook-category-heading"
-    >
-      <h2
-        id="muze-solid-notebook-category-heading"
-        tabindex="-1"
-        class="muze-solid-notebook-category-heading"
-        data-simply-field="muzeSolidNotebookCategoryTitle"
-        data-simply-transform="escape_html"
-      ></h2>
-      <ul
-        class="muze-solid-notebook-collection-entries"
-        data-simply-list="muzeSolidNotebookCollectionEntries"
-      >
-        <template
-          ><li>
-            <a
-              class="muze-solid-design-tool muze-solid-notebook-collection-link"
-              data-simply-command="muzeSolidNotebookCollectionChoose"
-              data-simply-value=":value.id"
-              data-simply-field="linkAttributes"
-              data-simply-transform="attributes"
-              data-simply-attributes="href,data-muze-solid-notebook-entry"
-            >
-              <svg
-                class="ds-icon ds-icon-feather"
-                aria-hidden="true"
-                data-simply-field="iconAttributes"
-                data-simply-transform="attributes"
-                data-simply-attributes="hidden"
-              >
-                <use href="../assets/feather-icons.svg#plus"></use>
-              </svg>
-              <span
-                data-simply-field="title"
-                data-simply-transform="escape_html"
-              ></span>
-            </a></li
-        ></template>
-      </ul>
-    </section>
-  </div>
+  {{view:muze-solid-collection-browser:../../../packages/solid-app-ui/src/collection-browser.html}}
 </section>
 <dialog
   class="ds-dialog muze-solid-design-dialog muze-solid-notebook-collection-dialog"
@@ -206,8 +135,8 @@
       </form>
       <h3>Documents in this view</h3>
       <ul
-        class="muze-solid-notebook-collection-entries"
-        data-simply-list="muzeSolidNotebookCollectionManagementEntries"
+        class="muze-solid-collection-browser-entries"
+        data-simply-list="muzeSolidCollectionManagementEntries"
       >
         <template
           ><li>
@@ -291,7 +220,7 @@
         name="group"
         data-simply-command="muzeSolidNotebookCollectionAssignGroup"
         class="muze-solid-notebook-input"
-        data-simply-list="muzeSolidNotebookEntryGroups"
+        data-simply-list="muzeSolidCollectionEntryGroups"
       >
         <template
           ><option

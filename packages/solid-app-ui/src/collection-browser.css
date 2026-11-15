@@ -1,0 +1,212 @@
+@layer component {
+  .muze-solid-collection-browser-layout {
+    flex: 1;
+    min-block-size: 0;
+    min-inline-size: 0;
+  }
+  .muze-solid-collection-browser-link {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 6px;
+    padding: 10px;
+    font-size: 0.8125rem;
+    text-decoration: none;
+    white-space: normal;
+    color: inherit;
+    overflow-wrap: anywhere;
+  }
+  .muze-solid-collection-browser-link[aria-current='page'] {
+    font-weight: 700;
+    background: var(
+      --muze-solid-collection-active,
+      color-mix(in srgb, currentColor 7%, transparent)
+    );
+  }
+  .muze-solid-collection-browser-entries {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+}
+
+@layer component {
+  .muze-solid-collection-browser-layout[data-layout='cards']
+    .muze-solid-collection-browser-details
+    > .muze-solid-collection-browser-entries {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 12px;
+  }
+  .muze-solid-collection-browser-layout[data-layout='cards']
+    .muze-solid-collection-browser-details
+    > .muze-solid-collection-browser-entries
+    .muze-solid-collection-browser-link {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: 1;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 0;
+  }
+  .muze-solid-collection-browser-layout[data-layout='cards']
+    .muze-solid-collection-browser-details
+    > .muze-solid-collection-browser-entries
+    .muze-solid-collection-browser-new-icon {
+    display: none;
+  }
+  .muze-solid-collection-browser-preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    container-type: inline-size;
+    overflow: hidden;
+    background: #243b53;
+    color: white;
+  }
+  .muze-solid-collection-browser-preview[hidden] {
+    display: none;
+  }
+  .muze-solid-collection-browser-preview-image {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+  .muze-solid-collection-browser-preview-title,
+  .muze-solid-collection-browser-preview-body {
+    z-index: 1;
+    max-inline-size: 84%;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    text-align: center;
+    text-shadow: 0 1px 3px #0009;
+  }
+  .muze-solid-collection-browser-preview-title {
+    font: 500 5cqw / 1.25 system-ui;
+  }
+  .muze-solid-collection-browser-preview-body {
+    font: 400 3cqw / 1.25 system-ui;
+  }
+  @media (min-width: 720px) {
+    .muze-solid-collection-browser-layout[data-layout='cards']
+      .muze-solid-collection-browser-details
+      > .muze-solid-collection-browser-entries {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@layer component {
+  .muze-solid-collection-browser-detail:empty {
+    display: none;
+  }
+  .muze-solid-collection-browser-detail {
+    font-size: 0.75rem;
+  }
+}
+
+@layer component {
+  .muze-solid-collection-browser-layout[data-layout='cards']
+    .muze-solid-collection-browser-item {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-inline-size: 0;
+    border: 1px solid currentColor;
+  }
+  .muze-solid-collection-browser-overlay {
+    position: absolute;
+    inset-block-start: 16px;
+    inset-inline-end: 16px;
+    z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .muze-solid-collection-browser-item:hover
+    .muze-solid-collection-browser-overlay,
+  .muze-solid-collection-browser-item:focus-within
+    .muze-solid-collection-browser-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .muze-solid-collection-browser-delete,
+  .muze-solid-collection-browser-local-status {
+    background: var(--muze-solid-collection-overlay-surface, Canvas);
+    color: var(--muze-solid-collection-overlay-color, CanvasText);
+    border: 1px solid currentColor;
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+  }
+  .muze-solid-collection-browser-delete {
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 10px;
+  }
+  .muze-solid-collection-browser-local-status {
+    position: absolute;
+    inset-block-start: 16px;
+    inset-inline-start: 16px;
+    inline-size: 32px;
+    block-size: 32px;
+    z-index: 2;
+  }
+  .muze-solid-collection-browser-layout[data-layout='cards']
+    .muze-solid-collection-browser-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .muze-solid-collection-browser-overlay[hidden],
+  .muze-solid-collection-browser-local-status[hidden] {
+    display: none;
+  }
+  @media (hover: none), (pointer: coarse) {
+    .muze-solid-collection-browser-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
+
+@layer component {
+  .muze-solid-collection-browser-layout[data-layout='cards']
+    .muze-solid-collection-browser-item:has(
+      [data-muze-solid-collection-entry='new']
+    ) {
+    border-style: dotted;
+  }
+  .muze-solid-collection-browser-layout[data-layout='cards']
+    [data-muze-solid-collection-entry='new'] {
+    justify-content: center;
+  }
+  [data-muze-solid-collection-entry='new']
+    .muze-solid-collection-browser-preview {
+    flex-direction: row;
+    gap: 12px;
+    background: transparent;
+    color: inherit;
+  }
+  [data-muze-solid-collection-entry='new']
+    .muze-solid-collection-browser-preview-title {
+    font: 400 2.5rem / 1 system-ui;
+    text-shadow: none;
+  }
+  [data-muze-solid-collection-entry='new']
+    .muze-solid-collection-browser-preview-body {
+    font: inherit;
+    text-shadow: none;
+  }
+  .muze-solid-collection-browser-layout[data-layout='cards']
+    [data-muze-solid-collection-entry='new']
+    .muze-solid-collection-browser-title {
+    display: none;
+  }
+}

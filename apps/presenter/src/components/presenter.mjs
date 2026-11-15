@@ -1,3 +1,4 @@
+import { batch, untracked } from '@muze-labs/simplyflow/state';
 import { render as renderCobalt } from '@muze-labs/cobalt-rich-text-note';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 import { muzeSolidDesignToolbar } from '@muze-labs/solid-design';
@@ -51,21 +52,7 @@ export const muzeSolidPresenter = {
       }
     },
     muzeSolidPresenterNew() {
-      return this.actions.muzeSolidPresenterRun(async () => {
-        if (this.runtime.deck.dirty) {
-          throw new Error(
-            'presenter: Save this deck to your Pod before starting another.'
-          );
-        }
-        if (!(await this.actions.muzeSolidPresenterCloseViews())) {
-          return;
-        }
-        await this.runtime.deck.create();
-        this.data.muzeSolidPresenterUrl = '';
-        this.runtime.selected = '';
-        await this.actions.muzeSolidPresenterPersist();
-        await this.actions.muzeSolidPresenterShowSlide();
-      });
+      return this.commands.call('muzeSolidPresenterNewDeck');
     },
     muzeSolidPresenterImportLocal() {
       return this.actions.muzeSolidPresenterRun(async () => {
@@ -80,7 +67,8 @@ export const muzeSolidPresenter = {
             'presenter: Start an empty deck before copying your signed-out deck.'
           );
         }
-        const saved = await new this.api.DeckDocument().open();
+        const signedOut = await new this.api.PresenterDecks().open();
+        const saved = signedOut.current;
         if (!saved.slides().length) {
           throw new Error(
             'presenter: No signed-out deck was found on this device.'
@@ -101,9 +89,13 @@ export const muzeSolidPresenter = {
         if (!(await this.actions.muzeSolidPresenterCloseViews())) {
           return;
         }
-        this.runtime.selected = this.runtime.deck.addSlide(layout);
+        this.runtime.selected = this.runtime.deck.addSlide(
+          layout,
+          this.runtime.selected
+        );
         await this.actions.muzeSolidPresenterPersist();
         await this.actions.muzeSolidPresenterShowSlide();
+        await this.actions.muzeSolidPresenterRevealSlide();
       });
     },
     muzeSolidPresenterSelect(_element, id) {
@@ -112,49 +104,55 @@ export const muzeSolidPresenter = {
       );
     },
     muzeSolidPresenterMove(_element, offset) {
-      return this.actions.muzeSolidPresenterRun(async () => {
-        this.runtime.deck.moveSlide(this.runtime.selected, Number(offset));
-        await this.actions.muzeSolidPresenterPersist();
-      });
+      return this.actions.muzeSolidPresenterRun(
+        async () => {
+          this.runtime.deck.moveSlide(this.runtime.selected, Number(offset));
+          await this.actions.muzeSolidPresenterPersist();
+          this.data.muzeSolidPresenterStatus =
+            'Slide position: ' +
+            this.data.muzeSolidPresenterPosition.replace(' / ', ' of ') +
+            '. ' +
+            this.data.muzeSolidPresenterStatus;
+          await this.actions.muzeSolidPresenterRevealSlide();
+        },
+        { disableControls: false }
+      );
     },
     muzeSolidPresenterRemove() {
       return this.actions.muzeSolidPresenterRun(async () => {
         if (!(await this.actions.muzeSolidPresenterCloseViews())) {
           return;
         }
+        const slides = this.runtime.slides.view.current;
+        const index = slides.findIndex(
+          (slide) => slide.id === this.runtime.selected
+        );
+        const previous = slides[index - 1]?.id || '';
         this.runtime.deck.removeSlide(this.runtime.selected);
-        this.runtime.selected = '';
+        this.runtime.selected = previous;
         await this.actions.muzeSolidPresenterPersist();
         await this.actions.muzeSolidPresenterShowSlide();
+        await this.actions.muzeSolidPresenterRevealSlide();
       });
     },
     muzeSolidPresenterSave() {
       return this.actions.muzeSolidPresenterRun(async () => {
         await this.actions.muzeSolidPresenterCollectAll();
+        const previous = this.runtime.deck.target;
         await this.runtime.deck.save(
           this.runtime.host.requireSession(),
           this.data.muzeSolidPresenterUrl
         );
         await this.actions.muzeSolidPresenterPersist();
+        await this.actions.muzeSolidPresenterUpdateCollectionSummary(previous);
       });
     },
     muzeSolidPresenterOpen() {
       return this.actions.muzeSolidPresenterRun(async () => {
-        if (this.runtime.deck.dirty) {
-          throw new Error(
-            'presenter: Save the local deck before opening another document.'
-          );
-        }
-        if (!(await this.actions.muzeSolidPresenterCloseViews())) {
-          return;
-        }
-        await this.runtime.deck.load(
-          this.runtime.host.requireSession(),
+        await this.actions.muzeSolidPresenterOpenDeck(
           this.data.muzeSolidPresenterUrl
         );
-        this.runtime.selected = '';
-        this.actions.muzeSolidPresenterProject();
-        await this.actions.muzeSolidPresenterShowSlide();
+        await this.actions.muzeSolidPresenterShowDeck();
       });
     },
     muzeSolidPresenterPresent() {
@@ -200,7 +198,13 @@ export const muzeSolidPresenter = {
     async muzeSolidPresenterInitialize() {
       const host = this.runtime.host;
       host.onAppAction = (command) => {
+        if (command.startsWith('muzeSolidPresenter')) {
+          return this.commands.call(command);
+        }
         if (command === 'add') {
+          if (this.data.muzeSolidPresenterOverviewVisibility.hidden !== '') {
+            return this.commands.call('muzeSolidPresenterNewDeck');
+          }
           return this.commands.muzeSolidPresenterAdd.call(this, null, 'image');
         }
         if (command === 'present') {
@@ -221,6 +225,63 @@ export const muzeSolidPresenter = {
           attributes: { 'data-muze-solid-action': 'present' }
         }
       ];
+      for (const [command, label, icon] of [
+        ['Collections', 'Collections', 'book-open'],
+        ['CollectionTools', '', 'more-vertical'],
+        ['CurrentDeck', 'Current deck', 'file-text'],
+        ['Save', 'Save', 'save'],
+        ['Status', '', 'info']
+      ]) {
+        host.view.data.muzeSolidUiAppTools.push({
+          command: 'muzeSolidPresenter' + command,
+          label,
+          icon: { href: '../assets/feather-icons.svg#' + icon },
+          attributes: {
+            'aria-label':
+              command === 'Status'
+                ? 'Presenter status'
+                : label || 'Collection options',
+            popovertarget:
+              command === 'Status' ? 'muze-solid-presenter-status' : null,
+            'data-muze-solid-action': 'muzeSolidPresenter' + command
+          }
+        });
+      }
+      const statusTool = host.view.data.muzeSolidUiAppTools.find(
+        (tool) => tool.command === 'muzeSolidPresenterStatus'
+      );
+      this.api.effect(() => {
+        const overview =
+          this.data.muzeSolidPresenterOverviewVisibility.hidden !== '';
+        this.data.muzeSolidPresenterStatusDisplay = overview
+          ? this.data.muzeSolidPresenterCollectionMessage
+          : this.data.muzeSolidPresenterStatus;
+        const busy = this.data.muzeSolidPresenterBusy.disabled === '';
+        for (const entry of this.data.muzeSolidCollectionEntries) {
+          if (entry.entryActionAttributes) {
+            entry.entryActionAttributes.disabled = busy ? '' : null;
+          }
+        }
+        const attention =
+          overview &&
+          (this.runtime.collectionFailure ||
+            this.runtime.collection?.error ||
+            !this.runtime.collection);
+        const dirty = overview
+          ? this.runtime.collection?.dirty
+          : this.runtime.deck?.dirty;
+        const icon = busy
+          ? 'loader'
+          : attention
+            ? 'alert-triangle'
+            : dirty
+              ? 'hard-drive'
+              : 'check-circle';
+        statusTool.icon.href = '../assets/feather-icons.svg#' + icon;
+        statusTool.attributes['aria-label'] = attention
+          ? 'Presenter needs attention. Show status'
+          : 'Show Presenter status';
+      });
       host.view.data.muzeSolidUiAppToolbar = { hidden: null };
       this.runtime.thumbnailUrls = new Map();
       const owner = this;
@@ -267,7 +328,10 @@ export const muzeSolidPresenter = {
           if (!selected || selected === this.runtime.selected) {
             return;
           }
-          if (this.runtime.deck) {
+          if (
+            this.runtime.deck &&
+            this.data.muzeSolidPresenterEditorVisibility.hidden === null
+          ) {
             await this.actions.muzeSolidPresenterSelect(selected);
           }
           else {
@@ -315,7 +379,17 @@ export const muzeSolidPresenter = {
           }
         }
         this.runtime.thumbnailUrls.clear();
-        this.runtime.deck = await new this.api.DeckDocument({ owner }).open();
+        this.runtime.decks = await new this.api.PresenterDecks({
+          owner
+        }).open();
+        this.runtime.deck = this.runtime.decks.current;
+        this.runtime.collection = null;
+        this.runtime.collectionUrl = '';
+        if (this.runtime.collectionList) {
+          this.runtime.collectionList.state.data = [];
+          this.runtime.collectionGroups.state.data = [];
+        }
+        await this.actions.muzeSolidPresenterFinishLocalCleanup();
         if (!host.managed?.ready) {
           this.runtime.broker ||= new this.api.WorkspaceBroker({
             resolveProvider: (capability) => {
@@ -350,7 +424,7 @@ export const muzeSolidPresenter = {
         this.actions.muzeSolidPresenterProject();
         this.data.muzeSolidPresenterStatus =
           'Local deck restored on this device.';
-        await this.actions.muzeSolidPresenterShowSlide();
+        await this.actions.muzeSolidPresenterInitializeCollections(owner);
       };
       this.runtime.openingAccount = open();
       try {
@@ -360,15 +434,20 @@ export const muzeSolidPresenter = {
         this.runtime.openingAccount = null;
       }
     },
-    async muzeSolidPresenterRun(operation) {
+    async muzeSolidPresenterRun(operation, { disableControls = true } = {}) {
       if (this.runtime.busy) {
         return;
       }
       this.runtime.busy = true;
-      for (const tool of this.runtime.host.view.data.muzeSolidUiAppTools) {
-        tool.attributes = { ...tool.attributes, disabled: '' };
+      if (disableControls) {
+        for (const tool of this.runtime.host.view.data.muzeSolidUiAppTools) {
+          tool.attributes = {
+            ...tool.attributes,
+            disabled: tool.attributes.popovertarget ? null : ''
+          };
+        }
+        this.data.muzeSolidPresenterBusy = { disabled: '' };
       }
-      this.data.muzeSolidPresenterBusy = { disabled: '' };
       try {
         await operation();
       }
@@ -379,10 +458,17 @@ export const muzeSolidPresenter = {
       }
       finally {
         this.runtime.busy = false;
-        for (const tool of this.runtime.host.view.data.muzeSolidUiAppTools) {
-          tool.attributes = { ...tool.attributes, disabled: null };
+        if (disableControls) {
+          for (const tool of this.runtime.host.view.data.muzeSolidUiAppTools) {
+            tool.attributes = { ...tool.attributes, disabled: null };
+          }
+          this.data.muzeSolidPresenterBusy = { disabled: null };
         }
-        this.data.muzeSolidPresenterBusy = { disabled: null };
+        this.actions.muzeSolidPresenterUpdateCollectionTools();
+        if (this.runtime.pendingCollectionNavigation) {
+          this.runtime.pendingCollectionNavigation = false;
+          await this.actions.muzeSolidPresenterCollectionHistory();
+        }
         if (this.runtime.focusPresentation) {
           this.runtime.focusPresentation = false;
           this.actions.muzeSolidPresenterFocus(
@@ -395,28 +481,52 @@ export const muzeSolidPresenter = {
     muzeSolidPresenterProject() {
       const deck = this.runtime.deck;
       this.data.muzeSolidPresenterTitle = deck.title;
-      this.runtime.slides.state.data = deck.slides().map((slide) => {
-        const regions = deck.regions(slide.id);
-        const text = regions.find((region) => region.name === 'title');
-        const image = regions.find((region) => region.kind === 'image');
-        const number = slide.position + 1;
-        const url =
-          image?.resource && this.runtime.thumbnailUrls.get(image.resource);
-        return {
-          ...slide,
-          number,
-          fragment: text?.fragment || { text: '', annotations: [] },
-          image: { src: url || null, hidden: url ? null : '' },
-          attributes: {
-            'aria-current': slide.id === this.runtime.selected ? 'true' : null,
-            'aria-label':
-              'Slide ' +
-              number +
-              (text?.fragment.text ? ': ' + text.fragment.text : ''),
-            title: text?.fragment.text || 'Slide ' + number
-          }
-        };
-      });
+      // Stable projection rows let SimplyFlow move existing thumbnail nodes.
+      batch(() =>
+        untracked(() => {
+          const previous =
+            this.runtime.slideProjection?.deck === deck
+              ? this.runtime.slideProjection.rows
+              : new Map();
+          const rows = deck.slides().map((slide) => {
+            const regions = deck.regions(slide.id);
+            const text = regions.find((region) => region.name === 'title');
+            const image = regions.find((region) => region.kind === 'image');
+            const number = slide.position + 1;
+            const url =
+              image?.resource && this.runtime.thumbnailUrls.get(image.resource);
+            const fields = {
+              ...slide,
+              number,
+              fragment: text?.fragment || { text: '', annotations: [] },
+              image: { src: url || null, hidden: url ? null : '' },
+              attributes: {
+                'data-muze-solid-slide': slide.id,
+                'aria-current':
+                  slide.id === this.runtime.selected ? 'true' : null,
+                'aria-label':
+                  'Slide ' +
+                  number +
+                  (text?.fragment.text ? ': ' + text.fragment.text : ''),
+                title: text?.fragment.text || 'Slide ' + number
+              }
+            };
+            const row = previous.get(slide.id);
+            if (row) {
+              Object.assign(row, fields);
+              return row;
+            }
+            return fields;
+          });
+          this.runtime.slides.state.data = rows;
+          this.runtime.slideProjection = {
+            deck,
+            rows: new Map(
+              this.runtime.slides.state.data.map((row) => [row.id, row])
+            )
+          };
+        })
+      );
       this.actions.muzeSolidPresenterThumbnails();
       const ordered = this.api
         .from(deck.slides())
@@ -512,9 +622,45 @@ export const muzeSolidPresenter = {
         await this.actions.muzeSolidPresenterSelect(next.id);
       }
     },
-    muzeSolidPresenterFocus(selector, presenting) {
+    async muzeSolidPresenterRevealSlide() {
+      const deck = this.runtime.deck;
+      const selected = this.runtime.selected;
+      const slide = deck.slides().find((slide) => slide.id === selected);
+      if (!slide) {
+        return;
+      }
+      for (let attempt = 0; attempt < 120; attempt++) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        if (this.runtime.deck !== deck || this.runtime.selected !== selected) {
+          return;
+        }
+        const button = this.container.querySelector(
+          '[data-muze-solid-slide="' + CSS.escape(selected) + '"]'
+        );
+        const number = button
+          ?.querySelector('.muze-solid-presenter-thumbnail-number')
+          ?.textContent.trim();
+        // SimplyFlow binds lists later. Wait for this slide's new position
+        // before scrolling, so a later list update cannot move it out again.
+        if (number === String(slide.position + 1)) {
+          button.scrollIntoView({
+            block: 'nearest',
+            inline: 'nearest',
+            behavior: 'instant'
+          });
+          return;
+        }
+      }
+    },
+    muzeSolidPresenterFocus(selector, presenting, selectText = false) {
+      const deck = this.runtime.deck;
       const focus = () => {
-        if (this.runtime.presenting !== presenting) {
+        if (
+          this.runtime.presenting !== presenting ||
+          this.runtime.deck !== deck ||
+          (selectText &&
+            this.data.muzeSolidPresenterEditorVisibility.hidden === '')
+        ) {
           return;
         }
         const button = this.container.closest('#app').querySelector(selector);
@@ -527,6 +673,9 @@ export const muzeSolidPresenter = {
           return;
         }
         button.focus();
+        if (selectText) {
+          button.select?.();
+        }
       };
       requestAnimationFrame(focus);
     },

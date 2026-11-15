@@ -1,0 +1,37 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:IMP-20261115-QG24H-226 a sd:Implementation ;
+    dcterms:identifier "IMP-20261115-QG24H-226" ;
+    sd:repositoryPath ".spiral/implementations/IMP-20261115-QG24H-226.md" ;
+    sd:status sd:Active ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261115-QG24H-225 ;
+        sd:gitCommit "650bbae2b22edd531ceed4b1db323ad35d67e902" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261114-QG24H-207 ;
+        sd:gitCommit "ef92bda2d462f6a49ec9949b7fe403affa2c68bf" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261115-QG24H-219 ;
+        sd:gitCommit "53c4acf973309ce718088624aceadb9b81627553" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261114-QG24H-209 ;
+        sd:gitCommit "abd3b9a9a2cd0c5d9512ab9fff588320ce64afb2" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261115-QG24H-220 ;
+        sd:gitCommit "238838aa7afe905c84d7d336ed45a2f246060150" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261112-QG24H-178 ;
+        sd:gitCommit "123a3fdd7d6995c2ac4d48ec93824130da37cc57" ] ;
+    sd:implements [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261113-QG24H-189 ;
+        sd:gitCommit "fdfc48315ce478e0e2265e7c249fb66f48fd2182" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261113-QG24H-190 ;
+        sd:gitCommit "26e53d742156321e0005f94dd60b614d5b69972c" ] ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:EVD-20261115-QG24H-221 ;
+        sd:gitCommit "1389bfeb6d74a57de2a12e6830c0abccbb6891a1" ] ;
+    sd:implementationChangeKind sd:MixedChange ;
+    sd:implementationLocation "apps/presenter/src", "apps/notebook/src/collections.mjs",
+        "packages/solid-app-ui/src/components/collection-browser.mjs" .

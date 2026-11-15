@@ -3,7 +3,10 @@ import * as fs from 'node:fs/promises';
 import * as http from 'node:http';
 import * as path from 'node:path';
 export { startChrome, freePort, waitForExit, formatBrowserException };
-async function startChrome(url, { allowPopups = false } = {}) {
+async function startChrome(
+  url,
+  { allowPopups = false, hoverPointer = false } = {}
+) {
   const debugPort = await freePort();
   const userDataDir = path.join(
     '/tmp',
@@ -16,6 +19,13 @@ async function startChrome(url, { allowPopups = false } = {}) {
       `--remote-debugging-port=${debugPort}`,
       `--user-data-dir=${userDataDir}`,
       '--disable-gpu',
+      // Headless Chrome otherwise reports no hover even at desktop sizes.
+      ...(hoverPointer
+        ? [
+            '--blink-settings=primaryHoverType=2,availableHoverTypes=2,' +
+              'primaryPointerType=4,availablePointerTypes=4'
+          ]
+        : []),
       '--no-first-run',
       '--no-default-browser-check',
       ...(allowPopups ? ['--disable-popup-blocking'] : []),
@@ -118,21 +128,26 @@ async function connectPage(url) {
       await this.send('Page.enable');
       // Inspect and subscribe in one browser task: load can otherwise fire
       // between receiving readyState and registering the CDP listener.
-      await this.evaluate(() => new Promise((resolve, reject) => {
-        if (document.readyState === 'complete') {
-          resolve();
-          return;
-        }
-        const loaded = () => {
-          clearTimeout(timer);
-          resolve();
-        };
-        const timer = setTimeout(() => {
-          window.removeEventListener('load', loaded);
-          reject(new Error('chrome-test: Page load timed out: ' + location.href));
-        }, 8000);
-        window.addEventListener('load', loaded, { once: true });
-      }));
+      await this.evaluate(
+        () =>
+          new Promise((resolve, reject) => {
+            if (document.readyState === 'complete') {
+              resolve();
+              return;
+            }
+            const loaded = () => {
+              clearTimeout(timer);
+              resolve();
+            };
+            const timer = setTimeout(() => {
+              window.removeEventListener('load', loaded);
+              reject(
+                new Error('chrome-test: Page load timed out: ' + location.href)
+              );
+            }, 8000);
+            window.addEventListener('load', loaded, { once: true });
+          })
+      );
     },
 
     async evaluate(fn) {

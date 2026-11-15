@@ -1,0 +1,53 @@
+@layer page {
+  .swb-presenter:has([data-muze-solid-presenter-collection-mode='overview']) {
+    --swb-main-display: flex;
+    --swb-main-overflow: hidden;
+    --swb-main-padding: 0;
+    --swb-content-flex: 1;
+    --swb-content-min-height: 0;
+    --swb-content-overflow: hidden;
+  }
+}
+@layer component {
+  .muze-solid-presenter[data-muze-solid-presenter-collection-mode='overview'] {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+    min-block-size: 0;
+  }
+  .muze-solid-presenter-collections-overview {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-block-size: 0;
+    inline-size: 100%;
+    max-inline-size: 80rem;
+    box-sizing: border-box;
+  }
+  .muze-solid-presenter-collections-overview[hidden],
+  .muze-solid-presenter-editor[hidden] {
+    display: none;
+  }
+  .muze-solid-presenter-collection-dialog,
+  .muze-solid-presenter-entry-dialog {
+    inline-size: min(42rem, calc(100vw - 2rem));
+    overflow-wrap: anywhere;
+  }
+  .muze-solid-presenter-collection-tools,
+  .muze-solid-presenter-collection-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 6px;
+    margin-block: 12px;
+  }
+  .muze-solid-presenter-status-popover {
+    inset: 4rem 1rem auto auto;
+    margin: 0;
+    max-inline-size: min(28rem, calc(100vw - 2rem));
+    padding: 12px;
+    background: var(--muze-presenter-surface, Canvas);
+    color: var(--muze-presenter-color, CanvasText);
+    font: inherit;
+  }
+}
