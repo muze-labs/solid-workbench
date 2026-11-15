@@ -1,5 +1,118 @@
 # Solid Workbench project context
 
+## Presenter collections cycle selected, 2026-11-15
+
+The maintainer agrees to the proposed Presenter collections scope including the
+same managed/linked and confirmed permanent-deletion policy as Notebook. CYC223
+is Active on verified spiral/CYC-20261115-QG24H-223-presenter-collections from
+clean accepted main a3147bb. SRC224/DES225/IMP226/EVD227 retain scope, design,
+implementation and evaluation. Continue the collection/personal-app foundation
+and library simplification with real second-consumer browser reuse. Preserve
+current deck drafts, dirty guards, direct resources and native data; uncached
+bodies need access. No acceptance, commit, merge, push or publication authorized.
+
+CYC223 now enters Evaluate with implementation and automated checks complete.
+Presenter consumes the native collection/default/lifecycle APIs and a shared
+category/entry browser also used by Notebook. The current deck stays recoverable
+and dirty replacement is refused. npm run check (36 files and both builds) and
+the uninterrupted fourteen-suite Chrome command pass. EVD227 retains transfer
+costs, prior probe failures, the simplification review and manual/provider/stock
+validator limits. Human acceptance is pending; changes remain uncommitted.
+
+During review the maintainer requests explicit-only collection status, correct
+category focus and first-slide deck cards (one phone/two desktop columns), and
+confirms lazy existing-document reads with offline cached previews. This extends
+the same unaccepted CYC223. Preview loading stays separate from document editing;
+source/build checks (36 files and both builds) and the uninterrupted fourteen-suite
+Chrome command pass. Category and entry rows retain identity for native focus;
+status is explicit-only and cached first-slide previews do not open editors.
+EVD227 supersedes the earlier completion statement with current costs and limits. No acceptance or delivery is authorized.
+
+The maintainer subsequently reports New deck is blocked by an unsaved current
+deck that is absent from the overview, and explicitly approves separate local
+drafts with visible recovery cards. They waive backward compatibility and choose
+manual Firefox Storage reset of solid-presenter / solid-presenter-drafts. New
+native owner-scoped registry/copies preserve edits across New/select/reload;
+local display does not import Pod membership. Migration code is removed. Source
+checks (37 files and both builds) and the final uninterrupted fourteen-suite
+Chrome run pass. EVD227 records the final native registry and recovery evidence. This remains Active CYC223 pending human review,
+with no commit or delivery authorized.
+
+The maintainer next agrees to visible per-card Delete/Remove link controls and
+no retained local version after successful confirmed Presenter deletion. This
+supersedes the earlier Presenter backup-retention policy; Notebook is unchanged.
+Local copies/baselines/previews are purged, native markers and write fences
+prevent late-write recovery, and Pod failures retain data plus an explicit Retry
+delete footer. Source/build (37 files, both builds), full Notebook and Presenter
+editor/collection phone/desktop/keyboard checks pass, with final reruns recorded.
+The required full browser command was run but is not green: workspace save-close
+passes on retry; Files recipient still fails a disconnection error assertion.
+Presenter editor passes on rerun and the collection regression passes after two
+CDP “Promise was collected” interruptions. No clean uninterrupted suite pass is
+claimed for this final correction. Scoped SHACL/exact references and the disclosed
+hierarchical-base adapter pass; stock validator limits remain. EVD227 retains
+current evidence, captures, costs and limitations. CYC223 remains Active in
+Evaluate awaiting human acceptance; no commit or delivery is authorized.
+
+Further CYC223 review confirms compact preview overlays: trash on hover/focus,
+always visible for touch, persistent Local only/Local changes badges and one
+caption line. The maintainer then asks for first-position dotted New deck with
+larger plus and adjacent label. After an explicit pause (browser command stopped),
+they resume with context-aware toolbar corrections: overview New deck, hidden
+Present; editor Add slide and Present. Existing separate-draft commands and
+SimplyFlow bindings implement both creation entries, retaining native storage
+and deletion behavior. SRC224/DES225/IMP226/EVD227 record scope and renewed
+verification. Source/build, full Notebook and final native Presenter collection checks pass;
+the full browser command remains non-green at managed Account/workspace recovery.
+EVD227 retains those failures, passing targeted evidence, snapshots and reviewed
+phone/desktop captures. All changes remain uncommitted in Active CYC223,
+Evaluate, awaiting human acceptance; no delivery is authorized.
+
+Slide review then confirms insertion after the current slide and reorder controls.
+The maintainer pauses before implementation, then explicitly defers drag/drop
+as too much scope. Only native anchored insertion and clearer existing move
+buttons proceed. Missing anchors refuse before mutation; subsequent positions
+shift without replacing IDs/content/unknown RDF. Visible Move earlier/later
+labels and live position feedback reuse native commands and local persistence.
+Source/build and expanded native Presenter editor checks pass, including keyboard
+focus, identity, text/order preservation and reload. Subsequent Move/Add reveal corrections pass the expanded editor suite; Notebook
+and collection tails also pass. All fourteen suites have coverage across runs,
+without an uninterrupted final full-command pass. EVD227 retains exact scope,
+snapshots and qualifications. The maintainer then reports flicker: native probe
+confirms stable editor iframes but replaced thumbnail nodes and temporarily
+dimmed/disabled controls. The maintainer confirms the correction: stable per-deck SimplyFlow projection
+rows and quiet Move operations retaining concurrency/persistence guards. The
+move-only focus workaround is removed after removing its disabling cause.
+Source/build and expanded complete Presenter suite pass, including original
+thumbnail/frame identity and no editor/toolbar disabling, focus, Add/Move scroll,
+edits/reload and provider recovery. The maintainer says flicker is much better, then requests selection of the
+predecessor on removal with first remaining slide as fallback. That policy now
+uses the existing sorted model and RevealSlide; an empty deck clears selection.
+Latest source/build and both expanded Presenter suites pass, including last,
+first and only-slide cases. EVD227 retains renewed full-suite results when
+complete. No drag infrastructure, human acceptance or delivery is inferred.
+
+Final CYC223 review evaluation now passes npm run check (37 source files,
+both variants) and an uninterrupted fourteen-suite npm run test:browser on the
+unchanged final product. This supersedes earlier non-green/pending evaluations
+for this product; EVD227 preserves prior failures and interrupted runs. Stable
+thumbnail/frame identity and no disabling during moves, Add/Move visibility,
+predecessor/first/empty removal selection, native focus and all prior collection/
+local-recovery/deletion contracts pass. Snapshot hashes and scoped/adapted graph
+validation pass; manual AT/Firefox/live-provider and stock-validator limits remain.
+CYC223 remains Active in Evaluate, uncommitted, awaiting human acceptance.
+
+## CYC223 accepted for integration, 2026-11-15
+
+The maintainer says “accepted, commit, merge and push please”. ACC228 accepts
+implementation 2aca5cd6da62dfbcf6c87f1128bebbbade63f79b and verification
+35d9c48364f9b78bf7e8c1f0ddca571ad50ea10d. CYC223 is Accepted; earlier Active/
+pending notes are superseded. Latest source/build and uninterrupted fourteen-
+suite Chrome checks pass. The authorized direct normal merge and push of main/
+cycle must follow exact prospective validation against latest main. Existing
+manual/provider and stock-validator limitations remain. Preserve the unrelated
+icon archive. No next cycle, package publication or deployment is selected.
+
 ## CYC217 accepted for integration, 2026-11-15
 
 After reviewing the shared-owner changes and reuse, the maintainer says
