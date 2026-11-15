@@ -6,7 +6,9 @@ import {
   rdf,
   xsd
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
-import { loadDocument, saveDocument, httpUrl } from '@muze-labs/solid-app-data';
+import { loadDocument, httpUrl } from '@muze-labs/solid-app-data';
+import { DocumentSession }
+  from '@muze-labs/solid-app-data/document-session.mjs';
 import { from, asc } from '@muze-nl/jaqt';
 import {
   readFragment,
@@ -19,22 +21,27 @@ const cachePredicate = (field) => presenter + 'local-' + field;
 
 // Presenter policy over existing native graph, local Turtle and conditional
 // document APIs. Remote replica sync does not supply conditional writes.
-export class DeckDocument {
+export class DeckDocument extends DocumentSession {
   constructor({ owner = '', source, baselineFor } = {}) {
+    super({
+      owner,
+      messages: {
+        account: 'presenter: Connect with this deck’s account before saving.',
+        address: 'presenter: Use a deck document URL without a fragment.',
+        exists: 'presenter: A document already exists there. Open it or choose a new URL.'
+      }
+    });
     this.source =
       source ||
       local.indexedDB('solid-presenter', {
         key: owner || 'anonymous'
       });
-    this.owner = owner;
     this.baselineFor =
       baselineFor ||
       ((url) =>
         local.indexedDB('solid-presenter-baselines', {
           key: owner + '\n' + url
         }));
-    this.pending = Promise.resolve();
-    this.revision = 0;
   }
   async open() {
     const text = await this.source.load();
@@ -189,8 +196,7 @@ export class DeckDocument {
           : undefined
         : literal(value, xsd + kind)
     );
-    this.revision += 1;
-    this.dirty = true;
+    this.changed();
   }
   editText(id, fragment) {
     this.graph.one(named(id), presenter + 'text', 'string');
@@ -247,8 +253,7 @@ export class DeckDocument {
     for (const term of keep) {
       this.graph.add(this.root, presenter + 'slide', term);
     }
-    this.revision += 1;
-    this.dirty = true;
+    this.changed();
   }
   content() {
     const graph = this.graph.clone();
@@ -267,61 +272,7 @@ export class DeckDocument {
       this.graph.set(this.root, cachePredicate(field), literal(value));
     }
     const text = this.graph.write();
-    this.pending = this.pending
-      .catch(() => {})
-      .then(() => this.source.save(text));
-    return this.pending;
-  }
-  async save(session, address) {
-    if (!session || session.webId !== this.owner) {
-      throw new Error(
-        'presenter: Connect with this deck’s account before saving.'
-      );
-    }
-    const url = httpUrl(address);
-    if (new URL(url).hash) {
-      throw new Error('presenter: Use a deck document URL without a fragment.');
-    }
-    await this.persist();
-    const revision = this.revision;
-    const graph = this.content();
-    let document;
-    if (this.url === url) {
-      document = {
-        url,
-        etag: this.etag,
-        missing: this.missing,
-        graph,
-        source: this.etag ? undefined : await this.baselineFor(url).load()
-      };
-    }
-    else {
-      document = await session.perform(() =>
-        loadDocument(session.client, url, {
-          allowMissing: true
-        })
-      );
-      if (!document.missing) {
-        throw new Error(
-          'presenter: A document already exists there. Open it or choose a new URL.'
-        );
-      }
-      document.graph = graph;
-    }
-    const saved = await session.perform(() =>
-      saveDocument(session.client, document)
-    );
-    if (!saved.etag) {
-      // A separate native Turtle document supplies the existing helper's
-      // comparison baseline after 205/no-ETag replies, including after reload.
-      await this.baselineFor(url).save(saved.source);
-    }
-    this.url = url;
-    this.etag = saved.etag;
-    this.missing = false;
-    this.dirty = revision !== this.revision;
-    await this.persist();
-    return saved;
+    return this.enqueueRecoveryWrite(() => this.source.save(text));
   }
   async load(session, address) {
     if (this.dirty) {
@@ -329,11 +280,10 @@ export class DeckDocument {
         'presenter: Save the local deck before opening another document.'
       );
     }
-    if (!session || session.webId !== this.owner) {
-      throw new Error(
-        'presenter: Connect with this deck’s account before opening.'
-      );
-    }
+    this.requireAccount(
+      session,
+      'presenter: Connect with this deck’s account before opening.'
+    );
     const revision = this.revision;
     const document = await session.perform(() =>
       loadDocument(session.client, address)

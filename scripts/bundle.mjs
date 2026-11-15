@@ -36,6 +36,13 @@ function entryOwners(id, getModuleInfo) {
 }
 
 function sharedChunk(id, { getModuleInfo }) {
+  // Only the two document apps need their shared save/recovery owner, including
+  // its optional source descriptor. Keep that cost out of unrelated app graphs.
+  if (id.replace(/\?source$/, '').endsWith(
+    '/packages/solid-app-data/src/document-session.mjs'
+  )) {
+    return 'shared/document-session';
+  }
   // Only Workbench and Preferences need workspace image storage. Sharing this
   // module must not pull it into every app's common UI chunk.
   if (
