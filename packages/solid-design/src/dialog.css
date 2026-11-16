@@ -30,20 +30,31 @@
   .muze-solid-design-dialog-footer {
     flex: none;
     padding: var(--swb-dialog-space-small, 0.5rem) var(--swb-dialog-space, 1rem);
-    background: var(--swb-dialog-surface, Canvas);
+    background: transparent;
   }
   .muze-solid-design-dialog-header {
     position: relative;
+    box-sizing: border-box;
     min-height: 2.75rem;
+    padding-block: 0;
     padding-inline-end: 4rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--swb-dialog-space, 1rem);
-    border-bottom: 1px solid var(--swb-dialog-hover, ButtonFace);
+    background: transparent;
   }
   .swb-dialog-title {
+    display: flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    min-inline-size: 0;
     margin: 0;
+    font: inherit;
+    font-size: var(--muze-solid-design-title-size, 1.25rem);
+    font-weight: 500;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
   }
   .muze-solid-design-dialog-close {
     margin: 0;
@@ -58,9 +69,9 @@
     height: 2.75rem;
     line-height: 1;
 
-    clip-path: polygon(0 0, 17px 100%, 100% 100%, 100% 0);
+    isolation: isolate;
     padding: 0 10px 0 25px;
-    background: var(--swb-dialog-marker, GrayText);
+    background: transparent;
     color: white;
     box-shadow: none;
   }
@@ -105,5 +116,28 @@
   .muze-solid-design-dialog::backdrop {
     background: #0007;
     backdrop-filter: blur(3px);
+  }
+}
+
+@layer component {
+  .muze-solid-design-dialog {
+    background: var(--muze-solid-design-chrome, Canvas);
+    color: var(--muze-solid-design-text, CanvasText);
+    border: 1px solid var(--muze-solid-design-divider, GrayText);
+    box-shadow: var(--muze-solid-design-elevation);
+  }
+
+}
+
+@layer component {
+  .muze-solid-design-dialog-header > button {
+    box-sizing: border-box;
+    align-self: stretch;
+    min-block-size: 2.75rem;
+    margin-block: 0;
+    padding-block: 0;
+  }
+  .muze-solid-design-dialog-close {
+    block-size: 100%;
   }
 }

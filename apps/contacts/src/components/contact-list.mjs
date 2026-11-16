@@ -33,6 +33,9 @@ export const contactList = {
         .where(this.api.isPerson)
         .select((node) => ({
           id: node.id,
+          selection: {
+            'aria-current': node.id === this.runtime.selected ? 'page' : null
+          },
           label: this.api.profileLabel(node),
           search: Object.values(this.api.readProfile(node))
             .join(' ')
@@ -47,10 +50,17 @@ export const contactList = {
     },
     selectContact(id) {
       this.runtime.selected = id;
+      for (const person of this.runtime.people.state.data) {
+        person.selection['aria-current'] = person.id === id ? 'page' : null;
+      }
       const node = id ? this.runtime.store.collection.get(id) : null;
+      document.title = node
+        ? this.api.profileLabel(node) + ' · Contacts'
+        : 'Contacts';
       this.data.visibility = { hidden: node ? null : '' };
       this.runtime.widget.show(node, {
         editable: true,
+        showEditButton: false,
         sourceLabel: 'Your private address book',
         onSave: (edits) => this.actions.saveContact(id, edits)
       });

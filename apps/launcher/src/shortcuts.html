@@ -1,19 +1,30 @@
 <div style="display: contents">
   <section class="swb-saved-apps">
     <h2 class="swb-visually-hidden">Your shortcuts</h2>
+    <p class="swb-visually-hidden" id="swb-shortcut-menu-help">
+      Right-click, hold, or press Shift+F10 for settings and movement.
+    </p>
     <div class="swb-launcher-grid">
       <ul
         class="swb-person-list swb-shortcut-list"
         data-simply-list="shortcuts"
       >
         <template
-          ><li class="swb-shortcut swb-list-item">
+          ><li
+            class="swb-shortcut swb-list-item"
+            data-simply-field="shortcutAttributes"
+            data-simply-transform="attributes"
+            data-simply-attributes="data-swb-shortcut class"
+          >
             <a
               class="swb-shortcut-link"
+              draggable="true"
+              aria-haspopup="menu"
+              aria-describedby="swb-shortcut-menu-help"
               data-simply-command="launchApp"
               data-simply-field="link"
               data-simply-transform="attributes"
-              data-simply-attributes="href target rel"
+              data-simply-attributes="href target rel title"
               ><svg
                 class="ds-icon ds-icon-feather swb-app-icon"
                 aria-hidden="true"
@@ -34,17 +45,70 @@
                 data-simply-field="icon"
                 data-simply-transform="attributes"
                 data-simply-attributes="src hidden" /><span
+                class="muze-solid-design-label-two-lines"
                 data-simply-field="label"
                 data-simply-transform="escape_html"
               ></span
             ></a>
-            <button
-              type="button"
-              class="ds-button swb-shortcut-settings swb-list-action"
-              data-simply-command="swb_shortcutSettings"
+            <div
+              class="muze-solid-design-popup swb-shortcut-menu"
+              popover
+              role="menu"
+              data-simply-field="menuPlacement"
+              data-simply-transform="attributes"
+              data-simply-attributes="style"
+              aria-label="Shortcut actions"
             >
-              Shortcut settings
-            </button>
+              <button
+                type="button"
+                role="menuitem"
+                tabindex="-1"
+                class="muze-solid-design-list-row muze-solid-design-list-state"
+                data-simply-command="swb_shortcutSettings"
+              >
+                Settings
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                tabindex="-1"
+                class="muze-solid-design-list-row muze-solid-design-list-state"
+                data-simply-command="swbShortcutMoveEarlier"
+                data-simply-value=":value.id"
+              >
+                Move earlier
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                tabindex="-1"
+                class="muze-solid-design-list-row muze-solid-design-list-state"
+                data-simply-command="swbShortcutMoveLater"
+                data-simply-value=":value.id"
+              >
+                Move later
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                tabindex="-1"
+                class="muze-solid-design-list-row muze-solid-design-list-state"
+                data-simply-command="swbShortcutMoveTo"
+                data-simply-value=":value.id"
+              >
+                Move to…
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                tabindex="-1"
+                class="muze-solid-design-list-row muze-solid-design-list-state"
+                data-simply-command="swbShortcutDelete"
+                data-simply-value=":value.id"
+              >
+                Delete shortcut
+              </button>
+            </div>
             <dialog
               class="ds-dialog muze-solid-design-dialog muze-solid-launcher-shortcut-settings"
               data-simply-behavior="muzeSolidDesignDialog"
@@ -54,7 +118,7 @@
                 <h2 class="swb-dialog-title">Shortcut settings</h2>
                 <button
                   type="button"
-                  class="ds-button muze-solid-design-dialog-close"
+                  class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
                   aria-label="Close shortcut settings"
                   data-simply-command="muzeSolidDesignCloseDialog"
                 >
@@ -64,15 +128,15 @@
                 </button>
               </header>
               <div class="muze-solid-design-dialog-content">
-                <label
+                <label class="muze-solid-design-label"
                   >Name<input
-                    class="swb-control swb-labeled-control"
+                    class="muze-solid-design-control swb-control swb-labeled-control"
                     name="swb_shortcutName"
                     data-simply-field="label"
                 /></label>
-                <label
+                <label class="muze-solid-design-label"
                   >Icon URL override<input
-                    class="swb-control swb-labeled-control"
+                    class="muze-solid-design-control swb-control swb-labeled-control"
                     name="swb_shortcutIcon"
                     type="url"
                     data-simply-field="iconUrl"
@@ -80,26 +144,30 @@
                 <p>Leave blank to use the application's icon.</p>
                 <button
                   type="button"
-                  class="ds-button"
+                  class="muze-solid-design-button ds-button"
                   data-simply-command="swb_editShortcut"
                   data-simply-value=":value.id"
                 >
                   Save name and icon
                 </button>
-                <label
-                  >Launch mode<select
-                    class="swb-control swb-labeled-control"
-                    data-simply-field="mode"
-                    data-simply-command="setLaunchMode"
-                    data-simply-value=":value.id"
-                  >
-                    <option value="">Follow application</option>
-                    <option value="fragment">URL fragment (#)</option>
-                    <option value="query">URL query (?)</option>
-                  </select></label
-                ><label
+                <label class="muze-solid-design-label"
+                  >Launch mode<span class="muze-solid-design-select-wrap"
+                    ><select
+                      class="muze-solid-design-select muze-solid-design-control swb-control swb-labeled-control"
+                      data-simply-field="mode"
+                      data-simply-command="setLaunchMode"
+                      data-simply-value=":value.id"
+                    >
+                      <option value="">Follow application</option>
+                      <option value="fragment">URL fragment (#)</option>
+                      <option value="query">URL query (?)</option></select
+                    ><span
+                      class="muze-solid-design-chevron"
+                      aria-hidden="true"
+                    ></span></span></label
+                ><label class="muze-solid-design-label"
                   ><input
-                    class="swb-control swb-labeled-control"
+                    class="muze-solid-design-choice-input"
                     type="checkbox"
                     data-simply-field="anonymous"
                     data-simply-command="setAnonymous"
@@ -107,7 +175,7 @@
                   />
                   Launch anonymously (omit WebID)</label
                 ><button
-                  class="ds-button"
+                  class="muze-solid-design-button ds-button"
                   data-simply-command="remove"
                   data-simply-value=":value.id"
                 >
@@ -130,13 +198,17 @@
       </ul>
       <button
         type="button"
-        class="ds-button swb-add-shortcut"
-        data-simply-command="muzeSolidCatalogOpen"
+        class="muze-solid-design-button ds-button swb-add-shortcut"
+        data-simply-command="swbShortcutAdd"
+        data-simply-field="swbShortcutAddAttributes"
+        data-simply-transform="attributes"
+        data-simply-attributes="class"
       >
         <svg class="ds-icon ds-icon-feather swb-app-icon" aria-hidden="true">
           <use href="../assets/feather-icons.svg#plus"></use>
         </svg>
-        <span>Add apps</span>
+        <span data-simply-field="swbShortcutAddLabel"
+          data-simply-transform="escape_html">Add apps</span>
       </button>
     </div>
     <p

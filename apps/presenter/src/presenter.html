@@ -11,19 +11,43 @@
     data-simply-transform="attributes"
     data-simply-attributes="data-muze-solid-presenting"
   >
-    <div class="muze-solid-presenter-document muze-solid-presenter-editing">
-      <input
-        class="muze-solid-presenter-title"
-        aria-label="Deck title"
-        name="deck-title"
+    <div
+      class="muze-solid-presenter-slide-tools muze-solid-presenter-editing muze-solid-design-toolbar"
+      aria-label="Deck and slide actions"
+    >
+      <span
+        class="muze-solid-design-toolbar-title muze-solid-presenter-title"
         data-simply-field="muzeSolidPresenterTitle"
         data-simply-transform="escape_html"
-      />
-      <details class="muze-solid-presenter-deck-menu">
-        <summary class="muze-solid-design-tool">Deck</summary>
-        <div class="muze-solid-presenter-deck-sheet">
-          <label
+      ></span>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeSolidPresenterEditTitle"
+        aria-label="Edit deck title"
+        title="Edit deck title"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#edit-2"></use>
+        </svg>
+      </button>
+      <div class="muze-solid-design-popup-scope muze-solid-presenter-deck-menu">
+        <button
+          type="button"
+          class="muze-solid-design-tool muze-solid-design-popup-trigger"
+          popovertarget="muze-solid-presenter-deck-sheet"
+        >
+          Deck
+        </button>
+        <div
+          class="muze-solid-design-popup muze-solid-design-popup-anchored muze-solid-presenter-deck-sheet"
+          id="muze-solid-presenter-deck-sheet"
+          popover="auto"
+          role="group"
+          aria-label="Deck settings"
+        >
+          <label class="muze-solid-design-label"
             >Deck document URL<input
+              class="muze-solid-design-control"
               type="url"
               data-simply-field="muzeSolidPresenterUrl"
               data-simply-transform="escape_html"
@@ -57,7 +81,112 @@
             </button>
           </div>
         </div>
-      </details>
+      </div>
+      <div
+        class="muze-solid-presenter-slide-actions"
+        data-simply-field="muzeSolidPresenterSelection"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <button
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidPresenterBackground"
+          data-simply-field="muzeSolidPresenterBackgroundVisibility"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#image"></use></svg
+          >Background
+        </button>
+        <button
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidPresenterMove"
+          data-simply-value="-1"
+          aria-label="Move slide earlier"
+          title="Move slide earlier"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#arrow-left"></use>
+          </svg>
+          Move earlier
+        </button>
+        <button
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidPresenterMove"
+          data-simply-value="1"
+          aria-label="Move slide later"
+          title="Move slide later"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#arrow-right"></use>
+          </svg>
+          Move later
+        </button>
+        <button
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidPresenterRemove"
+          aria-label="Remove slide"
+          title="Remove slide"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#trash-2"></use>
+          </svg>
+        </button>
+        <div
+          class="muze-solid-design-popup-scope muze-solid-presenter-view-options"
+        >
+          <button
+            type="button"
+            class="muze-solid-design-tool muze-solid-design-popup-trigger"
+            popovertarget="muze-solid-presenter-view-sheet"
+          >
+            View options
+          </button>
+          <div
+            class="muze-solid-design-popup muze-solid-design-popup-anchored muze-solid-presenter-deck-sheet"
+            id="muze-solid-presenter-view-sheet"
+            popover="auto"
+            role="group"
+            aria-label="Slide view options"
+            data-simply-list="muzeSolidPresenterRegions"
+          >
+            <template
+              ><div>
+                <span
+                  data-simply-field="label"
+                  data-simply-transform="escape_html"
+                ></span>
+                <button
+                  class="muze-solid-design-tool"
+                  data-simply-command="muzeSolidPresenterRetryRegion"
+                  data-simply-value=":value.id"
+                >
+                  Retry
+                </button>
+                <button
+                  class="muze-solid-design-tool"
+                  data-simply-command="muzeSolidPresenterUseProvider"
+                  data-simply-value=":value.id"
+                >
+                  Use preferred provider
+                </button>
+                <button
+                  class="muze-solid-design-tool"
+                  data-simply-command="muzeSolidPresenterDiscardRegion"
+                  data-simply-value=":value.id"
+                  hidden
+                  data-simply-field="discard"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="hidden"
+                >
+                  Discard view and its draft
+                </button>
+              </div></template
+            >
+          </div>
+        </div>
+      </div>
     </div>
     <div class="muze-solid-presenter-panels">
       <nav
@@ -71,7 +200,7 @@
           <template
             ><li>
               <button
-                class="muze-solid-presenter-slide-button"
+                class="muze-solid-presenter-slide-button muze-solid-design-list-state"
                 data-simply-command="muzeSolidPresenterSelect"
                 data-simply-value=":value.id"
                 data-simply-field="attributes"
@@ -108,97 +237,6 @@
         data-simply-transform="attributes"
         data-simply-attributes="hidden"
       >
-        <div
-          class="muze-solid-presenter-slide-tools muze-solid-presenter-editing muze-solid-design-toolbar"
-          aria-label="Slide actions"
-        >
-          <button
-            class="muze-solid-design-tool"
-            data-simply-command="muzeSolidPresenterBackground"
-            data-simply-field="muzeSolidPresenterBackgroundVisibility"
-            data-simply-transform="attributes"
-            data-simply-attributes="hidden"
-          >
-            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-              <use href="../assets/feather-icons.svg#image"></use></svg
-            >Background
-          </button>
-          <button
-            class="muze-solid-design-tool"
-            data-simply-command="muzeSolidPresenterMove"
-            data-simply-value="-1"
-            aria-label="Move slide earlier"
-            title="Move slide earlier"
-          >
-            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-              <use href="../assets/feather-icons.svg#arrow-left"></use>
-            </svg>
-            Move earlier
-          </button>
-          <button
-            class="muze-solid-design-tool"
-            data-simply-command="muzeSolidPresenterMove"
-            data-simply-value="1"
-            aria-label="Move slide later"
-            title="Move slide later"
-          >
-            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-              <use href="../assets/feather-icons.svg#arrow-right"></use>
-            </svg>
-            Move later
-          </button>
-          <button
-            class="muze-solid-design-tool"
-            data-simply-command="muzeSolidPresenterRemove"
-            aria-label="Remove slide"
-            title="Remove slide"
-          >
-            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-              <use href="../assets/feather-icons.svg#trash-2"></use>
-            </svg>
-          </button>
-          <details class="muze-solid-presenter-view-options">
-            <summary class="muze-solid-design-tool">View options</summary>
-            <div
-              class="muze-solid-presenter-deck-sheet"
-              data-simply-list="muzeSolidPresenterRegions"
-            >
-              <template
-                ><div>
-                  <span
-                    data-simply-field="label"
-                    data-simply-transform="escape_html"
-                  ></span>
-                  <button
-                    class="muze-solid-design-tool"
-                    data-simply-command="muzeSolidPresenterRetryRegion"
-                    data-simply-value=":value.id"
-                  >
-                    Retry
-                  </button>
-                  <button
-                    class="muze-solid-design-tool"
-                    data-simply-command="muzeSolidPresenterUseProvider"
-                    data-simply-value=":value.id"
-                  >
-                    Use preferred provider
-                  </button>
-                  <button
-                    class="muze-solid-design-tool"
-                    data-simply-command="muzeSolidPresenterDiscardRegion"
-                    data-simply-value=":value.id"
-                    hidden
-                    data-simply-field="discard"
-                    data-simply-transform="attributes"
-                    data-simply-attributes="hidden"
-                  >
-                    Discard view and its draft
-                  </button>
-                </div></template
-              >
-            </div>
-          </details>
-        </div>
         <div class="muze-solid-presenter-stage">
           {{view:muze-solid-presenter-regions:./regions.html}}
         </div>
@@ -263,3 +301,59 @@
     ></p>
   </div>
 </fieldset>
+
+<dialog
+  class="ds-dialog muze-solid-design-dialog muze-solid-presenter-title-dialog"
+  data-simply-behavior="muzeSolidDesignDialog"
+  aria-labelledby="muze-solid-presenter-title-heading"
+>
+  <form
+    class="swb-dialog-form"
+    data-simply-command="muzeSolidPresenterSaveTitle"
+  >
+    <header class="muze-solid-design-dialog-header">
+      <h2 id="muze-solid-presenter-title-heading" class="swb-dialog-title">
+        Deck title
+      </h2>
+      <button
+        type="button"
+        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+        data-simply-command="muzeSolidDesignCloseDialog"
+        aria-label="Close deck title"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#x"></use>
+        </svg>
+      </button>
+    </header>
+    <div class="muze-solid-design-dialog-content">
+      <label class="muze-solid-design-label"
+        >Title<input
+          class="muze-solid-design-control"
+          name="deck-title"
+          data-simply-field="muzeSolidPresenterTitleDraft"
+          autofocus
+      /></label>
+      <p
+        role="status"
+        data-simply-field="muzeSolidPresenterStatus"
+        data-simply-transform="escape_html"
+      ></p>
+    </div>
+    <footer class="muze-solid-design-dialog-footer">
+      <button
+        type="submit"
+        class="ds-button muze-solid-design-button muze-solid-design-button-primary"
+      >
+        Apply
+      </button>
+      <button
+        type="button"
+        class="ds-button muze-solid-design-button"
+        data-simply-command="muzeSolidDesignCloseDialog"
+      >
+        Cancel
+      </button>
+    </footer>
+  </form>
+</dialog>

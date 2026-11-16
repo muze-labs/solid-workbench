@@ -392,7 +392,7 @@ try {
     await run(
       'const s=getComputedStyle(document.querySelector("h1"));return {color:s.color,shadow:s.textShadow};'
     ),
-    { color: 'rgb(0, 0, 0)', shadow: 'none' }
+    { color: 'rgb(34, 43, 53)', shadow: 'none' }
   );
   await change('[name=theme]', 'dark');
   await wait('document.body.classList.contains("ds-darkmode")');

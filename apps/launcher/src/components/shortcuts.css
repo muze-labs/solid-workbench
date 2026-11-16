@@ -36,29 +36,28 @@
 
   .swb-launcher-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-    gap: var(--swb-shortcuts-space);
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    gap: 12px;
     padding: 0;
     list-style: none;
   }
   .swb-shortcut {
     display: block;
     min-width: 0;
-    padding: 0.5rem;
+    padding: 0;
     background: transparent;
   }
   .swb-shortcut-link {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--swb-shortcuts-space);
+    gap: 0.25rem;
     box-sizing: border-box;
     width: 100%;
-    padding: 0.5rem;
+    padding: 4px;
     text-align: center;
     text-decoration: none;
     font-size: 1rem;
-    min-height: 7rem;
     overflow-wrap: anywhere;
   }
   .swb-shortcut-image {
@@ -76,9 +75,8 @@
     align-items: center;
     justify-content: start;
     gap: var(--swb-shortcuts-space);
-    padding: 1rem;
+    padding: 4px;
     margin: 0;
-    min-height: 7rem;
     overflow-wrap: anywhere;
     font-size: 1rem;
     background: transparent;
@@ -91,23 +89,14 @@
   .swb-app-icon,
   .swb-shortcut-image {
     box-sizing: content-box;
-    padding: 0.625rem;
-    background: var(--swb-shortcuts-accent);
+    padding: 0;
+    background: transparent;
     color: var(--swb-shortcuts-accent-text);
   }
   .swb-shortcut-image {
-    background: var(--swb-shortcuts-image-surface, #f3f6fa);
-  }
-  .swb-shortcut-settings {
-    width: 100%;
-    font-size: 0.85rem;
-    padding: 0.5rem;
     background: transparent;
-    box-shadow: none;
   }
-
   .swb-shortcut-link,
-  .swb-shortcut-settings,
   .swb-add-shortcut,
   .swb-home-empty {
     color: var(--swb-home-text);
@@ -121,10 +110,36 @@
     filter: drop-shadow(0 1px 1px black) drop-shadow(0 0 1px black);
   }
   .swb-shortcut-link:focus-visible,
-  .swb-shortcut-settings:focus-visible,
   .swb-add-shortcut:focus-visible {
     outline: 2px solid white;
     outline-offset: 2px;
     box-shadow: 0 0 0 4px black;
+  }
+}
+
+@layer page {
+  .swb-shortcut-link,
+  .swb-add-shortcut {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    gap: 0.25rem;
+  }
+  .swb-shortcut-link {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  .swb-shortcut-menu {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 0.25rem;
+    min-inline-size: 12rem;
+    max-inline-size: calc(100vw - 16px);
+    max-block-size: calc(100dvh - 16px);
+    overflow: auto;
+    background: var(--muze-solid-design-surface);
+    color: var(--muze-solid-design-text);
+    text-shadow: none;
   }
 }

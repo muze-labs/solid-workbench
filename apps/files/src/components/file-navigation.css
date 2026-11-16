@@ -7,16 +7,7 @@
       var(--ds-color-background, Canvas) 94%,
       var(--ds-color, CanvasText)
     );
-    --muze-files-hover: color-mix(
-      in srgb,
-      var(--ds-color, CanvasText) 12%,
-      transparent
-    );
-    --muze-files-selected: color-mix(
-      in srgb,
-      var(--ds-color, CanvasText) 22%,
-      transparent
-    );
+
   }
 }
 @layer page {
@@ -32,7 +23,6 @@
   .swb-file-controls {
     block-size: 100%;
     min-inline-size: 0;
-    background: var(--muze-files-chrome, Canvas);
   }
   .muze-solid-files-context {
     display: flex;
@@ -87,7 +77,6 @@
     border: 0;
     background: var(--muze-files-chrome, Canvas);
     color: var(--muze-files-text, CanvasText);
-    box-shadow: 0 6px 20px #0005;
   }
   .muze-solid-files-folder-options,
   .swb-file-list {
@@ -105,9 +94,9 @@
     min-inline-size: 0;
   }
   .muze-solid-files-folder-option {
-    padding-inline-start: calc(8px + min(
-      var(--muze-files-folder-depth, 0) * 16px, 96px
-    ));
+    padding-inline-start: calc(
+      8px + min(var(--muze-files-folder-depth, 0) * 16px, 96px)
+    );
     inline-size: 100%;
     justify-content: start;
     white-space: normal;
@@ -116,9 +105,6 @@
     margin: 0 0 8px;
     font-size: 0.8125rem;
     overflow-wrap: anywhere;
-  }
-  .swb-file-list {
-    padding: 12px 10px;
   }
   .muze-solid-files-entry {
     display: flex;
@@ -129,21 +115,13 @@
     justify-content: start;
     min-inline-size: 0;
     max-inline-size: 100%;
-    font-size: 0.8125rem;
     text-align: start;
-    padding: 10px;
   }
   .muze-solid-files-entry-name {
     min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-  }
-  .swb-file-name[aria-current='page'] {
-    background: var(--muze-files-selected);
-  }
-  .swb-file-name:hover {
-    background: var(--muze-files-hover);
   }
   .muze-solid-files-entry-more {
     flex: none;

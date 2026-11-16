@@ -197,7 +197,8 @@ export const muzeSolidLauncherCatalog = {
       this.data.muzeSolidCatalogCategories = choices.map((choice) => ({
         ...choice,
         attributes: {
-          class: 'ds-button swb-section-choice',
+          class:
+            'muze-solid-design-list-row muze-solid-design-list-state swb-section-choice',
           'data-muze-solid-catalog-category': choice.id,
           'aria-current': choice.id === selected ? 'page' : null,
           tabindex: choice.id === selected ? '0' : '-1'
@@ -216,8 +217,7 @@ export const muzeSolidLauncherCatalog = {
       try {
         await action();
         if (this.data.muzeSolidCatalogStatus === 'Loading…') {
-          this.data.muzeSolidCatalogStatus =
-            'Choose an app to add to Workbench.';
+          this.data.muzeSolidCatalogStatus = '';
         }
       }
       catch (error) {

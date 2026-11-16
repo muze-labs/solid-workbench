@@ -17,17 +17,32 @@
     position: sticky;
     top: 0;
     z-index: 30;
-    padding: var(--swb-header-space-small, 0.5rem) var(--swb-header-space, 1rem);
-    background: var(--swb-header-background, var(--swb-header-surface, Canvas));
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    background: var(--swb-header-background, transparent);
     overflow: visible;
   }
   .swb-header-title {
-    color: var(--swb-header-text, inherit);
-    text-shadow: var(--swb-header-text-shadow, none);
-    display: var(--swb-header-title-display, block);
-    background: var(--swb-header-background, transparent);
+    color: var(--muze-solid-design-text, CanvasText);
+    display: var(--swb-header-title-display, flex);
+    align-items: center;
+    flex: 0 1 auto;
+    min-inline-size: 0;
+    min-block-size: 2.75rem;
     margin: 0;
-    padding-inline-end: 3rem;
+    padding-inline: 0.75rem;
+    font: inherit;
+    font-size: var(
+      --swb-header-title-size,
+      var(--muze-solid-design-title-size, 1.25rem)
+    );
+    font-weight: 500;
+    line-height: 1.4;
+    background: transparent;
+    text-shadow: var(--swb-header-text-shadow, none);
   }
   /* The DS heading mask belongs to horizontally scrolling panel headings. */
   /* Content views use the host's chrome. Keep their status and request-specific
@@ -42,9 +57,9 @@
     --swb-dropdown-link-padding: var(--swb-header-space-small, 0.5rem);
     display: flex;
     align-items: center;
-    gap: var(--swb-header-space-small, 0.5rem);
-    position: fixed;
-    inset: 0 0 auto auto;
+    gap: 0;
+    position: static;
+    margin-inline-start: auto;
     z-index: 100;
   }
   .muze-solid-ui-account-dialog[open] {
@@ -74,20 +89,17 @@
     color: var(--swb-header-text, inherit);
   }
   .swb-account-button {
-    clip-path: polygon(0 0, 17px 100%, 100% 100%, 100% 0);
+    position: relative;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 2.75rem;
     padding: 0 15px 0 30px;
-    background: var(--swb-header-marker, GrayText);
+    background: transparent;
     color: white;
     margin: 0;
     min-height: 2.75rem;
-  }
-  .swb-account-button:hover,
-  .swb-account-button:focus-visible {
-    background: var(--swb-header-accent, Highlight);
   }
   .swb-account-menu {
     position: fixed;
@@ -100,9 +112,13 @@
     overflow: auto;
   }
   .swb-suite-status {
+    background: var(--swb-status-background, transparent);
     color: var(--swb-header-text, inherit);
     text-shadow: var(--swb-header-text-shadow, none);
-    margin: var(--swb-header-space-small, 0.5rem) 0 0;
+    flex-basis: 100%;
+    box-sizing: border-box;
+    min-inline-size: 0;
+    margin: 0;
     padding: var(--swb-header-space-tiny, 0.25rem)
       var(--swb-header-space-small, 0.5rem);
     border-inline-start: 0.25rem solid var(--swb-header-accent, Highlight);
@@ -116,12 +132,6 @@
     .muze-solid-ui-account-dialog[open] {
       width: 100%;
       height: 100dvh;
-    }
-    .swb-suite-header {
-      padding-inline: var(--swb-header-space-small, 0.5rem);
-    }
-    .swb-header-title {
-      font-size: 1.5rem;
     }
   }
   /* The compact title width is shared at phone and desktop sizes. */
@@ -167,25 +177,9 @@
     display: none;
   }
 
-  .swb-account-button:focus-visible {
-    outline: var(--swb-header-marker-outline, revert);
-    outline-offset: -3px;
-  }
   @media (max-width: 720px) {
     .swb-account-name {
       max-width: 25vw;
-    }
-  }
-  @media (max-width: 359px) {
-    /* Narrow/zoomed widths give fixed account controls their own row. */
-    .swb-suite-header:has(.swb-account:not([hidden])) {
-      padding-block-start: calc(
-        2.75rem + var(--swb-header-space-small, 0.5rem)
-      );
-    }
-    .swb-header-title {
-      padding-inline-end: 0;
-      overflow-wrap: anywhere;
     }
   }
 }

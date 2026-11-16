@@ -39,6 +39,9 @@ import {
   parseLaunchUrl
 } from '@muze-labs/solid-app-data/launch.mjs';
 import {
+  shortcutOrder,
+  applyShortcutOrder,
+  shortcutOrderPredicate,
   shortcutLaunch,
   applyLaunchOverride,
   overridePredicate,
@@ -84,6 +87,7 @@ const definition = {
     lifecycle
   },
   data: {
+    swbShortcutAddLabel: 'Add apps',
     muzeSolidCatalogApps: [],
     muzeSolidCatalogSources: [],
     muzeSolidCatalogStatus: '',
@@ -152,6 +156,9 @@ const definition = {
     httpUrl,
     launchUrl,
     parseLaunchUrl,
+    shortcutOrder,
+    applyShortcutOrder,
+    shortcutOrderPredicate,
     shortcutLaunch,
     applyLaunchOverride,
     overridePredicate,

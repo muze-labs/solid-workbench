@@ -5,14 +5,7 @@
     min-inline-size: 0;
   }
   .muze-solid-files-layout {
-    display: grid;
-    grid-template-columns: 210px minmax(0, 1fr);
-    block-size: 100%;
-    min-block-size: 0;
-    gap: var(--swb-list-details-space, 16px);
     overflow: hidden;
-    scroll-snap-type: none;
-    align-items: stretch;
   }
   .muze-solid-files-list-pane,
   .muze-solid-files-details {

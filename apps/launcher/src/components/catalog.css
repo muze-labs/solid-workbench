@@ -14,13 +14,12 @@
     padding-inline: 16px;
     margin-block: 8px;
   }
+  .muze-solid-catalog-status:empty {
+    display: none;
+  }
   .muze-solid-catalog-layout {
     /* Keep offscreen accessible labels inside the scrolling panes. */
     position: relative;
-    --swb-list-details-list-width: 13rem;
-  }
-  .muze-solid-catalog-categories {
-    border-inline-end: 1px solid var(--muze-catalog-border, GrayText);
   }
   .muze-solid-catalog-details {
     padding: 12px;

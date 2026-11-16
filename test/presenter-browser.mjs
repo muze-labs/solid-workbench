@@ -242,7 +242,7 @@ async function recoverEditor(page, text, viewport) {
   );
   await run(
     page,
-    `document.querySelector('.muze-solid-presenter-view-options summary').click()`
+    `document.querySelector('.muze-solid-presenter-view-options > button').click()`
   );
   await until(
     page,
@@ -298,6 +298,11 @@ try {
   await click(page, 'muzeSolidUiAppAction', 0);
   await idle(page);
   await editText(page, 0, 'Our first deck');
+  await run(page, `const trigger=document.querySelector(
+    '.muze-solid-presenter-deck-menu > button');trigger.focus();trigger.click();`);
+  await until(page, 'document.querySelector("#muze-solid-presenter-deck-sheet:popover-open")');
+  await editText(page, 0, 'Our first deck');
+  await until(page, '!document.querySelector("#muze-solid-presenter-deck-sheet:popover-open")');
   const cold = await run(
     page,
     `const entries=[...performance.getEntriesByType('resource'),...performance.getEntriesByType('navigation'),...[...document.querySelectorAll('.muze-solid-presenter-frame')].flatMap(f=>[...f.contentWindow.performance.getEntriesByType('resource'),...f.contentWindow.performance.getEntriesByType('navigation')])];return {bytes:entries.reduce((sum,e)=>sum+e.transferSize,0),requests:entries.length};`

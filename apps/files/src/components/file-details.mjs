@@ -169,6 +169,7 @@ export const muzeSolidFileDetails = {
       }
     },
     muzeSolidFilesReturnToList() {
+      document.title = this.actions.decodeName(this.runtime.current) || 'Files';
       this.data.muzeSolidFilesLocation = {
         'data-muze-solid-files-detail': null
       };
@@ -190,6 +191,7 @@ export const muzeSolidFileDetails = {
       this.runtime.detailsResource = resource;
       this.runtime.files.state.options.selected = resource;
       this.data.muzeSolidFilesDetailName = this.actions.decodeName(resource);
+      document.title = this.data.muzeSolidFilesDetailName || 'Files';
       this.data.muzeSolidFilesDetailResource = resource;
       this.data.muzeSolidFilesDetails = { hidden: null };
       const host = this.runtime.host;

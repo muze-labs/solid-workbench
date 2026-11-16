@@ -10,7 +10,7 @@
     <h2 class="swb-dialog-title" id="swb-diagnostics-title">Diagnostics</h2>
     <button
       type="button"
-      class="ds-button muze-solid-design-dialog-close"
+      class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
       data-simply-command="muzeSolidDesignCloseDialog"
       aria-label="Close diagnostics"
     >
@@ -20,7 +20,11 @@
     </button>
   </header>
   <div class="muze-solid-design-dialog-content">
-    <button type="button" class="ds-button" data-simply-command="sync">
+    <button
+      type="button"
+      class="muze-solid-design-button ds-button"
+      data-simply-command="sync"
+    >
       Synchronize shortcuts
     </button>
     {{view:launcher-navigation:./navigation.html}}

@@ -1,8 +1,10 @@
+import { shortcutMenu } from './shortcut-menu.mjs';
 import styles from './shortcuts.css' with { type: 'text' };
 import sourceLauncherNavigation from '../navigation.html' with { type: 'text' };
 import sourceLauncherShortcuts from '../shortcuts.html' with { type: 'text' };
 
 export const shortcuts = {
+  components: { shortcutMenu },
   styles: { 'swb-workbench-shortcuts': styles },
   templates: {
     'launcher-navigation': sourceLauncherNavigation,
@@ -15,6 +17,7 @@ export const shortcuts = {
       this.actions.muzeSolidCatalogFocusDetails();
     },
     swb_shortcutSettings(button) {
+      button.closest('[popover]')?.hidePopover();
       return this.actions.muzeSolidDesignOpenDialog(
         button.closest('li').querySelector('dialog')
       );
@@ -64,6 +67,15 @@ export const shortcuts = {
       );
     },
     launchApp(element) {
+      if (Date.now() < (this.runtime.swbShortcutIgnoreClickUntil || 0)) {
+        return;
+      }
+      if (this.runtime.swbShortcutMoving) {
+        const id = element.closest('[data-swb-shortcut]').dataset.swbShortcut;
+        const moving = this.runtime.swbShortcutMoving;
+        this.actions.swbShortcutCancelMove();
+        return this.actions.swbMoveShortcut(moving, id);
+      }
       this.runtime.host.run(() => {
         if (!element.getAttribute('href')) {
           throw new Error('launcher: Connect to Solid to open this resource.');
@@ -125,7 +137,7 @@ export const shortcuts = {
         .toArray();
     },
     handleRemove(id) {
-      this.runtime.host.run(async () => {
+      return this.runtime.host.run(async () => {
         await this.runtime.store.collection.delete(id);
         this.actions.render();
         this.runtime.host.notify('Shortcut marked deleted.');
@@ -279,20 +291,39 @@ export const shortcuts = {
       }
       icon ||= sprite.href + '#grid';
       const usesSprite = icon.startsWith(sprite.href + '#');
+      let order = null;
+      try {
+        order = this.api.shortcutOrder(node);
+      }
+      catch (error) {
+        problem ||= error.message;
+      }
+      const label = String(
+        this.api.valueAt(node, this.api.prefixes.schema + 'name') || url
+      );
       const view = {
         id: node.id,
+        order,
+        menuPlacement: {},
+        shortcutAttributes: {
+          'data-swb-shortcut': node.id,
+          class: 'swb-shortcut'
+        },
         iconUrl: override,
         icon: { src: usesSprite ? null : icon, hidden: usesSprite ? '' : null },
         spriteIcon: { href: usesSprite ? icon : null },
         spriteVisibility: { hidden: usesSprite ? null : '' },
-        label: String(
-          this.api.valueAt(node, this.api.prefixes.schema + 'name') || url
-        ),
+        label,
         mode: settings.override,
         anonymous: settings.anonymous,
         modeNote,
         problem,
-        link: { href: settings.href, target: '_blank', rel: 'opener' }
+        link: {
+          href: settings.href,
+          target: '_blank',
+          rel: 'opener',
+          title: label
+        }
       };
       return {
         application: []
@@ -303,7 +334,7 @@ export const shortcuts = {
     },
     initializeShortcuts() {
       const owner = this;
-      const list = this.api.model({ data: [], options: {} });
+      const list = this.api.model({ data: [], options: { insertBefore: '' } });
       list.addEffect(function () {
         return owner.api.effect(() => this.state.data);
       });
@@ -313,6 +344,7 @@ export const shortcuts = {
             .from(input.current)
             .where(owner.actions.isShortcut)
             .select(owner.actions.shortcutView)
+            .orderBy({ order: owner.actions.swbCompareShortcutOrder })
             .toArray()
         );
       });
@@ -323,9 +355,29 @@ export const shortcuts = {
           ? ''
           : 'Add links to other applications you use.';
       });
+      this.runtime.shortcutPreviewEffect = this.api.effect(() => {
+        const target = list.state.options.insertBefore;
+        for (const row of list.view.current) {
+          row.shortcutAttributes.class =
+            row.id === target
+              ? 'swb-shortcut muze-solid-design-insert-before'
+              : 'swb-shortcut';
+        }
+        this.data.swbShortcutAddAttributes = {
+          class: 'muze-solid-design-button ds-button swb-add-shortcut' +
+            (target === 'end' ? ' muze-solid-design-insert-before' : '')
+        };
+      });
     },
     isShortcut(row) {
       return row.application;
+    },
+    swbCompareShortcutOrder(a, b) {
+      // Unpositioned new shortcuts follow the explicitly ordered ones.
+      return (
+        (a.order ?? Number.MAX_SAFE_INTEGER) -
+        (b.order ?? Number.MAX_SAFE_INTEGER)
+      );
     },
     shortcutView(row) {
       return row.view;

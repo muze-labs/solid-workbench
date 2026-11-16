@@ -90,6 +90,7 @@ export const workspaceHome = {
           this.api.prefixes.schema + 'name',
           this.api.prefixes.schema + 'url',
           this.api.overridePredicate,
+          this.api.shortcutOrderPredicate,
           this.api.anonymousPredicate,
           this.api.prefixes.schema + 'image',
           this.api.prefixes.apps + 'iconOverride'
@@ -145,8 +146,7 @@ export const workspaceHome = {
                   new URL(root).hostname),
               schema$url: { id: url },
               schema$image: {
-                id: new URL('../files/icon.svg', location.href)
-                  .href
+                id: new URL('../files/icon.svg', location.href).href
               }
             });
           }
@@ -161,6 +161,7 @@ export const workspaceHome = {
       const snapshot = this.runtime.persistence.snapshot;
       const entry = this.api.activeWorkspace(snapshot);
       this.data.swb_workspaceTitle = entry.title;
+      document.title = entry.title.trim() || 'Solid Workbench';
       const account = this.runtime.host.view;
       account.runtime.workbench = this;
       account.data.muzeSolidUiTitle = entry.title;

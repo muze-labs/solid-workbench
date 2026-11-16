@@ -5,7 +5,7 @@
     --ds-primary-contrast: white;
     --ds-box-radius: 0;
     --ds-dialog-radius: 0;
-    --ds-panels-list-width: 20em;
+    --ds-panels-list-width: 20rem;
   }
   .swb-root {
     --swb-ui-space: var(--ds-space);
@@ -72,7 +72,7 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .swb-control {
+  .swb-control:not(.muze-solid-design-control) {
     padding: var(--swb-control-inset) var(--swb-control-space);
     font: inherit;
   }
@@ -147,7 +147,6 @@
     );
   }
   .swb-app-content {
-    max-width: 80rem;
     flex: var(--swb-content-flex, initial);
     min-height: var(--swb-content-min-height, auto);
     overflow: var(--swb-content-overflow, visible);

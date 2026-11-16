@@ -2,17 +2,24 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 
 export async function checkAppIcons(page, origin) {
-  for (const app of ['workbench', 'files', 'contacts', 'profile']) {
+  for (const app of [
+    'workbench',
+    'files',
+    'contacts',
+    'profile',
+    'presenter',
+    'notebook'
+  ]) {
     const html = await (await fetch(origin + '/' + app + '/')).text();
     assert.match(html, /rel="icon" href="icon.svg"[^>]+sizes="any"/);
-    assert.match(html, /rel="icon" href="favicon.ico"/);
+    assert.match(html, /rel="icon" href="favicon.ico\?v=maya2"/);
     for (const asset of ['icon.svg', 'favicon.ico', 'favicon-32.png']) {
       const response = await fetch(origin + '/' + app + '/' + asset);
       assert.equal(response.status, 200);
       const sourceApp = app === 'workbench' ? 'launcher' : app;
-      const source = await readFile(new URL(
-        '../../apps/' + sourceApp + '/src/' + asset, import.meta.url
-      ));
+      const source = await readFile(
+        new URL('../../apps/' + sourceApp + '/src/' + asset, import.meta.url)
+      );
       assert.deepEqual(Buffer.from(await response.arrayBuffer()), source);
     }
   }
@@ -36,10 +43,13 @@ export async function checkAppIcons(page, origin) {
     node[schema + 'url'] = { id: 'https://external.example/files/' };
     const external = app.actions.shortcutRow(node).view;
     return {
-      current: current.icon.src, unchanged, custom: custom.icon.src,
+      current: current.icon.src,
+      unchanged,
+      custom: custom.icon.src,
       external: external.spriteIcon.href,
-      labels: [...document.querySelectorAll('.swb-shortcut-link')]
-        .every(link => link.textContent.trim().length > 0)
+      labels: [...document.querySelectorAll('.swb-shortcut-link')].every(
+        (link) => link.textContent.trim().length > 0
+      )
     };
   });
   assert.equal(result.current, origin + '/files/icon.svg');
@@ -48,18 +58,33 @@ export async function checkAppIcons(page, origin) {
   assert.equal(result.external, origin + '/assets/feather-icons.svg#folder');
   assert.equal(result.labels, true);
   for (let attempt = 0; attempt < 100; attempt++) {
-    if (await page.evaluate(() => [...document.querySelectorAll(
-      '.swb-shortcut-image:not([hidden])'
-    )].every(image => image.complete && image.naturalWidth > 0))) {
+    if (
+      await page.evaluate(() =>
+        [
+          ...document.querySelectorAll('.swb-shortcut-image:not([hidden])')
+        ].every((image) => image.complete && image.naturalWidth > 0)
+      )
+    ) {
       break;
     }
-    await new Promise(resolve => setTimeout(resolve, 30));
+    await new Promise((resolve) => setTimeout(resolve, 30));
   }
-  assert.equal(await page.evaluate(() => [...document.querySelectorAll(
-    '.swb-shortcut-image:not([hidden])'
-  )].every(image => image.complete && image.naturalWidth > 0)), true);
-  await writeFile('/tmp/cyc163-icons-phone.png', Buffer.from(
-    (await page.send('Page.captureScreenshot', { format: 'png' })).data, 'base64'
-  ));
-  console.log('PASS: supplied favicon bytes, colour Launcher defaults, cached old defaults, override/external preservation and phone labels.');
+  assert.equal(
+    await page.evaluate(() =>
+      [...document.querySelectorAll('.swb-shortcut-image:not([hidden])')].every(
+        (image) => image.complete && image.naturalWidth > 0
+      )
+    ),
+    true
+  );
+  await writeFile(
+    '/tmp/cyc163-icons-phone.png',
+    Buffer.from(
+      (await page.send('Page.captureScreenshot', { format: 'png' })).data,
+      'base64'
+    )
+  );
+  console.log(
+    'PASS: supplied favicon bytes, colour Launcher defaults, cached old defaults, override/external preservation and phone labels.'
+  );
 }

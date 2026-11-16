@@ -1,0 +1,587 @@
+/* Muze Workbench theme for the-ds. Opt in with .muze-solid-design-theme.
+ * Load after the-ds. No renderer, font download, or JavaScript dependency.
+ * Atomic composition: controls -> fields/actions -> toolbars/dialogs.
+ */
+@layer reset, setup, theme, base, component, page, utility;
+
+@layer theme {
+  /* THE DS ADAPTER. Keep all --ds-* references in this section.
+   * Reapply .muze-solid-design-theme at an independently themed boundary to resolve aliases
+   * against that boundary's host tokens. Override on the same element.
+   */
+  .muze-solid-design-theme {
+    --muze-solid-design-font: var(--ds-font-body, Arial, Helvetica, sans-serif);
+    --muze-solid-design-space: var(--ds-space, 1.6rem);
+    --muze-solid-design-shadow: var(--ds-shadow-medium, 0 4px 18px #20304233);
+    --muze-solid-design-popup-glow: var(--ds-glow-medium, 0 0 18px #d7e7ff45);
+    --muze-solid-design-glow: var(--ds-glow-small, 0 0 14px #d7e7ff38);
+    --muze-solid-design-surface: light-dark(#ffffff, #22272d);
+    --muze-solid-design-chrome: light-dark(#f1f4f6, #2d343c);
+    --muze-solid-design-text: light-dark(#222b35, #eef1f5);
+    --muze-solid-design-muted: light-dark(#576472, #b5bfca);
+    --muze-solid-design-marker: var(--ds-grey-70, #707c84);
+    --muze-solid-design-marker-active: var(--ds-primary, #225d96);
+    --muze-solid-design-border: light-dark(#83909b, #778593);
+    --muze-solid-design-divider: light-dark(#d2d9df, #4a535d);
+    --muze-solid-design-close-surface: light-dark(#e2e8ed, #3a444f);
+    --muze-solid-design-accent: light-dark(#225d96, #9ccaff);
+    --muze-solid-design-on-accent: light-dark(#ffffff, #142435);
+    --muze-solid-design-selected: light-dark(#dfebf6, #384d63);
+    --muze-solid-design-error: light-dark(#ac2929, #ffaaaa);
+    --muze-solid-design-focus: var(--muze-solid-design-accent);
+    --muze-solid-design-radius: 0;
+    --muze-solid-design-target: 2.75rem;
+    --muze-solid-design-title-size: 1.25rem;
+    --muze-solid-design-main-height: var(--muze-solid-design-target);
+    --muze-solid-design-gap: calc(var(--muze-solid-design-space) * 0.75);
+    --muze-solid-design-inset: var(--muze-solid-design-space);
+    --muze-solid-design-chevron-inset: 0.75rem;
+    --muze-solid-design-elevation: var(--muze-solid-design-shadow);
+    --muze-solid-design-popup-elevation: var(--muze-solid-design-shadow);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    .muze-solid-design-theme {
+      color-scheme: dark;
+      --muze-solid-design-elevation: var(--muze-solid-design-glow);
+      --muze-solid-design-popup-elevation: var(--muze-solid-design-popup-glow);
+    }
+  }
+  .ds-lightmode .muze-solid-design-theme {
+    color-scheme: light;
+    --muze-solid-design-elevation: var(--muze-solid-design-shadow);
+    --muze-solid-design-popup-elevation: var(--muze-solid-design-shadow);
+  }
+  .ds-darkmode .muze-solid-design-theme {
+    color-scheme: dark;
+    --muze-solid-design-elevation: var(--muze-solid-design-glow);
+    --muze-solid-design-popup-elevation: var(--muze-solid-design-popup-glow);
+  }
+}
+
+@layer base {
+  .muze-solid-design-theme {
+    font-family: var(--muze-solid-design-font);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--muze-solid-design-text);
+    background: var(--muze-solid-design-surface);
+  }
+}
+
+@layer component {
+  /* Atoms. Component layer also wins over the-ds element form defaults. */
+  .muze-solid-design-button {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-block-size: var(--muze-solid-design-target);
+    min-inline-size: var(--muze-solid-design-target);
+    padding: 0.5rem 1rem;
+    margin: 0;
+    border: 1px solid transparent;
+    border-radius: var(--muze-solid-design-radius);
+    background: var(--muze-solid-design-chrome);
+    color: var(--muze-solid-design-text);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-transform: none;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .muze-solid-design-button-primary {
+    background: var(--muze-solid-design-accent);
+    color: var(--muze-solid-design-on-accent);
+  }
+  .muze-solid-design-button-quiet {
+    background: transparent;
+  }
+  .muze-solid-design-button:hover {
+    filter: brightness(0.96);
+  }
+  .muze-solid-design-button[aria-pressed='true'],
+  .muze-solid-design-button[aria-expanded='true'] {
+    background: var(--muze-solid-design-selected);
+    color: var(--muze-solid-design-text);
+  }
+  .muze-solid-design-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+    filter: none;
+  }
+  .muze-solid-design-icon {
+    display: block;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+  }
+  .muze-solid-design-label {
+    display: block;
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .muze-solid-design-hint,
+  .muze-solid-design-error,
+  .muze-solid-design-status {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--muze-solid-design-muted);
+  }
+  .muze-solid-design-error {
+    color: var(--muze-solid-design-error);
+  }
+  .muze-solid-design-control {
+    box-sizing: border-box;
+    display: block;
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: var(--muze-solid-design-target);
+    block-size: auto;
+    padding: 0.5625rem 0.6875rem;
+    margin: 0;
+    border: 1px solid var(--muze-solid-design-border);
+    border-radius: var(--muze-solid-design-radius);
+    outline: none;
+    background: var(--muze-solid-design-surface);
+    color: var(--muze-solid-design-text);
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .muze-solid-design-control::placeholder {
+    color: var(--muze-solid-design-muted);
+    opacity: 1;
+  }
+  .muze-solid-design-control[readonly] {
+    background: var(--muze-solid-design-chrome);
+  }
+  .muze-solid-design-control:disabled {
+    opacity: 0.65;
+    cursor: default;
+  }
+  .muze-solid-design-control[aria-invalid='true'] {
+    border-color: var(--muze-solid-design-error);
+    box-shadow: inset 0 0 0 1px var(--muze-solid-design-error);
+  }
+  .muze-solid-design-textarea {
+    min-block-size: 6rem;
+    resize: vertical;
+  }
+  .muze-solid-design-select {
+    appearance: none;
+    padding-inline-end: calc(var(--muze-solid-design-chevron-inset) + 1.75rem);
+    background-image: none;
+  }
+  .muze-solid-design-select-wrap {
+    display: block;
+    position: relative;
+    min-inline-size: 0;
+  }
+  .muze-solid-design-chevron {
+    position: absolute;
+    inset-inline-end: var(--muze-solid-design-chevron-inset);
+    inset-block-start: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    inline-size: 0.4375rem;
+    block-size: 0.4375rem;
+    border-inline-end: 1.5px solid currentColor;
+    border-block-end: 1.5px solid currentColor;
+    color: var(--muze-solid-design-muted);
+    pointer-events: none;
+  }
+  .muze-solid-design-menu-button {
+    padding-inline-end: var(--muze-solid-design-chevron-inset);
+    gap: 0.75rem;
+  }
+  .muze-solid-design-menu-chevron {
+    display: block;
+    inline-size: 0.4375rem;
+    block-size: 0.4375rem;
+    border-inline-end: 1.5px solid currentColor;
+    border-block-end: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    flex: none;
+    margin-inline-end: 2px;
+  }
+  .muze-solid-design-control:focus-visible,
+  .muze-solid-design-control:focus,
+  .muze-solid-design-button:focus-visible,
+  .muze-solid-design-choice-input:focus-visible,
+  .muze-solid-design-close:focus-visible {
+    outline: 2px solid var(--muze-solid-design-focus);
+    outline-offset: 2px;
+  }
+
+  /* Molecules: fields, option groups, actions. */
+  .muze-solid-design-field {
+    display: grid;
+    gap: 0.375rem;
+    min-inline-size: 0;
+    margin: 0;
+  }
+  .muze-solid-design-fields {
+    display: grid;
+    gap: var(--muze-solid-design-gap);
+    min-inline-size: 0;
+  }
+  .muze-solid-design-field-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--muze-solid-design-gap);
+  }
+  .muze-solid-design-choices {
+    min-inline-size: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .muze-solid-design-legend {
+    padding: 0;
+    margin-block-end: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .muze-solid-design-choice {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-block-size: var(--muze-solid-design-target);
+    margin: 0;
+    font-size: 0.875rem;
+  }
+  .muze-solid-design-choice-input {
+    flex: none;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    margin: 0;
+    accent-color: var(--muze-solid-design-accent);
+  }
+  .muze-solid-design-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  /* Organisms: main bar, contextual toolbar, dialog and dockable panel. */
+  .muze-solid-design-mainbar {
+    display: flex;
+    align-items: stretch;
+    gap: 0.25rem;
+    block-size: var(--muze-solid-design-main-height);
+    min-inline-size: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--muze-solid-design-text);
+    border: 0;
+  }
+  .muze-solid-design-main-name {
+    flex: 1;
+    min-inline-size: 0;
+    align-self: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+    padding-inline: 0.75rem;
+    font-size: 0.875rem;
+  }
+  .muze-solid-design-main-status {
+    align-self: center;
+    font-size: 0.75rem;
+    color: var(--muze-solid-design-muted);
+    white-space: nowrap;
+  }
+  .muze-solid-design-main-button {
+    flex: none;
+    block-size: var(--muze-solid-design-main-height);
+    min-block-size: 0;
+    padding-block: 0;
+    white-space: nowrap;
+  }
+  .muze-solid-design-main-button:focus-visible {
+    outline-offset: -3px;
+  }
+  .muze-solid-design-panel,
+  .muze-solid-design-form-dialog {
+    box-sizing: border-box;
+    padding: 0;
+    border: 1px solid var(--muze-solid-design-divider);
+    border-radius: var(--muze-solid-design-radius);
+    background: var(--muze-solid-design-chrome);
+    color: var(--muze-solid-design-text);
+    font: inherit;
+    min-inline-size: 0;
+  }
+  .muze-solid-design-panel {
+    container-type: inline-size;
+  }
+  .muze-solid-design-panel-floating {
+    margin: 1rem;
+    border: 0;
+    box-shadow: var(--muze-solid-design-elevation);
+  }
+  .muze-solid-design-panel-docked {
+    margin: 0;
+    border-inline: 0;
+    border-block-end: 0;
+    box-shadow: none;
+  }
+  .muze-solid-design-panel-header {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    min-block-size: 3.625rem;
+    padding-inline-start: var(--muze-solid-design-inset);
+    background: var(--muze-solid-design-surface);
+    border-block-end: 1px solid var(--muze-solid-design-divider);
+  }
+  .muze-solid-design-panel-title {
+    align-self: center;
+    flex: 1;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+    margin: 0;
+    padding-block: 0.75rem;
+    font: inherit;
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+  .muze-solid-design-panel-action {
+    align-self: center;
+  }
+  .muze-solid-design-panel-content {
+    display: grid;
+    gap: var(--muze-solid-design-gap);
+    min-inline-size: 0;
+    padding: var(--muze-solid-design-inset);
+  }
+  .muze-solid-design-panel-footer {
+    padding: calc(var(--muze-solid-design-inset) * 0.5)
+      var(--muze-solid-design-inset);
+    border-block-start: 1px solid var(--muze-solid-design-divider);
+    background: var(--muze-solid-design-surface);
+  }
+  .muze-solid-design-close {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    align-self: stretch;
+    flex: none;
+    min-inline-size: 3.375rem;
+    min-block-size: var(--muze-solid-design-target);
+    margin: 0;
+    padding: 0.5rem 0.5625rem 0.5rem 1.25rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muze-solid-design-text);
+    font: inherit;
+    cursor: pointer;
+  }
+  /* Clip the decorative background, not the button or its focus indicator. */
+  .muze-solid-design-close::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--muze-solid-design-close-surface);
+    clip-path: polygon(0 0, 15px 100%, 100% 100%, 100% 0);
+  }
+  .muze-solid-design-close:dir(rtl)::before {
+    clip-path: polygon(0 0, 0 100%, calc(100% - 15px) 100%, 100% 0);
+  }
+  .muze-solid-design-close:focus-visible {
+    outline-offset: -3px;
+  }
+  .muze-solid-design-form-dialog {
+    inline-size: min(34rem, calc(100% - 2rem));
+    max-inline-size: calc(100% - 2rem);
+    max-block-size: calc(100dvh - 2rem);
+    margin: auto;
+    overflow: auto;
+    box-shadow: var(--muze-solid-design-elevation);
+  }
+  .muze-solid-design-form-dialog:not([open]) {
+    display: none;
+  }
+  .muze-solid-design-form-dialog[open] {
+    display: block;
+  }
+  .muze-solid-design-form-dialog::backdrop {
+    background: #0007;
+  }
+  @media (max-width: 480px) {
+    .muze-solid-design-form-dialog {
+      inline-size: calc(100% - 1rem);
+      max-inline-size: calc(100% - 1rem);
+      max-block-size: calc(100dvh - 1rem);
+    }
+  }
+  @media (forced-colors: active) {
+    .muze-solid-design-select {
+      appearance: auto;
+      padding-inline-end: 0.6875rem;
+    }
+    .muze-solid-design-chevron {
+      display: none;
+    }
+    .muze-solid-design-button,
+    .muze-solid-design-close,
+    .muze-solid-design-toolbar-floating,
+    .muze-solid-design-panel-floating {
+      border: 1px solid ButtonText;
+    }
+    .muze-solid-design-close::before {
+      background: ButtonFace;
+    }
+    .muze-solid-design-button[aria-pressed='true'],
+    .muze-solid-design-button[aria-expanded='true'] {
+      border-block-end: 3px solid Highlight;
+    }
+  }
+}
+
+@layer utility {
+  .muze-solid-design-sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  /* Native visibility must win over grid/flex component display rules. */
+  :where(.muze-solid-design-theme) [hidden] {
+    display: none !important;
+  }
+}
+
+@layer component {
+  .muze-solid-design-label:has(> .muze-solid-design-choice-input) {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-block-size: var(--muze-solid-design-target);
+  }
+}
+
+@layer component {
+  /* Existing apps use wrapping labels as their field container. Give that
+     composition the study's label/control gap and space between fields. */
+  .muze-solid-design-label:has(
+    > .muze-solid-design-control,
+    > .muze-solid-design-select-wrap
+  ) {
+    display: grid;
+    gap: 0.375rem;
+    margin-block: 0.75rem;
+    min-inline-size: 0;
+  }
+}
+
+@layer page {
+  /* Shared appearance for app-owned native popovers. Geometry stays local. */
+  .muze-solid-design-popup {
+    border: 0;
+    box-shadow: var(--muze-solid-design-popup-elevation);
+  }
+}
+
+@layer component {
+  .muze-solid-design-popup-scope {
+    anchor-scope: --muze-solid-design-popup;
+  }
+  .muze-solid-design-popup-trigger {
+    anchor-name: --muze-solid-design-popup;
+  }
+  .muze-solid-design-popup-anchored {
+    position: fixed;
+    position-anchor: --muze-solid-design-popup;
+    position-area: block-end span-inline-end;
+    position-try-fallbacks:
+      flip-inline,
+      flip-block,
+      flip-inline flip-block,
+      block-end,
+      block-start;
+    justify-self: start;
+    inset: auto;
+    margin: 4px;
+    padding: 12px;
+    box-sizing: border-box;
+    width: min(24rem, calc(100vw - 16px));
+    max-block-size: calc(100dvh - 16px);
+    overflow: auto;
+    background: var(--muze-solid-design-surface, Canvas);
+    color: var(--muze-solid-design-text, CanvasText);
+  }
+}
+
+@layer component {
+  .muze-solid-design-marker-button,
+  .muze-solid-design-marker-button:hover,
+  .muze-solid-design-marker-button:focus {
+    isolation: isolate;
+    background: transparent;
+    color: white;
+    box-shadow: none;
+  }
+  .muze-solid-design-marker-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--muze-solid-design-marker, GrayText);
+    clip-path: polygon(0 0, 17px 100%, 100% 100%, 100% 0);
+  }
+  .muze-solid-design-marker-button:hover::before,
+  .muze-solid-design-marker-button:focus-visible::before {
+    background: var(--muze-solid-design-marker-active, Highlight);
+  }
+  .muze-solid-design-marker-button:focus-visible {
+    outline: 2px solid var(--muze-solid-design-text, CanvasText);
+    outline-offset: -3px;
+  }
+}
+
+@layer component {
+  .muze-solid-design-insert-before {
+    position: relative;
+  }
+  .muze-solid-design-insert-before::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -8px;
+    inset-block: 8px;
+    inline-size: 4px;
+    background: var(--muze-solid-design-accent, Highlight);
+    box-shadow: 0 0 0 1px var(--muze-solid-design-surface, Canvas);
+    pointer-events: none;
+  }
+}
+
+@layer utility {
+  .muze-solid-design-label-two-lines {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

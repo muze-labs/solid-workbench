@@ -1,22 +1,24 @@
 <form class="muze-solid-catalog-manual-form" data-simply-command="add">
-  <label
-    >Name<input class="swb-control swb-labeled-control" name="name"
+  <label class="muze-solid-design-label"
+    >Name<input
+      class="muze-solid-design-control swb-control swb-labeled-control"
+      name="name"
   /></label>
-  <label
+  <label class="muze-solid-design-label"
     >Application URL<input
-      class="swb-control swb-labeled-control"
+      class="muze-solid-design-control swb-control swb-labeled-control"
       name="url"
       type="url"
   /></label>
-  <label
+  <label class="muze-solid-design-label"
     >Application manifest URL (optional)<input
-      class="swb-control swb-labeled-control"
+      class="muze-solid-design-control swb-control swb-labeled-control"
       name="manifest"
       type="url"
   /></label>
-  <label
+  <label class="muze-solid-design-label"
     >Icon URL (optional)<input
-      class="swb-control swb-labeled-control"
+      class="muze-solid-design-control swb-control swb-labeled-control"
       name="icon"
       type="url"
   /></label>
@@ -26,19 +28,23 @@
   </p>
   <details>
     <summary>Launch options</summary>
-    <label
-      >Launch mode<select
-        class="swb-control swb-labeled-control"
-        name="launchMode"
-      >
-        <option value="">Follow application</option>
-        <option value="fragment">URL fragment (#)</option>
-        <option value="query">URL query (?)</option>
-      </select></label
-    >
-    <label
+    <label class="muze-solid-design-label"
+      >Launch mode<span class="muze-solid-design-select-wrap"
+        ><select
+          class="muze-solid-design-select muze-solid-design-control swb-control swb-labeled-control"
+          name="launchMode"
+        >
+          <option value="">Follow application</option>
+          <option value="fragment">URL fragment (#)</option>
+          <option value="query">URL query (?)</option></select
+        ><span
+          class="muze-solid-design-chevron"
+          aria-hidden="true"
+        ></span></span
+    ></label>
+    <label class="muze-solid-design-label"
       ><input
-        class="swb-control swb-labeled-control"
+        class="muze-solid-design-choice-input"
         type="checkbox"
         name="anonymous"
       />
@@ -50,5 +56,9 @@
     </p>
   </details>
 
-  <button class="ds-button ds-button-primary">Add shortcut</button>
+  <button
+    class="muze-solid-design-button ds-button ds-button-primary muze-solid-design-button-primary"
+  >
+    Add shortcut
+  </button>
 </form>

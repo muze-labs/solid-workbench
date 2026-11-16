@@ -16,7 +16,6 @@
     border: 0;
     color: var(--muze-files-text, CanvasText);
     background: var(--muze-files-chrome, Canvas);
-    box-shadow: 0 4px 12px #0005;
   }
   @media (max-width: 650px) {
     [data-muze-solid-action='muzeSolidFilesRefresh'] { display: none; }

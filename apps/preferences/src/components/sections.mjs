@@ -71,7 +71,7 @@ export const sections = {
       }
     },
     async swb_selectSection(id) {
-      if (!await this.actions.swb_closeContribution()) {
+      if (!(await this.actions.swb_closeContribution())) {
         return;
       }
       this.runtime.section = id;
@@ -81,7 +81,8 @@ export const sections = {
       const entries = [
         ...this.api.common,
         ...(this.runtime.contributions ||
-          this.api.contributions[this.data.swb_app] || [])
+          this.api.contributions[this.data.swb_app] ||
+          [])
       ];
       const current = this.data.swb_sections;
       const sameSections =
@@ -97,8 +98,7 @@ export const sections = {
       for (const entry of this.data.swb_sections) {
         entry.attributes['aria-current'] = entry.id === id ? 'page' : null;
         entry.attributes.class =
-          'ds-button ds-nav swb-section-choice' +
-          (entry.id === id ? ' ds-selected' : '');
+          'muze-solid-design-list-row muze-solid-design-list-state swb-section-choice';
         entry.attributes.tabindex = entry.id === id ? '0' : '-1';
         entry.attributes['data-muze-solid-design-section'] = entry.id;
       }
@@ -135,6 +135,7 @@ export const sections = {
       this.data.swb_panels = panels;
       this.data.swb_sectionTitle =
         entries.find((entry) => entry.id === id)?.label || 'Appearance';
+      document.title = this.data.swb_sectionTitle + ' · Preferences';
       if (contribution) {
         await this.actions.swb_openContribution(contribution);
       }

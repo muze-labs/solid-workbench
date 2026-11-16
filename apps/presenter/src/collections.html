@@ -22,7 +22,7 @@
     </h2>
     <button
       type="button"
-      class="ds-button muze-solid-design-dialog-close"
+      class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
       data-simply-command="muzeSolidDesignCloseDialog"
       aria-label="Close dialog"
     >
@@ -58,9 +58,10 @@
         Sync / Retry
       </button>
     </div>
-    <label
+    <label class="muze-solid-design-label"
       >Collection name
       <input
+        class="muze-solid-design-control"
         data-simply-field="muzeSolidPresenterCollectionName"
         data-simply-transform="attributes"
         data-simply-attributes="value"
@@ -71,7 +72,12 @@
       class="muze-solid-presenter-collection-form"
       data-simply-command="muzeSolidPresenterCollectionGroup"
     >
-      <label>New category<input name="title" required /></label>
+      <label class="muze-solid-design-label"
+        >New category<input
+          class="muze-solid-design-control"
+          name="title"
+          required
+      /></label>
       <button class="muze-solid-design-tool" type="submit">Add category</button>
     </form>
     <button
@@ -141,7 +147,7 @@
     ></h2>
     <button
       type="button"
-      class="ds-button muze-solid-design-dialog-close"
+      class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
       data-simply-command="muzeSolidDesignCloseDialog"
       aria-label="Close dialog"
     >
@@ -155,20 +161,23 @@
       data-simply-field="muzeSolidPresenterEntryUrl"
       data-simply-transform="escape_html"
     ></p>
-    <label
+    <label class="muze-solid-design-label"
       >Category
-      <select
-        data-simply-command="muzeSolidPresenterEntryGroup"
-        data-simply-list="muzeSolidCollectionEntryGroups"
-      >
-        <template
-          ><option
-            data-simply-field="option"
-            data-simply-transform="attributes"
-            data-simply-attributes="value label"
-          ></option
-        ></template>
-      </select>
+      <span class="muze-solid-design-select-wrap"
+        ><select
+          class="muze-solid-design-select muze-solid-design-control"
+          data-simply-command="muzeSolidPresenterEntryGroup"
+          data-simply-list="muzeSolidCollectionEntryGroups"
+        >
+          <template
+            ><option
+              data-simply-field="option"
+              data-simply-transform="attributes"
+              data-simply-attributes="value label"
+            ></option
+          ></template></select
+        ><span class="muze-solid-design-chevron" aria-hidden="true"></span
+      ></span>
     </label>
     <button
       class="muze-solid-design-tool"
@@ -206,7 +215,7 @@
 <section
   id="muze-solid-presenter-status"
   popover
-  class="muze-solid-presenter-status-popover"
+  class="muze-solid-design-popup muze-solid-presenter-status-popover"
   aria-labelledby="muze-solid-presenter-status-heading"
 >
   <h2 id="muze-solid-presenter-status-heading">Presenter status</h2>

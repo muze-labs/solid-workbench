@@ -2012,8 +2012,8 @@ try {
   await wait('window.solidContacts?.store');
   await wait('document.querySelector(".swb-person-list button")');
   await evaluate('document.querySelector(".swb-person-list button").click();');
-  await wait('!document.querySelector(".contact-actions .muze-solid-design-toolbar").hidden');
-  await evaluate('document.querySelector(".contact-actions button").click();');
+  await wait(`document.querySelector('[aria-label="Contact actions"]').checkVisibility()`);
+  await evaluate(`document.querySelector('[aria-label="Contact actions"] [data-simply-command="remove"]').click();`);
   await wait(
     'document.querySelector(".swb-contacts-list .swb-empty").textContent.includes("No contacts")'
   );
@@ -2063,7 +2063,7 @@ try {
   );
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   await evaluate(`
-    document.querySelector('.swb-contact-search input').focus();
+    document.querySelector('.muze-solid-design-list-search-input').focus();
     window.solidContacts.host.message('Persistent recovery guidance');
     window.solidContacts.host.notify('Contact changes saved.');
   `);
@@ -2086,7 +2086,7 @@ try {
       const region = document.querySelector('.muze-solid-design-toasts');
       return region.getAttribute('role') === 'status' &&
         region.getAttribute('aria-live') === 'polite' &&
-        document.activeElement.matches('.swb-contact-search input') &&
+        document.activeElement.matches('.muze-solid-design-list-search-input') &&
         document.querySelector('.swb-suite-status').textContent === 'Persistent recovery guidance';
     `),
     true,
@@ -2121,7 +2121,7 @@ try {
   await wait('document.querySelector(".muze-solid-design-toast").hidden');
   assert.equal(
     await evaluate(
-      'return document.activeElement.matches(".swb-contact-search input");'
+      'return document.activeElement.matches(".muze-solid-design-list-search-input");'
     ),
     true,
     'Dismissing a keyboard-focused toast restores the previous focus'

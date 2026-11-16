@@ -2255,3 +2255,55 @@ recorded; they are not silently reclassified as observed product defects.
 CYC187 is Accepted on 2026-11-13 under ACC192 after review of size and behavior
 evidence. The maintainer authorizes normal commit/merge/push after validation;
 the known Presenter browser click-test limitation remains explicitly disclosed.
+
+## Shared UI design cycle selected, 2026-11-16
+
+After accepted CYC242 delivery, the maintainer confirms CYC248: integrate the
+supplied `solid-workbench-theme.zip` and `solid-workbench-maya-icons.zip`, including
+Presenter artwork, unify form and list-state appearance, review Preferences,
+keep inputs outside the main viewport toolbar, and use dark-mode floating-toolbar
+glow. Presenter retains its thumbnail layout. Launcher shortcuts lose their
+background/border and persistent settings link, tighten icon-label spacing,
+and gain right-click/long-press settings/delete menus plus responsive drag
+reordering with keyboard/non-drag alternatives. The maintainer explicitly selects
+responsive order rather than persistent cells with gaps.
+
+CYC248/SRC249/DES250/IMP251/EVD252 record scope and evidence. This selects the
+shared-form language, reusable design-component and concrete per-app UI work
+above; it does not reopen accepted CSS-refactor cycles, add broker/editor
+features, select a general toolbar abstraction or authorize delivery.
+
+## Explore grouped Launcher columns, 2026-11-16
+
+Maintainer-proposed future exploration: could horizontally scrollable column
+regions, each approximately the width of a normal mobile phone, let people group
+app icons while remaining useful on both mobile and desktop?
+
+Compare a small phone-first prototype with the current responsive grid before
+choosing a layout. Explore how groups are named and discovered, whether one
+column per phone viewport and several on desktop feel natural, and how users
+move apps within and between groups. Check touch scrolling versus long-press
+and drag, keyboard navigation and non-drag movement, focus and screen-reader
+announcements, zoom/reflow, and preservation of group/order edits offline and
+across reload or reconnection. Keep native RDF authoritative if persistence is
+later selected. Do not assume fixed screen dimensions or that horizontal
+scrolling alone makes groups discoverable.
+
+This is an open usability/design question for a future cycle, not a selected
+implementation or a replacement of CYC248's confirmed responsive-grid ordering.
+
+## Refine Launcher layout and Add apps cards, 2026-11-16
+
+Maintainer-requested future design work: redesign the cards in Add apps and
+refine the layout of the Launcher as a whole, including its catalog dialog.
+Review card hierarchy, icon/name/description placement, actions, spacing and
+how browsing and searching fit into the overall layout. Build on the shared
+component styles and the simplified catalog heading and inline search field.
+
+Evaluate the complete phone workflow before extending to desktop, including
+keyboard navigation, visible focus, text scaling and accessible action labels.
+Preserve existing add/launch behavior, cached catalog availability and recovery
+feedback. Coordinate with the grouped-column exploration above without assuming
+that a new grouping model is required for this visual refinement.
+
+This is future roadmap scope, not additional implementation selected for CYC248.
