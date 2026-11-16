@@ -215,7 +215,7 @@ try {
   await capture('contacts-phone');
   await click('.swb-contact-select');
   await wait(
-    'document.querySelector(".muze-solid-profile-edit").checkVisibility()'
+    '[...document.querySelectorAll("[data-simply-command=editProfile]")].some(button => button.checkVisibility())'
   );
   await click('[data-simply-command=editProfile]');
   await wait('document.querySelector(".swb-profile-form").checkVisibility()');
