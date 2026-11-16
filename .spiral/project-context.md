@@ -1,5 +1,15 @@
 # Solid Workbench project context
 
+## Shared UI design selected, 2026-11-16
+
+CYC248 is Active on verified spiral/CYC-20261116-QG24H-248-shared-ui-design
+from accepted main ac51ccf. SRC249/DES250 retain the confirmed scope and supplied
+theme/icon archives. Responsive Launcher reordering is explicitly selected.
+Shared forms/list states, main-bar discipline, dark glow, icons and Launcher
+menu/grid interaction are in scope. CYC242 delivery is complete. No new-cycle
+commit/integration/publication authority is inferred from that prior delivery.
+
+
 ## CYC242 accepted for integration, 2026-11-16
 
 The maintainer says “accepted, commit, merge and push please”. ACC247 accepts
