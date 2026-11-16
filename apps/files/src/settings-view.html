@@ -1,0 +1,44 @@
+<form
+  inert
+  data-simply-field="muzeSolidFilesSettingsDisabled"
+  data-simply-transform="attributes"
+  data-simply-attributes="inert"
+>
+  <label
+    >Starting folder
+    <input
+      class="swb-control"
+      type="url"
+      name="filesRoot"
+      data-simply-field="muzeSolidFilesSettingsValue"
+      data-simply-command="muzeSolidFilesSettingsSave"
+    />
+  </label>
+  <p>Changing this location does not move existing data.</p>
+  <p
+    role="status"
+    data-simply-field="muzeSolidFilesSettingsStatus"
+    data-simply-transform="escape_html"
+  ></p>
+  <button
+    type="button"
+    class="muze-solid-design-tool"
+    data-simply-command="muzeSolidFilesSettingsRetry"
+  >
+    Retry synchronization
+  </button>
+  <div
+    hidden
+    data-simply-field="muzeSolidFilesSettingsConflict"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
+    <p>The Pod has a different starting folder. Your choice is retained.</p>
+    <button type="button" data-simply-command="muzeSolidFilesSettingsKeep">
+      Keep my choice
+    </button>
+    <button type="button" data-simply-command="muzeSolidFilesSettingsRemote">
+      Use Pod choice
+    </button>
+  </div>
+</form>

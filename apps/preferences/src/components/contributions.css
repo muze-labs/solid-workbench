@@ -1,0 +1,7 @@
+@layer component {
+  .muze-solid-preferences-contribution {
+    inline-size: 100%;
+    min-block-size: 22rem;
+    border: 0;
+  }
+}

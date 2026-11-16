@@ -67,6 +67,7 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       [
         ...apps.map((name) => filename(name + '/src/index')),
         ...[
+          'files/src/settings-entry',
           'redirect',
           'shared/data',
           'shared/ui',
@@ -118,6 +119,7 @@ test('readable and minified apps preserve isolated module graphs', async () => {
         if (app) {
           assert(
             name === filename(app + '/src/index') ||
+              name === filename(app + '/src/settings-entry') ||
               name === filename('preferences/src/index') ||
               (app === 'launcher' && name === filename('shared/backgrounds')),
             'App contributions belong only to their owner or Preferences: ' + id

@@ -1,4 +1,4 @@
-import { checkNestedAccount, checkAccountOffline } from './support/account-interaction.mjs';
+import { checkContainingAccount, checkAccountOffline } from './support/account-interaction.mjs';
 import { waitForAccount, clickAccount, submitAccount } from './support/account-browser.mjs';
 import { checkEventBindings } from './support/events.mjs';
 import { checkStyleOwnership } from './support/style-ownership.mjs';
@@ -915,7 +915,7 @@ try {
   await checkAccountOffline(page);
   await account('preferences');
   await preferencesFrame();
-  await checkNestedAccount(page);
+  await checkContainingAccount(page);
   await changePreferences({
     theme: 'dark',
     textScale: '110',
@@ -1114,10 +1114,10 @@ try {
       const account = provider.document.querySelector('.swb-account');
       const connect = provider.document.querySelector('.muze-solid-ui-task-connect');
       return account.getClientRects().length === 0 &&
-        connect.getClientRects().length > 0;
+        connect === null;
     `),
     true,
-    'Tasks hide the preferences dropdown while keeping connection reachable'
+    'Embedded tasks use their containing app account controls'
   );
   assert.equal(
     await evaluate(`

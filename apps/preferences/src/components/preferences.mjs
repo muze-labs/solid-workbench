@@ -53,6 +53,7 @@ export const preferences = {
       return this.commands.call(command, input, input.value, event);
     },
     cleanup() {
+      this.runtime.contributionBroker?.dispose();
       this.actions.swb_cleanupProviders();
       clearTimeout(this.runtime.syncTimer);
       if (this.runtime.previewUrl) {
@@ -94,10 +95,12 @@ export const preferences = {
         onPreferences: (snapshot) => this.actions.swb_workspaceStatus(snapshot),
         getState: () => null,
         restoreState: () => {},
-        canClose: () => ({
-          allowed: !this.runtime.localWrites,
-          saving: Boolean(this.runtime.localWrites)
-        })
+        canClose: async () => {
+          if (this.runtime.localWrites) {
+            return { allowed: false, saving: true };
+          }
+          return { allowed: await this.actions.swb_closeContribution() };
+        }
       });
       this.actions.swb_selectSection('appearance');
       this.eventBindings.start();
@@ -129,16 +132,8 @@ export const preferences = {
       if (
         event.capability !== this.api.editPreferencesCapability ||
         input?.owner !== host.selectedWebId ||
-        ![
-          'workbench',
-          'launcher',
-          'contacts',
-          'files',
-          'profile',
-          'presenter',
-          'notebook',
-          'viewer'
-        ].includes(input.app)
+        typeof input.app !== 'string' || !input.app.trim() ||
+        input.app.length > 200
       ) {
         await host.managed.respond(event.id, {
           error: {
@@ -148,6 +143,25 @@ export const preferences = {
         });
         return;
       }
+      let contributions;
+      try {
+        contributions = this.api.preferenceSections(
+          input.sections, event.requester?.origin
+        );
+      }
+      catch (error) {
+        await host.managed.respond(event.id, {
+          error: { code: 'denied', message: error.message }
+        });
+        return;
+      }
+      if (!await this.actions.swb_closeContribution()) {
+        await host.managed.respond(event.id, {
+          error: { code: 'busy', message: 'Finish the current section first.' }
+        });
+        return;
+      }
+      this.runtime.contributions = input.sections ? contributions : null;
       this.runtime.request = event;
       this.data.swb_app = input.app === 'launcher' ? 'workbench' : input.app;
       this.runtime.callerWorkspace = input.workspace;

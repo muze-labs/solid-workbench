@@ -101,6 +101,20 @@ for (const name of [
     `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title>${faviconLinks}<link rel="describedby" type="text/turtle" href="manifest.ttl"><style>@layer reset, setup, theme, base, component, page, utility;</style><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto swb-${name}"><div id="app" class="swb-root">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
   );
 }
+const settingsContent = await composeTemplate(
+  path.join(root, 'apps/files/src/settings-view.html'), { appName: 'files' }
+);
+const settingsShell = await composeTemplate(
+  path.join(root, 'packages/solid-app-ui/src/shell.html'), { appName: 'files' }
+);
+await writeFile(path.join(root, 'www/files/settings.html'),
+  '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+  '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+  '<title>Files settings</title><link rel="stylesheet" href="../assets/theds.css">' +
+  '</head><body class="ds-darkmode-auto"><div id="app" class="swb-root">' +
+  settingsShell.replace('{{content}}', settingsContent) +
+  '</div><script type="module" src="../assets/files/src/settings-entry' +
+  scriptSuffix + '.js"></script></body></html>');
 await writeFile(
   path.join(root, 'www/redirect.html'),
   '<!doctype html><meta charset="utf-8"><title>Solid connection</title><p>Completing sign-in…</p><script type="module" src="assets/redirect' +

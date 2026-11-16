@@ -1,0 +1,41 @@
+<section
+  data-simply-field="swb_contributionVisibility"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+  hidden
+>
+  <p
+    role="status"
+    data-simply-field="swb_contributionStatus"
+    data-simply-transform="escape_html"
+  ></p>
+  <iframe
+    class="muze-solid-preferences-contribution"
+    title="Application settings"
+    src="about:blank"
+    data-simply-field="swb_contributionFrame"
+    data-simply-transform="attributes"
+    data-simply-attributes="src hidden title aria-busy"
+  ></iframe>
+  <div
+    hidden
+    data-simply-field="swb_contributionRecovery"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
+    <button
+      type="button"
+      class="muze-solid-design-tool"
+      data-simply-command="swb_retryContribution"
+    >
+      Retry section
+    </button>
+    <button
+      type="button"
+      class="muze-solid-design-tool"
+      data-simply-command="swb_discardContribution"
+    >
+      Discard unavailable section
+    </button>
+  </div>
+</section>

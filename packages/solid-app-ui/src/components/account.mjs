@@ -61,7 +61,9 @@ export const account = {
               this.runtime.appName ||
               location.pathname.split('/').filter(Boolean).at(-1) ||
               'launcher',
-            workspace: host.workspaceContext?.id || ''
+            workspace: host.workspaceContext?.id || '',
+            ...(host.preferenceSections
+              ? { sections: host.preferenceSections } : {})
           },
           'Preferences'
         );

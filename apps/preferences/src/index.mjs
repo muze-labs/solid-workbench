@@ -30,6 +30,7 @@ import { announcePreferences } from '@muze-labs/solid-preferences/consumer.mjs';
 import { applyPreferences, defaults } from '@muze-labs/solid-preferences';
 import * as backgrounds from '../../launcher/src/backgrounds.mjs';
 import { preferences } from './components/preferences.mjs';
+import { muzeSolidPreferenceContributions } from './components/contributions.mjs';
 import { sections } from './components/sections.mjs';
 import {
   swbProviderPreferences,
@@ -53,6 +54,7 @@ const definition = {
     preferences,
     swbProviderPreferences,
     sections,
+    muzeSolidPreferenceContributions,
     swbWorkbenchSettings,
     swbContactsSettings,
     swbFilesSettings,

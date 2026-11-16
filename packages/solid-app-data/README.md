@@ -148,3 +148,62 @@ preferences authority and broker conventions. Independent apps can instead own
 those decisions. The cross-origin picker in `test/provider-browser.mjs` exercises
 this direct API; the separate raw-wire recipient/view peers intentionally keep
 hand-written framing to test compatibility independently of the shared client.
+
+### App-hosted Preferences sections (experimental)
+
+An `edit-preferences` request may include `sections: []` or section metadata:
+
+```js
+{
+  owner: selectedWebId,
+  app: 'https://notes.example/app',
+  sections: [{
+    id: 'notes-settings',
+    label: 'Notes',
+    url: 'https://notes.example/settings'
+  }]
+}
+```
+
+The broker supplies the requester's origin. Each section URL must have that
+origin, use HTTP(S), and contain no credentials. Labels are plain text. There
+may be at most sixteen sections with distinct identifiers; the common section
+identifiers are reserved. Supporting an app identifier does not bypass selected
+owner or capability checks. An empty list exposes common settings only.
+
+A suite shell app sets `host.preferenceSections` to advertise these descriptors
+when its account menu opens Preferences. Other apps can send the same request
+without importing the suite UI. Preferences never imports provider JavaScript.
+The provider page must permit framing by the chosen Preferences host.
+
+Preferences renders the chosen section in an app-hosted document through a local
+broker restricted to that URL and
+`https://vocab.muze.nl/capabilities/edit-preference-section`. This is the existing
+embedded-view lifecycle: input includes `version: 1`, `generation`, `owner`,
+`section`, optional workspace identity, appearance and interactive/scroll
+presentation. Confirm `{version: 1, generation, ready: true,
+presentation: 'interactive-scroll'}` only when the section is usable. Handle
+`view` operations through the existing participant `onView` API. `prepare` must
+refuse closure while edits are not durably retained, or return
+`{allowed: true, frozen: true}` and stop accepting edits. Validate generation and
+owner in the provider; settings persistence and recovery remain app-owned.
+
+A failed provider is retained until safe close or explicit discard. Common
+settings remain usable when a provider has not started. An already-started
+provider may veto navigation to preserve edits. The host cannot make uncached
+provider code available offline, nor can it guarantee recovery of a provider
+that does not implement its own durable drafts.
+
+For existing suite workspace settings only, metadata may declare `workspaceKeys`
+from `filesRoot`, `contactsResource`, and `launcherResource`. The section may
+call `preferences-workspace` through its scoped port with `owner` and either
+`operation: 'read'` or `operation: 'settings'`, `revision`, `values`. Preferences
+fixes the target to the calling workspace, filters reads to declared keys and
+rejects other writes/operations or a changed owner. It forwards to the existing
+Workbench writer; it does not create another writer. Independent app-specific
+settings remain the app's own native data, not a generic extension of this bridge.
+
+Files' account-menu settings use this provider path. The standalone Preferences
+application selector and other existing built-in panels retain their legacy
+composition in this slice; this is not a claim that every built-in panel has
+been migrated. No public protocol/package release is implied.

@@ -122,15 +122,12 @@ export function shell({
       // The document title includes the suite name; the app heading does not.
       muzeSolidUiTitle: document.title.replace(/ · Solid Workbench$/, ''),
       muzeSolidDesignNotice: { text: '', visibility: { hidden: '' } },
-      muzeSolidUiEmbedded: { hidden: task ? null : '' },
+      muzeSolidUiEmbedded: { hidden: host.embedded ? null : '' },
       muzeSolidUiHeader: {
         'data-muze-solid-ui-content-view':
           embeddedContentOnly && host.embedded ? '' : null
       },
-      muzeSolidUiMenuVisibility: { hidden: task ? '' : null },
-      muzeSolidUiTaskConnectVisibility: {
-        hidden: task && !(embeddedContentOnly && host.embedded) ? null : ''
-      },
+      muzeSolidUiMenuVisibility: { hidden: host.embedded ? '' : null },
       muzeSolidUiDialog: {
         title: '',
         message: '',

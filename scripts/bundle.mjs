@@ -120,6 +120,8 @@ export async function bundleApplications(root) {
       path.join(root, `apps/${name}/src/index.mjs`)
     ])
   );
+  input['files/src/settings-entry'] = path.join(root,
+    'apps/files/src/settings-entry.mjs');
   input.redirect = path.join(root, 'packages/solid-app-data/src/redirect.mjs');
   const bundle = await rollup({
     input,

@@ -47,6 +47,11 @@ const host = shell({
   acceptLaunch: true,
   templates: { account: accountTemplate }
 });
+host.preferenceSections = [{
+  id: 'files-storage', label: 'Files · Storage',
+  url: new URL('./settings.html', location.href).href,
+  workspaceKeys: ['filesRoot']
+}];
 const definition = {
   // The browser's own mode attribute must also be inside the binding scope.
   container: host.main,

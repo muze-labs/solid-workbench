@@ -1,9 +1,4 @@
 @layer component {
-  .swb-suite-header:has(.muze-solid-ui-embedded:not([hidden])):has(
-      .swb-logout-section:not([hidden])
-    ):has(.swb-suite-status:empty):not(:has(.muze-solid-ui-recovery-dialog[open])) {
-    display: none;
-  }
   .swb-recovery-content {
     flex: 1;
   }
