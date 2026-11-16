@@ -7,7 +7,7 @@ project:DES-20261116-QG24H-250 a sd:Design ;
     sd:status sd:Active ;
     sd:transforms [ a sd:ArtifactReference ;
         sd:artifact project:DES-20261116-QG24H-250 ;
-        sd:gitCommit "d59bc74e7827614173db1a4028c1a448529ec501" ] ;
+        sd:gitCommit "d181042d0c9dc56c94964c97df1faf8464189f0a" ] ;
     sd:derivedFrom [ a sd:ArtifactReference ;
         sd:artifact project:SRC-20261116-QG24H-249 ;
         sd:gitCommit "158bac6b3f7892346cf221fccd9af1a0fe72da53" ] ;
