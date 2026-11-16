@@ -2273,24 +2273,42 @@ shared-form language, reusable design-component and concrete per-app UI work
 above; it does not reopen accepted CSS-refactor cycles, add broker/editor
 features, select a general toolbar abstraction or authorize delivery.
 
-## Explore grouped Launcher columns, 2026-11-16
+## Grouped Launcher screens: agreed starting design, 2026-11-16
 
-Maintainer-proposed future exploration: could horizontally scrollable column
-regions, each approximately the width of a normal mobile phone, let people group
-app icons while remaining useful on both mobile and desktop?
+The maintainer refines the earlier column exploration into a starting design
+for future implementation: fixed-width groups ("screens"), approximately phone
+width, with four icons per row. Phone layouts generally show one group; desktop
+layouts show several groups side by side. Keep group width and column count
+consistent across devices so the same app order produces familiar positions.
+Exact width and accessible behavior at narrow viewports/enlarged text still
+need verification; no pixel width is selected yet.
 
-Compare a small phone-first prototype with the current responsive grid before
-choosing a layout. Explore how groups are named and discovered, whether one
-column per phone viewport and several on desktop feel natural, and how users
-move apps within and between groups. Check touch scrolling versus long-press
-and drag, keyboard navigation and non-drag movement, focus and screen-reader
-announcements, zoom/reflow, and preservation of group/order edits offline and
-across reload or reconnection. Keep native RDF authoritative if persistence is
-later selected. Do not assume fixed screen dimensions or that horizontal
-scrolling alone makes groups discoverable.
+Each group contains an ordered list of icons. Dropping within a group reorders
+that list; dropping into another group changes membership and inserts at the
+drop position. There are no explicit grid slots, intentional gaps, fixed row
+counts or fixed group capacities. Preserve the current reorder interaction
+where it fits and provide keyboard/non-drag alternatives for moving between
+groups. Group naming and creation controls remain to be designed.
 
-This is an open usability/design question for a future cycle, not a selected
-implementation or a replacement of CYC248's confirmed responsive-grid ordering.
+Use horizontal swipe/scroll navigation and explicit left/right chevrons that
+advance by almost a viewport width. Scroll focused icons into view as needed.
+Retain one shared vertical scroll for the Launcher, rather than independent
+vertical scrolling within each group.
+
+The maintainer explicitly defers special scroll-position handling. Moving
+horizontally after scrolling down may reveal an apparently empty shorter group;
+start without automatic scroll-to-top resets or other special handling. Users
+can redistribute icons into less-filled groups. Revisit this only if actual
+use demonstrates a problem, rather than treating it as an implementation blocker.
+
+Evaluate phone and desktop interaction, swipe versus drag/long press, keyboard
+focus and non-drag movement, screen-reader feedback, text scaling, and preserving
+group membership/order offline and across reload or reconnection. Keep native
+RDF authoritative. Grouping should extend the Launcher's existing purpose and
+avoid new runtime dependencies unless a concrete need justifies them.
+
+This supersedes the earlier open layout proposal with an agreed direction for
+a future cycle. It does not start implementation or alter accepted CYC248.
 
 ## Refine Launcher layout and Add apps cards, 2026-11-16
 
@@ -2307,3 +2325,15 @@ feedback. Coordinate with the grouped-column exploration above without assuming
 that a new grouping model is required for this visual refinement.
 
 This is future roadmap scope, not additional implementation selected for CYC248.
+
+## Grouped Launcher cycle selected, 2026-11-16
+
+The maintainer confirms CYC254 after accepted CYC248: ordered groups with four
+icons per row, near-phone fixed width, horizontal navigation and native RDF
+preservation. Review refinements remove names and screen management controls;
+use numbered accessible regions, a trailing empty drop screen, automatic trimming
+of trailing empty groups, shared viewport scrolling, fixed conditional chevrons
+and a bottom-left floating Add apps button. Preserve empty intermediate screens.
+The published oldm-turtle0.4.5 fix is adopted and checked against the Files root
+read. SRC255/DES256/IMP257/EVD258 record scope and evidence; cycle Active, human
+acceptance pending. Add apps card redesign remains future work.

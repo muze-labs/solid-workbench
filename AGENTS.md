@@ -18,7 +18,15 @@ cycle bookkeeping, and record the correction without inventing past approvals.
 
 Documentation-only changes may be made outside a cycle; Git history is
 sufficient for those changes. This exception does not cover implementation
-mixed into a documentation update. Do not commit, merge or publish unless asked.
+mixed into a documentation update.
+
+Standing maintainer authorization: when the maintainer marks a cycle accepted,
+treat that acceptance as a request to commit the cycle, normally merge it into
+`main`, and push `main` and the cycle branch after the required verification and
+prospective integration checks. No separate delivery confirmation is needed.
+This includes CYC254, accepted immediately before this rule was established.
+Package publication and separate deployment still require explicit instructions.
+Outside this acceptance rule, do not commit, merge or publish unless asked.
 
 ## Feature guardrails
 
@@ -194,7 +202,8 @@ with their module. Test observable contracts, including failure and preservation
 of data; avoid tests which simply repeat implementation structure.
 
 Run `npm run check`; for UI changes also run `npm run test:browser` (Chrome needed).
-Do not commit or publish unless asked. Existing user work in other repositories
+Follow the accepted-cycle delivery authorization above; otherwise do not commit
+or publish unless asked. Existing user work in other repositories
 is outside this change.
 
 Use the original `poef/solid-apps` Contacts visual language: blue accent, square

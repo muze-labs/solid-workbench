@@ -1,5 +1,47 @@
 # Solid Workbench project context
 
+## Standing accepted-cycle delivery authorization, 2026-11-16
+
+The maintainer instructs: “from now on in this project, if i mark a cycle
+accepted, you may assume i want you to commit, merge and push it as well”.
+This is standing authorization for repository delivery after explicit cycle
+acceptance and required verification/integration checks. Apply it now to accepted
+CYC254. Earlier delivery-pending notes are superseded. Preserve normal merge
+history and push main plus the cycle branch. No separate confirmation is needed;
+package publication and separate deployment remain outside this authorization.
+The rule is retained in AGENTS.md for future sessions.
+
+## CYC254 accepted, 2026-11-16
+
+The maintainer says “agreed, and cycle accepted”. CYC254 is Accepted, covering
+the reviewed uncommitted IMP257 implementation and EVD258 verification. Keep
+real Launcher links; no Firefox-specific replacement with buttons is selected.
+Earlier Active/pending-acceptance notes are superseded. Exact implementation
+Git versions await authorized commits. Commit, merge, push and publication
+remain pending; no delivery authorization is inferred from acceptance alone.
+
+## CYC254 grouped Launcher ready for review, 2026-11-16
+
+CYC254 is Active in Evaluate on verified
+spiral/CYC-20261116-QG24H-254-launcher-groups. Four-column numbered screens,
+trailing drop creation, automatic trailing-empty trimming, shared viewport
+scrolling, fixed conditional chevrons, bottom-left floating Add, label ellipsis
+and stable markers follow maintainer review. Connected membership/order loss
+is fixed by advancing native edit revisions. Published parser0.4.5 is adopted
+and the affected public Files root read succeeds.39 source-test files/build
+and all17 browser suites have passing cumulative results; EVD258 retains failed
+attempts, corrections, measurements and manual/Firefox/live-provider limits.
+Final grouped native and all-app shared UI rechecks pass after marker/ellipsis
+feedback, as does source/build. Awaiting human acceptance. No commit, merge,
+push or publication performed.
+
+## CYC254 Launcher groups selected, 2026-11-16
+
+Maintainer agrees to grouped Launcher screens and parser release adoption.
+CYC254/SRC255/DES256/IMP257/EVD258 retain scope and verification. Branch
+spiral/CYC-20261116-QG24H-254-launcher-groups is verified from main01bc8fc.
+Status Active; no delivery authorization. Existing roadmap edit is preserved.
+
 ## CYC248 accepted for integration, 2026-11-16
 
 The maintainer explicitly accepts the reviewed UI and requests commit, merge
