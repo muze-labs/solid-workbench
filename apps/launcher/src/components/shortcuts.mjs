@@ -1,10 +1,11 @@
+import { launcherScreens } from './screens.mjs';
 import { shortcutMenu } from './shortcut-menu.mjs';
 import styles from './shortcuts.css' with { type: 'text' };
 import sourceLauncherNavigation from '../navigation.html' with { type: 'text' };
 import sourceLauncherShortcuts from '../shortcuts.html' with { type: 'text' };
 
 export const shortcuts = {
-  components: { shortcutMenu },
+  components: { shortcutMenu, launcherScreens },
   styles: { 'swb-workbench-shortcuts': styles },
   templates: {
     'launcher-navigation': sourceLauncherNavigation,
@@ -131,14 +132,26 @@ export const shortcuts = {
       if (!this.runtime.store) {
         return;
       }
-      this.runtime.shortcuts.state.data = this.api
+      const groups = this.api
         .from(this.runtime.store.collection.list())
-        .select(this.actions.shortcutRow)
+        .select(this.api.launcherGroups.groupDescription)
+        .where(Boolean)
         .toArray();
+      const shortcuts = this.api.from(this.runtime.store.collection.list())
+        .select(this.actions.shortcutRow).toArray();
+      this.api.batch(() => {
+        const previousGroups = this.runtime.launcherScreens.state.data;
+        if (groups.length !== previousGroups.length || groups.some((group, index) =>
+          group.id !== previousGroups[index].id || group.order !== previousGroups[index].order)) {
+          this.runtime.launcherScreens.state.data = groups;
+        }
+        this.runtime.shortcuts.state.data = shortcuts;
+      });
     },
     handleRemove(id) {
       return this.runtime.host.run(async () => {
         await this.runtime.store.collection.delete(id);
+        await this.actions.muzeSolidLauncherTrimScreens();
         this.actions.render();
         this.runtime.host.notify('Shortcut marked deleted.');
       });
@@ -220,13 +233,25 @@ export const shortcuts = {
       if (anonymous) {
         this.api.applyAnonymousLaunch(subject, true);
       }
-      if (mode || anonymous || override) {
+      if (this.runtime.launcherAddScreen) {
+        this.api.launcherGroups.setShortcutGroup(
+          subject,
+          this.runtime.launcherAddScreen
+        );
+      }
+      if (mode || anonymous || override || this.runtime.launcherAddScreen) {
         await this.runtime.store.collection.save(subject);
       }
       this.actions.render();
       this.runtime.host.notify('Shortcut saved on this device.');
     },
     shortcutRow(node) {
+      const application = []
+        .concat(node.a || [])
+        .includes(this.api.prefixes.schema + 'SoftwareApplication');
+      if (!application) {
+        return { application: false };
+      }
       const url = this.api.idOf(
         this.api.valueAt(node, this.api.prefixes.schema + 'url')
       );
@@ -304,16 +329,22 @@ export const shortcuts = {
       const view = {
         id: node.id,
         order,
+        group: this.api.launcherGroups.shortcutGroup(node),
         menuPlacement: {},
         shortcutAttributes: {
           'data-swb-shortcut': node.id,
-          class: 'swb-shortcut'
+          class: 'swb-shortcut swb-list-item'
         },
         iconUrl: override,
         icon: { src: usesSprite ? null : icon, hidden: usesSprite ? '' : null },
         spriteIcon: { href: usesSprite ? icon : null },
         spriteVisibility: { hidden: usesSprite ? null : '' },
         label,
+        labelAttributes: {
+          class: 'muze-solid-launcher-label ' +
+            (/\s/.test(label) ? 'muze-solid-design-label-two-lines'
+              : 'muze-solid-design-label-one-line')
+        },
         mode: settings.override,
         anonymous: settings.anonymous,
         modeNote,
@@ -326,9 +357,7 @@ export const shortcuts = {
         }
       };
       return {
-        application: []
-          .concat(node.a || [])
-          .includes(this.api.prefixes.schema + 'SoftwareApplication'),
+        application,
         view
       };
     },
@@ -349,6 +378,7 @@ export const shortcuts = {
         );
       });
       this.runtime.shortcuts = list;
+      this.actions.muzeSolidLauncherInitializeScreens();
       this.runtime.shortcutEffect = this.api.effect(() => {
         this.data.shortcuts = list.view.current;
         this.data.empty = list.view.current.length
@@ -357,16 +387,25 @@ export const shortcuts = {
       });
       this.runtime.shortcutPreviewEffect = this.api.effect(() => {
         const target = list.state.options.insertBefore;
+        const firstInGroup = new Set();
         for (const row of list.view.current) {
+          const first = !firstInGroup.has(row.group);
+          firstInGroup.add(row.group);
           row.shortcutAttributes.class =
             row.id === target
-              ? 'swb-shortcut muze-solid-design-insert-before'
-              : 'swb-shortcut';
+              ? 'swb-shortcut swb-list-item muze-solid-design-insert-before' +
+                (first ? ' muze-solid-design-insert-inside' : '')
+              : 'swb-shortcut swb-list-item';
         }
-        this.data.swbShortcutAddAttributes = {
-          class: 'muze-solid-design-button ds-button swb-add-shortcut' +
-            (target === 'end' ? ' muze-solid-design-insert-before' : '')
-        };
+
+        for (const screen of this.runtime.launcherScreens.view.current || []) {
+          screen.endAttributes.class =
+            'muze-solid-design-tool muze-solid-launcher-screen-end' +
+            (target === 'end:' + screen.id
+              ? ' muze-solid-design-insert-before' +
+                (screen.shortcuts.length ? '' : ' muze-solid-design-insert-inside')
+              : '');
+        }
       });
     },
     isShortcut(row) {

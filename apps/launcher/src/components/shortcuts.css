@@ -28,7 +28,11 @@
     margin-bottom: 0;
   }
   .swb-saved-apps {
-    margin-block-start: var(--swb-shortcuts-space-large);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-block-size: 0;
+    padding-block-start: var(--swb-shortcuts-space-large);
   }
   .muze-solid-launcher-suite-apps {
     margin-block: var(--swb-shortcuts-space);
@@ -54,36 +58,24 @@
     gap: 0.25rem;
     box-sizing: border-box;
     width: 100%;
-    padding: 4px;
+    padding: 0;
     text-align: center;
     text-decoration: none;
     font-size: 1rem;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
   }
   .swb-shortcut-image {
     flex: 0 0 auto;
-    width: 4rem;
+    width: min(4rem, 100%);
     height: 4rem;
     object-fit: contain;
   }
   .swb-shortcut-list {
     display: contents;
   }
-  .swb-add-shortcut {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    gap: var(--swb-shortcuts-space);
-    padding: 4px;
-    margin: 0;
-    overflow-wrap: anywhere;
-    font-size: 1rem;
-    background: transparent;
-    box-shadow: none;
-  }
+
   .swb-app-icon {
-    width: 4rem;
+    width: min(4rem, 100%);
     height: 4rem;
   }
   .swb-app-icon,
@@ -97,7 +89,6 @@
     background: transparent;
   }
   .swb-shortcut-link,
-  .swb-add-shortcut,
   .swb-home-empty {
     color: var(--swb-home-text);
     text-shadow: var(--swb-home-text-shadow);
@@ -118,8 +109,7 @@
 }
 
 @layer page {
-  .swb-shortcut-link,
-  .swb-add-shortcut {
+  .swb-shortcut-link {
     border: 0;
     background: transparent;
     box-shadow: none;
@@ -141,5 +131,112 @@
     background: var(--muze-solid-design-surface);
     color: var(--muze-solid-design-text);
     text-shadow: none;
+  }
+}
+
+@layer page {
+  .muze-solid-launcher-screens {
+    display: flex;
+    align-items: stretch;
+    overflow: auto;
+    flex: 1;
+    min-block-size: 0;
+    gap: 12px;
+    padding: 0;
+    scroll-snap-type: x proximity;
+  }
+  .muze-solid-launcher-screen {
+    flex: 0 0 min(390px, 100vw);
+    min-inline-size: 0;
+    box-sizing: border-box;
+    padding: 0 0 80px;
+    min-block-size: min-content;
+    border: 2px dashed var(--muze-solid-launcher-drop-border, transparent);
+    scroll-snap-align: start;
+  }
+  .muze-solid-launcher-screen-list {
+    display: contents;
+  }
+  .muze-solid-launcher-screens-dragging,
+  .muze-solid-launcher-screens-moving {
+    --muze-solid-launcher-drop-border: currentColor;
+    scroll-snap-type: none;
+    --muze-solid-launcher-end-display: inline-flex;
+  }
+
+  .swb-launcher-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 8px;
+    align-content: start;
+  }
+}
+
+@layer page {
+  .muze-solid-launcher-label {
+    inline-size: 100%;
+    font-size: 1rem;
+    line-height: 1.35;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+}
+
+@layer page {
+  .swb-add-shortcut {
+    position: fixed;
+    inset-inline-start: max(16px, env(safe-area-inset-left));
+    inset-block-end: max(16px, env(safe-area-inset-bottom));
+    z-index: 40;
+    inline-size: 56px;
+    block-size: 56px;
+    min-inline-size: 56px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    justify-content: center;
+  }
+  .muze-solid-launcher-screen-end {
+    display: var(--muze-solid-launcher-end-display, none);
+  }
+}
+
+@layer page {
+  .muze-solid-launcher-navigation {
+    display: contents;
+  }
+  .muze-solid-launcher-chevron {
+    position: fixed;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    z-index: 35;
+    inline-size: 64px;
+    block-size: 64px;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--swb-home-text);
+    text-shadow: var(--swb-home-text-shadow);
+  }
+  .muze-solid-launcher-chevron-previous {
+    inset-inline-start: 0;
+  }
+  .muze-solid-launcher-chevron-next {
+    inset-inline-end: 0;
+  }
+}
+
+@layer page {
+  .swb-launcher-layout {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+
+@layer page {
+  .muze-solid-launcher-screens-moving {
+    --muze-solid-launcher-move-label-display: inline;
+  }
+  .muze-solid-launcher-move-label {
+    display: var(--muze-solid-launcher-move-label-display, none);
   }
 }

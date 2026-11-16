@@ -367,7 +367,7 @@ try {
   await until(page, '!solidLauncher.host.view.runtime.muzeSolidUiCall');
   await run(caller, 'document.querySelector("#choose").click();');
   await until(caller, 'document.querySelector("iframe")');
-  await until(caller, 'document.querySelector("iframe").contentWindow.pending !== undefined || document.querySelector("iframe").contentDocument.body.innerText.includes("Selection requested")');
+  await until(caller, 'document.querySelector("iframe").contentWindow.pending !== undefined || document.querySelector("iframe").contentDocument?.body?.innerText?.includes("Selection requested")');
   await run(caller, 'document.querySelector("iframe").contentDocument.querySelector("#choose").click();');
   await until(caller, 'window.outcome');
   assert.equal(await run(caller, 'return outcome["@id"];'), 'https://independent.example/person#me');

@@ -10,7 +10,7 @@
   .muze-solid-design-toasts {
     position: fixed;
     inset: auto 1rem 1rem auto;
-    width: min(26rem, calc(100vw - 2rem));
+    width: min(26rem, var(--muze-solid-design-toast-available-width, calc(100vw - 2rem)));
     z-index: 200;
     pointer-events: none;
   }

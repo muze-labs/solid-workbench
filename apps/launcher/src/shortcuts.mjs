@@ -192,10 +192,32 @@ export function shortcutOrder(subject) {
 // Every shortcut shares one local resource graph. Validate before changing it;
 // the caller saves that resource once through the existing collection API.
 export function applyShortcutOrder(subjects) {
+  const modifiedPredicate = prefixes.dcterms + 'modified';
+  const timestamps = subjects.map((subject) => {
+    const previous = valueAt(subject, modifiedPredicate);
+    if (Array.isArray(previous) || previous?.id || previous?.language) {
+      throw new Error(
+        'launcher/shortcuts: Modification time must be one date.'
+      );
+    }
+    const previousTime = Date.parse(String(previous || ''));
+    return new Date(
+      Math.max(Date.now(), Number.isFinite(previousTime) ? previousTime + 1 : 0)
+    ).toISOString();
+  });
   for (const subject of subjects) {
     shortcutOrder(subject);
   }
   for (const [index, subject] of subjects.entries()) {
+    // Replica scalar arbitration uses modified time. A move must outrank its
+    // older Pod copy, including when two local moves occur in one millisecond.
+    subject.graph.set(
+      subject.id,
+      modifiedPredicate,
+      oldm.literal(timestamps[index], {
+        type: 'http://www.w3.org/2001/XMLSchema#dateTime'
+      })
+    );
     subject.graph.set(
       subject.id,
       shortcutOrderPredicate,

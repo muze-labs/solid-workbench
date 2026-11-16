@@ -1,5 +1,56 @@
 # Solid Workbench project context
 
+## CYC254 accepted delivery versions, 2026-11-16
+
+ACC259 records acceptance of implementation 407ae4b508e9f93e0f5d73c0bf19b4e17623d352
+and verification 43f49158c9e9642d1841d452422eff5fb5348d86. Product/test hashes
+match the reviewed state. Normal merge and push are authorized after exact
+prospective integration validation, then cleanup of merged cycle branch refs.
+Keep unmerged branches and other worktrees. Prior pending/uncommitted notes are
+superseded; no package publication or separate deployment is inferred.
+
+## Standing accepted-cycle delivery authorization, 2026-11-16
+
+The maintainer instructs: “from now on in this project, if i mark a cycle
+accepted, you may assume i want you to commit, merge and push it as well”.
+This is standing authorization for repository delivery after explicit cycle
+acceptance and required verification/integration checks. Apply it now to accepted
+CYC254. Earlier delivery-pending notes are superseded. Preserve normal merge
+history and push main plus the cycle branch. No separate confirmation is needed;
+package publication and separate deployment remain outside this authorization.
+The rule is retained in AGENTS.md for future sessions.
+
+## CYC254 accepted, 2026-11-16
+
+The maintainer says “agreed, and cycle accepted”. CYC254 is Accepted, covering
+the reviewed uncommitted IMP257 implementation and EVD258 verification. Keep
+real Launcher links; no Firefox-specific replacement with buttons is selected.
+Earlier Active/pending-acceptance notes are superseded. Exact implementation
+Git versions await authorized commits. Commit, merge, push and publication
+remain pending; no delivery authorization is inferred from acceptance alone.
+
+## CYC254 grouped Launcher ready for review, 2026-11-16
+
+CYC254 is Active in Evaluate on verified
+spiral/CYC-20261116-QG24H-254-launcher-groups. Four-column numbered screens,
+trailing drop creation, automatic trailing-empty trimming, shared viewport
+scrolling, fixed conditional chevrons, bottom-left floating Add, label ellipsis
+and stable markers follow maintainer review. Connected membership/order loss
+is fixed by advancing native edit revisions. Published parser0.4.5 is adopted
+and the affected public Files root read succeeds.39 source-test files/build
+and all17 browser suites have passing cumulative results; EVD258 retains failed
+attempts, corrections, measurements and manual/Firefox/live-provider limits.
+Final grouped native and all-app shared UI rechecks pass after marker/ellipsis
+feedback, as does source/build. Awaiting human acceptance. No commit, merge,
+push or publication performed.
+
+## CYC254 Launcher groups selected, 2026-11-16
+
+Maintainer agrees to grouped Launcher screens and parser release adoption.
+CYC254/SRC255/DES256/IMP257/EVD258 retain scope and verification. Branch
+spiral/CYC-20261116-QG24H-254-launcher-groups is verified from main01bc8fc.
+Status Active; no delivery authorization. Existing roadmap edit is preserved.
+
 ## CYC248 accepted for integration, 2026-11-16
 
 The maintainer explicitly accepts the reviewed UI and requests commit, merge
@@ -3299,3 +3350,13 @@ stock integration parser limitation remains disclosed; hierarchical-base plus
 exact pinned-ontology adaptation passes prospective integration. Final target/
 candidate are revalidated immediately before the authorized normal merge.
 No product changes follow acceptance; the unrelated icon archive stays untracked.
+
+
+## Merged cycle branch cleanup, 2026-11-16
+
+The maintainer says “I don't think we need to keep cycle branches after they've
+been merged”. Retain causal commits through normal merge history, then delete
+merged spiral/CYC-* branches locally and remotely after main is pushed. Keep
+unmerged branches. This supersedes earlier instructions to retain/push a cycle
+branch after delivery. Apply to CYC254 and already-merged project cycle branches
+whose ancestry is mechanically verified against main.

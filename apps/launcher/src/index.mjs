@@ -1,3 +1,4 @@
+import * as launcherGroups from './groups.mjs';
 import { AppCatalog } from './catalog.mjs';
 import catalogSource from './catalog.mjs?source';
 import { providerCapabilities } from '@muze-labs/solid-preferences/providers.mjs';
@@ -17,7 +18,7 @@ import {
 import shortcutSource from './shortcuts.mjs?source';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import { model } from '@muze-labs/simplyflow/model';
-import { effect, destroy } from '@muze-labs/simplyflow/state';
+import { effect, destroy, batch } from '@muze-labs/simplyflow/state';
 import { from } from '@muze-nl/jaqt';
 import { shell } from '@muze-labs/solid-app-ui';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
@@ -87,7 +88,11 @@ const definition = {
     lifecycle
   },
   data: {
-    swbShortcutAddLabel: 'Add apps',
+    muzeSolidLauncherDropScreen: {hidden: ''},
+    muzeSolidLauncherDragScreens: {class: 'muze-solid-launcher-screens'},
+    muzeSolidLauncherPrevious: {hidden: ''},
+    muzeSolidLauncherNext: {hidden: ''},
+    muzeSolidLauncherNavigation: {hidden: ''},
     muzeSolidCatalogApps: [],
     muzeSolidCatalogSources: [],
     muzeSolidCatalogStatus: '',
@@ -156,6 +161,8 @@ const definition = {
     httpUrl,
     launchUrl,
     parseLaunchUrl,
+    launcherGroups,
+    batch,
     shortcutOrder,
     applyShortcutOrder,
     shortcutOrderPredicate,

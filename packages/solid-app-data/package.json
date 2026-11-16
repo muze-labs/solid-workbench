@@ -10,7 +10,7 @@
   "dependencies": {
     "@muze-labs/jsfs-solid": "^0.1.1",
     "@muze-labs/metro-solid": "^0.1.0",
-    "@muze-labs/oldm-turtle": "^0.4.4",
+    "@muze-labs/oldm-turtle": "^0.4.5",
     "@muze-labs/simplysolid": "^0.2.2",
     "@muze-labs/solid-workspace": "^0.2.2",
     "@muze-nl/jaqt": "^0.10.7",

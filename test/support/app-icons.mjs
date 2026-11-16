@@ -29,6 +29,7 @@ export async function checkAppIcons(page, origin) {
     const apps = app.api.prefixes.apps;
     const node = {
       id: 'urn:test:icon',
+      a: schema + 'SoftwareApplication',
       [schema + 'url']: { id: location.origin + '/files/#resource=example' },
       [schema + 'image']: {
         id: location.origin + '/assets/feather-icons.svg#folder'
