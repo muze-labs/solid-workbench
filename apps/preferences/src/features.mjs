@@ -10,3 +10,5 @@ export { swbProfileSettings } from '../../profile/src/settings-sections.mjs';
 export { swbProviderPreferences } from './components/providers.mjs';
 
 export { muzeSolidDesignToolbar } from '../../../packages/solid-design/src/features.mjs';
+
+export { muzeSolidPreferenceContributions } from './components/contributions.mjs';

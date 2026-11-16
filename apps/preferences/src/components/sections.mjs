@@ -34,8 +34,8 @@ export const sections = {
     }
   },
   commands: {
-    swb_chooseSection(_button, id, event) {
-      this.actions.swb_selectSection(id);
+    async swb_chooseSection(_button, id, event) {
+      await this.actions.swb_selectSection(id);
       // Keyboard activation stays in the section list; Tab enters its controls.
       if (event?.detail === 0) {
         return;
@@ -70,14 +70,18 @@ export const sections = {
         entry.attributes.tabindex = entry.id === id ? '0' : '-1';
       }
     },
-    swb_selectSection(id) {
+    async swb_selectSection(id) {
+      if (!await this.actions.swb_closeContribution()) {
+        return;
+      }
       this.runtime.section = id;
       if (id === 'providers') {
         this.actions.swb_loadProviders();
       }
       const entries = [
         ...this.api.common,
-        ...this.api.contributions[this.data.swb_app]
+        ...(this.runtime.contributions ||
+          this.api.contributions[this.data.swb_app] || [])
       ];
       const current = this.data.swb_sections;
       const sameSections =
@@ -120,9 +124,20 @@ export const sections = {
           panels[section.id] = { hidden: section.id === id ? null : '' };
         }
       }
+      const contribution = this.runtime.contributions?.find(
+        (entry) => entry.id === id
+      );
+      if (contribution) {
+        for (const panel of Object.values(panels)) {
+          panel.hidden = '';
+        }
+      }
       this.data.swb_panels = panels;
       this.data.swb_sectionTitle =
         entries.find((entry) => entry.id === id)?.label || 'Appearance';
+      if (contribution) {
+        await this.actions.swb_openContribution(contribution);
+      }
     }
   }
 };

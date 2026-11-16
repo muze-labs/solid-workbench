@@ -150,7 +150,6 @@
   .swb-suite-header:has(.muze-solid-ui-embedded:not([hidden])) {
     --swb-header-title-display: none;
     --swb-header-name-display: none;
-    min-height: 2.75rem;
   }
 
   .swb-account-name:hover {
@@ -188,5 +187,15 @@
       padding-inline-end: 0;
       overflow-wrap: anywhere;
     }
+  }
+}
+
+@layer page {
+  /* Embedded chrome takes only its visible children's space. Keep the header
+     rendered so its status, app actions and recovery dialog remain usable. */
+  .swb-suite-header:has(> .muze-solid-ui-embedded:not([hidden])) {
+    min-block-size: 0;
+    margin: 0;
+    padding: 0;
   }
 }
