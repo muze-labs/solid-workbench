@@ -5,6 +5,13 @@ project:IMP-20261116-QG24H-251 a sd:Implementation ;
     dcterms:identifier "IMP-20261116-QG24H-251" ;
     sd:repositoryPath ".spiral/implementations/IMP-20261116-QG24H-251.md" ;
     sd:status sd:Active ;
+    sd:implementationChangeKind sd:SemanticChange ;
+    sd:changeCausedBy [ a sd:ArtifactReference ;
+        sd:artifact project:DES-20261116-QG24H-250 ;
+        sd:gitCommit "d181042d0c9dc56c94964c97df1faf8464189f0a" ] ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:IMP-20261116-QG24H-251 ;
+        sd:gitCommit "4e9bc57768d7b9d9885a6641c0295bc1263fdd31" ] ;
     sd:implements [ a sd:ArtifactReference ;
         sd:artifact project:DES-20261116-QG24H-250 ;
-        sd:gitCommit "d59bc74e7827614173db1a4028c1a448529ec501" ] .
+        sd:gitCommit "d181042d0c9dc56c94964c97df1faf8464189f0a" ] .
