@@ -4,4 +4,7 @@
 project:CYC-20261116-QG24H-242 a sd:Cycle ;
     dcterms:identifier "CYC-20261116-QG24H-242" ;
     sd:repositoryPath ".spiral/cycles/CYC-20261116-QG24H-242.md" ;
-    sd:status sd:Active .
+    sd:status sd:Accepted ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:CYC-20261116-QG24H-242 ;
+        sd:gitCommit "8ce21549a035176ad8fc9b734f6f5cde8546c3e6" ] .

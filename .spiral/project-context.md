@@ -1,5 +1,62 @@
 # Solid Workbench project context
 
+## CYC242 accepted for integration, 2026-11-16
+
+The maintainer says “accepted, commit, merge and push please”. ACC247 accepts
+implementation befe72ee450d4404b377bcf37c2bc89672bb1cbb and
+verification 0ab80da215231fe7c273f0ea1fe0488366468201. CYC242 is Accepted,
+superseding earlier Active/pending notes. Source/build and all fifteen Chrome
+suites pass for the unchanged product. Direct normal merge and push are authorized
+after exact integration validation. Preserve both design archives. UI-design work
+remains future work; no new cycle, publication or deployment is authorized.
+
+## Content-owned embedded header spacing verified, 2026-11-16
+
+Following CYC242 review, the maintainer confirms removing the empty header strip
+and specifies child-owned spacing. Embedded headers now have zero margin,
+padding and minimum height; visible children determine their size. The obsolete
+header-hiding rule is removed so recovery dialogs remain usable. Source/build
+checks and all fifteen browser suites pass uninterrupted, including phone and
+desktop geometry, visible status/compact toolbar and focused recovery modal.
+EVD246 records evidence and manual-review limits. CYC242 remains Active in
+Evaluate; no human acceptance, commit, integration or publication inferred.
+
+## Account chrome correction verified, 2026-11-16
+
+During CYC242 review the maintainer requests removal of the redundant task-only
+WebID/connection button. The shared shell now hides account chrome only when
+embedded; separate-window tasks retain the normal dropdown and header. The
+obsolete button/state is removed. Preferences drafts survive leaving the dialog
+to use the containing app's Account controls. Source/build and all fifteen Chrome
+suites pass uninterrupted for the final product, including the separate-window
+dropdown. EVD246 preserves earlier failures and final evidence. CYC242 remains
+Active in Evaluate; no acceptance, commit, merge or publication is inferred.
+
+## Independent Preferences cycle selected, 2026-11-16
+
+The maintainer confirms the independent-app Preferences goal after rejecting the
+selection-toolbar extraction's uncertain simplification, then explicitly chooses
+app-hosted embedded settings views. CYC242 is Active on verified
+spiral/CYC-20261116-QG24H-242-independent-preferences from main aaab098.
+SRC243/DES244/IMP245/EVD246 retain the confirmed gap, boundary and implementation.
+Preferences uses an existing local broker restricted to the caller's section URL
+and capability; outer broker nesting restrictions stay intact. Files account-menu
+settings and an independent provider exercise the new contract. Other built-in
+panels and standalone app selection retain their legacy composition.
+
+Source/build and scoped authority/durability contracts pass. Existing browser
+suites have passing results with a retained full-command Presenter layout failure,
+unchanged passing rerun and separately run later suites. The cold probe found and
+fixed initially interactive HTML before provider readiness; the real three-page
+Files-to-settings task costs 1742759 uncompressed/no-store transfer bytes / 26
+entries / 33269 ms at 50 KiB/s and 150 ms. EVD246 retains detailed evidence,
+preliminary independent fixture failures and stock validator limitations. The final
+independent recovery run exits successfully, including native phone interaction,
+empty contributions and unavailable-startup fallback. CYC242 is Active in Evaluate,
+ready for human review; no acceptance is inferred.
+RSK240 remains deferred. No commit, merge, push or publication is authorized;
+preserve the unrelated icon archive.
+
 ## CYC235 accepted for integration, 2026-11-16
 
 The maintainer requests deferred graph-format risk RSK240, then says “otherwise
