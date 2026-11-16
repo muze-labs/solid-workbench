@@ -510,14 +510,6 @@
   .muze-solid-design-popup-trigger {
     anchor-name: --muze-solid-design-popup;
   }
-  @position-try --muze-solid-design-popup-below {
-    position-area: block-end;
-    justify-self: center;
-  }
-  @position-try --muze-solid-design-popup-above {
-    position-area: block-start;
-    justify-self: center;
-  }
   .muze-solid-design-popup-anchored {
     position: fixed;
     position-anchor: --muze-solid-design-popup;
@@ -526,8 +518,9 @@
       flip-inline,
       flip-block,
       flip-inline flip-block,
-      --muze-solid-design-popup-below,
-      --muze-solid-design-popup-above;
+      block-end,
+      block-start;
+    justify-self: start;
     inset: auto;
     margin: 4px;
     padding: 12px;
