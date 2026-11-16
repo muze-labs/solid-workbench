@@ -5,6 +5,9 @@ project:EVD-20261116-QG24H-258 a sd:VerificationEvidence ;
     dcterms:identifier "EVD-20261116-QG24H-258" ;
     sd:repositoryPath ".spiral/evidence/EVD-20261116-QG24H-258.md" ;
     sd:status sd:Active ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:EVD-20261116-QG24H-258 ;
+        sd:gitCommit "43f49158c9e9642d1841d452422eff5fb5348d86" ] ;
     sd:verifies [ a sd:ArtifactReference ;
         sd:artifact project:IMP-20261116-QG24H-257 ;
         sd:gitCommit "407ae4b508e9f93e0f5d73c0bf19b4e17623d352" ] .
