@@ -41,7 +41,9 @@ export const shortcutMenu = {
       action: 'swbShortcutDrag'
     },
     swbShortcutDragOver: {
-      target: container,
+      target() {
+        return this.container.ownerDocument;
+      },
       type: 'dragover',
       action: 'swbShortcutDragOver'
     },
@@ -58,7 +60,7 @@ export const shortcutMenu = {
     swbShortcutPointerLeave: {
       target: container,
       type: 'pointerleave',
-      action: 'swbShortcutClearPreview'
+      action: 'swbShortcutPointerLeave'
     },
     swbShortcutDrop: {
       target: container,
@@ -73,11 +75,31 @@ export const shortcutMenu = {
   },
   commands: {
     swbShortcutAdd() {
-      const moving = this.runtime.swbShortcutMoving;
-      if (moving) {
-        this.actions.swbShortcutCancelMove();
-        return this.actions.swbMoveShortcut(moving, null);
+      // The floating action adds to the screen occupying the largest visible area.
+      const viewport = this.container
+        .querySelector('.muze-solid-launcher-screens')
+        .getBoundingClientRect();
+      let selected = '';
+      let largest = -1;
+      for (const screen of this.container.querySelectorAll(
+        '[data-muze-solid-launcher-screen]:not([hidden])'
+      )) {
+        const rect = screen.getBoundingClientRect();
+        const visible = Math.max(
+          0,
+          Math.min(rect.right, viewport.right) -
+            Math.max(rect.left, viewport.left)
+        );
+        if (
+          visible > largest &&
+          screen.dataset.muzeSolidLauncherScreen !== 'new'
+        ) {
+          selected = screen.dataset.muzeSolidLauncherScreen;
+          largest = visible;
+        }
       }
+      this.actions.swbShortcutCancelMove();
+      this.runtime.launcherAddScreen = selected;
       return this.commands.call('muzeSolidCatalogOpen');
     },
     swbShortcutMoveEarlier(button, id) {
@@ -89,9 +111,17 @@ export const shortcutMenu = {
     swbShortcutMoveTo(button, id) {
       this.actions.swbShortcutCloseMenu(button);
       this.runtime.swbShortcutMoving = id;
-      this.data.swbShortcutAddLabel = 'Move to end';
+      this.data.muzeSolidLauncherDropScreen = {
+        hidden: null,
+        'aria-label':
+          'Screen ' + (this.data.muzeSolidLauncherScreens.length + 1)
+      };
+      this.data.muzeSolidLauncherDragScreens = {
+        class:
+          'muze-solid-launcher-screens muze-solid-launcher-screens-moving'
+      };
       this.runtime.host.notify(
-        'Choose a shortcut to move before it, or Move to end. Escape cancels.'
+        'Choose a shortcut or a screen’s Move here control. Escape cancels.'
       );
     },
     async swbShortcutDelete(button, id) {
@@ -236,6 +266,15 @@ export const shortcutMenu = {
       this.runtime.swbShortcutDragging = link.closest(
         '[data-swb-shortcut]'
       ).dataset.swbShortcut;
+      this.data.muzeSolidLauncherDragScreens = {
+        class:
+          'muze-solid-launcher-screens muze-solid-launcher-screens-dragging'
+      };
+      this.data.muzeSolidLauncherDropScreen = {
+        hidden: null,
+        'aria-label':
+          'Screen ' + (this.data.muzeSolidLauncherScreens.length + 1)
+      };
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData(
         'text/plain',
@@ -243,6 +282,8 @@ export const shortcutMenu = {
       );
     },
     swbShortcutDragOver(event) {
+      this.runtime.launcherDragPoint = { x: event.clientX, y: event.clientY };
+      this.actions.muzeSolidLauncherDragScroll();
       const target = this.actions.swbShortcutDestination(event.target);
       this.actions.swbShortcutPreview(target);
       if (this.runtime.swbShortcutDragging && target) {
@@ -251,7 +292,8 @@ export const shortcutMenu = {
       }
     },
     swbShortcutDragLeave(event) {
-      if (!this.actions.swbShortcutDestination(event.relatedTarget)) {
+      if (!this.runtime.swbShortcutDragging &&
+          !this.actions.swbShortcutDestination(event.relatedTarget)) {
         this.actions.swbShortcutClearPreview();
       }
     },
@@ -262,12 +304,22 @@ export const shortcutMenu = {
         );
       }
     },
+    swbShortcutPointerLeave() {
+      if (!this.runtime.swbShortcutDragging) {
+        this.actions.swbShortcutClearPreview();
+      }
+    },
     swbShortcutClearPreview() {
-      this.actions.swbShortcutPreview();
+      clearTimeout(this.runtime.shortcutPreviewTimer);
+      this.runtime.shortcutPreviewTarget = '';
+      this.runtime.shortcuts.state.options.insertBefore = '';
     },
     swbShortcutCancelMove() {
       this.runtime.swbShortcutMoving = null;
-      this.data.swbShortcutAddLabel = 'Add apps';
+      this.data.muzeSolidLauncherDropScreen = { hidden: '' };
+      this.data.muzeSolidLauncherDragScreens = {
+        class: 'muze-solid-launcher-screens'
+      };
       this.actions.swbShortcutClearPreview();
     },
     swbShortcutDestination(element) {
@@ -275,13 +327,33 @@ export const shortcutMenu = {
       if (shortcut) {
         return shortcut.dataset.swbShortcut;
       }
-      return element?.closest?.('.swb-add-shortcut') ? 'end' : '';
+      const end = element?.closest?.('.muze-solid-launcher-screen-end');
+      const screen = element?.closest?.('[data-muze-solid-launcher-screen]');
+      if (end || screen) {
+        const id = (end || screen).closest('[data-muze-solid-launcher-screen]')
+          .dataset.muzeSolidLauncherScreen;
+        return 'end:' + id;
+      }
+      return '';
     },
     swbShortcutPreview(target = '') {
       const moving =
         this.runtime.swbShortcutDragging || this.runtime.swbShortcutMoving;
       const destination = moving && target !== moving ? target : '';
-      this.runtime.shortcuts.state.options.insertBefore = destination;
+      if (!this.runtime.swbShortcutDragging) {
+        this.runtime.shortcuts.state.options.insertBefore = destination;
+        return;
+      }
+      if (this.runtime.shortcutPreviewTarget === destination) {
+        return;
+      }
+      clearTimeout(this.runtime.shortcutPreviewTimer);
+      this.runtime.shortcutPreviewTarget = destination;
+      // Native dragleave fires between child nodes as well as whole screens.
+      // Wait for a stable successor instead of flashing an intermediate slot.
+      this.runtime.shortcutPreviewTimer = setTimeout(() => {
+        this.runtime.shortcuts.state.options.insertBefore = destination;
+      }, 100);
     },
     swbShortcutDrop(event) {
       const target = this.actions.swbShortcutDestination(event.target);
@@ -291,16 +363,31 @@ export const shortcutMenu = {
       }
       event.preventDefault();
       this.actions.swbShortcutDragEnd();
-      return this.actions.swbMoveShortcut(id, target === 'end' ? null : target);
+      return target.startsWith('end:')
+        ? this.actions.swbMoveShortcut(id, null, false, target.slice(4))
+        : this.actions.swbMoveShortcut(id, target);
     },
     swbShortcutDragEnd() {
+      if (!this.runtime.swbShortcutDragging) {
+        return;
+      }
+      cancelAnimationFrame(this.runtime.launcherDragScroll);
+      this.runtime.launcherDragScroll = null;
+      this.runtime.launcherDragPoint = null;
+      this.data.muzeSolidLauncherDragScreens = {
+        class: 'muze-solid-launcher-screens'
+      };
+      this.data.muzeSolidLauncherDropScreen = { hidden: '' };
       this.runtime.swbShortcutDragging = null;
       this.actions.swbShortcutClearPreview();
       this.runtime.swbShortcutIgnoreClickUntil = Date.now() + 300;
     },
     swbShortcutStep(button, id, direction) {
       this.actions.swbShortcutCloseMenu(button);
-      const ids = this.data.shortcuts.map((row) => row.id);
+      const group = this.data.shortcuts.find((row) => row.id === id)?.group;
+      const ids = this.data.shortcuts
+        .filter((row) => row.group === group)
+        .map((row) => row.id);
       const index = ids.indexOf(id);
       const next = index + direction;
       if (next < 0 || next >= ids.length) {
@@ -308,26 +395,43 @@ export const shortcutMenu = {
       }
       return this.actions.swbMoveShortcut(id, ids[next], direction > 0);
     },
-    swbMoveShortcut(id, target, after = false) {
+    swbMoveShortcut(id, target, after = false, group) {
       return this.runtime.host.run(async () => {
         this.actions.swb_requireOwner();
         if (id === target) {
           return;
         }
-        const ids = this.data.shortcuts.map((row) => row.id);
-        if (!ids.includes(id) || (target !== null && !ids.includes(target))) {
+        const source = this.data.shortcuts.find((row) => row.id === id);
+        const destination = this.data.shortcuts.find(
+          (row) => row.id === target
+        );
+        if (!source || (target !== null && !destination)) {
           throw new Error('launcher: The shortcut changed; choose it again.');
         }
-        ids.splice(ids.indexOf(id), 1);
-        const position = target === null
-          ? ids.length : ids.indexOf(target) + (after ? 1 : 0);
+        group ??= destination?.group ?? source.group;
+        if (group === 'new') {
+          group = await this.actions.muzeSolidLauncherCreateScreen();
+        }
+        const ids = this.data.shortcuts
+          .filter((row) => row.group === group && row.id !== id)
+          .map((row) => row.id);
+        const position =
+          target === null ? ids.length : ids.indexOf(target) + (after ? 1 : 0);
         ids.splice(position, 0, id);
         const subjects = ids.map((key) =>
           this.runtime.store.collection.get(key)
         );
+        this.api.launcherGroups.shortcutGroup(
+          this.runtime.store.collection.get(id)
+        );
         this.api.applyShortcutOrder(subjects);
+        this.api.launcherGroups.setShortcutGroup(
+          this.runtime.store.collection.get(id),
+          group
+        );
         // Collection resource writes snapshot the entire shared native graph.
         await this.runtime.store.collection.save(subjects[0]);
+        await this.actions.muzeSolidLauncherTrimScreens();
         this.actions.render();
         await new Promise((resolve) => requestAnimationFrame(resolve));
         for (const item of this.container.querySelectorAll(

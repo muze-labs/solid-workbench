@@ -177,3 +177,16 @@ The shared shell closes outside auto popovers when focus enters an owned iframe;
 it does not inspect frame contents or close a popover containing that iframe.
 Fixed toolbars are transparent by default; floating toolbars keep a surface.
 `muze-solid-design-toolbar-title` follows the shared 20px default title scale.
+
+Insertion markers use `--muze-solid-design-insert-height` (default `4rem`)
+independently of row text height. Apply `muze-solid-design-insert-inside` at
+a container's first slot to place the marker inside its boundary; other slots
+retain the between-item offset.
+
+`--muze-solid-design-toast-available-width` optionally reserves horizontal room
+for a floating action while keeping the normal bottom-right toast position.
+Its default is `calc(100vw - 2rem)`; Launcher reserves its bottom-left Add action.
+
+Choose either `muze-solid-design-label-one-line` or
+`muze-solid-design-label-two-lines` for overflow ellipsis; the one-line utility
+uses block display and nowrap, and the two-line utility uses line clamping.

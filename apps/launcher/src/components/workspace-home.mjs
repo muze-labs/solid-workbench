@@ -69,6 +69,7 @@ export const workspaceHome = {
         store = await this.actions.swb_openShortcuts(entry);
       }
       await persistence.stage(next);
+      this.runtime.launcherAddScreen = '';
       this.runtime.store = store;
       this.runtime.host.workspaceContext = {
         id: entry.id,
@@ -91,6 +92,7 @@ export const workspaceHome = {
           this.api.prefixes.schema + 'url',
           this.api.overridePredicate,
           this.api.shortcutOrderPredicate,
+          this.api.launcherGroups.groupPredicate,
           this.api.anonymousPredicate,
           this.api.prefixes.schema + 'image',
           this.api.prefixes.apps + 'iconOverride'
@@ -229,6 +231,7 @@ export const workspaceHome = {
         throw error;
       }
       await this.runtime.workspace.closeApps();
+      this.runtime.launcherAddScreen = '';
       this.runtime.store = store;
       this.actions.createWorkspace();
       this.runtime.host.workspaceContext = {

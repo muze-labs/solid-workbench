@@ -120,11 +120,18 @@ export const lifecycle = {
       this.eventBindings.start();
     },
     cleanup() {
+      clearTimeout(this.runtime.shortcutPreviewTimer);
+      cancelAnimationFrame(this.runtime.launcherDragScroll);
+      cancelAnimationFrame(this.runtime.launcherScreenLayout);
       this.actions.swb_releaseBackground();
       clearTimeout(this.runtime.restoreTimer);
       clearTimeout(this.runtime.settingsSyncTimer);
       this.runtime.selection?.abort();
       this.runtime.workspace?.dispose();
+      this.api.destroy(this.runtime.launcherScreenEffect);
+      for (const signal of this.runtime.launcherScreens.effects.slice(1)) {
+        this.api.destroy(signal);
+      }
       this.api.destroy(this.runtime.shortcutEffect);
       this.api.destroy(this.runtime.shortcutPreviewEffect);
       for (const signal of this.runtime.shortcuts.effects.slice(1)) {

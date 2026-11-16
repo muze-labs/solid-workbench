@@ -2,6 +2,13 @@
    optional properties inherit; its own adapter initializes only defaults. */
 @layer theme {
   .swb-launcher {
+    --swb-main-padding: 0;
+    --muze-solid-design-toast-available-width: calc(100vw - 104px);
+    --swb-main-display: flex;
+    --swb-main-overflow: hidden;
+    --swb-content-flex: 1;
+    --swb-content-min-height: 0;
+    --swb-content-overflow: hidden;
     --swb-home-text: var(--ds-color);
     --swb-header-title-size: 1.5rem;
     --swb-home-text-shadow: none;

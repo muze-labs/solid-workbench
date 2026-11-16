@@ -208,7 +208,7 @@ try {
           height:label.getBoundingClientRect().height,
           line:parseFloat(style.lineHeight),clamp:style.webkitLineClamp,
           title:label.closest('a').title,text:label.textContent.trim(),
-          gap:getComputedStyle(document.querySelector('.swb-launcher-grid')).gap};
+          gap:getComputedStyle(document.querySelector('.swb-launcher-grid')).rowGap};
       })()`);
       assert.ok(Math.abs(label.headerSize - 24 * scale / 100) < 0.01);
       assert.equal(label.clamp, '2');
@@ -389,7 +389,7 @@ try {
     await page.send('Input.setInterceptDrags', { enabled: true });
     const dragPoints = await evaluate(`(() => {
       const links = [...document.querySelectorAll('.swb-shortcut-link')];
-      return ${dropAtEnd ? "[links[0], document.querySelector('.swb-add-shortcut')]" : '[links.at(-1), links[0]]'}.map(link => {
+      return ${dropAtEnd ? "[links[0], links[0]]" : '[links.at(-1), links[0]]'}.map(link => {
         const r = link.getBoundingClientRect();
         return {x:r.x+r.width/2, y:r.y+r.height/2};
       });
@@ -419,6 +419,13 @@ try {
         setTimeout(() => reject(new Error('Native drag did not start')), 5000)
       )
     ]);
+    if (dropAtEnd) {
+      await wait("getComputedStyle(document.querySelector('.muze-solid-launcher-screen-end')).display !== 'none'");
+      dragPoints[1] = await evaluate(`(() => {
+        const r=document.querySelector('.muze-solid-launcher-screen-end').getBoundingClientRect();
+        return {x:r.x+r.width/2,y:r.y+r.height/2};
+      })()`);
+    }
     for (const type of ['dragEnter', 'dragOver']) {
       await page.send('Input.dispatchDragEvent', {
         type,
@@ -431,7 +438,7 @@ try {
     assert.equal(
       await evaluate(`(() => {
       const target=document.querySelector('.muze-solid-design-insert-before');
-      return target===document.querySelector(${JSON.stringify(dropAtEnd ? '.swb-add-shortcut' : '[data-swb-shortcut]')}) &&
+      return target===document.querySelector(${JSON.stringify(dropAtEnd ? '.muze-solid-launcher-screen-end' : '[data-swb-shortcut]')}) &&
         getComputedStyle(target,'::before').width==='4px';
     })()`),
       true,

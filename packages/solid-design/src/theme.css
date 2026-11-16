@@ -564,11 +564,15 @@
   .muze-solid-design-insert-before {
     position: relative;
   }
+  .muze-solid-design-insert-inside {
+    --muze-solid-design-insert-offset: 4px;
+  }
   .muze-solid-design-insert-before::before {
     content: '';
     position: absolute;
-    inset-inline-start: -8px;
-    inset-block: 8px;
+    inset-inline-start: var(--muze-solid-design-insert-offset, -8px);
+    inset-block-start: 0;
+    block-size: var(--muze-solid-design-insert-height, 4rem);
     inline-size: 4px;
     background: var(--muze-solid-design-accent, Highlight);
     box-shadow: 0 0 0 1px var(--muze-solid-design-surface, Canvas);
@@ -577,6 +581,12 @@
 }
 
 @layer utility {
+  .muze-solid-design-label-one-line {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .muze-solid-design-label-two-lines {
     display: -webkit-box;
     -webkit-box-orient: vertical;
