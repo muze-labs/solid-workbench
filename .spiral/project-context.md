@@ -1,5 +1,45 @@
 # Solid Workbench project context
 
+## CYC235 accepted for integration, 2026-11-16
+
+The maintainer requests deferred graph-format risk RSK240, then says “otherwise
+accepted, commit, merge and push please”. ACC241 accepts
+IMP238@a251d7bf17c437ea3d1afa034ba150112268df6a and
+EVD239@77d5b7ca35ee37ea632532cb2ac6209efaaac94a. CYC235 is Accepted,
+superseding earlier Active/pending notes. All four tested product/test/doc files
+are unchanged. Direct normal merge into latest main and push of both branches
+are authorized after prospective validation. Existing validator and manual/live-
+provider limits remain disclosed. RSK240 stays Active/Deferred; no current format
+change, successor format, next cycle, publication or deployment is selected.
+Preserve the unrelated icon archive outside delivery.
+
+## Capability participation selected, 2026-11-15
+
+After CYC229 delivery the maintainer confirms the next library-simplification
+cycle. CYC235 is Active on verified
+spiral/CYC-20261115-QG24H-235-capability-participation from main 5b1561a.
+Separate reusable port participation from Workbench browser launch/restoration
+policy; prove suite and independent provider without replacing raw-wire peers.
+SRC236/DES237/IMP238/EVD239 retain scope and evidence. Preserve current authority,
+protocol, local edits and provider-owned close guards; no new UI/storage policy,
+package publication or delivery authorization. Icon archive remains untouched.
+
+CYC235 enters Evaluate ready for review. CapabilityParticipant accepts an explicit
+port without browser launch/storage assumptions; ManagedApp retains those policies
+and reuses it. An independent cross-origin picker consumes the direct API; raw-
+wire peers remain separate. Source/build, 28 capability cases and all fourteen
+Chrome suites pass. A refactor ordering regression around failed resume storage
+was caught and corrected before final verification. Complete minified graphs grow
+106 gzip B with no new startup request or dependency. EVD239 retains failure
+history, cold-task measurements and validation/manual-review limits. Cycle stays
+Active; no acceptance, commit or integration is inferred.
+
+During CYC235 review the maintainer explicitly defers graph identity and
+capability-format suitability to a future cycle, possibly changing formats.
+RSK240 and the broker roadmap retain the concern; no format change is made now.
+They then accept CYC235 and authorize commit, merge and push with this follow-up.
+Exact acceptance/delivery references will supersede earlier pending notes.
+
 ## CYC229 accepted for integration, 2026-11-15
 
 The maintainer says “accepted, commit, merge and push please”. ACC234 accepts
