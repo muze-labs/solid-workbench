@@ -1,5 +1,14 @@
 # Solid Workbench project context
 
+## CYC254 accepted delivery versions, 2026-11-16
+
+ACC259 records acceptance of implementation 407ae4b508e9f93e0f5d73c0bf19b4e17623d352
+and verification 43f49158c9e9642d1841d452422eff5fb5348d86. Product/test hashes
+match the reviewed state. Normal merge and push are authorized after exact
+prospective integration validation, then cleanup of merged cycle branch refs.
+Keep unmerged branches and other worktrees. Prior pending/uncommitted notes are
+superseded; no package publication or separate deployment is inferred.
+
 ## Standing accepted-cycle delivery authorization, 2026-11-16
 
 The maintainer instructs: “from now on in this project, if i mark a cycle
