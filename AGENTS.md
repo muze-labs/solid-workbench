@@ -22,8 +22,11 @@ mixed into a documentation update.
 
 Standing maintainer authorization: when the maintainer marks a cycle accepted,
 treat that acceptance as a request to commit the cycle, normally merge it into
-`main`, and push `main` and the cycle branch after the required verification and
-prospective integration checks. No separate delivery confirmation is needed.
+`main`, and push `main` after the required verification and prospective integration
+checks. Once the normal merge is successfully pushed, delete merged cycle
+branches locally and on the remote; retain their commits through merge history.
+Keep unmerged cycle branches. A merged cycle branch need not be newly published
+just to delete it. No separate delivery confirmation is needed.
 This includes CYC254, accepted immediately before this rule was established.
 Package publication and separate deployment still require explicit instructions.
 Outside this acceptance rule, do not commit, merge or publish unless asked.

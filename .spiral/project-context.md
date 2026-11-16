@@ -3341,3 +3341,13 @@ stock integration parser limitation remains disclosed; hierarchical-base plus
 exact pinned-ontology adaptation passes prospective integration. Final target/
 candidate are revalidated immediately before the authorized normal merge.
 No product changes follow acceptance; the unrelated icon archive stays untracked.
+
+
+## Merged cycle branch cleanup, 2026-11-16
+
+The maintainer says “I don't think we need to keep cycle branches after they've
+been merged”. Retain causal commits through normal merge history, then delete
+merged spiral/CYC-* branches locally and remotely after main is pushed. Keep
+unmerged branches. This supersedes earlier instructions to retain/push a cycle
+branch after delivery. Apply to CYC254 and already-merged project cycle branches
+whose ancestry is mechanically verified against main.
