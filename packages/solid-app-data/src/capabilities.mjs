@@ -138,11 +138,14 @@ export class PortConnection {
     }
     const validId = typeof message.id === 'string' && message.id.length > 0;
     const validType = ['call', 'reply', 'cancel'].includes(message.type);
-    const validMethod = message.type !== 'call' ||
+    const validMethod =
+      message.type !== 'call' ||
       (typeof message.method === 'string' && message.method.length > 0);
-    const validError = message.type !== 'reply' ||
+    const validError =
+      message.type !== 'reply' ||
       message.error === undefined ||
-      (message.error && typeof message.error.code === 'string' &&
+      (message.error &&
+        typeof message.error.code === 'string' &&
         typeof message.error.message === 'string');
     if (!validId || !validType || !validMethod || !validError) {
       this.close('Invalid capability frame.');
@@ -263,7 +266,9 @@ export class PortConnection {
   }
 }
 
-export class ManagedApp {
+// Own one private-port participation, independently of window launch policy.
+// The host adapter must authenticate the window/source/origin before connecting.
+export class CapabilityParticipant {
   constructor({
     name,
     capabilities = [],
@@ -274,11 +279,10 @@ export class ManagedApp {
     onView,
     onState,
     onContext = () => {},
-    onPreferences = () => {},
-    onFocus = () => {},
     beforeCheckpoint = () => {},
-    waitForPresentation = false,
-    canClose = () => ({ allowed: true })
+    canClose = () => ({ allowed: true }),
+    transient = false,
+    embedded = false
   } = {}) {
     Object.assign(this, {
       name,
@@ -290,18 +294,135 @@ export class ManagedApp {
       onView,
       onState,
       onContext,
-      onPreferences,
-      onFocus,
       beforeCheckpoint,
-      waitForPresentation,
-      canClose
+      canClose,
+      transient,
+      embedded
     });
+    this.generation = crypto.randomUUID();
     this.incoming = new Map();
     this.ready = false;
-    this.task = new URL(location.href).searchParams.has('solid-apps-task');
-    this.embedded = this.task && window.parent !== window;
+  }
+  async connect(port, { state = null, identity = null } = {}) {
+    this.disconnect();
+    const peer = new PortConnection(port, (method, input, options) =>
+      this.handle(method, input, options)
+    );
+    this.peer = peer;
+    try {
+      const registered = await peer.call('register', {
+        name: this.name,
+        restoring: true,
+        generation: this.generation,
+        capabilities: this.capabilities
+      });
+      if (this.peer !== peer || peer.closed) {
+        return;
+      }
+      await this.onContext(registered?.context || null);
+      if (this.peer !== peer || peer.closed) {
+        return;
+      }
+      if (identity !== this.restorationIdentity) {
+        this.restorationIdentity = identity;
+        this.restoreError = '';
+        this.restoring = Promise.resolve().then(() => this.restoreState(state));
+      }
+      await this.restoring;
+      if (this.peer !== peer || peer.closed) {
+        return;
+      }
+      this.ready = true;
+      await this.publish(peer);
+      await peer.call('ready', null);
+    }
+    catch (error) {
+      if (this.peer !== peer || peer.closed) {
+        return;
+      }
+      this.ready = false;
+      this.restoreError = error.message;
+      await peer
+        .call('restore-error', { message: error.message })
+        .catch(() => {});
+      this.onState?.(error.message);
+    }
+  }
+  async handle(method, input, { signal }) {
+    if (method === 'view' && this.embedded && this.onView) {
+      return this.onView(input);
+    }
+    if (method === 'can-close') {
+      return this.canClose();
+    }
+    if (method === 'checkpoint') {
+      if (!this.ready) {
+        throw capabilityError(
+          this.restoreError ||
+            'App is still restoring. Finish connecting or reload it.',
+          'restoring'
+        );
+      }
+      await this.beforeCheckpoint();
+      return restorationState(await this.getState());
+    }
+    if (
+      method !== 'capability' ||
+      !this.capabilities.includes(input.capability)
+    ) {
+      throw capabilityError('Unsupported operation.', 'denied');
+    }
+    const id = crypto.randomUUID();
+    return new Promise((resolve, reject) => {
+      const cancel = () => {
+        this.incoming.delete(id);
+        this.onCancel?.({ id });
+        reject(capabilityError('Selection cancelled.', 'cancelled'));
+      };
+      signal.addEventListener('abort', cancel, { once: true });
+      const complete = (result) => {
+        signal.removeEventListener('abort', cancel);
+        resolve(result);
+      };
+      this.incoming.set(id, { complete });
+      this.onRequest?.({ ...input, id });
+    });
+  }
+  async publish(peer = this.peer) {
+    if (this.transient) {
+      return;
+    }
+    if (this.ready && peer && !peer.closed) {
+      const state = restorationState(await this.getState());
+      if (this.ready && this.peer === peer && !peer.closed) {
+        return peer.call('state', state);
+      }
+    }
+  }
+  async respond(id, response) {
+    const request = this.incoming.get(id);
+    if (!request) {
+      throw capabilityError('Selection request is no longer active.');
+    }
+    this.incoming.delete(id);
+    request.complete(response);
+  }
+  disconnect() {
+    this.ready = false;
+    this.peer?.close();
+  }
+}
+
+export class ManagedApp extends CapabilityParticipant {
+  constructor(options = {}) {
+    const task = new URL(location.href).searchParams.has('solid-apps-task');
+    const embedded = task && window.parent !== window;
+    super({ ...options, transient: task, embedded });
+    this.onPreferences = options.onPreferences || (() => {});
+    this.onFocus = options.onFocus || (() => {});
+    this.waitForPresentation = options.waitForPresentation || false;
+    this.task = task;
     this.parent = this.embedded ? window.parent : window.opener;
-    this.generation = crypto.randomUUID();
     this.listen = (event) => this.offer(event);
     window.addEventListener('message', this.listen);
     try {
@@ -405,8 +526,9 @@ export class ManagedApp {
     ) {
       return;
     }
-    this.peer?.close();
-    this.ready = false;
+    // Retire the old channel before browser storage can fail. Direct port
+    // consumers also retire it in connect(); disconnect is idempotent.
+    this.disconnect();
     this.parentTarget =
       typeof message.focusTarget === 'string' &&
       /^solid-apps-launcher-[0-9a-f-]{36}$/.test(message.focusTarget)
@@ -416,110 +538,22 @@ export class ManagedApp {
     if (!this.task) {
       sessionStorage.setItem('solid-apps.managed', JSON.stringify(this.resume));
     }
-    const peer = new PortConnection(event.ports[0], (method, input, options) =>
-      this.handle(method, input, options)
-    );
-    this.peer = peer;
-    try {
-      const registered = await peer.call('register', {
-        name: this.name,
-        restoring: true,
-        generation: this.generation,
-        capabilities: this.capabilities
-      });
-      await this.onContext(registered?.context || null);
-      const identity = JSON.stringify(this.resume);
-      if (identity !== this.restorationIdentity) {
-        this.restorationIdentity = identity;
-        this.restoreError = '';
-        this.restoring = Promise.resolve().then(() =>
-          this.restoreState(message.state)
-        );
-      }
-      await this.restoring;
-      if (this.peer !== peer || peer.closed) {
-        return;
-      }
-      this.ready = true;
-      await this.publish(peer);
-      await peer.call('ready', null);
-    }
-    catch (error) {
-      if (this.peer !== peer || peer.closed) {
-        return;
-      }
-      this.ready = false;
-      this.restoreError = error.message;
-      await peer
-        .call('restore-error', { message: error.message })
-        .catch(() => {});
-      this.onState?.(error.message);
-    }
+    await this.connect(event.ports[0], {
+      state: message.state,
+      identity: JSON.stringify(this.resume)
+    });
   }
-  async handle(method, input, { signal }) {
+  async handle(method, input, options) {
     if (
       method === 'preferences-update' &&
       this.capabilities.includes(editPreferencesCapability)
     ) {
       return this.onPreferences(input);
     }
-    if (method === 'view' && this.embedded && this.onView) {
-      return this.onView(input);
-    }
-    if (method === 'can-close') {
-      return this.canClose();
-    }
-    if (method === 'checkpoint') {
-      if (!this.ready) {
-        throw capabilityError(
-          this.restoreError ||
-            'App is still restoring. Finish connecting or reload it.',
-          'restoring'
-        );
-      }
-      await this.beforeCheckpoint();
-      return restorationState(await this.getState());
-    }
-    if (
-      method !== 'capability' ||
-      !this.capabilities.includes(input.capability)
-    ) {
-      throw capabilityError('Unsupported operation.', 'denied');
-    }
-    const id = crypto.randomUUID();
-    return new Promise((resolve, reject) => {
-      const cancel = () => {
-        this.incoming.delete(id);
-        this.onCancel?.({ id });
-        reject(capabilityError('Selection cancelled.', 'cancelled'));
-      };
-      signal.addEventListener('abort', cancel, { once: true });
-      const complete = (result) => {
-        signal.removeEventListener('abort', cancel);
-        resolve(result);
-      };
-      this.incoming.set(id, { complete });
-      this.onRequest?.({ ...input, id });
-    });
-  }
-  async publish(peer = this.peer) {
-    if (this.task) {
-      return;
-    }
-    if (this.ready && peer && !peer.closed) {
-      const state = restorationState(await this.getState());
-      if (this.ready && this.peer === peer && !peer.closed) {
-        return peer.call('state', state);
-      }
-    }
+    return super.handle(method, input, options);
   }
   async respond(id, response) {
-    const request = this.incoming.get(id);
-    if (!request) {
-      throw capabilityError('Selection request is no longer active.');
-    }
-    this.incoming.delete(id);
-    request.complete(response);
+    await super.respond(id, response);
     try {
       // Targeting the existing context during this gesture activates tabs in
       // browsers which ignore cross-origin opener.focus(). Never navigate it.

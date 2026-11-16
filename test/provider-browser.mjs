@@ -66,15 +66,33 @@ const provider = createServer((request, response) => {
   response.end(`<!doctype html><title>Other picker</title>
     <h1>Other picker</h1><button id="select">Select resource</button>
     <button id="cancel">Cancel</button><script type="module">
-    import { ManagedApp, browseCapability } from '/protocol.mjs';
+    import { CapabilityParticipant, browseCapability } from '/protocol.mjs';
     document.querySelector('#select').disabled=true;
     document.querySelector('#cancel').disabled=true;
-    window.managed = new ManagedApp({name:'Other picker',
+    window.managed = new CapabilityParticipant({name:'Other picker', transient:true,
       capabilities:${url.pathname === '/unsupported/' ? '[]' : '[browseCapability]'}, onRequest(event) {
         window.pending = event;
         document.querySelector('#select').disabled=false;
         document.querySelector('#cancel').disabled=false;
       }});
+    // This independent app owns the window handshake, not Workbench URL/storage.
+    const hostOrigin=${JSON.stringify(origin)};
+    const host=parent!==window?parent:opener;
+    addEventListener('pagehide',()=>managed.disconnect());
+    let ticket;
+    addEventListener('message',event=>{
+      if(event.source!==host || event.origin!==hostOrigin ||
+        event.data?.type!=='solid-apps:offer' || !event.ports[0] ||
+        typeof event.data.id!=='string' || typeof event.data.key!=='string')return;
+      ticket={id:event.data.id,key:event.data.key};
+      managed.connect(event.ports[0],{identity:JSON.stringify(ticket)});
+    });
+    window.closePresentation=()=>{
+      if(parent===window || !ticket || !managed.ready)return false;
+      host.postMessage({type:'solid-apps:presentation-close',...ticket},hostOrigin);
+      return true;
+    };
+    host.postMessage({type:'solid-apps:embedded-ready',generation:managed.generation},hostOrigin);
     document.querySelector('#select').onclick=()=>managed.respond(
       pending.id,{result:{'@id':'https://pod.example/chosen.ttl#item'}});
     document.querySelector('#cancel').onclick=()=>managed.respond(
@@ -566,7 +584,7 @@ try {
     await new Promise(resolve=>setTimeout(resolve,40));
   }
   assert.equal((await tab.send('Runtime.evaluate', {
-    expression:'managed.requestPresentationClose()',returnByValue:true
+    expression:'closePresentation()',returnByValue:true
   })).result.value,false);
   await tab.send('Runtime.evaluate', {expression:'document.querySelector("#select").focus();'});
   await escapeKey(tab);

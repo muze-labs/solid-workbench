@@ -110,3 +110,41 @@ policy; Notebook retains drafts and Presenter purges deleted copies. Standalone
 files omit membership while still requiring local reconciliation. Files'
 tombstone-only deletion remains a separate contract. These are private suite
 integration APIs, not a new published package or a changed protocol version.
+
+`CapabilityParticipant` is the private protocol participant for an app that owns
+its host integration. It has no framework, Solid client, browser-launch or
+storage dependency. Import it from `@muze-labs/solid-app-data/capabilities.mjs`.
+The existing module also exports `PortConnection` and the Workbench browser
+adapter `ManagedApp`; the participant is not a new protocol version or package.
+
+Construct with `name`, `capabilities`, `onRequest`, `onCancel`, `canClose`,
+`getState`, `restoreState`, `beforeCheckpoint`, `onContext` and `onState` as needed.
+`connect(port, { identity, state })` registers, applies host context, restores,
+publishes state and reports readiness; failed restoration reports `restore-error`
+and leaves `ready` false. `onState` receives that error for app-owned feedback.
+Check `ready` after awaiting `connect`: a reported startup failure does not throw
+through this handshake. The integrator must authenticate the window source,
+origin and expected offer/ticket before passing its transferred port. This API
+does not make an arbitrary message or a claimed WebID trustworthy.
+
+Use a stable string `identity` for the same restored host slot. Reconnecting that
+identity does not restore an older checkpoint over newer local edits. A different
+identity restores the supplied state. Keep the existing native envelope
+`{ turtle, opaque? }`; the optional app-owned opaque string is not a substitute
+for native main state. Set `transient: true` for a task that must not automatically
+publish persistent state. `embedded: true` enables app-supplied `onView` dispatch.
+
+`onRequest` receives a local request `id` alongside the capability/input. Complete
+it once with `respond(id, response)`; `onCancel({ id })` retires the matching UI.
+The app decides what request/result means and when `canClose` allows departure.
+`disconnect()` retires the port and pending requests; it does not grant permission
+to discard drafts, delete local state or close a started editor. Keep app-owned
+recovery durable independently. A failed startup is distinct from an active view
+holding unsaved edits. Reconnection never replays an outstanding selection.
+
+`ManagedApp` reuses that same participation implementation while retaining the
+Workbench task URL, opener/parent binding, session resume, presentation/focus,
+preferences authority and broker conventions. Independent apps can instead own
+those decisions. The cross-origin picker in `test/provider-browser.mjs` exercises
+this direct API; the separate raw-wire recipient/view peers intentionally keep
+hand-written framing to test compatibility independently of the shared client.

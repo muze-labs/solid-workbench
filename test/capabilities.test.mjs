@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   PortConnection,
   ManagedApp,
+  CapabilityParticipant,
   capabilityError,
   browseRequest,
   selectionUrl,
@@ -619,3 +620,345 @@ test('managed embedded calls transport reactive inputs as plain wire values',
     });
     assert.equal(fragment.text, 'Retain this text');
   });
+
+function participantHost(t, participant, receive = () => null) {
+  const channel = new MessageChannel();
+  const frames = [];
+  const host = new PortConnection(channel.port1, async (method, input) => {
+    frames.push({ method, input });
+    return receive(method, input);
+  });
+  t.after(() => {
+    participant.disconnect();
+    host.close();
+  });
+  return { host, frames, port: channel.port2 };
+}
+
+test('direct participation restores native state and registers without browser launch globals', async (t) => {
+  const state = {
+    turtle:
+      '<urn:draft> a <urn:Note>, <urn:Foreign>; <urn:text> "keep". _:extra <urn:unknown> "foreign".',
+    opaque: 'app-owned experiment'
+  };
+  let restored;
+  let context;
+  const participant = new CapabilityParticipant({
+    name: 'Independent editor',
+    capabilities: ['urn:edit'],
+    restoreState: (value) => {
+      restored = value;
+    },
+    getState: () => restored,
+    onContext: (value) => {
+      context = value;
+    },
+    beforeCheckpoint: () => {
+      restored = { ...restored, opaque: 'checkpoint' };
+    }
+  });
+  const connection = participantHost(t, participant, (method) =>
+    method === 'register' ? { context: { resource: 'urn:document' } } : null
+  );
+  await participant.connect(connection.port, { state, identity: 'owned-slot' });
+  assert(participant.ready);
+  assert.deepEqual(restored, state);
+  assert.deepEqual(context, { resource: 'urn:document' });
+  assert.deepEqual(
+    connection.frames.map((frame) => frame.method),
+    ['register', 'state', 'ready']
+  );
+  assert.equal(typeof connection.frames[0].input.generation, 'string');
+  assert.deepEqual(await connection.host.call('checkpoint', null), {
+    ...state,
+    opaque: 'checkpoint'
+  });
+  assert.equal(
+    restored.turtle,
+    state.turtle,
+    'Participation does not parse or flatten native RDF'
+  );
+});
+
+test('a transient participant publishes no checkpoint automatically and retains app close vetoes', async (t) => {
+  let dirty = true;
+  const participant = new CapabilityParticipant({
+    transient: true,
+    canClose: () => ({ allowed: !dirty, message: 'Keep this draft' }),
+    getState: () => {
+      throw new Error('Must not publish automatically');
+    }
+  });
+  const connection = participantHost(t, participant);
+  await participant.connect(connection.port);
+  assert.deepEqual(
+    connection.frames.map((frame) => frame.method),
+    ['register', 'ready']
+  );
+  assert.deepEqual(await connection.host.call('can-close', null), {
+    allowed: false,
+    message: 'Keep this draft'
+  });
+  dirty = false;
+  assert.equal((await connection.host.call('can-close', null)).allowed, true);
+});
+
+test('direct request completion, cancellation and reconnect never replay a selection', async (t) => {
+  const requests = [];
+  const cancelled = [];
+  const participant = new CapabilityParticipant({
+    transient: true,
+    capabilities: ['urn:choose'],
+    onRequest: (request) => {
+      requests.push(request);
+    },
+    onCancel: (request) => {
+      cancelled.push(request.id);
+    }
+  });
+  let connection = participantHost(t, participant);
+  await participant.connect(connection.port);
+  const waitRequest = async (count) => {
+    while (requests.length < count) {
+      await new Promise((resolve) => setTimeout(resolve, 1));
+    }
+    return requests[count - 1];
+  };
+  const first = connection.host.call('capability', {
+    capability: 'urn:choose',
+    input: { title: 'Choose' }
+  });
+  const request = await waitRequest(1);
+  await participant.respond(request.id, { result: { '@id': 'urn:chosen' } });
+  assert.deepEqual(await first, { result: { '@id': 'urn:chosen' } });
+  await assert.rejects(participant.respond(request.id, {}), /no longer active/);
+  const controller = new AbortController();
+  const second = connection.host.call(
+    'capability',
+    { capability: 'urn:choose' },
+    { signal: controller.signal }
+  );
+  const toCancel = await waitRequest(2);
+  controller.abort();
+  await assert.rejects(second, (error) => error.code === 'cancelled');
+  while (!cancelled.includes(toCancel.id)) {
+    await new Promise((resolve) => setTimeout(resolve, 1));
+  }
+  await assert.rejects(
+    participant.respond(toCancel.id, {}),
+    /no longer active/
+  );
+  const third = connection.host.call('capability', {
+    capability: 'urn:choose'
+  });
+  const rejection = assert.rejects(
+    third,
+    (error) => error.code === 'disconnected'
+  );
+  const toRetire = await waitRequest(3);
+  connection = participantHost(t, participant);
+  await participant.connect(connection.port);
+  await rejection;
+  assert(cancelled.includes(toRetire.id));
+  assert.equal(requests.length, 3);
+  await assert.rejects(
+    connection.host.call('capability', { capability: 'urn:other' }),
+    (error) => error.code === 'denied'
+  );
+});
+
+test('reconnecting the same restoration identity keeps newer local edits, while a new identity restores', async (t) => {
+  let document;
+  let restores = 0;
+  const participant = new CapabilityParticipant({
+    restoreState: (state) => {
+      document = state;
+      restores += 1;
+    },
+    getState: () => document
+  });
+  let connection = participantHost(t, participant);
+  await participant.connect(connection.port, {
+    identity: 'one',
+    state: restoration('original')
+  });
+  document = restoration('newer local edits');
+  connection = participantHost(t, participant);
+  await participant.connect(connection.port, {
+    identity: 'one',
+    state: restoration('old checkpoint')
+  });
+  assert.equal(restores, 1);
+  assert.deepEqual(
+    connection.frames.find((frame) => frame.method === 'state').input,
+    restoration('newer local edits')
+  );
+  connection = participantHost(t, participant);
+  await participant.connect(connection.port, {
+    identity: 'two',
+    state: restoration('different document')
+  });
+  assert.equal(restores, 2);
+  assert.deepEqual(document, restoration('different document'));
+});
+
+test('failed startup reports restore error without ready or checkpoint, and a fresh identity can recover', async (t) => {
+  let failure = true;
+  const participant = new CapabilityParticipant({
+    restoreState: () => {
+      if (failure) {
+        throw new Error('Local recovery unavailable');
+      }
+    }
+  });
+  let connection = participantHost(t, participant);
+  await participant.connect(connection.port, { identity: 'failed' });
+  assert.equal(participant.ready, false);
+  assert.deepEqual(
+    connection.frames.map((frame) => frame.method),
+    ['register', 'restore-error']
+  );
+  await assert.rejects(
+    connection.host.call('checkpoint', null),
+    (error) => error.code === 'restoring'
+  );
+  failure = false;
+  connection = participantHost(t, participant);
+  await participant.connect(connection.port, { identity: 'fresh' });
+  assert(participant.ready);
+});
+
+test('retired registration cannot restore, publish or report readiness on its replacement', async (t) => {
+  let release;
+  let registered;
+  const seen = new Promise((resolve) => {
+    registered = resolve;
+  });
+  const held = new Promise((resolve) => {
+    release = resolve;
+  });
+  const restored = [];
+  const contexts = [];
+  const participant = new CapabilityParticipant({
+    transient: true,
+    restoreState: (state) => {
+      restored.push(state);
+    },
+    onContext: (context) => {
+      contexts.push(context);
+    }
+  });
+  const old = participantHost(t, participant, async (method) => {
+    if (method === 'register') {
+      registered();
+      await held;
+    }
+    return { context: 'retired' };
+  });
+  const connecting = participant.connect(old.port, {
+    identity: 'old',
+    state: restoration('old')
+  });
+  await seen;
+  const current = participantHost(t, participant, () => ({
+    context: 'current'
+  }));
+  await participant.connect(current.port, {
+    identity: 'current',
+    state: restoration('current')
+  });
+  release();
+  await connecting;
+  assert.deepEqual(restored, [restoration('current')]);
+  assert.deepEqual(contexts, ['current']);
+  assert(participant.ready);
+});
+
+test('a retired context callback cannot restore an old checkpoint after a replacement is ready', async (t) => {
+  let entered;
+  let release;
+  const started = new Promise((resolve) => {
+    entered = resolve;
+  });
+  const held = new Promise((resolve) => {
+    release = resolve;
+  });
+  const restored = [];
+  const participant = new CapabilityParticipant({
+    transient: true,
+    onContext: async (context) => {
+      if (context === 'old') {
+        entered();
+        await held;
+      }
+    },
+    restoreState: (state) => {
+      restored.push(state);
+    }
+  });
+  const previous = participantHost(t, participant, () => ({ context: 'old' }));
+  const connecting = participant.connect(previous.port, {
+    identity: 'old',
+    state: restoration('old')
+  });
+  await started;
+  const current = participantHost(t, participant, () => ({
+    context: 'current'
+  }));
+  await participant.connect(current.port, {
+    identity: 'current',
+    state: restoration('current')
+  });
+  release();
+  await connecting;
+  assert.deepEqual(restored, [restoration('current')]);
+  assert(participant.ready);
+});
+
+test('a failed resume-ticket write still retires the previous browser channel', async (t) => {
+  const participant = new CapabilityParticipant({ transient: true });
+  Object.setPrototypeOf(participant, ManagedApp.prototype);
+  participant.parent = {};
+  participant.task = false;
+  const connection = participantHost(t, participant);
+  await participant.connect(connection.port);
+  const previous = Object.getOwnPropertyDescriptor(
+    globalThis,
+    'sessionStorage'
+  );
+  Object.defineProperty(globalThis, 'sessionStorage', {
+    configurable: true,
+    value: {
+      setItem() {
+        throw new Error('Resume storage unavailable');
+      }
+    }
+  });
+  const offered = new MessageChannel();
+  try {
+    await assert.rejects(
+      participant.offer({
+        source: participant.parent,
+        origin: 'https://caller.example',
+        data: { type: 'solid-apps:offer', id: 'new', key: 'private-key' },
+        ports: [offered.port2]
+      }),
+      /Resume storage unavailable/
+    );
+    assert.equal(participant.ready, false);
+    await assert.rejects(
+      participant.peer.call('checkpoint', null),
+      (error) => error.code === 'failed'
+    );
+  }
+  finally {
+    offered.port1.close();
+    offered.port2.close();
+    if (previous) {
+      Object.defineProperty(globalThis, 'sessionStorage', previous);
+    }
+    else {
+      delete globalThis.sessionStorage;
+    }
+  }
+});
