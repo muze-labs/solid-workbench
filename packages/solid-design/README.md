@@ -135,3 +135,45 @@ their own cancel listener and invoke the shared close action only after permissi
 to close is established. Fullscreen phone layout applies below 720px. Native Web
 Animations fills Firefox's missing CSS deferred-overlay transition support;
 no dialog method is patched and no backdrop DOM is constructed.
+
+## Shared Workbench theme
+
+`muzeSolidDesignTheme` adapts the supplied
+`design/solid-workbench-theme.zip` into editable named styles. The suite opts in
+with `muze-solid-design-theme` on its root. Appearance classes on the containing
+body select light, dark or system mode through the existing Preferences API.
+The component maps the installed the-ds tokens; do not load the archive's vendor
+stylesheet or example script. All component classes and custom properties use
+the `muze-solid-design-` prefix.
+
+Forms use `-control`, `-label`, `-choice-input`, `-button`, `-button-primary` and
+`-button-quiet`. Native selects have a `-select-wrap` and decorative `-chevron`;
+forced-colors mode restores the browser arrow. Native labels, validation, draft
+state and saving remain app-owned. `-list-row` provides row layout and
+`-list-state` supplies normal, hover, selected and keyboard-focus appearance.
+Thumbnail lists may use only the state class to preserve their content geometry.
+
+The viewport's main application bar holds buttons, text and status, never form
+inputs. Contextual forms belong in content panels or dialogs. Floating toolbar
+surfaces use `--muze-solid-design-elevation`: shadow in light mode, glow in dark.
+Existing dialog lifecycle, focus restoration and draft-close guards are retained.
+
+List-details search uses `muze-solid-design-list-search` on its labelled field,
+`muze-solid-design-list-search-icon` on a decorative, aria-hidden SVG, and
+`muze-solid-design-list-search-input` alongside `muze-solid-design-control` on
+the native search input. Give the input an accessible name. This compact field
+keeps its icon inside, reserves text space to the right, and has a transparent
+background; its action row should also be transparent. Do not apply the stacked
+`muze-solid-design-label` class. Contacts supplies the current composition;
+filtering behavior remains owned by each app's SimplyFlow model.
+
+Native popovers use `muze-solid-design-popup` for borderless, theme-aware medium
+shadow/glow. For CSS-anchored dropdowns, put `muze-solid-design-popup-scope` on
+the local wrapper, `muze-solid-design-popup-trigger` on its button and
+`muze-solid-design-popup-anchored` on the popover. Use native `popovertarget` and
+`popover="auto"`; positioning has inline/block fallbacks and a bounded scroll
+area. These are directly applied classes, without descendant overrides.
+The shared shell closes outside auto popovers when focus enters an owned iframe;
+it does not inspect frame contents or close a popover containing that iframe.
+Fixed toolbars are transparent by default; floating toolbars keep a surface.
+`muze-solid-design-toolbar-title` follows the shared 20px default title scale.

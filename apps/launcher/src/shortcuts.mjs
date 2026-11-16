@@ -168,3 +168,40 @@ export function applyIconOverride(subject, value) {
     subject.graph.delete(subject.id, predicate);
   }
 }
+
+export const shortcutOrderPredicate = prefixes.apps + 'shortcutOrder';
+
+export function shortcutOrder(subject) {
+  const value = valueAt(subject, shortcutOrderPredicate);
+  if (value === undefined) {
+    return null;
+  }
+  if (
+    Array.isArray(value) ||
+    value?.language ||
+    (value?.type &&
+      String(value.type) !== 'http://www.w3.org/2001/XMLSchema#integer') ||
+    !/^[0-9]+$/.test(String(value)) ||
+    !Number.isSafeInteger(Number(value))
+  ) {
+    throw new Error('launcher/shortcuts: Shortcut order must be one integer.');
+  }
+  return Number(value);
+}
+
+// Every shortcut shares one local resource graph. Validate before changing it;
+// the caller saves that resource once through the existing collection API.
+export function applyShortcutOrder(subjects) {
+  for (const subject of subjects) {
+    shortcutOrder(subject);
+  }
+  for (const [index, subject] of subjects.entries()) {
+    subject.graph.set(
+      subject.id,
+      shortcutOrderPredicate,
+      oldm.literal(String(index), {
+        type: 'http://www.w3.org/2001/XMLSchema#integer'
+      })
+    );
+  }
+}

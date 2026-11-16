@@ -28,7 +28,7 @@
   .swb-list-toolbar {
     position: var(--swb-list-toolbar-position, sticky);
     bottom: 0;
-    background: var(--swb-list-details-surface, Canvas);
+    background: transparent;
     padding-block: var(--swb-list-details-space-small, 0.5rem);
     margin-bottom: 0;
     z-index: 2;
@@ -39,7 +39,7 @@
   @media (min-width: 720px) {
     .muze-solid-design-list-details {
       display: grid;
-      grid-template-columns: var(--swb-list-details-list-width, 20em) minmax(
+      grid-template-columns: var(--swb-list-details-list-width, 20rem) minmax(
           0,
           1fr
         );
@@ -65,5 +65,81 @@
     .muze-solid-design-list-details {
       --swb-list-toolbar-position: static;
     }
+  }
+}
+
+@layer component {
+  .muze-solid-design-list-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: 44px;
+    margin: 0;
+    padding: 0.625rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muze-solid-design-text, CanvasText);
+    font: inherit;
+    font-size: 0.875rem;
+    text-align: start;
+    text-decoration: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    box-shadow: none;
+  }
+  .muze-solid-design-list-state {
+    background: transparent;
+  }
+  .muze-solid-design-list-state:hover {
+    background: var(--muze-solid-design-chrome, ButtonFace);
+  }
+  .muze-solid-design-list-state[aria-current='page'],
+  .muze-solid-design-list-state[aria-current='true'],
+  .muze-solid-design-list-state[aria-selected='true'] {
+    background: var(--muze-solid-design-selected, Highlight);
+    color: var(--muze-solid-design-text, CanvasText);
+  }
+  .muze-solid-design-list-state:focus-visible {
+    outline: 2px solid var(--muze-solid-design-focus, Highlight);
+    outline-offset: -3px;
+  }
+}
+
+@layer component {
+  .swb-list-pane.ds-panels-list {
+    background: var(--muze-solid-design-surface, Canvas);
+    border-inline-end: 1px solid var(--muze-solid-design-divider, GrayText);
+  }
+  @media (max-width: 719px) {
+    .swb-list-pane.ds-panels-list {
+      border-inline-end: 0;
+    }
+  }
+}
+
+@layer component {
+  /* Compact list search is an inline field, not a stacked form label. */
+  .muze-solid-design-list-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-inline-size: 0;
+    margin: 0;
+  }
+  .muze-solid-design-list-search-icon {
+    position: absolute;
+    inset-inline-start: 12px;
+    pointer-events: none;
+  }
+  .muze-solid-design-list-search-input {
+    min-inline-size: 0;
+    inline-size: 100%;
+    padding-inline-start: 40px;
+    background: transparent;
   }
 }

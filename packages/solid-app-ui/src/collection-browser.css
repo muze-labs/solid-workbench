@@ -16,13 +16,6 @@
     color: inherit;
     overflow-wrap: anywhere;
   }
-  .muze-solid-collection-browser-link[aria-current='page'] {
-    font-weight: 700;
-    background: var(
-      --muze-solid-collection-active,
-      color-mix(in srgb, currentColor 7%, transparent)
-    );
-  }
   .muze-solid-collection-browser-entries {
     padding: 0;
     margin: 0;

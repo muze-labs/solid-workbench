@@ -1,12 +1,15 @@
 import { batch, untracked } from '@muze-labs/simplyflow/state';
 import { render as renderCobalt } from '@muze-labs/cobalt-rich-text-note';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
-import { muzeSolidDesignToolbar } from '@muze-labs/solid-design';
+import {
+  muzeSolidDesignToolbar,
+  muzeSolidDesignDialog
+} from '@muze-labs/solid-design';
 import template from '../presenter.html?template' with { type: 'text' };
 import styles from './presenter.css' with { type: 'text' };
 
 export const muzeSolidPresenter = {
-  components: { muzeSolidDesignToolbar },
+  components: { muzeSolidDesignToolbar, muzeSolidDesignDialog },
   transformers: {
     muzeSolidPresenterRichText(context, next) {
       context.value = {
@@ -27,13 +30,6 @@ export const muzeSolidPresenter = {
       type: 'fullscreenchange',
       action: 'muzeSolidPresenterFullscreen'
     },
-    muzeSolidPresenterInput: {
-      target() {
-        return this.container;
-      },
-      type: 'input',
-      action: 'muzeSolidPresenterInput'
-    },
     muzeSolidPresenterKey: {
       target: 'window',
       type: 'keydown',
@@ -41,6 +37,23 @@ export const muzeSolidPresenter = {
     }
   },
   commands: {
+    muzeSolidPresenterEditTitle() {
+      this.data.muzeSolidPresenterTitleDraft = this.runtime.deck.title;
+      return this.actions.muzeSolidDesignOpenDialog(
+        this.container.querySelector('.muze-solid-presenter-title-dialog')
+      );
+    },
+    muzeSolidPresenterSaveTitle(form) {
+      const title = new FormData(form).get('deck-title');
+      return this.actions.muzeSolidPresenterRun(
+        async () => {
+          this.runtime.deck.change(this.runtime.deck.root.id, 'title', title);
+          await this.actions.muzeSolidPresenterPersist();
+          await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
+        },
+        { disableControls: false }
+      );
+    },
     muzeSolidPresenterBackground() {
       const image = this.data.muzeSolidPresenterRegions.find(
         (region) => region.kind === 'image'
@@ -185,16 +198,6 @@ export const muzeSolidPresenter = {
     }
   },
   actions: {
-    muzeSolidPresenterInput(event) {
-      if (event.target.name !== 'deck-title') {
-        return;
-      }
-      const subject = this.runtime.deck.root.id;
-      // Queue every local edit; rapid typing must not be dropped by the
-      // operation guard used for slide transitions and network tasks.
-      this.runtime.deck.change(subject, 'title', event.target.value);
-      this.runtime.host.run(this.actions.muzeSolidPresenterPersist);
-    },
     async muzeSolidPresenterInitialize() {
       const host = this.runtime.host;
       host.onAppAction = (command) => {
@@ -480,7 +483,10 @@ export const muzeSolidPresenter = {
     },
     muzeSolidPresenterProject() {
       const deck = this.runtime.deck;
-      this.data.muzeSolidPresenterTitle = deck.title;
+      this.data.muzeSolidPresenterTitle = deck.title || 'Untitled presentation';
+      if (this.data.muzeSolidPresenterEditorVisibility?.hidden !== '') {
+        document.title = deck.title.trim() || 'Untitled presentation';
+      }
       // Stable projection rows let SimplyFlow move existing thumbnail nodes.
       batch(() =>
         untracked(() => {

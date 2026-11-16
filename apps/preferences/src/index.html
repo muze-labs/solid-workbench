@@ -7,24 +7,29 @@
     aria-label="Preferences sections"
   >
     <label
+      class="muze-solid-design-label"
       data-simply-field="swb_applicationChoice"
       data-simply-transform="attributes"
       data-simply-attributes="hidden"
-      >Application<select
-        class="swb-control swb-labeled-control"
-        data-simply-field="swb_app"
-        data-simply-command="swb_chooseApp"
-        aria-label="Application settings"
-      >
-        <option value="workbench">Solid Workbench</option>
-        <option value="contacts">Contacts</option>
-        <option value="files">Files</option>
-        <option value="profile">Profile</option>
-        <option value="presenter">Presenter</option>
-        <option value="notebook">Notebook</option>
-        <option value="viewer">Resource Viewer</option>
-      </select></label
-    >
+      >Application<span class="muze-solid-design-select-wrap"
+        ><select
+          class="muze-solid-design-select muze-solid-design-control swb-control swb-labeled-control"
+          data-simply-field="swb_app"
+          data-simply-command="swb_chooseApp"
+          aria-label="Application settings"
+        >
+          <option value="workbench">Solid Workbench</option>
+          <option value="contacts">Contacts</option>
+          <option value="files">Files</option>
+          <option value="profile">Profile</option>
+          <option value="presenter">Presenter</option>
+          <option value="notebook">Notebook</option>
+          <option value="viewer">Resource Viewer</option></select
+        ><span
+          class="muze-solid-design-chevron"
+          aria-hidden="true"
+        ></span></span
+    ></label>
     <ul
       class="ds-navbar-nav"
       data-muze-solid-design-sections
@@ -78,12 +83,17 @@
       data-simply-attributes="hidden"
       hidden
     >
-      <label
-        >Editing workspace<select
-          class="swb-control swb-labeled-control"
-          data-simply-field="swb_workspaceSelect"
-          data-simply-command="swb_chooseWorkspace"
-        ></select
+      <label class="muze-solid-design-label"
+        >Editing workspace<span class="muze-solid-design-select-wrap"
+          ><select
+            class="muze-solid-design-select muze-solid-design-control swb-control swb-labeled-control"
+            data-simply-field="swb_workspaceSelect"
+            data-simply-command="swb_chooseWorkspace"
+          ></select
+          ><span
+            class="muze-solid-design-chevron"
+            aria-hidden="true"
+          ></span></span
       ></label>
       <button
         type="button"

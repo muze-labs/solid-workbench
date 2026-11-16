@@ -9,7 +9,11 @@ import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import { loadDocument } from '@muze-labs/solid-app-data';
 import { app } from '@muze-labs/simplyflow/app';
 import { readProfile } from '@muze-labs/solid-profile';
-import { connectSession, logoutAccount, httpUrl } from '@muze-labs/solid-app-data';
+import {
+  connectSession,
+  logoutAccount,
+  httpUrl
+} from '@muze-labs/solid-app-data';
 import { defaults, applyPreferences } from '@muze-labs/solid-preferences';
 import { preferenceConsumer } from '@muze-labs/solid-preferences/consumer.mjs';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
@@ -27,6 +31,7 @@ import {
   sessionRecovery,
   accountLifecycle,
   muzeSolidUiAccountPresenter,
+  muzeSolidUiPopoverLifecycle,
   suiteAppearance
 } from './features.mjs';
 import sources from './features.mjs?entries';
@@ -112,6 +117,7 @@ export function shell({
       sessionRecovery,
       accountLifecycle,
       muzeSolidUiAccountPresenter,
+      muzeSolidUiPopoverLifecycle,
       muzeSolidUiCapabilityDialog,
       suiteAppearance,
       ...accountOptions.components
@@ -119,8 +125,8 @@ export function shell({
     data: {
       muzeSolidUiAppTools: [],
       muzeSolidUiAppToolbar: { hidden: '' },
-      // The document title includes the suite name; the app heading does not.
-      muzeSolidUiTitle: document.title.replace(/ · Solid Workbench$/, ''),
+      // Capture the app heading before its tab follows the active content.
+      muzeSolidUiTitle: document.title,
       muzeSolidDesignNotice: { text: '', visibility: { hidden: '' } },
       muzeSolidUiEmbedded: { hidden: host.embedded ? null : '' },
       muzeSolidUiHeader: {

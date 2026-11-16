@@ -16,3 +16,5 @@ export {
 export { sessionRecovery } from './components/session-recovery.mjs';
 
 export { muzeSolidUiAccountPresenter } from './components/account-presenter.mjs';
+
+export { muzeSolidUiPopoverLifecycle } from './components/popover-lifecycle.mjs';

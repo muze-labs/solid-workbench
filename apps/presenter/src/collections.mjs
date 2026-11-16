@@ -354,7 +354,7 @@ export const muzeSolidPresenterCollections = {
       this.runtime.selected = '';
       await this.actions.muzeSolidPresenterShowDeck();
       this.actions.muzeSolidPresenterFocus(
-        'input[name="deck-title"]',
+        '[data-simply-command="muzeSolidPresenterEditTitle"]',
         this.runtime.presenting,
         true
       );
@@ -648,7 +648,8 @@ export const muzeSolidPresenterCollections = {
           this.runtime.deck.target ||
           this.runtime.decks.activeId
       );
-      document.title = this.runtime.deck.title || 'Presenter';
+      document.title =
+        this.runtime.deck.title.trim() || 'Untitled presentation';
     },
     muzeSolidPresenterUpdateCollectionTools() {
       const overview =

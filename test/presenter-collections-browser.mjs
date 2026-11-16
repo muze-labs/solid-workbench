@@ -483,10 +483,56 @@ try {
   await until(
     `document.querySelector(${JSON.stringify('[data-muze-solid-action="present"]')}).checkVisibility()`
   );
-  await until('document.activeElement.name==="deck-title"');
+  await until(
+    'document.activeElement.dataset.simplyCommand==="muzeSolidPresenterEditTitle"'
+  );
   await click('[data-muze-solid-action="add"]');
   await until(`${app}.runtime.deck.slides().length===1`);
   await capture('editor-tools-phone');
+  for (const menu of [
+    '.muze-solid-presenter-deck-menu',
+    '.muze-solid-presenter-view-options'
+  ]) {
+    await click(menu + ' > button');
+    for (const width of [390, 1280, 390]) {
+      await page.send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: width < 720
+      });
+      await idle();
+      assert.equal(
+        await run(`const sheet=document.querySelector(
+        ${JSON.stringify(menu + ' .muze-solid-presenter-deck-sheet')});
+        const box=sheet.getBoundingClientRect();
+        const style=getComputedStyle(sheet);
+        return style.borderTopWidth==='0px' && style.boxShadow!=='none' &&
+          box.left>=0 && box.right<=innerWidth && box.top>=0 &&
+          box.bottom<=innerHeight && style.positionAnchor===
+          '--muze-solid-design-popup';`),
+        true,
+        menu + ' stays anchored inside the viewport on resize'
+      );
+    }
+    await capture(
+      menu.includes('deck-menu') ? 'deck-menu-phone' : 'view-menu-phone'
+    );
+    for (const type of ['keyDown', 'keyUp']) {
+      await page.send('Input.dispatchKeyEvent', {
+        type,
+        key: 'Escape',
+        code: 'Escape',
+        windowsVirtualKeyCode: 27
+      });
+    }
+    await until(`!document.querySelector(${JSON.stringify(menu + ' [popover]')})
+      .matches(':popover-open')`);
+    await click(menu + ' > button');
+    await click('.swb-header-title');
+    await until(`!document.querySelector(${JSON.stringify(menu + ' [popover]')})
+      .matches(':popover-open')`);
+  }
   // Restore the empty collection fixture before its separate offline checks.
   await click(command('Remove'));
   await until(`${app}.runtime.deck.slides().length===0`);
@@ -513,7 +559,35 @@ try {
     true
   );
   assert(!resources.has(new URL(target).pathname));
-  // Title editing uses native input and the existing local document writer.
+  // Cancel preserves the deck; the toolbar contains text and an edit action.
+  const originalTitle = await run(`return ${app}.runtime.deck.title`);
+  assert.equal(
+    await run(`return document.querySelector(
+    '.muze-solid-presenter-document') === null`),
+    true
+  );
+  assert.equal(
+    await run(`return document.querySelector(
+    '.muze-solid-presenter-title').tagName`),
+    'SPAN'
+  );
+  await click(command('EditTitle'));
+  await click('input[name="deck-title"]');
+  await page.send('Input.insertText', { text: 'Cancelled title' });
+  await click('.muze-solid-presenter-title-dialog footer button[type=button]');
+  await until(
+    '!document.querySelector(".muze-solid-presenter-title-dialog").open'
+  );
+  assert.equal(await run(`return ${app}.runtime.deck.title`), originalTitle);
+  assert.equal(
+    await run('return document.activeElement.dataset.simplyCommand'),
+    'muzeSolidPresenterEditTitle'
+  );
+  // Apply uses native input and the existing local document writer.
+  await click(command('EditTitle'));
+  await until(
+    'document.querySelector(".muze-solid-presenter-title-dialog").open'
+  );
   await click('input[name="deck-title"]');
   await page.send('Input.dispatchKeyEvent', {
     type: 'keyDown',
@@ -530,7 +604,16 @@ try {
     windowsVirtualKeyCode: 65
   });
   await page.send('Input.insertText', { text: 'Reusable deck' });
+  await click('.muze-solid-presenter-title-dialog button[type=submit]');
   await until(`${app}.runtime.deck.title==='Reusable deck'`);
+  await until(
+    '!document.querySelector(".muze-solid-presenter-title-dialog").open'
+  );
+  assert.equal(await run('return document.title'), 'Reusable deck');
+  assert.equal(
+    await run('return document.activeElement.dataset.simplyCommand'),
+    'muzeSolidPresenterEditTitle'
+  );
   resources.set('/storage/first-slide.png', {
     text: Buffer.from(
       'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a4Z8AAAAASUVORK5CYII=',
@@ -578,9 +661,14 @@ try {
   );
   await capture('delete-cards-phone');
   await click(managedCard);
+  await click(command('EditTitle'));
+  await until(
+    'document.querySelector(".muze-solid-presenter-title-dialog").open'
+  );
   await click('input[name="deck-title"]');
   await until('document.activeElement.name==="deck-title"');
   await page.send('Input.insertText', { text: ' offline' });
+  await click('.muze-solid-presenter-title-dialog button[type=submit]');
   await until(`${app}.runtime.deck.dirty`);
   await page.send('Network.enable');
   podOffline = true;

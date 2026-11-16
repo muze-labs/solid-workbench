@@ -42,7 +42,13 @@ export const profileDetails = {
         empty: subject ? '' : this.runtime.profile.emptyText,
         detailsVisibility: { hidden: null },
         formVisibility: { hidden: '' },
-        editVisibility: { hidden: subject && settings.editable ? null : '' },
+        // A host may place its edit action beside other app-owned actions.
+        editVisibility: {
+          hidden:
+            subject && settings.editable && settings.showEditButton !== false
+              ? null
+              : ''
+        },
         title: subject ? this.api.profile.profileLabel(subject) : '',
         id: subject?.id || '',
         sourceLabel: settings.sourceLabel || '',

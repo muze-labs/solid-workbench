@@ -8,7 +8,10 @@
         <template
           ><li class="swb-list-item">
             <button
-              class="swb-contact-select swb-list-action"
+              class="swb-contact-select swb-list-action muze-solid-design-list-row muze-solid-design-list-state"
+              data-simply-field="selection"
+              data-simply-transform="attributes"
+              data-simply-attributes="aria-current"
               data-simply-command="select"
               data-simply-value=":value.id"
             >
@@ -35,7 +38,10 @@
           Import contacts saved by an earlier version on this device into this
           address book. The previous copy is retained.
         </p>
-        <button class="ds-button" data-simply-command="swb_recoverContacts">
+        <button
+          class="muze-solid-design-button ds-button"
+          data-simply-command="swb_recoverContacts"
+        >
           Import previous device contacts
         </button>
       </details>
@@ -45,15 +51,15 @@
       role="group"
       aria-label="Contact actions"
     >
-      <label class="swb-contact-search muze-solid-design-toolbar-field"
+      <label class="muze-solid-design-list-search"
         ><span class="swb-visually-hidden">Search contacts</span
         ><svg
-          class="ds-icon ds-icon-feather swb-contact-search-icon"
+          class="ds-icon ds-icon-feather muze-solid-design-list-search-icon"
           aria-hidden="true"
         >
           <use href="../assets/feather-icons.svg#search"></use></svg
         ><input
-          class="swb-control muze-solid-design-toolbar-input swb-contact-search-input"
+          class="muze-solid-design-control swb-control muze-solid-design-toolbar-input muze-solid-design-list-search-input"
           type="search"
           aria-label="Search contacts"
           placeholder="Search"
@@ -93,7 +99,7 @@
           <h2 class="swb-dialog-title">New contact</h2>
           <button
             type="button"
-            class="ds-button muze-solid-design-dialog-close"
+            class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
             data-simply-command="cancelNew"
             aria-label="Close new contact dialog"
           >
@@ -103,17 +109,20 @@
           </button>
         </header>
         <div class="muze-solid-design-dialog-content">
-          <label
+          <label class="muze-solid-design-label"
             >Name<input
-              class="swb-control swb-labeled-control"
+              class="muze-solid-design-control swb-control swb-labeled-control"
               name="name"
               placeholder="Name (optional)"
           /></label>
         </div>
         <footer class="muze-solid-design-dialog-footer">
-          <button class="ds-button ds-button-primary">Add contact</button
+          <button
+            class="muze-solid-design-button ds-button ds-button-primary muze-solid-design-button-primary"
+          >
+            Add contact</button
           ><button
-            class="ds-button"
+            class="muze-solid-design-button ds-button"
             type="button"
             data-simply-command="cancelNew"
           >

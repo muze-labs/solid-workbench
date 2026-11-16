@@ -4,10 +4,12 @@
   aria-labelledby="muze-solid-catalog-title"
 >
   <header class="muze-solid-design-dialog-header">
-    <h2 id="muze-solid-catalog-title" class="swb-dialog-title">Add apps</h2>
+    <h2 id="muze-solid-catalog-title" class="swb-dialog-title">
+      Choose an app to add to Workbench
+    </h2>
     <button
       type="button"
-      class="ds-button muze-solid-design-dialog-close"
+      class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
       data-simply-command="muzeSolidCatalogClose"
       aria-label="Close app catalog"
     >
@@ -83,14 +85,16 @@
           data-simply-attributes="hidden"
         >
           <div class="muze-solid-design-toolbar">
-            <label class="muze-solid-design-toolbar-field">
-              <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <label
+              class="muze-solid-design-list-search"
+            >
+              <svg class="ds-icon ds-icon-feather muze-solid-design-list-search-icon" aria-hidden="true">
                 <use href="../assets/feather-icons.svg#search"></use>
               </svg>
               <span class="swb-visually-hidden">Search apps</span>
               <input
                 type="search"
-                class="swb-control muze-solid-design-toolbar-input"
+                class="muze-solid-design-control swb-control muze-solid-design-toolbar-input muze-solid-design-list-search-input"
                 placeholder="Search apps"
                 aria-label="Search apps"
                 data-simply-command="muzeSolidCatalogSearch"
@@ -212,10 +216,11 @@
               class="muze-solid-design-toolbar"
               data-simply-command="muzeSolidCatalogAddSource"
             >
-              <label class="muze-solid-design-toolbar-field"
+              <label
+                class="muze-solid-design-label muze-solid-design-toolbar-field"
                 ><span>Catalog URL</span>
                 <input
-                  class="swb-control muze-solid-design-toolbar-input"
+                  class="muze-solid-design-control swb-control muze-solid-design-toolbar-input"
                   type="url"
                   name="catalogUrl"
                   required
@@ -262,7 +267,7 @@
           />
           <button
             type="button"
-            class="ds-button ds-button-primary"
+            class="muze-solid-design-button ds-button ds-button-primary muze-solid-design-button-primary"
             data-simply-command="muzeSolidCatalogAdd"
             data-simply-field="muzeSolidCatalogInfo.add"
             data-simply-transform="attributes"

@@ -1,6 +1,9 @@
-<header class="swb-suite-header ds-panels-heading"
-  data-simply-field="muzeSolidUiHeader" data-simply-transform="attributes"
-  data-simply-attributes="data-muze-solid-ui-content-view data-muze-solid-ui-header-layout">
+<header
+  class="swb-suite-header ds-panels-heading"
+  data-simply-field="muzeSolidUiHeader"
+  data-simply-transform="attributes"
+  data-simply-attributes="data-muze-solid-ui-content-view data-muze-solid-ui-header-layout"
+>
   <span
     class="muze-solid-ui-embedded"
     hidden
@@ -16,20 +19,36 @@
   >
     {{title}}
   </h1>
-  <nav class="muze-solid-design-toolbar muze-solid-ui-app-toolbar"
+  <nav
+    class="muze-solid-design-toolbar muze-solid-ui-app-toolbar"
     aria-label="Application actions"
     data-simply-field="muzeSolidUiAppToolbar"
-    data-simply-transform="attributes" data-simply-attributes="hidden">
-    <div style="display:contents" data-simply-list="muzeSolidUiAppTools">
-      <template><button type="button" class="muze-solid-design-tool"
-        data-simply-command="muzeSolidUiAppAction" data-simply-value=":value.command"
-        data-simply-field="attributes" data-simply-transform="attributes"
-        data-simply-attributes="disabled hidden title aria-label aria-pressed data-muze-solid-action popovertarget">
-        <svg class="ds-icon ds-icon-feather" aria-hidden="true"><use
-          data-simply-field="icon" data-simply-transform="attributes"
-          data-simply-attributes="href"></use></svg>
-        <span data-simply-field="label" data-simply-transform="escape_html"></span>
-      </button></template>
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
+    <div style="display: contents" data-simply-list="muzeSolidUiAppTools">
+      <template
+        ><button
+          type="button"
+          class="muze-solid-design-tool"
+          data-simply-command="muzeSolidUiAppAction"
+          data-simply-value=":value.command"
+          data-simply-field="attributes"
+          data-simply-transform="attributes"
+          data-simply-attributes="disabled hidden title aria-label aria-pressed data-muze-solid-action popovertarget"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use
+              data-simply-field="icon"
+              data-simply-transform="attributes"
+              data-simply-attributes="href"
+            ></use>
+          </svg>
+          <span
+            data-simply-field="label"
+            data-simply-transform="escape_html"
+          ></span></button
+      ></template>
     </div>
   </nav>
   <div
@@ -57,7 +76,7 @@
     </button>
     <button
       type="button"
-      class="ds-button ds-button-naked muze-solid-ui-account-status"
+      class="muze-solid-design-button-quiet muze-solid-design-button ds-button ds-button-naked muze-solid-ui-account-status"
       data-simply-command="connectDialog"
       data-simply-field="muzeSolidUiStatusButton"
       data-simply-transform="attributes"
@@ -74,7 +93,7 @@
     </button>
     <button
       type="button"
-      class="ds-button ds-button-naked swb-account-button"
+      class="ds-button ds-button-naked muze-solid-design-marker-button swb-account-button"
       popovertarget="muze-solid-ui-account-menu"
       aria-label="Account and preferences"
       title="Account and preferences"
@@ -85,7 +104,7 @@
     </button>
     <nav
       id="muze-solid-ui-account-menu"
-      class="ds-dropdown-nav ds-dropdown-right swb-account-menu swb-dropdown-menu"
+      class="muze-solid-design-popup ds-dropdown-nav ds-dropdown-right swb-account-menu swb-dropdown-menu"
       popover="auto"
       aria-label="Account"
     >
@@ -93,7 +112,7 @@
         <li class="ds-dropdown-item swb-dropdown-item">
           <button
             type="button"
-            class="ds-button ds-button-naked ds-dropdown-link swb-account-link swb-dropdown-link"
+            class="muze-solid-design-button-quiet muze-solid-design-button ds-button ds-button-naked ds-dropdown-link swb-account-link swb-dropdown-link"
             data-simply-command="connectDialog"
           >
             WebID / connection
@@ -102,7 +121,7 @@
         <li class="ds-dropdown-item swb-dropdown-item">
           <button
             type="button"
-            class="ds-button ds-button-naked ds-dropdown-link swb-account-link swb-dropdown-link"
+            class="muze-solid-design-button-quiet muze-solid-design-button ds-button ds-button-naked ds-dropdown-link swb-account-link swb-dropdown-link"
             data-simply-command="preferences"
           >
             Preferences
@@ -130,7 +149,7 @@
       </h2>
       <button
         type="button"
-        class="ds-button muze-solid-design-dialog-close"
+        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
         data-simply-command="muzeSolidUiCancelSignIn"
         aria-label="Close sign-in dialog"
       >
@@ -153,7 +172,7 @@
     <footer class="muze-solid-design-dialog-footer">
       <button
         type="button"
-        class="ds-button ds-button-primary"
+        class="muze-solid-design-button ds-button ds-button-primary muze-solid-design-button-primary"
         data-simply-command="muzeSolidUiSignInAgain"
         data-simply-field="muzeSolidUiRecoveryButton"
         data-simply-transform="attributes"
@@ -163,7 +182,7 @@
       </button>
       <button
         type="button"
-        class="ds-button"
+        class="muze-solid-design-button ds-button"
         data-simply-command="muzeSolidUiCancelSignIn"
       >
         Cancel

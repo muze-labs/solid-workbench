@@ -172,6 +172,9 @@ export const fileNavigation = {
         this.data.muzeSolidFilesDetails = { hidden: '' };
       }
       this.runtime.current = url;
+      document.title =
+        this.actions.decodeName(this.runtime.detailsResource || url) ||
+        new URL(url).host;
       this.data.url = url;
       this.actions.muzeSolidFilesRenderLocation(url);
       const locationSheet = this.container.querySelector(
@@ -252,7 +255,8 @@ export const fileNavigation = {
     initializeFiles() {
       const owner = this;
       const list = this.api.model({
-        data: [], options: { picker: false, pickerMode: 'resource' }
+        data: [],
+        options: { picker: false, pickerMode: 'resource' }
       });
       list.addEffect(function () {
         return owner.api.effect(() => this.state.data);
@@ -265,7 +269,9 @@ export const fileNavigation = {
           return owner.api
             .from(input.current)
             .where(owner.actions.visibleFile)
-            .select((entry) => owner.actions.fileRow(entry, picking, selected, mode))
+            .select((entry) =>
+              owner.actions.fileRow(entry, picking, selected, mode)
+            )
             .toArray();
         });
       });
@@ -287,11 +293,7 @@ export const fileNavigation = {
         'muze-solid-files-entry-menu-' + encodeURIComponent(entry.url);
       return {
         pickerSelect: {
-          hidden:
-            entry.type === 'folder' &&
-            mode !== 'resource'
-              ? ''
-              : null
+          hidden: entry.type === 'folder' && mode !== 'resource' ? '' : null
         },
         icon: {
           href:

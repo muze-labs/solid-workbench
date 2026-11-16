@@ -63,7 +63,7 @@ for (const name of [
 ]) {
   const route = name === 'launcher' ? 'workbench' : name;
   const title = applicationTitle(name);
-  const pageTitle = name === 'launcher' ? title : title + ' · Solid Workbench';
+  const pageTitle = title;
   const content = await composeTemplate(
     path.join(root, `apps/${name}/src/index.html`),
     { appName: name }
@@ -77,15 +77,20 @@ for (const name of [
   await mkdir(path.join(root, `www/${route}`), { recursive: true });
   const assets =
     name === 'account' ? ['manifest.ttl'] : ['manifest.ttl', 'icon.svg'];
-  const hasAppIcon = ['launcher', 'contacts', 'files', 'profile'].includes(
-    name
-  );
+  const hasAppIcon = [
+    'launcher',
+    'contacts',
+    'files',
+    'profile',
+    'presenter',
+    'notebook'
+  ].includes(name);
   if (hasAppIcon) {
     assets.push('favicon.ico', 'favicon-32.png');
   }
   const faviconLinks = hasAppIcon
-    ? '<link rel="icon" href="favicon.ico" sizes="16x16 24x24 32x32 48x48">' +
-      '<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">' +
+    ? '<link rel="icon" href="favicon.ico?v=maya2" sizes="16x16 24x24 32x32 48x48">' +
+      '<link rel="icon" href="favicon-32.png?v=maya2" type="image/png" sizes="32x32">' +
       '<link rel="icon" href="icon.svg" type="image/svg+xml" sizes="any">'
     : name === 'notebook'
       ? '<link rel="icon" href="icon.svg" type="image/svg+xml">'
@@ -98,23 +103,28 @@ for (const name of [
   }
   await writeFile(
     path.join(root, `www/${route}/index.html`),
-    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title>${faviconLinks}<link rel="describedby" type="text/turtle" href="manifest.ttl"><style>@layer reset, setup, theme, base, component, page, utility;</style><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto swb-${name}"><div id="app" class="swb-root">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
+    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title>${faviconLinks}<link rel="describedby" type="text/turtle" href="manifest.ttl"><style>@layer reset, setup, theme, base, component, page, utility;</style><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto swb-${name}"><div id="app" class="swb-root muze-solid-design-theme">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
   );
 }
 const settingsContent = await composeTemplate(
-  path.join(root, 'apps/files/src/settings-view.html'), { appName: 'files' }
+  path.join(root, 'apps/files/src/settings-view.html'),
+  { appName: 'files' }
 );
 const settingsShell = await composeTemplate(
-  path.join(root, 'packages/solid-app-ui/src/shell.html'), { appName: 'files' }
+  path.join(root, 'packages/solid-app-ui/src/shell.html'),
+  { appName: 'files' }
 );
-await writeFile(path.join(root, 'www/files/settings.html'),
+await writeFile(
+  path.join(root, 'www/files/settings.html'),
   '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
-  '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-  '<title>Files settings</title><link rel="stylesheet" href="../assets/theds.css">' +
-  '</head><body class="ds-darkmode-auto"><div id="app" class="swb-root">' +
-  settingsShell.replace('{{content}}', settingsContent) +
-  '</div><script type="module" src="../assets/files/src/settings-entry' +
-  scriptSuffix + '.js"></script></body></html>');
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>Files settings</title><link rel="stylesheet" href="../assets/theds.css">' +
+    '</head><body class="ds-darkmode-auto"><div id="app" class="swb-root muze-solid-design-theme">' +
+    settingsShell.replace('{{content}}', settingsContent) +
+    '</div><script type="module" src="../assets/files/src/settings-entry' +
+    scriptSuffix +
+    '.js"></script></body></html>'
+);
 await writeFile(
   path.join(root, 'www/redirect.html'),
   '<!doctype html><meta charset="utf-8"><title>Solid connection</title><p>Completing sign-in…</p><script type="module" src="assets/redirect' +

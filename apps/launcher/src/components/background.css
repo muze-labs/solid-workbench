@@ -3,7 +3,9 @@
 @layer theme {
   .swb-launcher {
     --swb-home-text: var(--ds-color);
+    --swb-header-title-size: 1.5rem;
     --swb-home-text-shadow: none;
+    --swb-header-text-shadow: var(--swb-home-text-shadow);
     --swb-home-dark-shadow:
       -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black,
       0 2px 4px black;
@@ -18,16 +20,6 @@
   }
 }
 @layer page {
-  .swb-launcher {
-    --swb-header-background: transparent;
-    --swb-header-text: var(--swb-home-text);
-    --swb-header-text-shadow: var(--swb-home-text-shadow);
-    --swb-header-name-hover: transparent;
-    --swb-header-focus-color: white;
-    --swb-header-focus-offset: 2px;
-    --swb-header-focus-shadow: 0 0 0 4px black;
-    --swb-header-marker-outline: 2px solid white;
-  }
   .swb-launcher-background {
     position: fixed;
     inset: 0;

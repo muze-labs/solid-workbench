@@ -50,6 +50,9 @@ export const profileResource = {
           await this.actions.muzeSolidProfileComplete(url);
         }
       });
+      document.title =
+        (this.data.profile.title || 'Profile') +
+        (this.data.profile.title ? ' · Profile' : '');
       this.runtime.host.managed
         ?.publish()
         .catch((error) => this.runtime.host.message(error));
@@ -87,6 +90,9 @@ export const profileResource = {
         sourceLabel: 'Your private address book',
         onSave: (...args) => this.actions.saveLocalContact(...args)
       });
+      document.title =
+        (this.data.profile.title || 'Profile') +
+        (this.data.profile.title ? ' · Profile' : '');
     },
     async saveLocalContact(edits) {
       const node = this.runtime.store.collection.get(this.runtime.contactId);

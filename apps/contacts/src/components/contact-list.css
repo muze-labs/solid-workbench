@@ -1,11 +1,8 @@
 /* DS adapter: resolve host values at this component boundary. */
 @layer theme {
   .swb-contacts-list {
-    --swb-contacts-space-small: var(--ds-space-d2);
     --swb-contacts-space-tiny: var(--ds-space-d4);
-    --swb-contacts-hover: var(--ds-grey-low);
     --swb-contacts-border: var(--ds-grey-medium);
-    --swb-contacts-surface: var(--ds-color-background);
   }
 }
 
@@ -14,23 +11,6 @@
     display: flex;
     flex-direction: column;
     min-height: 22rem;
-  }
-  .swb-contact-select {
-    display: flex;
-    gap: var(--swb-contacts-space-small);
-    align-items: center;
-    width: 100%;
-    text-align: start;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    padding: var(--swb-contacts-space-tiny) 0;
-    overflow-wrap: anywhere;
-  }
-  .swb-contact-select:hover,
-  .swb-contact-select:focus-visible {
-    background: var(--swb-contacts-hover);
   }
   .swb-person-avatar {
     display: grid;
@@ -49,15 +29,6 @@
     flex: none;
     flex-wrap: nowrap;
     margin-block: 8px 0;
-    background: var(--swb-contacts-surface, Canvas);
-  }
-  .swb-contact-search {
-    flex: 1;
-    min-inline-size: 0;
-  }
-  .swb-contact-search-input {
-    min-inline-size: 0;
-    inline-size: 100%;
   }
   @media (max-width: 720px) {
     .swb-contacts-list {

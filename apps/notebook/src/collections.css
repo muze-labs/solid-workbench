@@ -25,13 +25,11 @@
     display: contents;
   }
   .muze-solid-notebook-collections-overview {
-    --muze-solid-collection-active: var(--muze-notebook-active);
     display: flex;
     flex-direction: column;
     flex: 1;
     min-block-size: 0;
     inline-size: 100%;
-    max-inline-size: 80rem;
     box-sizing: border-box;
   }
   .muze-solid-notebook-collections-overview[hidden] {

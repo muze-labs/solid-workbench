@@ -1,8 +1,8 @@
 @layer theme {
   .muze-solid-design-toolbar,
   .muze-solid-design-tool {
-    --muze-toolbar-background: var(--ds-color-background, Canvas);
-    --muze-toolbar-color: var(--ds-color, CanvasText);
+    --muze-toolbar-background: var(--muze-solid-design-surface, var(--ds-color-background, Canvas));
+    --muze-toolbar-color: var(--muze-solid-design-text, var(--ds-color, CanvasText));
     --muze-toolbar-hover: color-mix(in srgb, currentColor 12%, transparent);
     --muze-toolbar-selected: color-mix(in srgb, currentColor 22%, transparent);
   }
@@ -12,10 +12,10 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 2px;
-    padding: 4px;
+    gap: 0.5rem;
+    padding: 0.25rem;
     color: var(--muze-toolbar-color, CanvasText);
-    background: var(--muze-toolbar-background, Canvas);
+    background: transparent;
     max-inline-size: 100%;
     box-sizing: border-box;
   }
@@ -62,8 +62,10 @@
   .muze-solid-design-toolbar-floating {
     position: fixed;
     z-index: 5;
-    box-shadow: 0 3px 12px #0004;
-    width: max-content;
+    box-shadow: var(--muze-solid-design-elevation, 0 3px 12px #0004);
+    inline-size: fit-content;
+    max-inline-size: 100%;
+    background: var(--muze-toolbar-background, Canvas);
   }
 }
 
@@ -90,5 +92,13 @@
     align-items: center;
     gap: 2px;
     margin: 0;
+  }
+}
+
+@layer component {
+  .muze-solid-design-toolbar-title {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+    font-size: var(--muze-solid-design-title-size, 1.25rem);
   }
 }

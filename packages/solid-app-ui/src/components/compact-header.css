@@ -1,49 +1,32 @@
 @layer page {
-  /* The app shell owns these direct header parts. This opt-in layout keeps
-     title, app actions and account controls in the study's single row. */
-  .swb-suite-header[data-muze-solid-ui-header-layout='compact'] {
-    display: flex;
-    min-block-size: 44px;
+  /* One main-bar treatment, independent of an app's action count. Each row
+     stays 44px high; narrow layouts retain all actions and can add a row. */
+  .muze-solid-ui-app-toolbar {
+    min-inline-size: 0;
     padding: 0;
     gap: 0;
-    align-items: center;
+    background: transparent;
+    align-items: stretch;
   }
-  :where([data-muze-solid-ui-header-layout='compact']) .swb-header-title {
-    flex: none;
-    font-size: 1.25rem;
+  .muze-solid-ui-app-toolbar .muze-solid-design-tool {
+    box-sizing: border-box;
+    min-block-size: 2.75rem;
+    block-size: 2.75rem;
     margin: 0;
-    padding-inline: 12px;
+    padding-block: 0;
   }
-  :where([data-muze-solid-ui-header-layout='compact']) .swb-account {
-    position: static;
-    margin-inline-start: auto;
-    gap: 0;
-  }
-  :where([data-muze-solid-ui-header-layout='compact'])
-    .muze-solid-ui-app-toolbar {
-    padding: 0;
-    flex-wrap: nowrap;
+  .swb-account-name,
+  .muze-solid-ui-account-status,
+  .swb-account-button {
+    box-sizing: border-box;
+    block-size: 2.75rem;
+    min-block-size: 2.75rem;
+    margin-block: 0;
+    padding-block: 0;
   }
   @media (max-width: 850px) {
     :where([data-muze-solid-ui-header-layout='compact']) .swb-account-name {
       display: none;
     }
-  }
-  @media (max-width: 500px) {
-    :where([data-muze-solid-ui-header-layout='compact'])
-      .muze-solid-design-tool {
-      padding-inline: 6px;
-    }
-  }
-}
-@layer page {
-  .swb-suite-header[data-muze-solid-ui-header-layout='compact'] {
-    flex-wrap: wrap;
-  }
-  :where([data-muze-solid-ui-header-layout='compact']) .swb-suite-status {
-    flex-basis: 100%;
-    min-inline-size: 0;
-    box-sizing: border-box;
-    margin: 0;
   }
 }

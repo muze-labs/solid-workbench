@@ -1,6 +1,9 @@
-<div data-simply-field="swb_contactEditor"
-  data-simply-transform="attributes" data-simply-attributes="hidden"
-  class="swb-split-view ds-panels-panes muze-solid-design-list-details">
+<div
+  data-simply-field="swb_contactEditor"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+  class="swb-split-view ds-panels-panes muze-solid-design-list-details"
+>
   {{view:contacts-list:./list.html}}
   <section
     class="swb-contact-details ds-panels-pane ds-panels-details swb-list-pane"
@@ -8,13 +11,13 @@
   >
     <button
       type="button"
-      class="ds-button muze-solid-design-list-back"
+      class="muze-solid-design-button ds-button muze-solid-design-list-back"
       data-simply-command="muzeSolidDesignShowList"
     >
       Back to contacts
     </button>
-    <div class="swb-contact-profile">{{profile}}</div>
     {{view:contacts-details:./details.html}}
+    <div class="swb-contact-profile">{{profile}}</div>
   </section>
 </div>
 {{view:swb-contacts-recipient-picker:./recipient-picker.html}}

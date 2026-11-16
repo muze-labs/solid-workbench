@@ -158,7 +158,7 @@ async function category(id) {
 }
 async function reopen() {
   await wait('!muzeSolidLauncherApp.runtime.catalogBusy');
-  await click('[data-simply-command=muzeSolidCatalogOpen]');
+  await click('.swb-add-shortcut');
   await wait(
     'document.querySelector(".muze-solid-catalog-dialog").open && !muzeSolidLauncherApp.runtime.catalogBusy'
   );
@@ -212,7 +212,7 @@ try {
     false,
     'catalog is loaded on demand'
   );
-  await click('[data-simply-command=muzeSolidCatalogOpen]');
+  await click('.swb-add-shortcut');
   await wait(
     'muzeSolidLauncherApp.data.muzeSolidCatalogApps.length === 9 && !muzeSolidLauncherApp.runtime.catalogBusy'
   );
@@ -381,7 +381,7 @@ try {
   await page.send('Page.reload');
   await page.ready();
   await wait('window.solidLauncher?.store');
-  await click('[data-simply-command=muzeSolidCatalogOpen]');
+  await click('.swb-add-shortcut');
   await wait(
     'muzeSolidLauncherApp.runtime.catalogModel?.state.data.length === 10 && !muzeSolidLauncherApp.runtime.catalogBusy'
   );
@@ -482,7 +482,7 @@ try {
   await page.send('Page.reload');
   await page.ready();
   await wait('window.solidLauncher?.store');
-  await click('[data-simply-command=muzeSolidCatalogOpen]');
+  await click('.swb-add-shortcut');
   await wait(
     'muzeSolidLauncherApp.data.muzeSolidCatalogApps.length === 1 && !muzeSolidLauncherApp.runtime.catalogBusy'
   );
@@ -502,7 +502,7 @@ try {
   await wait('!document.querySelector(".muze-solid-catalog-dialog").open');
   assert.equal(
     await evaluate('document.activeElement.dataset.simplyCommand'),
-    'muzeSolidCatalogOpen'
+    'swbShortcutAdd'
   );
   // Open the saved external link with an ordinary native click.
   const selector = '.swb-shortcut-link[href="' + origin + '/external/"]';

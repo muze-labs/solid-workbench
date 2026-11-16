@@ -126,6 +126,7 @@ export const lifecycle = {
       this.runtime.selection?.abort();
       this.runtime.workspace?.dispose();
       this.api.destroy(this.runtime.shortcutEffect);
+      this.api.destroy(this.runtime.shortcutPreviewEffect);
       for (const signal of this.runtime.shortcuts.effects.slice(1)) {
         this.api.destroy(signal);
       }

@@ -1,18 +1,29 @@
-<div style="display: contents">
-  <div class="contact-actions">
-    <div
-      class="muze-solid-design-toolbar"
-      hidden
-      data-simply-field="visibility"
-      data-simply-transform="attributes"
-      data-simply-attributes="hidden"
-    >
-      <button class="muze-solid-design-tool" data-simply-command="remove">
-        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-          <use href="../assets/feather-icons.svg#trash-2"></use>
-        </svg>
-        Delete contact
-      </button>
-    </div>
+<div
+  style="display: contents"
+  data-simply-field="visibility"
+  data-simply-transform="attributes"
+  data-simply-attributes="hidden"
+  hidden
+>
+  <div
+    class="muze-solid-design-toolbar"
+    role="group"
+    aria-label="Contact actions"
+    data-simply-field="profile.detailsVisibility"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden"
+  >
+    <button class="muze-solid-design-tool" data-simply-command="editProfile">
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#edit"></use>
+      </svg>
+      Edit profile
+    </button>
+    <button class="muze-solid-design-tool" data-simply-command="remove">
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#trash-2"></use>
+      </svg>
+      Delete contact
+    </button>
   </div>
 </div>

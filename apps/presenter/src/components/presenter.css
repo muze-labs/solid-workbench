@@ -19,43 +19,8 @@
     --muze-presenter-editing: block;
   }
 
-  .muze-solid-presenter-document {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 12px;
-  }
-  .muze-solid-presenter-title {
-    box-shadow: none;
-    flex: 1;
-    min-width: 0;
-    font: inherit;
-    padding: 8px 0;
-    border: 0;
-    color: inherit;
-    background: transparent;
-  }
-  .muze-solid-presenter-deck-menu,
-  .muze-solid-presenter-view-options {
-    position: relative;
-  }
-  .muze-solid-presenter-deck-sheet {
-    position: absolute;
-    z-index: 10;
-    top: 100%;
-    right: 0;
-    padding: 12px;
-    width: min(24rem, 85vw);
-    background: var(--muze-presenter-surface);
-    box-shadow: 0 4px 16px #0004;
-  }
-  .muze-solid-presenter-deck-sheet input {
-    box-sizing: border-box;
-    width: 100%;
-    font: inherit;
-  }
-  .muze-solid-presenter-deck-sheet .muze-solid-design-toolbar {
-    flex-wrap: wrap;
+  .muze-solid-presenter-slide-actions {
+    display: contents;
   }
   .muze-solid-presenter-panels {
     display: grid;
@@ -81,14 +46,7 @@
     border: 0;
     padding: 4px;
     color: inherit;
-    background: transparent;
     text-align: center;
-  }
-  .muze-solid-presenter-slide-button[aria-current='true'] {
-    background: color-mix(in srgb, currentColor 20%, transparent);
-  }
-  .muze-solid-presenter-slide-button:focus-visible {
-    outline: 2px solid currentColor;
   }
   .muze-solid-presenter-thumbnail {
     display: grid;
@@ -123,10 +81,6 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-  }
-  .muze-solid-presenter-slide-tools {
-    align-items: center;
-    min-width: 0;
   }
   .muze-solid-presenter-view-options {
     margin-left: auto;
@@ -257,40 +211,11 @@
     .muze-solid-presenter-stage {
       padding: 8px;
     }
-    .muze-solid-presenter-slide-tools {
-      padding: 0 4px;
-    }
-    .muze-solid-presenter-view-options summary {
-      font-size: 0.75rem;
-      padding-inline: 4px;
-    }
   }
 }
 @layer page {
-  .swb-presenter .swb-suite-header {
-    display: flex;
-    min-height: 48px;
-    padding: 0;
-    gap: 0;
-    align-items: center;
-  }
-  .swb-presenter .swb-header-title {
-    font-size: 1.25rem;
-    margin: 0;
-    padding-inline: 12px;
-  }
-  .swb-presenter .swb-suite-header::after {
-    display: none;
-  }
-  .swb-presenter .swb-suite-main {
-    padding: 0;
-  }
-  .swb-presenter .swb-suite-status:empty {
-    display: none;
-  }
-  .swb-presenter .swb-account {
-    position: static;
-    margin-left: auto;
+  .swb-presenter {
+    --swb-main-padding: 0;
   }
   .swb-presenter:has([data-muze-solid-presenting]) .swb-suite-account-owner {
     visibility: hidden;

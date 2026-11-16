@@ -98,7 +98,8 @@ export const muzeSolidViewer = {
           this.data.muzeSolidViewerStatus = '';
           this.data.muzeSolidViewerImage = { hidden: '' };
           await this.actions.muzeSolidViewerContentReady(draft.text, '');
-        } else {
+        }
+        else {
           if (input.access !== 'direct') {
             throw new Error('viewer: Resource viewing requires direct access.');
           }
@@ -135,7 +136,8 @@ export const muzeSolidViewer = {
             }
           }
         });
-      } catch (error) {
+      }
+      catch (error) {
         this.data.muzeSolidViewerStatus = error.message;
         if (this.runtime.host.managed.incoming.has(id)) {
           await this.runtime.host.managed.respond(id, {
@@ -222,6 +224,15 @@ export const muzeSolidViewer = {
         throw new Error('viewer: This view is prepared for removal.');
       }
       const url = this.api.httpUrl(resource);
+      const resourceUrl = new URL(url);
+      let name = resourceUrl.pathname.replace(/\/$/, '').split('/').pop();
+      try {
+        name = decodeURIComponent(name);
+      }
+      catch {
+        // A malformed escape should not prevent opening the resource.
+      }
+      document.title = name || resourceUrl.host || 'Resource Viewer';
       const generation = ++this.runtime.loadGeneration;
       const host = this.runtime.host;
       const client =
@@ -258,14 +269,16 @@ export const muzeSolidViewer = {
         let image = '';
         if (type?.startsWith('text/')) {
           text = await response.text();
-        } else if (
+        }
+        else if (
           ['image/png', 'image/jpeg', 'image/gif', 'image/webp'].includes(type)
         ) {
           const blob = await response.blob();
           const decoded = await createImageBitmap(blob);
           decoded.close();
           image = URL.createObjectURL(blob);
-        } else {
+        }
+        else {
           throw new Error(
             'viewer: This resource format is unsupported. ' +
               'Use another viewer or download it.'
@@ -288,7 +301,8 @@ export const muzeSolidViewer = {
         };
         this.data.muzeSolidViewerStatus = '';
         await this.actions.muzeSolidViewerContentReady(text, image);
-      } catch (error) {
+      }
+      catch (error) {
         if (generation === this.runtime.loadGeneration) {
           this.data.muzeSolidViewerStatus =
             error.message + ' Previously loaded content is retained.';
@@ -306,7 +320,8 @@ export const muzeSolidViewer = {
           observer.disconnect();
           if (error) {
             reject(error);
-          } else {
+          }
+          else {
             resolve();
           }
         };
@@ -343,7 +358,8 @@ export const muzeSolidViewer = {
               }
             }
             finish();
-          } catch (error) {
+          }
+          catch (error) {
             finish(error);
           }
         };
