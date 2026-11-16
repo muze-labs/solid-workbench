@@ -40,6 +40,18 @@ Normal top-level app routing remains supported. The maintainer accepts this
 cycle on 2026-11-07 (ACC66). Registry and recipient-picker phases remain future
 work; UI-cycle acceptance does not claim those phases are complete.
 
+## Deferred capability-format risk, 2026-11-16
+
+The maintainer requests a future-cycle investigation of graph identity and
+payload-format suitability, possibly changing formats. [RSK240](../.spiral/risks/RSK-20261116-QG24H-240.md)
+records the source, current normalization behavior and evaluation criteria.
+MessagePort can carry cyclic/shared structures, while JSON-compatible
+normalization does not preserve JavaScript object identity. URI references and
+native Turtle state address current needs but do not settle future graph-shaped
+payloads. Compare concrete consumer round trips and format/version compatibility
+before deciding. This is deferred risk work, not a format change in CYC235 or a
+selected next cycle. Keep native RDF and existing authority/recovery contracts.
+
 ## 2. Principles and boundaries
 
 1. **URIs identify semantics.** Capabilities, applications, resources, and vocabulary terms use stable URIs. Data exchanged across application boundaries has explicit linked-data meaning.
