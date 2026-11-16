@@ -1,5 +1,18 @@
 # Solid Workbench project context
 
+## CYC248 accepted for integration, 2026-11-16
+
+The maintainer explicitly accepts the reviewed UI and requests commit, merge
+and push. ACC253 accepts implementation 843e97077185e94eb3d002f2fec22d6b7ba7deb9
+and verification 9a477d88e520ab52b833739e27b6cc2d8b2a6061. CYC248 is Accepted;
+earlier Active/pending and no-delivery-authority notes are superseded.
+Source/build and all sixteen browser suites have passing results, with retries
+and the test-only stale assertion corrections retained in EVD252. Final popup alignment correction is recorded with native browser evidence. Normal merge and push are authorized after exact
+integration validation; no package publication or separate deployment.
+Grouped Launcher columns and Add apps card/overall Launcher layout redesign
+remain future roadmap work. Manual AT/physical-device/live-provider limits and
+the documented stock-validator compatibility workaround remain explicit.
+
 ## Shared UI design selected, 2026-11-16
 
 CYC248 is Active on verified spiral/CYC-20261116-QG24H-248-shared-ui-design
