@@ -5,6 +5,9 @@ project:EVD-20261117-QG24H-264 a sd:VerificationEvidence ;
     dcterms:identifier "EVD-20261117-QG24H-264" ;
     sd:repositoryPath ".spiral/evidence/EVD-20261117-QG24H-264.md" ;
     sd:status sd:Active ;
+    sd:transforms [ a sd:ArtifactReference ;
+        sd:artifact project:EVD-20261117-QG24H-264 ;
+        sd:gitCommit "c88c4d4684339a6a580d392f2d0486496f88a221" ] ;
     sd:verifies [ a sd:ArtifactReference ;
         sd:artifact project:IMP-20261117-QG24H-263 ;
         sd:gitCommit "d359650da7ca97dd53c6f4d79689b5cda5cffaae" ] .
