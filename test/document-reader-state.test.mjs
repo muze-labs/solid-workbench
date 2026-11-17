@@ -99,3 +99,49 @@ test('invalid reader state is refused atomically and owner stores stay independe
     false
   );
 });
+
+test('deliberate bookmarks merge across readers, survive reload and detach without losing unknown RDF', async () => {
+  const f = fixture();
+  const first = new ReaderState(f.store, 'owner', f.locks);
+  const second = new ReaderState(f.store, 'owner', f.locks);
+  const a = {
+    ...place('https://example.org/a.pdf', 2),
+    id: 'urn:uuid:a',
+    label: 'A place'
+  };
+  const b = {
+    ...place('https://example.org/b.pdf', 7),
+    id: 'urn:uuid:b',
+    label: 'B place'
+  };
+  await Promise.all([
+    first.save({ bookmark: a }),
+    second.save({ bookmark: b })
+  ]);
+  assert.equal(
+    (await new ReaderState(f.store, 'owner', f.locks).bookmarks()).length,
+    2
+  );
+  await first.save({ removeBookmark: a.id });
+  assert.deepEqual(
+    (await second.bookmarks()).map((item) => item.id),
+    [b.id]
+  );
+  assert.match(f.text(), /preserved/);
+  const before = f.text();
+  await assert.rejects(first.save({ bookmark: { ...a, page: 0 } }));
+  assert.equal(f.text(), before);
+});
+
+test('unnamed bookmarks retain an empty label without a generated page label', async () => {
+  const f = fixture();
+  const reader = new ReaderState(f.store, 'owner', f.locks);
+  await reader.save({
+    bookmark: {
+      ...place('https://example.org/a.pdf', 3),
+      id: 'urn:uuid:unnamed',
+      label: ''
+    }
+  });
+  assert.equal((await reader.bookmarks())[0].label, '');
+});

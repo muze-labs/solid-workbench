@@ -440,3 +440,134 @@
     background: var(--muze-documents-toggle-selected);
   }
 }
+
+@layer component {
+  .muze-documents-navigation {
+    box-sizing: border-box;
+    width: min(20rem, 100%);
+    flex-shrink: 0;
+    overflow: auto;
+    padding: 0.75rem;
+    background: var(--muze-documents-surface);
+    color: var(--muze-documents-text);
+  }
+  .muze-documents-navigation-list {
+    list-style: none;
+    padding: 0;
+  }
+  .muze-documents-navigation-result {
+    white-space: normal;
+    text-align: start;
+    display: block;
+    overflow-wrap: anywhere;
+    width: 100%;
+  }
+  .muze-documents-navigation-result small {
+    display: block;
+  }
+  ::highlight(muze-document-search) {
+    background: #ffe58a;
+    color: #151515;
+  }
+  @media (max-width: 719px) {
+    .muze-documents-navigation {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      padding-inline: 2.75rem;
+      z-index: 3;
+    }
+  }
+}
+
+@layer component {
+  .muze-documents-navigation-handle {
+    position: absolute;
+    pointer-events: auto;
+    inset-inline-start: 0;
+    inset-block-start: 6.5rem;
+    width: 24px;
+    min-width: 24px;
+    padding: 0;
+    background: var(--muze-documents-surface);
+    border: 1px solid var(--muze-documents-border);
+  }
+  .muze-documents-navigation-handle[data-simply-value='bookmarks'] {
+    inset-block-start: 9.5rem;
+  }
+  .muze-documents-navigation-handle[aria-expanded='true'] {
+    background: var(--muze-toolbar-selected);
+  }
+}
+
+@layer theme {
+  .muze-documents-bookmark-row {
+    --muze-documents-bookmark-hover: var(
+      --muze-solid-design-chrome,
+      ButtonFace
+    );
+    --muze-documents-bookmark-selected: var(
+      --muze-solid-design-selected,
+      Highlight
+    );
+  }
+}
+@layer component {
+  .muze-documents-bookmark-list {
+    margin-inline: -0.75rem;
+  }
+  .muze-documents-bookmark-row {
+    margin: 0;
+    position: relative;
+  }
+  .muze-documents-bookmark-open {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.4rem;
+    inline-size: 100%;
+    text-align: start;
+    white-space: normal;
+    padding: 0.4rem 0.5rem;
+  }
+  .muze-documents-bookmark-open:focus-visible,
+  .muze-documents-bookmark-row:focus-within .muze-documents-bookmark-open {
+    background: var(--muze-documents-bookmark-hover);
+  }
+  .muze-documents-bookmark-row:has([aria-current='true'])
+    .muze-documents-bookmark-open {
+    background: var(--muze-documents-bookmark-selected);
+  }
+  .muze-documents-bookmark-remove {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    opacity: 0;
+    pointer-events: none;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 4px;
+  }
+  .muze-documents-bookmark-row:is(:hover, :focus-within)
+    .muze-documents-bookmark-remove,
+  .muze-documents-bookmark-row:has([aria-current='true'])
+    .muze-documents-bookmark-remove {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  @media (max-width: 719px) {
+    .muze-documents-bookmark-list {
+      margin-inline: -2.75rem;
+    }
+  }
+}
+
+@layer component {
+  .muze-documents-bookmark-open > span:empty { display: none; }
+  .muze-documents-bookmark-open > span:first-child {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .muze-documents-bookmark-open > span:last-child { flex-shrink: 0; }
+}

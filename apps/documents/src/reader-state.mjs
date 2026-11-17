@@ -83,6 +83,22 @@ export class ReaderState {
       position: saved?.digest === digest ? saved : null
     };
   }
+  async bookmarks() {
+    await this.pending;
+    const graph = new StateGraph((await this.store.load()) || '');
+    return graph.values(root, doc + 'bookmark').map((subject) => ({
+      id: subject.id,
+      document: graph.one(subject, doc + 'document', 'iri', true).id,
+      label: graph.one(subject, doc + 'label', 'string', true).value,
+      page: Number(
+        graph.one(subject, doc + 'readingPage', 'integer', true).value
+      ),
+      fraction: Number(
+        graph.one(subject, doc + 'readingFraction', 'decimal', true).value
+      ),
+      digest: graph.one(subject, doc + 'readingDigest', 'string', true).value
+    }));
+  }
   save(update) {
     const change = structuredClone(update);
     this.pending = this.pending
@@ -143,6 +159,46 @@ export class ReaderState {
                 literal(saved.readAt, xsd + 'integer')
               );
             }
+          }
+          if (change.bookmark) {
+            const saved = change.bookmark;
+            validatePosition(saved);
+            if (
+              typeof saved.label !== 'string' ||
+              typeof saved.id !== 'string' ||
+              !saved.id.startsWith('urn:uuid:')
+            ) {
+              throw new Error('documents/reader-state: Invalid bookmark.');
+            }
+            const subject = named(saved.id);
+            const members = graph.values(root, doc + 'bookmark');
+            if (!members.some((item) => item.id === saved.id)) {
+              graph.add(root, doc + 'bookmark', subject);
+            }
+            graph.set(subject, doc + 'document', named(saved.document));
+            graph.set(subject, doc + 'label', literal(saved.label));
+            graph.set(
+              subject,
+              doc + 'readingPage',
+              literal(saved.page, xsd + 'integer')
+            );
+            graph.set(
+              subject,
+              doc + 'readingFraction',
+              literal(saved.fraction, xsd + 'decimal')
+            );
+            graph.set(subject, doc + 'readingDigest', literal(saved.digest));
+          }
+          if (change.removeBookmark) {
+            // Detach membership only; retain unknown/shared bookmark statements.
+            graph.quads = graph.quads.filter(
+              (quad) =>
+                !(
+                  quad.subject.id === root.id &&
+                  quad.predicate.id === doc + 'bookmark' &&
+                  quad.object.id === change.removeBookmark
+                )
+            );
           }
           await this.store.save(graph.write());
         });

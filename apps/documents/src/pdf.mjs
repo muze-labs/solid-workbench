@@ -366,6 +366,62 @@ class PdfSession {
     await visit(await this.document.getOutline());
     return result;
   }
+  async search(text, accept = () => true, receive = () => {}) {
+    const query = text.toLowerCase();
+    if (!query) {
+      return;
+    }
+    for (
+      let number = 1;
+      number <= this.document.numPages && accept();
+      number += 1
+    ) {
+      const page = await this.document.getPage(number);
+      const content = await page.getTextContent();
+      if (!accept()) {
+        return;
+      }
+      // Search readable text with spaces between PDF runs; keep an offset map
+      // into TextLayer's concatenated text for precise highlight ranges.
+      let source = '';
+      let readable = '';
+      const offsets = [];
+      for (const item of content.items) {
+        const text = item.str || '';
+        if (!text) {
+          continue;
+        }
+        if (readable) {
+          readable += ' ';
+          offsets.push(source.length);
+        }
+        for (let index = 0; index < text.length; index += 1) {
+          offsets.push(source.length + index);
+        }
+        readable += text;
+        source += text;
+      }
+      const lower = readable.toLowerCase();
+      for (
+        let found = lower.indexOf(query);
+        found >= 0;
+        found = lower.indexOf(query, found + query.length)
+      ) {
+        const start = offsets[found];
+        const end = offsets[found + query.length - 1] + 1;
+        receive({
+          page: number,
+          start,
+          end,
+          quote: source.slice(start, end),
+          context: readable.slice(
+            Math.max(0, found - 45),
+            found + query.length + 65
+          )
+        });
+      }
+    }
+  }
   async find(text, after = 0) {
     const query = text.toLocaleLowerCase();
     for (let offset = 0; offset < this.document.numPages; offset += 1) {
