@@ -1825,6 +1825,35 @@ phone/keyboard/assistive-technology reading and non-drag selection, draft recove
 unknown-RDF round trips, provider replacement and the private-note/copy/reply/
 changed-PDF scenario. This is a second-stage option, not a scheduled cycle.
 
+#### Document bookmarks and paged reading
+
+Maintainer-requested roadmap additions, 2026-11-17, following accepted CYC260:
+
+- **Per-document bookmarks:** save deliberate reading positions and return to
+  them from a document's bookmark list, alongside automatic last-position recall.
+- **Global bookmarks:** provide a list across documents so a reader can reopen
+  the right document directly at a saved place. Link to document URIs rather
+  than copying the documents; keep unavailable or changed sources understandable.
+- **EPUB-style reading mode:** offer previous/next-page navigation as an
+  alternative to continuous scrolling, with an optional two-page side-by-side
+  spread. Preserve the reading position when switching modes. This describes a
+  reading layout; EPUB file-format support remains separate roadmap work.
+- **Document search sidebar:** replace the search dialog with a sidebar like
+  thumbnails and outline. Show multiple text matches with enough context to
+  distinguish them; clicking a result scrolls to its position and highlights or
+  selects the matched term where supported. Keep the results available for
+  moving between matches. This searches document content, separately from the
+  existing annotation search. Follow the same phone overlay and toolbar-toggle
+  behavior as the other reader sidebars, with keyboard-accessible results.
+
+Keep bookmark data personal and durable through reload, with locally available
+bookmarks usable offline and no assumption that uncached documents are available.
+Use native RDF and conditional updates when synchronizing. Design compact phone
+controls and keyboard-accessible bookmark/page navigation; adapt two-page spreads
+to the available width. Coordinate the global list with the proposed Documents
+collections interface. These are future features, not additional CYC260 scope or
+authorization to start implementation.
+
 ### Sharing through user-selected invitation providers
 
 Add the [sharing proposal](solid-sharing-design.md) as a reusable capability for

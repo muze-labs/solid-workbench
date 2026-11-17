@@ -490,6 +490,15 @@ search, outline and original download preserve the source document. Pages
 without text support page notes; tagged paragraphs and selected text support
 more specific anchors.
 
+Search document text from its sidebar, retaining contextual matches across
+pages; choosing a match scrolls to and highlights the exact text when supported.
+Search needs a PDF text layer; scanned pages without text remain searchable only
+after a future OCR feature. The Bookmarks sidebar saves named positions locally
+per account, with an All documents switch for global or current-document lists.
+Bookmarks retain source URI/revision and scroll position across reload. Reopening
+an uncached source needs network; changed documents retain their original
+bookmark with an explicit message. Bookmark Pod synchronization is future work.
+
 Scroll continuously through lazily rendered pages, with an optional outline on
 the left. Opening sidebars keeps the paper scale stable. Zoom and sidebar
 settings carry across documents on this device; each account also remembers

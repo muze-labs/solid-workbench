@@ -94,9 +94,12 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool"
-        data-simply-command="muzeDocumentsDialog"
-        data-simply-value="find"
+        class="muze-solid-design-tool muze-documents-panel-toggle"
+        data-simply-command="muzeDocumentsNavigation"
+        data-simply-value="search"
+        data-simply-field="muzeDocumentsSearchToggle"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-expanded"
         aria-label="Find text"
         title="Find text"
       >
@@ -176,9 +179,53 @@
           <use href="../assets/feather-icons.svg#message-square"></use>
         </svg>
       </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool muze-documents-panel-toggle"
+        data-simply-command="muzeDocumentsNavigation"
+        data-simply-value="bookmarks"
+        data-simply-field="muzeDocumentsBookmarksToggle"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-expanded"
+        aria-label="Bookmarks"
+        title="Bookmarks"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#bookmark"></use>
+        </svg>
+      </button>
     </nav>
     <div class="muze-documents-layout">
       <nav class="muze-documents-panel-handles" aria-label="Reader sidebars">
+        <button
+          class="muze-solid-design-tool muze-documents-navigation-handle"
+          data-simply-command="muzeDocumentsNavigation"
+          data-simply-value="search"
+          title="Search document"
+          aria-label="Search document"
+          data-simply-field="muzeDocumentsSearchToggle"
+          data-simply-transform="attributes"
+          data-simply-attributes="aria-expanded"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#search"></use>
+          </svg>
+        </button>
+        <button
+          class="muze-solid-design-tool muze-documents-navigation-handle"
+          data-simply-command="muzeDocumentsNavigation"
+          data-simply-value="bookmarks"
+          title="Bookmarks"
+          aria-label="Bookmarks"
+          data-simply-field="muzeDocumentsBookmarksToggle"
+          data-simply-transform="attributes"
+          data-simply-attributes="aria-expanded"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#bookmark"></use>
+          </svg>
+        </button>
+
         <button
           class="muze-solid-design-tool muze-documents-panel-handle muze-documents-outline-handle"
           data-simply-command="muzeDocumentsToggleOutline"
@@ -219,6 +266,131 @@
           </svg>
         </button>
       </nav>
+      <aside
+        class="muze-documents-navigation"
+        aria-label="Find and resume reading"
+        hidden
+        data-simply-field="muzeDocumentsNavigationPanel"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <section
+          data-simply-field="muzeDocumentsSearchSection"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+        >
+          <form
+            class="muze-solid-design-toolbar"
+            data-simply-command="muzeDocumentsSearch"
+          >
+            <label class="muze-solid-design-list-search"
+              ><span class="swb-visually-hidden">Search document</span>
+              <input
+                class="muze-solid-design-control muze-solid-design-list-search-input"
+                type="search"
+                name="query"
+                placeholder="Search document"
+                required
+            /></label>
+            <button
+              class="muze-solid-design-tool"
+              title="Search"
+              aria-label="Search"
+            >
+              <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                <use href="../assets/feather-icons.svg#search"></use>
+              </svg>
+            </button>
+          </form>
+          <p
+            data-simply-field="muzeDocumentsSearchStatus"
+            data-simply-transform="escape_html"
+            role="status"
+          ></p>
+          <ul
+            class="muze-documents-navigation-list"
+            data-simply-list="muzeDocumentsSearchResults"
+          >
+            <template
+              ><li>
+                <button
+                  class="muze-solid-design-tool muze-documents-navigation-result"
+                  data-simply-command="muzeDocumentsSearchResult"
+                  data-simply-value=":value.id"
+                >
+                  <span
+                    data-simply-field="label"
+                    data-simply-transform="escape_html"
+                  ></span>
+                </button></li
+            ></template>
+          </ul>
+        </section>
+        <section
+          data-simply-field="muzeDocumentsBookmarksSection"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+        >
+          <form
+            class="muze-solid-design-toolbar"
+            data-simply-command="muzeDocumentsBookmark"
+          >
+            <label
+              >Bookmark name<input
+                class="muze-solid-design-control"
+                name="label"
+                placeholder="Current position" /></label
+            ><button class="muze-solid-design-tool">Add bookmark</button>
+          </form>
+          <label
+            ><input
+              type="checkbox"
+              checked
+              data-simply-command="muzeDocumentsBookmarkScope"
+            />All documents</label
+          >
+          <p
+            data-simply-field="muzeDocumentsBookmarksEmpty"
+            data-simply-transform="escape_html"
+          ></p>
+          <ul
+            class="muze-documents-navigation-list muze-documents-bookmark-list"
+            data-simply-list="muzeDocumentsBookmarks"
+          >
+            <template
+              ><li class="muze-documents-bookmark-row">
+                <button
+                  class="muze-solid-design-tool muze-solid-design-list-state muze-documents-bookmark-open"
+                  data-simply-command="muzeDocumentsOpenBookmark"
+                  data-simply-value=":value.id"
+                  data-simply-field="selection"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="aria-current title"
+                >
+                  <span
+                    data-simply-field="label"
+                    data-simply-transform="escape_html"
+                  ></span>
+                  <span
+                    data-simply-field="location"
+                    data-simply-transform="escape_html"
+                  ></span>
+                </button>
+                <button
+                  class="muze-solid-design-tool muze-documents-bookmark-remove"
+                  title="Remove bookmark"
+                  aria-label="Remove bookmark"
+                  data-simply-command="muzeDocumentsRemoveBookmark"
+                  data-simply-value=":value.id"
+                >
+                  <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                    <use href="../assets/feather-icons.svg#trash-2"></use>
+                  </svg>
+                </button></li
+            ></template>
+          </ul>
+        </section>
+      </aside>
       <nav
         class="muze-documents-outline"
         id="muze-documents-outline"
@@ -518,41 +690,7 @@
       </form>
     </div>
   </dialog>
-  <dialog
-    class="ds-dialog muze-solid-design-dialog"
-    data-simply-behavior="muzeSolidDesignDialog"
-    data-document-dialog="find"
-    aria-label="Find text"
-  >
-    <div class="muze-solid-design-dialog-header">
-      <h2 class="swb-dialog-title">Find text</h2>
-      <button
-        type="button"
-        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-        data-simply-command="muzeSolidDesignCloseDialog"
-        aria-label="Close"
-        title="Close"
-      >
-        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
-          <use href="../assets/feather-icons.svg#x"></use>
-        </svg>
-      </button>
-    </div>
-    <div class="muze-solid-design-dialog-content muze-solid-design-fields">
-      <form
-        class="muze-solid-design-fields"
-        data-simply-command="muzeDocumentsFind"
-      >
-        <label class="muze-solid-design-label muze-solid-design-field"
-          >Find text
-          <input
-            class="muze-solid-design-control"
-            name="query"
-            required /></label
-        ><button class="muze-solid-design-tool">Find next</button>
-      </form>
-    </div>
-  </dialog>
+
   <dialog
     class="ds-dialog muze-solid-design-dialog"
     data-simply-behavior="muzeSolidDesignDialog"

@@ -1,5 +1,5 @@
 import { app } from '@muze-labs/simplyflow/app';
-import { model } from '@muze-labs/simplyflow/model';
+import { model, sort } from '@muze-labs/simplyflow/model';
 import { effect, batch } from '@muze-labs/simplyflow/state';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import { shell } from '@muze-labs/solid-app-ui';
@@ -34,6 +34,7 @@ import {
   doc
 } from './annotations.mjs';
 import { muzeDocuments } from './features.mjs';
+import { muzeDocumentsNavigation } from './navigation.mjs';
 import {
   validateFragment,
   readFragment,
@@ -59,9 +60,20 @@ const definition = {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
     muzeSolidDesignToolbar,
-    muzeDocuments
+    muzeDocuments,
+    muzeDocumentsNavigation
   },
   data: {
+    muzeDocumentsNavigationPanel: { hidden: '' },
+    muzeDocumentsSearchSection: { hidden: null },
+    muzeDocumentsBookmarksSection: { hidden: '' },
+    muzeDocumentsSearchToggle: { 'aria-expanded': 'false' },
+    muzeDocumentsBookmarksToggle: { 'aria-expanded': 'false' },
+    muzeDocumentsNavigationMode: 'search',
+    muzeDocumentsSearchResults: [],
+    muzeDocumentsSearchStatus: '',
+    muzeDocumentsBookmarks: [],
+    muzeDocumentsBookmarksEmpty: '',
     muzeDocumentsStatus: '',
     muzeDocumentsHighlightStyles: '',
     muzeDocumentsPages: [],
@@ -94,6 +106,7 @@ const definition = {
   },
   api: {
     model,
+    sort,
     effect,
     batch,
     StateGraph,

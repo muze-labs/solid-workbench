@@ -312,6 +312,9 @@ export const muzeDocuments = {
       );
     },
     async muzeDocumentsToggleThumbnails() {
+      this.data.muzeDocumentsNavigationPanel.hidden = '';
+      this.data.muzeDocumentsSearchToggle = { 'aria-expanded': 'false' };
+      this.data.muzeDocumentsBookmarksToggle = { 'aria-expanded': 'false' };
       const open = this.data.muzeDocumentsThumbnailsPanel.hidden !== null;
       this.data.muzeDocumentsThumbnailsPanel.hidden = open ? null : '';
       this.data.muzeDocumentsThumbnailsToggle['aria-expanded'] = String(open);
@@ -330,6 +333,9 @@ export const muzeDocuments = {
       this.runtime.pdf?.retainThumbnails();
     },
     muzeDocumentsToggleOutline() {
+      this.data.muzeDocumentsNavigationPanel.hidden = '';
+      this.data.muzeDocumentsSearchToggle = { 'aria-expanded': 'false' };
+      this.data.muzeDocumentsBookmarksToggle = { 'aria-expanded': 'false' };
       const expanded = this.data.muzeDocumentsOutlinePanel.hidden !== null;
       if (expanded) {
         if (matchMedia('(max-width: 719px)').matches) {
@@ -815,6 +821,22 @@ export const muzeDocuments = {
       group.colorHue = hue;
       return hue;
     },
+    muzeDocumentsExclusiveReaderPanel() {
+      const navigationOpen =
+        this.data.muzeDocumentsNavigationPanel.hidden === null;
+      if (navigationOpen) {
+        this.data.muzeDocumentsThumbnailsPanel.hidden = '';
+        this.data.muzeDocumentsThumbnailsToggle['aria-expanded'] = 'false';
+        this.runtime.pdf?.retainThumbnails();
+      }
+      if (
+        navigationOpen ||
+        this.data.muzeDocumentsThumbnailsPanel.hidden === null
+      ) {
+        this.data.muzeDocumentsOutlinePanel.hidden = '';
+        this.data.muzeDocumentsOutlineToggle['aria-expanded'] = 'false';
+      }
+    },
     muzeDocumentsRememberDesktopPanes() {
       this.runtime.desktopPanes = {
         outline: this.data.muzeDocumentsOutlinePanel.hidden,
@@ -836,17 +858,21 @@ export const muzeDocuments = {
       this.data.muzeDocumentsThumbnailsToggle['aria-expanded'] = String(
         saved.thumbnails === null
       );
-      if (saved.thumbnails === null) {
+      this.actions.muzeDocumentsExclusiveReaderPanel();
+      if (this.data.muzeDocumentsThumbnailsPanel.hidden === null) {
         requestAnimationFrame(() =>
           this.actions.muzeDocumentsRenderThumbnails()
         );
       }
     },
     muzeDocumentsHideSidebars() {
+      this.data.muzeDocumentsNavigationPanel.hidden = '';
+      this.data.muzeDocumentsSearchToggle = { 'aria-expanded': 'false' };
+      this.data.muzeDocumentsBookmarksToggle = { 'aria-expanded': 'false' };
       if (
         this.container.contains(document.activeElement) &&
         document.activeElement.closest(
-          '.muze-documents-outline, .muze-documents-notes, .muze-documents-thumbnails'
+          '.muze-documents-outline, .muze-documents-notes, .muze-documents-thumbnails, .muze-documents-navigation'
         )
       ) {
         this.container.querySelector('.muze-documents-paper-scroll').focus();
@@ -1086,6 +1112,7 @@ export const muzeDocuments = {
       list.addEffect(function () {
         return host.documentsApi.effect(() => this.state.data);
       });
+      list.addEffect(this.api.sort({ sortBy: 'page', direction: 'asc' }));
       list.addEffect(function (input) {
         return host.documentsApi.effect(() =>
           input.current.filter(
@@ -1270,6 +1297,13 @@ export const muzeDocuments = {
       }
       const owner = this.runtime.host.selectedWebId || '';
       if (!this.runtime.readerState || owner !== this.runtime.owner) {
+        if (this.runtime.bookmarks) {
+          this.runtime.bookmarks.state.data = [];
+        }
+        this.runtime.searchGeneration =
+          (this.runtime.searchGeneration || 0) + 1;
+        this.data.muzeDocumentsSearchResults = [];
+        this.data.muzeDocumentsSearchStatus = '';
         this.runtime.readerState = new this.api.ReaderState(
           this.api.local.indexedDB('solid-document-reader', {
             key: owner + '\nreader'
@@ -1286,6 +1320,7 @@ export const muzeDocuments = {
         this.runtime.authorLookups = new Set();
         this.runtime.authorQueue = [];
       }
+      await this.actions.muzeDocumentsBookmarks();
       this.runtime.owner = owner;
       this.runtime.notes.state.data = [];
       this.runtime.notes.state.options.visible = [];
@@ -1595,6 +1630,10 @@ export const muzeDocuments = {
         await pdf.dispose();
         return;
       }
+      this.runtime.searchGeneration = (this.runtime.searchGeneration || 0) + 1;
+      this.data.muzeDocumentsSearchResults = [];
+      this.data.muzeDocumentsSearchStatus = '';
+      CSS.highlights?.delete('muze-document-search');
       this.runtime.readerReady = false;
       this.runtime.viewportToken = (this.runtime.viewportToken || 0) + 1;
       await this.runtime.pdf?.dispose();
@@ -1615,6 +1654,9 @@ export const muzeDocuments = {
       this.runtime.bytes = bytes;
       this.runtime.document = url || 'urn:sha256:' + digest;
       this.runtime.digest = digest;
+      if (this.runtime.bookmarks?.state.options.document) {
+        this.runtime.bookmarks.state.options.document = this.runtime.document;
+      }
       this.runtime.group = null;
       const savedReader = await this.runtime.readerState.read(
         this.runtime.document,
@@ -1656,6 +1698,7 @@ export const muzeDocuments = {
       this.data.muzeDocumentsNotesPanel.hidden = settings.annotationsOpen
         ? null
         : '';
+      this.actions.muzeDocumentsExclusiveReaderPanel();
       if (matchMedia('(max-width: 719px)').matches) {
         this.actions.muzeDocumentsRememberDesktopPanes();
         this.actions.muzeDocumentsHideSidebars();
@@ -1852,6 +1895,39 @@ export const muzeDocuments = {
         this.actions.muzeDocumentsScroll();
       }
     },
+    async muzeDocumentsReaderLayout() {
+      // SimplyFlow batches style/list bindings. Scroll restoration needs the
+      // final page geometry, rather than whichever layout one frame exposes.
+      for (let frame = 0; frame < 120; frame += 1) {
+        for (
+          let index = 1;
+          index <= this.data.muzeDocumentsPages.length;
+          index += 1
+        ) {
+          this.actions.muzeDocumentsPageSize(index);
+        }
+        const slots = [...this.container.querySelectorAll('[data-pdf-page]')];
+        if (
+          slots.length === this.data.muzeDocumentsPages.length &&
+          slots.every((slot, index) => {
+            const size = this.runtime.pdf.size(
+              index + 1,
+              this.runtime.readerWidth,
+              this.runtime.zoom,
+              this.runtime.rotation
+            );
+            return (
+              Math.abs(slot.offsetHeight - size.height) <= 1 &&
+              Math.abs(slot.offsetWidth - size.width) <= 1
+            );
+          })
+        ) {
+          return;
+        }
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      throw new Error('documents: Reader page layout did not settle.');
+    },
     async muzeDocumentsShow(page, fraction = 0) {
       const pdf = this.runtime.pdf;
       if (!pdf) {
@@ -1886,7 +1962,7 @@ export const muzeDocuments = {
             this.actions.muzeDocumentsPageSize(index);
           }
         }
-        await new Promise((resolve) => requestAnimationFrame(resolve));
+        await this.actions.muzeDocumentsReaderLayout();
         const slot = this.container.querySelector(
           '[data-pdf-page="' + number + '"]'
         );
@@ -1901,7 +1977,7 @@ export const muzeDocuments = {
           return;
         }
         this.actions.muzeDocumentsPageSize(number);
-        await new Promise((resolve) => requestAnimationFrame(resolve));
+        await this.actions.muzeDocumentsReaderLayout();
         scroller.scrollTop = slot.offsetTop + slot.offsetHeight * fraction;
         this.runtime.readerReady = true;
         this.actions.muzeDocumentsActivate(number);

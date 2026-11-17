@@ -260,59 +260,153 @@ try {
     'First section'
   );
   if (!slow) {
-    await page.evaluate(() => {
-      document.querySelector('[data-simply-value="find"]').focus();
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      await app.commands.muzeDocumentsNavigation.call(app, null, 'search');
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      if (
+        !app.container
+          .querySelector('.muze-documents-navigation')
+          .checkVisibility()
+      ) {
+        throw new Error('Search sidebar must be visible on phone.');
+      }
+      const form = app.container.querySelector(
+        '[data-simply-command="muzeDocumentsSearch"]'
+      );
+      form.elements.query.value = 'line';
+      await app.commands.muzeDocumentsSearch.call(app, form);
+      if (
+        app.data.muzeDocumentsSearchResults.length !== 1 ||
+        app.data.muzeDocumentsNavigationPanel.hidden !== null
+      ) {
+        throw new Error(
+          'Document search must show contextual results in a sidebar.'
+        );
+      }
+      await app.commands.muzeDocumentsSearchResult.call(app, null, '0');
+      if (!CSS.highlights.has('muze-document-search')) {
+        throw new Error('Search result must highlight its exact text.');
+      }
+      await app.commands.muzeDocumentsNavigation.call(app, null, 'bookmarks');
+      const bookmark = app.container.querySelector(
+        '[data-simply-command="muzeDocumentsBookmark"]'
+      );
+      bookmark.elements.label.value = 'Resume fixture';
+      await app.commands.muzeDocumentsBookmark.call(app, bookmark);
+      await new Promise(resolve => setTimeout(resolve, 80));
+      const saved = app.data.muzeDocumentsBookmarks.find(
+        (item) => item.label === 'Resume fixture'
+      );
+      if (!saved) {
+        throw new Error('Bookmark must be listed after creation.');
+      }
+      await app.commands.muzeDocumentsOpenBookmark.call(app, null, saved.id);
+      await app.commands.muzeDocumentsRemoveBookmark.call(app, null, saved.id);
+      for (let i = 0; i < 50 && app.data.muzeDocumentsBookmarks.some(item => item.id === saved.id); i += 1) {
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      if (
+        app.data.muzeDocumentsBookmarks.some((item) => item.id === saved.id)
+      ) {
+        throw new Error('Removed bookmark must leave the list.');
+      }
+      app.actions.muzeDocumentsHideSidebars();
     });
-    await page.send('Input.dispatchKeyEvent', {
-      type: 'keyDown',
-      key: 'Enter',
-      code: 'Enter',
-      text: '\r',
-      windowsVirtualKeyCode: 13
-    });
-    await page.send('Input.dispatchKeyEvent', {
-      type: 'keyUp',
-      key: 'Enter',
-      code: 'Enter',
-      windowsVirtualKeyCode: 13
-    });
-    assert(
-      await page.evaluate(
-        () =>
-          document.querySelector('[data-document-dialog="find"]').open &&
-          document.activeElement.closest('dialog') !== null
-      ),
-      'Search opens as a focused modal from the toolbar'
-    );
-    await page.send('Input.dispatchKeyEvent', {
-      type: 'keyDown',
-      key: 'Escape',
-      code: 'Escape',
-      windowsVirtualKeyCode: 27
-    });
-    await page.send('Input.dispatchKeyEvent', {
-      type: 'keyUp',
-      key: 'Escape',
-      code: 'Escape',
-      windowsVirtualKeyCode: 27
+    await page.send('Emulation.setDeviceMetricsOverride', {
+      width: 390,
+      height: 844,
+      deviceScaleFactor: 1,
+      mobile: true
     });
     await page.evaluate(async () => {
       for (
         let i = 0;
-        i < 100 && document.querySelector('[data-document-dialog="find"]').open;
+        i < 100 && !muzeSolidDocumentsApp.runtime.narrowReader;
         i += 1
       ) {
         await new Promise((resolve) => setTimeout(resolve, 20));
       }
     });
-    assert(
+    for (const mode of ['search', 'bookmarks']) {
       await page.evaluate(
-        () =>
-          !document.querySelector('[data-document-dialog="find"]').open &&
-          document.activeElement.dataset.simplyValue === 'find'
-      ),
-      'Escape closes search and restores toolbar focus'
-    );
+        '() => (' +
+          (async (mode) => {
+            const app = muzeSolidDocumentsApp;
+            await app.commands.muzeDocumentsNavigation.call(app, null, mode);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            if (mode === 'bookmarks') {
+              const form = app.container.querySelector('[data-simply-command="muzeDocumentsBookmark"]');
+              form.elements.label.value = '';
+              await app.commands.muzeDocumentsBookmark.call(app, form);
+              form.elements.label.value = 'Reading place';
+              await app.commands.muzeDocumentsBookmark.call(app, form);
+              await new Promise(resolve => setTimeout(resolve, 100));
+              window.compactBookmarkIds = app.runtime.bookmarks.state.data.map(item => item.id);
+              let open;
+              for (let i = 0; i < 50; i += 1) {
+                open = [...app.container.querySelectorAll('.muze-documents-bookmark-open')]
+                  .find(button => button.innerText.trim() === 'Page 1');
+                if (open) { break; }
+                await new Promise(resolve => setTimeout(resolve, 10));
+              }
+              if (!open) { throw new Error('Unnamed bookmark must display only its page.'); }
+              const row = open.closest('.muze-documents-bookmark-row');
+              const remove = row.querySelector('.muze-documents-bookmark-remove');
+              if (open.innerText.trim() !== 'Page 1' ||
+                  getComputedStyle(remove).opacity !== '0' || row.offsetHeight > 52) {
+                throw new Error('Unnamed bookmark layout: ' + JSON.stringify({text:open.innerText, height:row.offsetHeight, opacity:getComputedStyle(remove).opacity, html:row.outerHTML}));
+              }
+              const list = row.closest('.muze-documents-bookmark-list');
+              if (Math.abs(row.getBoundingClientRect().left - list.getBoundingClientRect().left) > 1) {
+                throw new Error('Bookmark rows must have no extra list indentation.');
+              }
+              const before = getComputedStyle(open).backgroundColor;
+              open.focus();
+              if (getComputedStyle(remove).opacity !== '1' ||
+                  getComputedStyle(open).backgroundColor === before ||
+                  Math.abs(remove.getBoundingClientRect().top - row.getBoundingClientRect().top) > 1) {
+                throw new Error('Bookmark focus must reveal its overlay delete icon and menu background.');
+              }
+            }
+            const panel = app.container.querySelector(
+              '.muze-documents-navigation'
+            );
+            const bounds = panel.getBoundingClientRect();
+            if (
+              !panel.checkVisibility() ||
+              bounds.left < 0 ||
+              bounds.right > innerWidth + 1
+            ) {
+              throw new Error(
+                'Reader navigation panel must fit the phone viewport: ' +
+                  JSON.stringify({
+                    bounds: bounds.toJSON(),
+                    hidden: panel.hidden,
+                    width: innerWidth
+                  })
+              );
+            }
+          }).toString() +
+          ')(' +
+          JSON.stringify(mode) +
+          ')'
+      );
+      const navigationShot = await page.send('Page.captureScreenshot', {
+        format: 'png'
+      });
+      await writeFile(
+        '/tmp/cyc266-' + mode + '.png',
+        Buffer.from(navigationShot.data, 'base64')
+      );
+    }
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      for (const id of window.compactBookmarkIds || []) {
+        await app.commands.muzeDocumentsRemoveBookmark.call(app, null, id);
+      }
+      app.actions.muzeDocumentsHideSidebars();
+    });
     for (const width of [390, 1440]) {
       await page.send('Emulation.setDeviceMetricsOverride', {
         width,
@@ -558,6 +652,31 @@ try {
     await page.evaluate(async () => {
       const app = muzeSolidDocumentsApp;
       await app.actions.muzeDocumentsLoad(location.origin + '/many-pages.pdf');
+      const searchForm = app.container.querySelector(
+        '[data-simply-command="muzeDocumentsSearch"]'
+      );
+      searchForm.elements.query.value = 'line';
+      await app.commands.muzeDocumentsSearch.call(app, searchForm);
+      // Landscape page 12 clips the fixture text outside its MediaBox.
+      if (app.data.muzeDocumentsSearchResults.length !== 23) {
+        throw new Error(
+          'Search must retain results from every text-bearing page: ' +
+            app.data.muzeDocumentsSearchResults.length
+        );
+      }
+      await app.commands.muzeDocumentsSearchResult.call(
+        app,
+        null,
+        app.data.muzeDocumentsSearchResults.find((item) => item.page === 13).id
+      );
+      if (
+        app.runtime.page !== 13 ||
+        !CSS.highlights.has('muze-document-search')
+      ) {
+        throw new Error(
+          'An offscreen search result must navigate and highlight its page.'
+        );
+      }
       await app.actions.muzeDocumentsShow(12, 0.25);
       const surface = () =>
         app.container.querySelector('[data-pdf-page="12"] [data-pdf-surface]');
@@ -577,6 +696,34 @@ try {
       }
       await app.commands.muzeDocumentsZoom.call(app, null, 0.25);
       await app.actions.muzeDocumentsShow(12, 0.25);
+      await app.commands.muzeDocumentsNavigation.call(app, null, 'bookmarks');
+      const bookmarkForm = app.container.querySelector(
+        '[data-simply-command="muzeDocumentsBookmark"]'
+      );
+      bookmarkForm.elements.label.value = 'Global reading place';
+      await app.commands.muzeDocumentsBookmark.call(app, bookmarkForm);
+      await new Promise(resolve => setTimeout(resolve, 80));
+      window.resumeBookmark = app.data.muzeDocumentsBookmarks.find(
+        (item) => item.label === 'Global reading place'
+      ).id;
+      for (const page of [15, 2, 1]) {
+        await app.runtime.readerState.save({ bookmark: {
+          document: app.runtime.document, digest: app.runtime.digest,
+          page, fraction: 0, readAt: Date.now(), id: 'urn:uuid:page-sort-' + page, label: ''
+        } });
+      }
+      await app.actions.muzeDocumentsBookmarks();
+      await new Promise(resolve => setTimeout(resolve, 80));
+      const pages = app.data.muzeDocumentsBookmarks.filter(item => item.document === app.runtime.document).map(item => item.page);
+      if (pages.some((page, index) => index && page < pages[index - 1])) {
+        throw new Error('Bookmarks must sort numerically by page, starting at page 1.');
+      }
+      for (const page of [15, 2, 1]) {
+        await app.runtime.readerState.save({ removeBookmark: 'urn:uuid:page-sort-' + page });
+      }
+      await app.actions.muzeDocumentsBookmarks();
+
+      app.actions.muzeDocumentsHideSidebars();
       await app.actions.muzeDocumentsFlushReader();
       await app.actions.muzeDocumentsLoad(location.origin + '/report.pdf');
       if (
@@ -586,7 +733,46 @@ try {
       ) {
         throw new Error('Reader settings did not carry to another document.');
       }
-      await app.actions.muzeDocumentsLoad(location.origin + '/many-pages.pdf');
+      await app.commands.muzeDocumentsNavigation.call(app, null, 'bookmarks');
+      await app.commands.muzeDocumentsOpenBookmark.call(
+        app,
+        null,
+        window.resumeBookmark
+      );
+      if (
+        app.data.muzeDocumentsNavigationPanel.hidden !== null ||
+        app.data.muzeDocumentsNavigationMode !== 'bookmarks' ||
+        app.data.muzeDocumentsOutlinePanel.hidden === null ||
+        app.data.muzeDocumentsThumbnailsPanel.hidden === null ||
+        app.data.muzeDocumentsOutlineToggle['aria-expanded'] !== 'false'
+      ) {
+        throw new Error(
+          'Following a cross-document bookmark must keep only bookmarks open.'
+        );
+      }
+      for (const mode of ['outline', 'thumbnails', 'search', 'bookmarks']) {
+        if (mode === 'outline') {
+          await app.commands.muzeDocumentsToggleOutline.call(app);
+        }
+        else if (mode === 'thumbnails') {
+          await app.commands.muzeDocumentsToggleThumbnails.call(app);
+        }
+        else {
+          await app.commands.muzeDocumentsNavigation.call(app, null, mode);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 80));
+        const panels = [
+          '.muze-documents-outline',
+          '.muze-documents-thumbnails',
+          '.muze-documents-navigation'
+        ].map((selector) => app.container.querySelector(selector));
+        if (panels.filter((panel) => panel.checkVisibility()).length !== 1) {
+          throw new Error(
+            'Switching reader panels must leave exactly one visible: ' + mode
+          );
+        }
+      }
+
       const position = app.actions.muzeDocumentsCapturePosition();
       if (position.page !== 12 || Math.abs(position.fraction - 0.25) > 0.03) {
         throw new Error(
@@ -1404,6 +1590,10 @@ try {
       );
       app.actions.muzeDocumentsRefresh();
       await app.actions.muzeDocumentsShow(24);
+      for (let i = 0; i < 50 && !app.data.muzeDocumentsNotes.some(note =>
+          note.html.includes('Last page only')); i += 1) {
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
       if (
         !app.data.muzeDocumentsNotes.some((note) =>
           note.html.includes('Last page only')
@@ -1457,6 +1647,10 @@ try {
     await page.evaluate(async () => {
       const app = muzeSolidDocumentsApp;
       await new Promise((resolve) => setTimeout(resolve, 80));
+      const annotationPages = app.data.muzeDocumentsNotes.map(note => note.page);
+      if (annotationPages.some((page, index) => index && page < annotationPages[index - 1])) {
+        throw new Error('Annotation list must sort numerically by page.');
+      }
       if (
         !app.data.muzeDocumentsNotes.some((note) => note.page === 12) ||
         !app.data.muzeDocumentsNotes.some((note) => note.page === 1)
@@ -1699,6 +1893,10 @@ try {
         );
       }
       app.actions.muzeDocumentsHighlights();
+      for (let i = 0; i < 50 && !app.data.muzeDocumentsNotes.some(note =>
+          note.authorDetails.title === 'https://remote.example/#author'); i += 1) {
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
       if (
         !app.data.muzeDocumentsNotes.some(
           (note) =>
