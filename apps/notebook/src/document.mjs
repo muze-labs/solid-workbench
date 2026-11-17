@@ -8,9 +8,10 @@ import {
   sameGraph
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import {
-  readFragment,
-  writeFragment
+  readFragment
 } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
+import { writeCobaltFragment }
+  from '@muze-labs/solid-app-data/cobalt-html.mjs';
 import { loadDocument, httpUrl } from '@muze-labs/solid-app-data';
 import { DocumentSession }
   from '@muze-labs/solid-app-data/document-session.mjs';
@@ -177,13 +178,13 @@ export class NotebookDocuments extends DocumentSession {
       const content =
         this.graph.one(this.root, notebook + 'title-content', 'iri') ||
         named('urn:uuid:' + crypto.randomUUID());
-      writeFragment(this.graph, content.id, fragment);
+      writeCobaltFragment(this.graph, content.id, fragment);
       this.graph.set(this.root, notebook + 'title-content', content);
       this.graph.set(this.root, notebook + 'title', literal(fragment.text));
       this.changed();
       return;
     }
-    writeFragment(this.graph, id, fragment);
+    writeCobaltFragment(this.graph, id, fragment);
     this.changed();
   }
   add(

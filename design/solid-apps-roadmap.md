@@ -110,6 +110,27 @@ cannot meet these constraints, redesign, split or defer it rather than silently
 waive them. This agreement does not start a cycle, implement offline/sync/PWA
 support or certify the accessibility/performance of existing apps.
 
+## Semantic HTML and ARIA review
+
+Maintainer direction, 2026-11-17: analyze semantic HTML and ARIA use across the
+apps and shared components. Prefer meaningful HTML structures over layers of
+generic `div` elements. Use native semantics first; do not add ARIA where HTML
+already communicates the same meaning.
+
+- Review landmarks, navigation, lists, headings, forms, labels, dialogs and
+  controls. Choose elements for their meaning and built-in behavior; keep
+  generic containers where no semantic element is appropriate.
+- Identify redundant or conflicting roles, labels and states. Prefer native
+  elements and label associations. Retain ARIA where it supplies necessary
+  information that HTML does not express, such as an icon button's accessible
+  name or an expandable control's current state.
+- Check the resulting accessibility tree, keyboard behavior and core tasks with
+  assistive technology. Removing attributes or reducing wrapper counts alone
+  does not establish an improvement.
+
+This is a roadmap review item, not a completed audit or a new implementation
+cycle. It does not change the existing priority decisions below.
+
 ## High priority: library boundaries and simplification
 
 Maintainer priority decision, 2026-11-15: add the
@@ -2337,3 +2358,13 @@ and a bottom-left floating Add apps button. Preserve empty intermediate screens.
 The published oldm-turtle0.4.5 fix is adopted and checked against the Files root
 read. SRC255/DES256/IMP257/EVD258 record scope and evidence; cycle Active, human
 acceptance pending. Add apps card redesign remains future work.
+
+## Documents collections — discussion proposal
+
+The maintainer asks whether standalone Documents should gain a collections
+interface like Notebook and Presenter. The proposed next-cycle direction is
+a library of PDF URI references with linked annotation resources, preserving
+the existing embedded viewer capability and avoiding automatic PDF copies.
+Discovery, organization, unavailable-source handling and locally available
+reading belong in that cycle's scope discussion. No implementation or cycle
+acceptance is implied by this proposal.

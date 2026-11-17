@@ -13,7 +13,8 @@ const appNames = [
   'account',
   'viewer',
   'presenter',
-  'notebook'
+  'notebook',
+  'documents'
 ];
 
 function entryOwners(id, getModuleInfo) {
@@ -36,6 +37,17 @@ function entryOwners(id, getModuleInfo) {
 }
 
 function sharedChunk(id, { getModuleInfo }) {
+  if (id.includes('/node_modules/pdfjs-dist/')) {
+    return 'documents/pdf-engine';
+  }
+  if (id.includes('/node_modules/dompurify/')) {
+    return 'documents/html';
+  }
+  // Portable HTML is produced only on the editing path. Ordinary graph
+  // readers must not acquire the Cobalt runtime through the common data chunk.
+  if (id.endsWith('/solid-app-data/src/cobalt-html.mjs')) {
+    return 'shared/cobalt-html';
+  }
   // Collection data and browsing belong to the document apps. Sharing their
   // implementation must not add them to every account/app download graph.
   if (

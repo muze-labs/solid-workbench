@@ -3,6 +3,8 @@ import { named, sameTerm } from '@muze-labs/solid-app-data/state-rdf.mjs';
 
 export const capabilityNamespace = 'https://vocab.muze.nl/capability#';
 export const providerCapabilities = Object.freeze({
+  noteBodyProvider: 'https://vocab.muze.nl/capabilities/edit-note-body',
+  pdfViewProvider: 'https://vocab.muze.nl/capabilities/view-pdf',
   textViewProvider: 'https://vocab.muze.nl/capabilities/view-text',
   textCreateProvider: 'https://vocab.muze.nl/capabilities/create-text',
   textEditProvider: 'https://vocab.muze.nl/capabilities/edit-text',

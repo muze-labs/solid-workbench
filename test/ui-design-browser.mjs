@@ -785,7 +785,8 @@ try {
     'account',
     'viewer',
     'presenter',
-    'notebook'
+    'notebook',
+    'documents'
   ]) {
     console.log('Checking app widths', route);
     await visit(route);
@@ -840,7 +841,7 @@ try {
       await capture('ui-width-' + route + '-' + width);
     }
   }
-  console.log('PASS all nine apps fit phone/desktop; eight shells fill main');
+  console.log('PASS all ten apps fit phone/desktop; nine shells fill main');
   // An opaque-origin frame verifies dismissal without reading frame contents.
   for (const route of ['contacts', 'files']) {
     await visit(route);
