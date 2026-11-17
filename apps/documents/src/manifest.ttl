@@ -1,0 +1,6 @@
+@prefix schema: <https://schema.org/> .
+@prefix cap: <https://vocab.muze.nl/capability#> .
+<> a schema:SoftwareApplication ; schema:name "Documents" ;
+ schema:url <./> ; schema:image <icon.svg> ;
+ cap:provides <https://vocab.muze.nl/capabilities/view-pdf>, <https://vocab.muze.nl/capabilities/view-resource>,
+ <https://vocab.muze.nl/capabilities/edit-note-body> .

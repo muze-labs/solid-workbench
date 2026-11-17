@@ -60,7 +60,8 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       'account',
       'viewer',
       'presenter',
-      'notebook'
+      'notebook',
+      'documents'
     ];
     assert.deepEqual(
       [...chunks.keys()].sort(),
@@ -74,6 +75,11 @@ test('readable and minified apps preserve isolated module graphs', async () => {
           'shared/profile',
           'shared/backgrounds',
           'shared/cobalt',
+          'shared/cobalt-html',
+          'documents/html',
+          'documents/pdf-engine',
+          'pdf',
+          'note-editor',
           'shared/document-session',
           'shared/document-collections',
           'shared/collection-browser',
@@ -121,6 +127,7 @@ test('readable and minified apps preserve isolated module graphs', async () => {
             name === filename(app + '/src/index') ||
               name === filename(app + '/src/settings-entry') ||
               name === filename('preferences/src/index') ||
+              (app === 'documents' && ['pdf', 'note-editor'].some((entry) => name === filename(entry))) ||
               (app === 'launcher' && name === filename('shared/backgrounds')),
             'App contributions belong only to their owner or Preferences: ' + id
           );
@@ -181,7 +188,9 @@ test('readable and minified apps preserve isolated module graphs', async () => {
       }
       if (['presenter', 'viewer', 'notebook'].includes(name)) {
         required.push(filename('shared/cobalt'));
+        required.push(filename('shared/cobalt-html'));
       }
+      if (name === 'documents') { required.push(filename('documents/html')); }
       if (name === 'notebook') { required.push(filename('notebook/controller')); }
       if (['presenter', 'notebook'].includes(name)) {
         required.push(filename('shared/document-session'));

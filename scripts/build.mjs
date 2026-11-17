@@ -1,6 +1,6 @@
 import { composeTemplate, applicationTitle } from './templates.mjs';
 import { bundleApplications } from './bundle.mjs';
-import { mkdir, copyFile, writeFile, rm, cp } from 'node:fs/promises';
+import { mkdir, copyFile, readFile, writeFile, rm, cp } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
@@ -59,7 +59,8 @@ for (const name of [
   'account',
   'viewer',
   'presenter',
-  'notebook'
+  'notebook',
+  'documents'
 ]) {
   const route = name === 'launcher' ? 'workbench' : name;
   const title = applicationTitle(name);
@@ -138,13 +139,23 @@ await writeFile(
 await cp(path.join(root, 'catalog'), path.join(root, 'www/catalog'), {
   recursive: true
 });
-console.log('Built all nine apps and static catalog in www/');
+console.log('Built all ten apps and static catalog in www/');
 const outputs = Object.fromEntries(
   bundles
     .filter((item) => item.type === 'chunk')
     .map((item) => ['www/assets/' + item.fileName, item])
 );
 const gzipSizes = new Map();
+const pdfWorkerSizes = {};
+for (const suffix of ['', '.min']) {
+  const worker = await readFile(
+    path.join(
+      root,
+      'node_modules/pdfjs-dist/legacy/build/pdf.worker' + suffix + '.mjs'
+    )
+  );
+  pdfWorkerSizes[suffix] = gzipSync(worker, { level: 6 }).byteLength;
+}
 for (const [name, output] of Object.entries(outputs)) {
   gzipSizes.set(name, gzipSync(output.code, { level: 6 }).byteLength);
 }
@@ -172,15 +183,27 @@ function appSizes(suffix) {
     'account',
     'viewer',
     'presenter',
-    'notebook'
+    'notebook',
+    'documents'
   ]) {
     const files = importGraph(`www/assets/${name}/src/index${suffix}.js`);
     importGraph('www/assets/redirect' + suffix + '.js', files);
     const total = [...files].reduce(
       (sum, file) => sum + gzipSizes.get(file),
-      0
+      name === 'documents' ? pdfWorkerSizes[suffix] : 0
     );
-    sizes[name] = { gzipBytes: total, scripts: [...files] };
+    sizes[name] = {
+      gzipBytes: total,
+      scripts: [...files],
+      ...(name === 'documents'
+        ? {
+            worker: {
+              path: 'www/assets/pdf/pdf.worker.js',
+              gzipBytes: pdfWorkerSizes[suffix]
+            }
+          }
+        : {})
+    };
     // Budgets are advisory: size must never prevent a build or dev startup.
     const readableWorkbench = name === 'launcher' && suffix === '';
     const budget = readableWorkbench ? 220033 : 200000;
@@ -272,4 +295,24 @@ console.log(
     ' files, ' +
     authoring.files.reduce((sum, file) => sum + file.gzipBytes, 0) +
     ' B gzip in total; none are automatic startup requests.'
+);
+
+await mkdir(path.join(root, 'www/assets/pdf'), { recursive: true });
+for (const name of ['cmaps', 'standard_fonts', 'wasm']) {
+  await cp(
+    path.join(root, 'node_modules/pdfjs-dist', name),
+    path.join(root, 'www/assets/pdf', name),
+    { recursive: true }
+  );
+}
+await copyFile(
+  path.join(root, 'node_modules/pdfjs-dist/LICENSE'),
+  path.join(root, 'www/assets/pdf/LICENSE')
+);
+await copyFile(
+  path.join(
+    root,
+    'node_modules/pdfjs-dist/legacy/build/pdf.worker' + scriptSuffix + '.mjs'
+  ),
+  path.join(root, 'www/assets/pdf/pdf.worker.js')
 );

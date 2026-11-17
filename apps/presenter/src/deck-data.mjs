@@ -11,9 +11,10 @@ import { loadDocument, httpUrl } from '@muze-labs/solid-app-data';
 import { DocumentSession } from '@muze-labs/solid-app-data/document-session.mjs';
 import { from, asc } from '@muze-nl/jaqt';
 import {
-  readFragment,
-  writeFragment
+  readFragment
 } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
+import { writeCobaltFragment }
+  from '@muze-labs/solid-app-data/cobalt-html.mjs';
 
 export const presenter = 'https://vocab.muze.nl/presenter#';
 const localFields = ['remote', 'etag', 'dirty', 'missing', 'target'];
@@ -206,7 +207,7 @@ export class DeckDocument extends DocumentSession {
   }
   editText(id, fragment) {
     this.graph.one(named(id), presenter + 'text', 'string');
-    writeFragment(this.graph, id, fragment);
+    writeCobaltFragment(this.graph, id, fragment);
     this.change(id, 'text', fragment.text);
   }
   addSlide(layout = 'text', afterId = '') {

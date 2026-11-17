@@ -8,9 +8,10 @@ import {
 import { StateGraph } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import {
   readFragment,
-  writeFragment,
   validateFragment
 } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
+import { writeCobaltFragment, cobaltBody }
+  from '@muze-labs/solid-app-data/cobalt-html.mjs';
 import { local } from '@muze-labs/solid-workspace';
 import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
@@ -80,8 +81,9 @@ const definition = {
     readFragmentFromClipboard,
     StateGraph,
     readFragment,
-    writeFragment,
     validateFragment,
+    writeCobaltFragment,
+    cobaltBody,
     local,
     AppState,
     apps,

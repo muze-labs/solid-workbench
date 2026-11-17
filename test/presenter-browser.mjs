@@ -538,6 +538,12 @@ try {
     for(let index=0;index<4;index++){ids.push(${app}.runtime.deck.addSlide('image'));}
     await ${app}.actions.muzeSolidPresenterPersist();return ids`
   );
+  // Persistence finishes before SimplyFlow's next layout. Wait for the
+  // observable fixture geometry before testing the scroll interaction.
+  await until(page, `(() => {
+    const strip=document.querySelector('.muze-solid-presenter-filmstrip');
+    return strip.scrollWidth>strip.clientWidth;
+  })()`);
   assert.equal(
     await run(
       page,

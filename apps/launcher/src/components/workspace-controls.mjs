@@ -141,7 +141,8 @@ export const workspaceControls = {
             'profile',
             'preferences',
             'presenter',
-            'viewer'
+            'viewer',
+            'documents'
           ];
           const allowed = suiteApps.some((name) => {
             const trusted = new URL('../' + name + '/', location.href);
@@ -163,6 +164,10 @@ export const workspaceControls = {
         resolveProvider: (capability) =>
           this.actions.swb_preferredProvider(capability),
         embeddedProviders: [
+          ...['noteBodyProvider', 'pdfViewProvider'].map((key) => ({
+            url: new URL('../documents/', location.href).href,
+            capability: this.api.providerCapabilities[key]
+          })),
           ...['textViewProvider', 'textCreateProvider', 'textEditProvider'].map(
             (key) => ({
               url: new URL('../viewer/', location.href).href,

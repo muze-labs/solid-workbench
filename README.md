@@ -22,8 +22,8 @@ Solid Workbench links to Contacts, Files, Profile, Presenter and Notebook.
 The dev command builds once, then starts the server. Restart it after changing
 server code or response types; rebuilding `www/` alone does not reload the
 running server's configuration.
-Node 20.6 or newer is required for the build; the browser integration harness uses
-Node 22 or newer (native WebSocket) and `google-chrome` on PATH. Use localhost or
+Node 22.13 or newer is required, matching the PDF.js dependency; the browser
+integration harness also needs `google-chrome` on PATH. Use localhost or
 HTTPS so browser storage, crypto and authentication work. Deploy `www/` as static
 files, preserving all nine app paths and `/redirect.html`. External dependencies
 come from npm; workspace links only connect packages inside this repository.
@@ -480,3 +480,64 @@ keeps your local changes. Opening another document preserves the current local
 copy first. Concurrent editing in multiple tabs is not coordinated; code/image
 blocks and folders remain future work. Manual assistive-technology and physical
 phone keyboard review remain separate from browser-fixture checks.
+
+### PDF documents and annotations
+
+Open Documents from the app catalog, or open a `.pdf` file in Files. Documents
+reads local files and browser-accessible PDF URLs (up to 32 MiB). Remote URLs
+need appropriate access and CORS support. Page navigation, zoom, rotation,
+search, outline and original download preserve the source document. Pages
+without text support page notes; tagged paragraphs and selected text support
+more specific anchors.
+
+Scroll continuously through lazily rendered pages, with an optional outline on
+the left. Opening sidebars keeps the paper scale stable. Zoom and sidebar
+settings carry across documents on this device; each account also remembers
+the last page and scroll position for each unchanged PDF URI.
+On phones, edge handles open overlay panes; outline/thumbnail navigation
+closes them again. The optional thumbnails pane lazily renders nearby pages,
+with page-number overlays and a wrapping grid on narrow screens.
+
+Tagged paragraphs expose a small + action on hover or keyboard focus, and on
+touch screens. By default the notes pane shows anchors currently in view. Its
+**All annotations** list-icon toggle includes every loaded group for the current
+PDF. Click a card to navigate, or use its page button with the keyboard. Search matches note text, author
+nicknames and group names within the selected scope. Both work on loaded notes
+offline; search does not discover unloaded resources.
+Add an annotation file by URL or import: it appears alongside your writing group
+with its source and recorded authors. Each resource has a persistent color for
+its cards and highlights. Authors use nicknames or generated symbols; full
+WebIDs appear only in hover titles. Added files start view-only; enable writing
+explicitly to offer them as new-note destinations. Author metadata is preserved;
+older notes without authors remain unattributed. Anonymous new notes use a
+pseudonymous identifier scoped to their original local group.
+
+Notes contain HTML and start as personal, account-scoped copies on this device.
+Create named groups and choose a separate annotations folder to save them to a
+Pod. Each PDF/group pair has its own Turtle resource, even when the source PDF
+lives on another Pod or website. Existing destination permissions apply; this
+version does not edit permissions. Export/import or open a group's resource URL
+to use it elsewhere. The local index maps PDF URIs to groups and destinations.
+
+Existing-resource saves require version protection; new resources use conditional
+creation. Rejected writes retain the local draft. Competing tabs retain separate
+recovery copies, without automatic conflict merging. Editing uses Cobalt by
+default; the annotation-editor preference can select an `edit-note-body` provider.
+HTML display is independent of Cobalt. The shared Cobalt integration also writes
+HTML alongside native fragments in Notebook, Presenter and Resource Viewer.
+Existing native Cobalt fragments take precedence when editing; otherwise Cobalt
+imports supported HTML. Annotations open in a Save/Close dialog with floating
+Bold, Italic and Link controls. Closing an existing note without saving retains its local draft. Closing a new
+note discards its empty marker; saving an empty note removes the annotation.
+Ctrl+Enter (Cmd+Enter on macOS) saves from the editor. Hovering or tapping a PDF
+highlight emphasizes and reveals its card in an already open notes pane. Hover
+emphasis changes the card background and clears when the pointer leaves the
+highlight or reader.
+
+An already loaded editor can preserve annotations without a connection. PDF
+viewing also needs the engine and any fonts/assets required by the page; uncached
+assets are not promised offline. Annotation drafts survive reload; remote PDFs
+require a connection on reopen. Offline shell/PDF installation, permission
+management, conflict merging and password prompts are outside this first version.
+PDF.js and its worker exceed the advisory download target; the size report counts
+the worker explicitly, with fonts/cmaps/wasm loaded when needed.

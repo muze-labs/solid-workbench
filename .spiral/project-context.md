@@ -1,5 +1,71 @@
 # Solid Workbench project context
 
+## CYC260 accepted for delivery, 2026-11-17
+
+The maintainer says “cycle accepted”. ACC265 binds acceptance to implementation
+d359650da7ca97dd53c6f4d79689b5cda5cffaae and evidence
+c88c4d4684339a6a580d392f2d0486496f88a221. Earlier Active/pending notes are superseded.
+Source/build and layout pass; browser reliability limits remain disclosed in
+EVD264. No product changes follow acceptance. Standing authorization requests
+commit, normal merge into current main, push and merged-cycle branch cleanup
+after verification. Keep the unrelated vision document untouched; no npm
+publication or separate deployment is requested.
+
+## PDF annotation cycle started, 2026-11-17
+
+The maintainer confirms “ok, go ahead start the cycle” after agreeing PDF
+reading with page/paragraph/text annotations, personal defaults, named groups
+each in a separate Turtle resource, concurrency protection from the start,
+and deferred permission management and conflict-resolution UI. The narrow
+PDF.js document-surface exception to SimplyFlow-only rendering is approved.
+CYC-20261117-QG24H-260 is Active on verified
+spiral/CYC-20261117-QG24H-260-pdf-annotations from main d96c9b8.
+SRC261 retains the instructions and interpretation. The cycle revises the
+earlier per-note-resource proposal; implementation is now under evaluation, with no acceptance claimed.
+Further clarification explicitly includes HTML annotation display independent
+of Cobalt, with Cobalt the default editor replaceable through the capabilities
+API. CYC260/SRC261 record that editor replacement is in scope, superseding its
+initial deferral; the viewer retains draft and publication ownership.
+HTML output is standard across the shared Cobalt editor integration. Further
+storage clarification requires one resource per PDF-and-group pair in a
+separate annotations folder, optionally discovered through a PDF-URI index;
+source PDFs may live on other Pods or websites.
+Preserve the unrelated company-data-sovereignty vision document. DES262/IMP263/EVD264 retain implementation and evaluation. Documents, shared
+Cobalt HTML, separate-folder conditional storage and native recovery are under
+verification. Final feature/check/build and ten-app layout checks pass; EVD264
+retains the baseline-reproduced launcher paging failure, combined-run Notebook
+pointer failure with isolated pass, download/offline limits and uncommitted
+causal-reference limitations. The maintainer subsequently rejected the cluttered
+PDF presentation and reported a worker import failure. CYC260 remains Active:
+correcting the view to open directly on the PDF, with a toolbar, optional notes
+panel and explicit-action dialogs. Worker is now published as .js for old
+running development-server MIME compatibility. Review is still pending. Final correction check/build and focused PDF/layout
+checks pass; the new full-browser run stopped at Presenter managed-disconnect
+editor readiness (line 1059), not yet diagnosed; do not claim a clean full run.
+The latest styling review also aligns PDF dialogs, labels/inputs, group select
+and panel colors with the shared design components. Check/build and focused
+PDF tests pass; shared dialog phone/desktop screenshots were inspected.
+Latest PDF steering adds a persistent left outline and continuous lazy page
+rendering (single full PDF download). Native scrolling/keyboard, renderer
+eviction and annotation page identity pass focused browser verification.
+Paged/facing-page modes remain later options. The roadmap also records the
+maintainer's semantic-HTML-first and unnecessary-ARIA review request; no broad
+audit is claimed.
+Latest reader/editor corrections adopt published Cobalt 0.2.0 and pass focused
+PDF, all-app phone/desktop layout and 42 source-test files. The required full
+browser attempt again stops at Presenter managed-disconnect readiness (:1059);
+EVD264 records the unresolved limit. Reader settings/positions are account-scoped
+and device-local; Save/Close modal editing preserves native Cobalt fragments.
+The current review correction also includes inline paragraph + controls,
+viewport-filtered compact cards, additional view-only annotation resources with
+explicit writing opt-in, per-resource colors, author nicknames/symbols, selectable
+new-note destinations, empty-note removal, highlight/card interaction, lazy
+thumbnails and phone overlays with desktop restoration/reference-width sizing.
+Verification for this expanded scope is in progress; prior passes do not certify
+these later changes. Standalone Documents collections are a discussion proposal
+for a following cycle, not implemented scope.
+No acceptance, commit, merge or publication is inferred.
+
 ## CYC254 accepted delivery versions, 2026-11-16
 
 ACC259 records acceptance of implementation 407ae4b508e9f93e0f5d73c0bf19b4e17623d352
@@ -3360,3 +3426,26 @@ merged spiral/CYC-* branches locally and remotely after main is pushed. Keep
 unmerged branches. This supersedes earlier instructions to retain/push a cycle
 branch after delivery. Apply to CYC254 and already-merged project cycle branches
 whose ancestry is mechanically verified against main.
+
+## CYC260 reader/editor review refinements
+
+CYC260 remains Active on spiral/CYC-20261117-QG24H-260-pdf-annotations. Positive
+feedback on scrolling/outline is not whole-cycle acceptance. Latest corrections
+cover compact outline, stable paper scale with sidebars, local reading settings
+and per-document positions, native Cobalt fragment preservation, and Save/Close
+annotation dialogs with floating formatting and hyperlink entry. The authorized
+upstream importer is now published by the maintainer as Cobalt 0.2.0 and is
+adopted through npm. No Workbench commit, merge or publication is authorized.
+Semantic HTML/ARIA review is recorded as future roadmap work.
+
+
+Further CYC260 reader review adds inline paragraph controls, lazy thumbnails,
+phone overlay handles, responsive restoration, multi-resource author/color and
+writing-destination handling, empty-note removal, Ctrl/Cmd+Enter saving, and
+compact annotation cards. The icon-only All annotations toggle and Contacts-style
+search operate on loaded groups; visible mode uses the same groups with valid
+visible anchors, independent of the selected writing destination. Whole-card
+clicks navigate, metadata shares a row, and page numbers float bottom-right.
+Hover uses background emphasis and clears on exit. The chat icon alone toggles
+the sidebar. EVD264 retains final checks and broad-suite failures. CYC260 remains
+Active and uncommitted, without inferred acceptance or integration authority.

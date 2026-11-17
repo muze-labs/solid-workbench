@@ -202,7 +202,7 @@ export const muzeSolidCobaltEditor = {
         this.runtime.cobaltLastValue = key;
         this.runtime.cobaltRevision += 1;
         this.data.muzeSolidCobaltFragment = value;
-        this.api.writeFragment(
+        this.api.writeCobaltFragment(
           this.runtime.cobaltGraph,
           this.runtime.cobaltInput.id,
           value
@@ -262,9 +262,7 @@ export const muzeSolidCobaltEditor = {
         return {
           id: this.runtime.cobaltInput.id,
           revision: this.runtime.cobaltRevision,
-          fragment: this.api.validateFragment(
-            this.runtime.cobaltEditor.getValue()
-          )
+          ...this.api.cobaltBody(this.runtime.cobaltEditor.getValue())
         };
       }
       if (input.operation === 'acknowledge') {

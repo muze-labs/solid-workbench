@@ -1,0 +1,442 @@
+@layer theme {
+  .muze-documents {
+    --muze-documents-surface: var(--muze-solid-design-surface, Canvas);
+    --muze-documents-chrome: var(--muze-solid-design-chrome, Canvas);
+    --muze-documents-text: var(--muze-solid-design-text, CanvasText);
+    --muze-documents-border: var(--muze-solid-design-divider, GrayText);
+  }
+}
+@layer component {
+  .swb-documents-layout {
+    height: 100%;
+    min-height: 0;
+  }
+  .muze-documents {
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+  }
+  .muze-documents-content {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .muze-documents-reader {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .muze-documents-tools {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    flex-shrink: 0;
+    margin: 0;
+  }
+  .muze-documents-location {
+    white-space: nowrap;
+    font-size: 0.875rem;
+    padding-inline: 0.25rem;
+  }
+  .muze-documents-status {
+    margin: 0;
+    padding-inline: 0.5rem;
+  }
+  .muze-documents-status:empty {
+    display: none;
+  }
+  .muze-documents-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    position: relative;
+  }
+  .muze-documents-outline {
+    flex: 0 0 min(15rem, 40%);
+    min-width: 0;
+    overflow: auto;
+    padding: 0.5rem;
+    background: var(--muze-documents-surface);
+    color: var(--muze-documents-text);
+    border-inline-end: 1px solid var(--muze-documents-border);
+  }
+  .muze-documents-outline-item {
+    margin: 0;
+    padding: 0;
+  }
+  .muze-documents-outline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .muze-documents-paper-scroll {
+    scrollbar-gutter: stable;
+    flex: 1;
+    overflow: auto;
+    min-width: 0;
+    padding: 0.75rem;
+    background: var(--muze-documents-chrome);
+  }
+  .muze-documents-pages {
+    position: relative;
+    min-width: 100%;
+  }
+  .muze-documents-page-slot {
+    margin-inline: auto;
+    margin-block-end: 1rem;
+    background: white;
+    color: black;
+  }
+  .muze-documents-paper {
+    position: relative;
+    background: white;
+    color: black;
+    margin-inline: auto;
+  }
+  .muze-documents-note-list {
+    list-style: none;
+    padding: 0;
+  }
+  .muze-documents-note-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .muze-documents-editor {
+    min-height: 12rem;
+    padding: 1rem;
+    border: 1px solid var(--muze-documents-border);
+    white-space: pre-wrap;
+  }
+  .muze-documents-notes {
+    width: min(20rem, 100%);
+    flex-shrink: 0;
+    overflow: auto;
+    padding: 0.75rem;
+    background: var(--muze-documents-surface);
+    color: var(--muze-documents-text);
+  }
+  .muze-documents :where(input, select) {
+    max-width: 100%;
+  }
+  @media (max-width: 40rem) {
+    .muze-documents-notes {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      z-index: 2;
+      border-inline-start: 1px solid var(--muze-documents-border);
+    }
+  }
+  /* PDF.js 6.5 display-layer geometry, adapted from Apache-2.0 pdf_viewer.css.
+   Selectors stay scoped to the specialist PDF surface. */
+  .muze-documents-paper .textLayer {
+    position: absolute;
+    inset: 0;
+    line-height: 1;
+    text-align: initial;
+    overflow: clip;
+    transform-origin: 0 0;
+    text-size-adjust: none;
+    forced-color-adjust: none;
+    --min-font-size: 1;
+    --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+    --min-font-size-inv: calc(1 / var(--min-font-size));
+  }
+  .muze-documents-paper .textLayer :is(span, br) {
+    color: transparent;
+    position: absolute;
+    white-space: pre;
+    cursor: text;
+    transform-origin: 0 0;
+    user-select: text;
+  }
+  .muze-documents-paper .textLayer > :not(.markedContent),
+  .muze-documents-paper .markedContent span:not(.markedContent) {
+    z-index: 1;
+    --font-height: 0;
+    font-size: calc(var(--text-scale-factor) * var(--font-height));
+    --scale-x: 1;
+    --rotate: 0deg;
+    transform: rotate(var(--rotate)) scaleX(var(--scale-x))
+      scale(var(--min-font-size-inv));
+  }
+  .muze-documents-paper .markedContent {
+    display: contents;
+  }
+  .muze-documents-paper ::selection {
+    background: #70a8ff88;
+    color: transparent;
+  }
+}
+
+@layer component {
+  .muze-documents-page-slot {
+    position: relative;
+  }
+  .muze-documents-paragraph-controls {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .muze-documents-paragraph-add {
+    position: absolute;
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    font-size: 1.5rem;
+    opacity: 0;
+    background: var(--muze-documents-surface);
+    color: var(--muze-documents-text);
+    border: 1px solid var(--muze-documents-border);
+  }
+  .muze-documents-paragraph-add:is(:focus, :hover, [data-active]) {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .muze-documents-paragraph-add {
+      opacity: 1;
+    }
+  }
+  .muze-documents-note-card {
+    margin: 0 0 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid var(--muze-documents-border);
+    border-inline-start: 3px solid
+      hsl(var(--muze-documents-note-hue, 210) 65% 68%);
+    color: #f5f7fb;
+    border-radius: 0.6rem 0.6rem 0.6rem 0;
+    background: hsl(var(--muze-documents-note-hue, 210) 34% 21%);
+    overflow-wrap: anywhere;
+  }
+}
+
+@layer component {
+  .muze-documents-thumbnails {
+    flex: 0 0 min(9rem, 35%);
+    overflow: auto;
+    background: var(--muze-documents-surface);
+    border-inline-end: 1px solid var(--muze-documents-border);
+  }
+  .muze-documents-thumbnail-list {
+    list-style: none;
+    padding: 0.4rem;
+    margin: 0;
+  }
+  .muze-documents-thumbnail-item {
+    margin: 0 0 0.5rem;
+    padding: 0;
+  }
+  .muze-documents-thumbnail {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 172px;
+    padding: 4px;
+    border: 2px solid transparent;
+    background: transparent;
+  }
+  .muze-documents-thumbnail[aria-current='page'] {
+    border-color: #387cb4;
+  }
+  .muze-documents-thumbnail canvas {
+    max-width: 100%;
+    height: auto;
+    background: white;
+  }
+  .muze-documents-thumbnail-number {
+    position: absolute;
+    inset-inline-end: 4px;
+    inset-block-end: 4px;
+    padding: 0.1rem 0.45rem;
+    background: #25364b;
+    color: white;
+  }
+}
+
+@layer component {
+  .muze-documents-paragraph-controls {
+    z-index: 2;
+  }
+  @media (max-width: 719px) {
+    .muze-documents-outline,
+    .muze-documents-notes,
+    .muze-documents-thumbnails {
+      position: absolute;
+      inset-block: 0;
+      z-index: 3;
+      box-shadow: 0 4px 16px #0004;
+    }
+    .muze-documents-outline {
+      inset-inline-start: 0;
+      width: min(20rem, 85%);
+    }
+    .muze-documents-notes {
+      inset-inline-end: 0;
+      width: min(20rem, 85%);
+    }
+    .muze-documents-thumbnails {
+      inset-inline: 0;
+      width: 100%;
+    }
+    .muze-documents-thumbnail-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.5rem;
+    }
+    .muze-documents-thumbnail-item {
+      margin: 0;
+    }
+  }
+}
+
+@layer component {
+  .muze-documents-panel-handles {
+    display: none;
+  }
+  @media (max-width: 719px) {
+    .muze-documents-panel-toggle {
+      display: none;
+    }
+    .muze-documents-panel-handles {
+      display: block;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .muze-documents-panel-handle {
+      position: absolute;
+      pointer-events: auto;
+      background: var(--muze-documents-surface);
+      border: 1px solid var(--muze-documents-border);
+      min-width: 24px;
+      width: 24px;
+      min-height: 44px;
+      padding: 0;
+    }
+    .muze-documents-outline-handle {
+      inset-block-start: 0.5rem;
+      inset-inline-start: 0;
+    }
+    .muze-documents-thumbnails-handle {
+      inset-block-start: 3.5rem;
+      inset-inline-start: 0;
+    }
+    .muze-documents-notes-handle {
+      inset-block-start: 0.5rem;
+      inset-inline-end: 0;
+    }
+  }
+}
+
+@layer component {
+  .muze-documents-note-card a {
+    color: hsl(var(--muze-documents-note-hue, 210) 80% 85%);
+  }
+}
+
+@layer component {
+  .muze-documents-note-card[data-active] {
+    background: hsl(var(--muze-documents-note-hue, 210) 45% 34%);
+  }
+}
+
+@layer component {
+  .muze-documents-note-card {
+    cursor: pointer;
+    position: relative;
+    padding: 0.5rem 0.6rem;
+    margin-block-end: 0.5rem;
+  }
+  .muze-documents-note-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0 1.8rem 0.25rem 0;
+    min-inline-size: 0;
+  }
+  .muze-documents-note-author {
+    margin: 0;
+    font-weight: 600;
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.85rem;
+  }
+  .muze-documents-note-source {
+    min-inline-size: 0;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.75rem;
+  }
+  .muze-documents-note-source:has(span:empty) {
+    display: none;
+  }
+  .muze-documents-note-body {
+    line-height: 1.35;
+  }
+  .muze-documents-note-body > :first-child {
+    margin-block-start: 0;
+  }
+  .muze-documents-note-body > :last-child {
+    margin-block-end: 0;
+  }
+  .muze-documents-note-edit {
+    position: absolute;
+    inset-inline-end: 0.2rem;
+    inset-block-start: 0.2rem;
+    min-width: 32px;
+    min-height: 32px;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    opacity: 0;
+  }
+  .muze-documents-note-card:is(:hover, :focus-within)
+    .muze-documents-note-edit {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .muze-documents-note-edit {
+      opacity: 1;
+    }
+  }
+}
+
+@layer component {
+  .muze-documents-note-filters {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .muze-documents-note-location {
+    position: absolute;
+    inset-inline-end: 4px;
+    inset-block-end: 4px;
+    min-inline-size: 24px;
+    min-block-size: 24px;
+    font-size: 0.8rem;
+    padding: 0.1rem 0.45rem;
+    background: #25364b;
+    color: white;
+  }
+}
+
+@layer theme {
+  .muze-documents-panel-toggle,
+  .muze-documents-panel-handle {
+    --muze-documents-toggle-selected: var(--muze-toolbar-selected);
+  }
+}
+@layer component {
+  .muze-documents-panel-toggle[aria-expanded='true'],
+  .muze-documents-panel-handle[aria-expanded='true'] {
+    background: var(--muze-documents-toggle-selected);
+  }
+}

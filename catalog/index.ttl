@@ -2,7 +2,7 @@
 
 <> a schema:Collection ;
     schema:name "Solid Workbench apps" ;
-    schema:hasPart <#contacts>, <#files>, <#profile>, <#presenter>, <#notebook>, <#viewer>, <#preferences>, <#penny>, <#umai> .
+    schema:hasPart <#documents>, <#contacts>, <#files>, <#profile>, <#presenter>, <#notebook>, <#viewer>, <#preferences>, <#penny>, <#umai> .
 
 <#contacts> a schema:SoftwareApplication ;
     schema:applicationCategory "People" ;
@@ -77,3 +77,9 @@
     schema:description "Write and save rich-text notebook documents." ;
     schema:text "Keep ordered rich-text blocks in separate notebook documents, with local recovery and explicit Pod saving." ;
     schema:subjectOf <notebook.ttl> .
+
+<#documents> a schema:SoftwareApplication ; schema:name "Documents" ;
+ schema:image <../documents/icon.svg> ;
+ schema:description "Read PDFs and keep separate annotation groups." ;
+ schema:text "Personal page and highlighted-text annotations, stored separately from the original PDF." ;
+ schema:subjectOf <documents.ttl> .

@@ -1,0 +1,909 @@
+<div class="muze-documents-content">
+  <style
+    data-simply-field="muzeDocumentsHighlightStyles"
+    data-simply-transform="escape_html"
+  ></style>
+  <p
+    class="muze-documents-status"
+    role="status"
+    data-simply-field="muzeDocumentsStatus"
+    data-simply-transform="escape_html"
+  ></p>
+  <div
+    class="muze-documents-reader"
+    data-simply-field="muzeDocumentsReader"
+    data-simply-transform="attributes"
+    data-simply-attributes="hidden inert"
+  >
+    <nav
+      class="muze-solid-design-toolbar muze-documents-tools"
+      aria-label="Document controls"
+    >
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsDialog"
+        data-simply-value="open"
+        aria-label="Open PDF"
+        title="Open PDF"
+        data-simply-field="muzeDocumentsSource"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#folder"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsPage"
+        data-simply-value="-1"
+        aria-label="Previous page"
+        title="Previous page"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#chevron-left"></use>
+        </svg></button
+      ><span
+        class="muze-documents-location"
+        data-simply-field="muzeDocumentsLocation"
+        data-simply-transform="escape_html"
+      ></span
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsPage"
+        data-simply-value="1"
+        aria-label="Next page"
+        title="Next page"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#chevron-right"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsZoom"
+        data-simply-value="-0.25"
+        aria-label="Zoom out"
+        title="Zoom out"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#minus"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsZoom"
+        data-simply-value="0.25"
+        aria-label="Zoom in"
+        title="Zoom in"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#plus"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsRotate"
+        aria-label="Rotate"
+        title="Rotate"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#rotate-cw"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsDialog"
+        data-simply-value="find"
+        aria-label="Find text"
+        title="Find text"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#search"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool muze-documents-panel-toggle"
+        data-simply-command="muzeDocumentsToggleOutline"
+        data-simply-field="muzeDocumentsOutlineToggle"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-expanded"
+        aria-controls="muze-documents-outline"
+        aria-label="Document outline"
+        title="Document outline"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#list"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool muze-documents-panel-toggle"
+        data-simply-command="muzeDocumentsToggleThumbnails"
+        data-simply-field="muzeDocumentsThumbnailsToggle"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-expanded"
+        aria-controls="muze-documents-thumbnails"
+        aria-label="Page thumbnails"
+        title="Page thumbnails"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#grid"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsDownload"
+        aria-label="Download original"
+        title="Download original"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#download"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsPageNote"
+        aria-label="Note on page"
+        title="Note on page"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#edit-3"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsSelectionNote"
+        aria-label="Highlight selection"
+        title="Highlight selection"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#edit-2"></use>
+        </svg></button
+      ><button
+        type="button"
+        class="muze-solid-design-tool muze-documents-panel-toggle"
+        data-simply-command="muzeDocumentsNotes"
+        data-simply-field="muzeDocumentsNotesToggle"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-expanded"
+        aria-controls="muze-documents-annotations"
+        aria-label="Annotations"
+        title="Annotations"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#message-square"></use>
+        </svg>
+      </button>
+    </nav>
+    <div class="muze-documents-layout">
+      <nav class="muze-documents-panel-handles" aria-label="Reader sidebars">
+        <button
+          class="muze-solid-design-tool muze-documents-panel-handle muze-documents-outline-handle"
+          data-simply-command="muzeDocumentsToggleOutline"
+          aria-label="Document outline"
+          data-simply-field="muzeDocumentsOutlineToggle"
+          data-simply-transform="attributes"
+          data-simply-attributes="aria-expanded"
+          aria-controls="muze-documents-outline"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#list"></use>
+          </svg>
+        </button>
+        <button
+          class="muze-solid-design-tool muze-documents-panel-handle muze-documents-thumbnails-handle"
+          data-simply-command="muzeDocumentsToggleThumbnails"
+          aria-label="Page thumbnails"
+          data-simply-field="muzeDocumentsThumbnailsToggle"
+          data-simply-transform="attributes"
+          data-simply-attributes="aria-expanded"
+          aria-controls="muze-documents-thumbnails"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#grid"></use>
+          </svg>
+        </button>
+        <button
+          class="muze-solid-design-tool muze-documents-panel-handle muze-documents-notes-handle"
+          data-simply-command="muzeDocumentsNotes"
+          data-simply-field="muzeDocumentsNotesToggle"
+          data-simply-transform="attributes"
+          data-simply-attributes="aria-expanded"
+          aria-controls="muze-documents-annotations"
+          aria-label="Annotations"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#message-square"></use>
+          </svg>
+        </button>
+      </nav>
+      <nav
+        class="muze-documents-outline"
+        id="muze-documents-outline"
+        aria-label="Document outline"
+        hidden
+        data-simply-field="muzeDocumentsOutlinePanel"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <p
+          class="muze-solid-design-hint"
+          data-simply-field="muzeDocumentsOutlineEmpty"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+        >
+          This PDF has no document outline.
+        </p>
+        <ul
+          class="muze-documents-outline-list"
+          data-simply-list="muzeDocumentsOutline"
+        >
+          <template
+            ><li class="muze-documents-outline-item">
+              <button
+                class="muze-solid-design-list-row muze-solid-design-list-state muze-documents-outline-link"
+                data-simply-command="muzeDocumentsOutline"
+                data-simply-value=":value.page"
+                data-simply-field="current"
+                data-simply-transform="attributes"
+                data-simply-attributes="aria-current"
+              >
+                <span
+                  data-simply-field="title"
+                  data-simply-transform="escape_html"
+                ></span>
+              </button></li
+          ></template>
+        </ul>
+      </nav>
+      <nav
+        class="muze-documents-thumbnails"
+        id="muze-documents-thumbnails"
+        aria-label="Page thumbnails"
+        hidden
+        data-simply-field="muzeDocumentsThumbnailsPanel"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <ol
+          class="muze-documents-thumbnail-list"
+          data-simply-list="muzeDocumentsThumbnails"
+        >
+          <template
+            ><li class="muze-documents-thumbnail-item">
+              <button
+                class="muze-documents-thumbnail"
+                data-simply-command="muzeDocumentsOutline"
+                data-simply-value=":value.page"
+                data-simply-field="attributes"
+                data-simply-transform="attributes"
+                data-simply-attributes="aria-label aria-current data-thumbnail-page"
+              >
+                <canvas aria-hidden="true"></canvas
+                ><span
+                  class="muze-documents-thumbnail-number"
+                  data-simply-field="page"
+                  data-simply-transform="escape_html"
+                ></span>
+              </button></li
+          ></template>
+        </ol>
+      </nav>
+      <div
+        class="muze-documents-paper-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="PDF pages"
+      >
+        <div class="muze-documents-pages" data-simply-list="muzeDocumentsPages">
+          <template
+            ><div
+              class="muze-documents-page-slot"
+              role="group"
+              data-simply-field="attributes"
+              data-simply-transform="attributes"
+              data-simply-attributes="style data-pdf-page aria-label"
+            >
+              <div class="muze-documents-paper" data-pdf-surface></div>
+              <div
+                class="muze-documents-paragraph-controls"
+                data-simply-list="markers"
+              >
+                <template
+                  ><button
+                    type="button"
+                    class="muze-documents-paragraph-add"
+                    data-simply-command="muzeDocumentsInlineParagraph"
+                    data-simply-value=":value.key"
+                    data-simply-field="attributes"
+                    data-simply-transform="attributes"
+                    data-simply-attributes="style aria-label data-active"
+                  >
+                    +
+                  </button></template
+                >
+              </div>
+            </div></template
+          >
+        </div>
+      </div>
+      <aside
+        id="muze-documents-annotations"
+        aria-label="Annotations"
+        class="muze-documents-notes"
+        hidden
+        data-simply-field="muzeDocumentsNotesPanel"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <nav class="muze-solid-design-toolbar" aria-label="Annotation controls">
+          <button
+            type="button"
+            class="muze-solid-design-tool"
+            title="All annotations"
+            aria-label="All annotations"
+            aria-pressed="false"
+            data-simply-command="muzeDocumentsAnnotationScope"
+            data-simply-field="muzeDocumentsAnnotationScope"
+            data-simply-transform="attributes"
+            data-simply-attributes="aria-pressed"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#list"></use>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="muze-solid-design-tool"
+            data-simply-command="muzeDocumentsDialog"
+            data-simply-value="groups"
+            aria-label="Manage annotation groups"
+            title="Manage annotation groups"
+          >
+            <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+              <use href="../assets/feather-icons.svg#settings"></use>
+            </svg>
+          </button>
+        </nav>
+        <div class="muze-solid-design-toolbar muze-documents-note-filters">
+          <label class="muze-solid-design-list-search">
+            <span class="swb-visually-hidden">Search annotations</span>
+            <svg
+              class="ds-icon ds-icon-feather muze-solid-design-list-search-icon"
+              aria-hidden="true"
+            >
+              <use href="../assets/feather-icons.svg#search"></use>
+            </svg>
+            <input
+              type="search"
+              placeholder="Search"
+              class="muze-solid-design-control swb-control muze-solid-design-toolbar-input muze-solid-design-list-search-input"
+              data-simply-field="muzeDocumentsAnnotationSearch"
+              data-simply-command="muzeDocumentsSearchAnnotations"
+              data-simply-immediate="true"
+            />
+          </label>
+        </div>
+        <p
+          data-simply-field="muzeDocumentsNotesEmpty"
+          data-simply-transform="escape_html"
+        ></p>
+        <ul
+          data-simply-list="muzeDocumentsNotes"
+          class="muze-documents-note-list"
+        >
+          <template
+            ><li
+              class="muze-documents-note-card"
+              data-simply-field="appearance"
+              data-simply-transform="attributes"
+              data-simply-attributes="data-external style data-active data-note-key"
+            >
+              <header class="muze-documents-note-header">
+                <span
+                  class="muze-documents-note-author"
+                  data-simply-field="authorDetails"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="title"
+                >
+                  <span
+                    data-simply-field="author"
+                    data-simply-transform="escape_html"
+                  ></span>
+                </span>
+                <span
+                  class="muze-documents-note-source"
+                  data-simply-field="sourceDetails"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="title"
+                >
+                  <span
+                    data-simply-field="source"
+                    data-simply-transform="escape_html"
+                  ></span>
+                </span>
+              </header>
+              <div
+                class="muze-documents-note-body"
+                data-simply-field="html"
+                data-simply-transform="muzeDocumentsHtml"
+              ></div>
+              <button
+                type="button"
+                class="muze-solid-design-tool muze-documents-note-location"
+                data-simply-command="muzeDocumentsGoNote"
+                data-simply-value=":value.key"
+                data-simply-field="location"
+                data-simply-transform="attributes"
+                data-simply-attributes="hidden title aria-label"
+              >
+                <span
+                  data-simply-field="locationLabel"
+                  data-simply-transform="escape_html"
+                ></span>
+              </button>
+              <button
+                class="muze-solid-design-tool muze-documents-note-edit"
+                aria-label="Edit note"
+                title="Edit note"
+                data-simply-command="muzeDocumentsEditNote"
+                data-simply-value=":value.key"
+                data-simply-field="edit"
+                data-simply-transform="attributes"
+                data-simply-attributes="hidden"
+              >
+                <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+                  <use href="../assets/feather-icons.svg#edit-3"></use>
+                </svg>
+              </button></li
+          ></template>
+        </ul>
+      </aside>
+    </div>
+  </div>
+  <dialog
+    class="ds-dialog muze-solid-design-dialog"
+    data-simply-behavior="muzeSolidDesignDialog"
+    data-document-dialog="open"
+    aria-label="Open PDF"
+  >
+    <div class="muze-solid-design-dialog-header">
+      <h2 class="swb-dialog-title">Open PDF</h2>
+      <button
+        type="button"
+        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+        data-simply-command="muzeSolidDesignCloseDialog"
+        aria-label="Close"
+        title="Close"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#x"></use>
+        </svg>
+      </button>
+    </div>
+    <div class="muze-solid-design-dialog-content muze-solid-design-fields">
+      <p>
+        Notes stay on this device. Reopening a remote PDF requires a connection.
+      </p>
+      <form
+        class="muze-solid-design-fields"
+        data-simply-command="muzeDocumentsOpen"
+      >
+        <label class="muze-solid-design-label muze-solid-design-field"
+          >PDF URL
+          <input
+            type="url"
+            name="url"
+            required
+            class="muze-solid-design-control"
+        /></label>
+        <button class="muze-solid-design-tool">Open PDF</button>
+        <label class="muze-solid-design-label muze-solid-design-field"
+          >Or local PDF
+          <input
+            class="muze-solid-design-control"
+            type="file"
+            accept="application/pdf"
+            data-document-file
+        /></label>
+        <button
+          class="muze-solid-design-tool"
+          type="button"
+          data-simply-command="muzeDocumentsCancel"
+        >
+          Cancel loading
+        </button>
+      </form>
+    </div>
+  </dialog>
+  <dialog
+    class="ds-dialog muze-solid-design-dialog"
+    data-simply-behavior="muzeSolidDesignDialog"
+    data-document-dialog="find"
+    aria-label="Find text"
+  >
+    <div class="muze-solid-design-dialog-header">
+      <h2 class="swb-dialog-title">Find text</h2>
+      <button
+        type="button"
+        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+        data-simply-command="muzeSolidDesignCloseDialog"
+        aria-label="Close"
+        title="Close"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#x"></use>
+        </svg>
+      </button>
+    </div>
+    <div class="muze-solid-design-dialog-content muze-solid-design-fields">
+      <form
+        class="muze-solid-design-fields"
+        data-simply-command="muzeDocumentsFind"
+      >
+        <label class="muze-solid-design-label muze-solid-design-field"
+          >Find text
+          <input
+            class="muze-solid-design-control"
+            name="query"
+            required /></label
+        ><button class="muze-solid-design-tool">Find next</button>
+      </form>
+    </div>
+  </dialog>
+  <dialog
+    class="ds-dialog muze-solid-design-dialog"
+    data-simply-behavior="muzeSolidDesignDialog"
+    data-document-dialog="groups"
+    aria-label="Annotation groups"
+  >
+    <div class="muze-solid-design-dialog-header">
+      <h2 class="swb-dialog-title">Annotation groups</h2>
+      <button
+        type="button"
+        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+        data-simply-command="muzeSolidDesignCloseDialog"
+        aria-label="Close"
+        title="Close"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#x"></use>
+        </svg>
+      </button>
+    </div>
+    <div class="muze-solid-design-dialog-content muze-solid-design-fields">
+      <label class="muze-solid-design-label muze-solid-design-field"
+        >Writing group
+        <span class="muze-solid-design-select-wrap"
+          ><select
+            class="muze-solid-design-control muze-solid-design-select"
+            data-document-group
+            data-simply-list="muzeDocumentsGroups"
+          >
+            <template
+              ><option
+                data-simply-field="attributes"
+                data-simply-transform="attributes"
+                data-simply-attributes="value selected label"
+              ></option
+            ></template></select
+          ><span
+            class="muze-solid-design-chevron"
+            aria-hidden="true"
+          ></span></span
+      ></label>
+      <p
+        data-simply-field="muzeDocumentsGroupStatus"
+        data-simply-transform="escape_html"
+      ></p>
+
+      <form
+        class="muze-solid-design-fields"
+        data-simply-command="muzeDocumentsNewGroup"
+      >
+        <label class="muze-solid-design-label muze-solid-design-field"
+          >New group name
+          <input
+            class="muze-solid-design-control"
+            name="name"
+            required /></label
+        ><button class="muze-solid-design-tool">Create group</button>
+      </form>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsExport"
+      >
+        Export group Turtle
+      </button>
+      <label class="muze-solid-design-label muze-solid-design-field"
+        >Import group
+        <input
+          class="muze-solid-design-control"
+          type="file"
+          accept=".ttl,text/turtle"
+          data-group-file
+      /></label>
+      <form
+        class="muze-solid-design-fields"
+        data-simply-command="muzeDocumentsOpenGroup"
+      >
+        <label class="muze-solid-design-label muze-solid-design-field"
+          >Annotation file URL
+          <input
+            class="muze-solid-design-control"
+            type="url"
+            name="url"
+            required /></label
+        ><button class="muze-solid-design-tool">Add annotation file</button>
+      </form>
+      <button
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsSave"
+      >
+        Save group to Pod
+      </button>
+      <form
+        class="muze-solid-design-fields"
+        data-simply-command="muzeDocumentsPublish"
+      >
+        <label class="muze-solid-design-label muze-solid-design-field"
+          >Separate annotations folder
+          <input
+            class="muze-solid-design-control"
+            type="url"
+            name="folder"
+            required
+            placeholder="https://my-pod.example/annotations/"
+          />
+        </label>
+        <p>
+          This folder's existing permissions apply. Choose a private folder for
+          personal notes.
+        </p>
+        <button class="muze-solid-design-tool">
+          Create group resource in folder
+        </button>
+      </form>
+      <ul
+        data-simply-list="muzeDocumentsExternalSources"
+        class="muze-documents-note-list"
+      >
+        <template
+          ><li>
+            <span
+              data-simply-field="name"
+              data-simply-transform="escape_html"
+            ></span>
+            <button
+              type="button"
+              class="muze-solid-design-tool"
+              data-simply-command="muzeDocumentsEnableWriting"
+              data-simply-value=":value.id"
+              data-simply-field="label"
+              data-simply-transform="escape_html"
+            ></button></li
+        ></template>
+      </ul>
+    </div>
+  </dialog>
+  <dialog
+    class="ds-dialog muze-solid-design-dialog"
+    data-document-dialog="destination"
+    data-simply-behavior="muzeSolidDesignDialog"
+    aria-labelledby="muze-documents-destination-title"
+  >
+    <form
+      class="swb-dialog-form"
+      data-simply-command="muzeDocumentsChooseDestination"
+    >
+      <header class="muze-solid-design-dialog-header">
+        <h2 class="swb-dialog-title" id="muze-documents-destination-title">
+          New annotation
+        </h2>
+        <button
+          type="button"
+          class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+          data-simply-command="muzeSolidDesignCloseDialog"
+          aria-label="Close"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#x"></use>
+          </svg>
+        </button>
+      </header>
+      <div class="muze-solid-design-dialog-content">
+        <label class="muze-solid-design-label muze-solid-design-field"
+          >Save annotation in
+          <span class="muze-solid-design-select-wrap"
+            ><select
+              name="destination"
+              class="muze-solid-design-control muze-solid-design-select"
+              data-simply-list="muzeDocumentsDestinations"
+            >
+              <template
+                ><option
+                  data-simply-field="attributes"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="value selected label"
+                ></option
+              ></template></select
+            ><span class="muze-solid-design-chevron" aria-hidden="true"></span
+          ></span>
+        </label>
+      </div>
+      <footer class="muze-solid-design-dialog-footer">
+        <button class="muze-solid-design-tool">Continue to editor</button>
+      </footer>
+    </form>
+  </dialog>
+  <dialog
+    class="ds-dialog muze-solid-design-dialog"
+    data-document-dialog="annotation"
+    data-simply-behavior="muzeDocumentsAnnotationDialog"
+    aria-labelledby="muze-documents-annotation-title"
+  >
+    <header class="muze-solid-design-dialog-header">
+      <h2 class="swb-dialog-title" id="muze-documents-annotation-title">
+        Annotation
+      </h2>
+      <button
+        type="button"
+        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+        data-simply-command="muzeDocumentsCloseNote"
+        aria-label="Close annotation"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#x"></use>
+        </svg>
+      </button>
+    </header>
+    <div class="muze-solid-design-dialog-content">
+      <p
+        class="muze-solid-design-status"
+        role="status"
+        data-simply-field="muzeDocumentsEditorStatus"
+        data-simply-transform="escape_html"
+      ></p>
+      <label
+        class="muze-solid-design-label muze-solid-design-field"
+        data-simply-field="muzeDocumentsDestinationField"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+        >Save annotation in
+        <span class="muze-solid-design-select-wrap"
+          ><select
+            class="muze-solid-design-control muze-solid-design-select"
+            data-note-destination
+            data-simply-list="muzeDocumentsDestinations"
+          >
+            <template
+              ><option
+                data-simply-field="attributes"
+                data-simply-transform="attributes"
+                data-simply-attributes="value selected label"
+              ></option
+            ></template>
+          </select>
+          <span class="muze-solid-design-chevron" aria-hidden="true"></span
+        ></span>
+      </label>
+      <div
+        class="muze-documents-editor"
+        data-note-editor
+        aria-label="Annotation body"
+      ></div>
+    </div>
+    <div
+      class="muze-solid-design-toolbar muze-solid-design-toolbar-floating"
+      data-note-formatting
+      hidden
+      data-simply-field="muzeDocumentsFormatting"
+      data-simply-transform="attributes"
+      data-simply-attributes="hidden style"
+      role="group"
+      aria-label="Annotation formatting"
+    >
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsFormat"
+        data-simply-value="strong"
+        data-simply-field="muzeDocumentsBold"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-pressed"
+        aria-label="Bold"
+        title="Bold"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#bold"></use>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsFormat"
+        data-simply-value="em"
+        data-simply-field="muzeDocumentsItalic"
+        data-simply-transform="attributes"
+        data-simply-attributes="aria-pressed"
+        aria-label="Italic"
+        title="Italic"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#italic"></use>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsLink"
+        aria-label="Link"
+        title="Link"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#link"></use>
+        </svg>
+      </button>
+    </div>
+    <footer class="muze-solid-design-dialog-footer">
+      <button
+        type="button"
+        class="muze-solid-design-tool"
+        data-simply-command="muzeDocumentsSaveNote"
+        title="Save (Ctrl+Enter / Cmd+Enter)"
+        aria-keyshortcuts="Control+Enter Meta+Enter"
+      >
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#check"></use></svg
+        >Save
+      </button>
+    </footer>
+  </dialog>
+  <dialog
+    class="ds-dialog muze-solid-design-dialog"
+    data-document-dialog="annotation-link"
+    data-simply-behavior="muzeSolidDesignDialog"
+    aria-labelledby="muze-documents-link-title"
+  >
+    <form class="swb-dialog-form" data-simply-command="muzeDocumentsApplyLink">
+      <header class="muze-solid-design-dialog-header">
+        <h2 class="swb-dialog-title" id="muze-documents-link-title">
+          Hyperlink
+        </h2>
+        <button
+          type="button"
+          class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+          data-simply-command="muzeSolidDesignCloseDialog"
+          aria-label="Close hyperlink"
+        >
+          <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+            <use href="../assets/feather-icons.svg#x"></use>
+          </svg>
+        </button>
+      </header>
+      <div class="muze-solid-design-dialog-content">
+        <label class="muze-solid-design-label muze-solid-design-field"
+          >Address
+          <input
+            class="muze-solid-design-control"
+            type="url"
+            name="href"
+            required
+            autofocus
+          />
+        </label>
+        <p
+          class="muze-solid-design-status"
+          role="status"
+          data-simply-field="muzeDocumentsLinkStatus"
+          data-simply-transform="escape_html"
+        ></p>
+      </div>
+      <footer class="muze-solid-design-dialog-footer">
+        <button class="muze-solid-design-tool">Add link</button>
+      </footer>
+    </form>
+  </dialog>
+</div>

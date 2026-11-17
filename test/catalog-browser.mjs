@@ -214,10 +214,10 @@ try {
   );
   await click('.swb-add-shortcut');
   await wait(
-    'muzeSolidLauncherApp.data.muzeSolidCatalogApps.length === 9 && !muzeSolidLauncherApp.runtime.catalogBusy'
+    'muzeSolidLauncherApp.data.muzeSolidCatalogApps.length === 10 && !muzeSolidLauncherApp.runtime.catalogBusy'
   );
   await wait(
-    'document.querySelectorAll(".muze-solid-catalog-card").length === 9'
+    'document.querySelectorAll(".muze-solid-catalog-card").length === 10'
   );
   assert.equal(
     await evaluate(
@@ -333,7 +333,7 @@ try {
   );
   await click('[data-simply-command=muzeSolidCatalogAddSource] button');
   await wait(
-    'muzeSolidLauncherApp.runtime.catalogModel?.state.data.length === 10 && !muzeSolidLauncherApp.runtime.catalogBusy'
+    'muzeSolidLauncherApp.runtime.catalogModel?.state.data.length === 11 && !muzeSolidLauncherApp.runtime.catalogBusy'
   );
   await category('all');
   await click('[aria-label="Search apps"]');
@@ -383,7 +383,7 @@ try {
   await wait('window.solidLauncher?.store');
   await click('.swb-add-shortcut');
   await wait(
-    'muzeSolidLauncherApp.runtime.catalogModel?.state.data.length === 10 && !muzeSolidLauncherApp.runtime.catalogBusy'
+    'muzeSolidLauncherApp.runtime.catalogModel?.state.data.length === 11 && !muzeSolidLauncherApp.runtime.catalogBusy'
   );
   assert.equal(
     await evaluate(

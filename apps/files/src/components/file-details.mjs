@@ -195,9 +195,10 @@ export const muzeSolidFileDetails = {
       this.data.muzeSolidFilesDetailResource = resource;
       this.data.muzeSolidFilesDetails = { hidden: null };
       const host = this.runtime.host;
+      const pdf = new URL(resource).pathname.toLowerCase().endsWith('.pdf');
       const provider =
-        host.preferences.viewProvider?.url ||
-        new URL('../viewer/', location.href).href;
+        (pdf ? host.preferences.pdfViewProvider : host.preferences.viewProvider)?.url ||
+        new URL(pdf ? '../documents/' : '../viewer/', location.href).href;
       this.data.muzeSolidFilesProvider = provider;
       this.data.muzeSolidFilesStandalone = {
         title: this.data.muzeSolidFilesDetailName,
@@ -229,11 +230,17 @@ export const muzeSolidFileDetails = {
           return;
         }
         const host = this.runtime.host;
+        const pdfCapability = 'https://vocab.muze.nl/capabilities/view-pdf';
+        const capability = new URL(resource).pathname.toLowerCase().endsWith('.pdf')
+          ? pdfCapability : this.api.viewResourceCapability;
         let broker = host.managed?.ready ? host.managed : null;
         if (!broker) {
           this.runtime.viewBroker ||= new this.api.WorkspaceBroker({
-            resolveProvider: (capability) =>
-              capability === this.api.viewResourceCapability
+            resolveProvider: (requested) =>
+              requested === pdfCapability
+                ? host.preferences.pdfViewProvider?.url ||
+                  new URL('../documents/', location.href).href
+                : requested === this.api.viewResourceCapability
                 ? host.preferences.viewProvider?.url ||
                   new URL('../viewer/', location.href).href
                 : undefined
@@ -241,7 +248,7 @@ export const muzeSolidFileDetails = {
           broker = this.runtime.viewBroker;
         }
         const provider = await broker.embeddedProvider(
-          this.api.viewResourceCapability
+          capability
         );
         if (selection !== this.runtime.viewSelection) {
           return;
@@ -259,6 +266,7 @@ export const muzeSolidFileDetails = {
         this.data.muzeSolidFilesRecovery = { hidden: '' };
         const view = new this.api.EmbeddedView({
           broker,
+          capability,
           frame: this.container.querySelector('.muze-solid-files-frame'),
           change: (state) => {
             if (this.runtime.resourceView !== view) {

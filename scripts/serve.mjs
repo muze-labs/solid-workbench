@@ -11,6 +11,9 @@ const types = {
   '.webp': 'image/webp',
   '.html': 'text/html',
   '.js': 'text/javascript',
+  '.mjs': 'text/javascript',
+  '.wasm': 'application/wasm',
+  '.pdf': 'application/pdf',
   '.css': 'text/css',
   '.map': 'application/json',
   '.ttl': 'text/turtle'

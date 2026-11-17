@@ -21,6 +21,8 @@ import {
 } from './providers.mjs';
 export const defaults = Object.freeze({
   theme: 'system',
+  noteBodyProvider: null,
+  pdfViewProvider: null,
   browseProvider: null,
   recipientProvider: null,
   viewProvider: null,
