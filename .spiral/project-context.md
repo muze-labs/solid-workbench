@@ -1,5 +1,15 @@
 # Solid Workbench project context
 
+## CYC266 accepted for delivery, 2026-11-17
+
+The maintainer says “accepted”. ACC271 accepts implementation
+0d7b873f944752e8f18607a4e0e1c55bf0d2f4f8 and evidence 990b19f43ec9381084c2ca5de0e362008871419e.
+Earlier Active/pending notes are superseded. Source/build, Documents browser and
+layout pass; broad Notebook title-split failure remains disclosed. No product
+changes follow acceptance. Standing authorization requests commit, normal merge,
+push and merged-cycle branch cleanup after exact integration verification.
+Preserve the unrelated vision file. No npm publication/deployment is requested.
+
 ## CYC260 accepted for delivery, 2026-11-17
 
 The maintainer says “cycle accepted”. ACC265 binds acceptance to implementation
@@ -3449,3 +3459,28 @@ clicks navigate, metadata shares a row, and page numbers float bottom-right.
 Hover uses background emphasis and clears on exit. The chat icon alone toggles
 the sidebar. EVD264 retains final checks and broad-suite failures. CYC260 remains
 Active and uncommitted, without inferred acceptance or integration authority.
+
+
+CYC266 Find and resume reading is confirmed and Active on
+spiral/CYC-20261117-QG24H-266-find-resume-reading from main 3a63f96.
+Search sidebar, deliberate local bookmarks and reading-position recovery are
+in scope; paged reading follows later. SRC267/DES268/IMP269/EVD270 retain scope
+and evidence. No acceptance or commit/integration authority is inferred.
+
+
+CYC266 is now ready for review: search sidebar with contextual multi-page matches
+and exact highlight navigation, named local bookmarks with per-document/global
+lists, and geometry-aware position restoration. Source/build, final Documents
+Chrome and ten-app layout pass. Required broad suite stops on Files metadata
+fetch in demo styling; EVD270 retains details, prior failed probes and limits.
+Bookmarks are account/device-local; Pod synchronization is future work. CYC266
+stays Active; no commit, acceptance or integration is inferred.
+
+
+CYC266 latest review corrections are evaluated: mutually exclusive bookmarks/
+search/outline/thumbnails during cross-document navigation and restoration;
+compact bookmark rows with no inherited list indent, conditional delete overlay
+and empty unnamed labels; numeric page sorting for bookmarks and annotations.
+Final Documents Chrome, all-app layout and source/build checks pass. EVD270
+retains the broad Notebook title-split failure and intermediate test evidence.
+Cycle stays Active awaiting review; no delivery authorization is inferred.
