@@ -1,0 +1,10 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:muze-labs:solid-apps:spiral:> .
+project:DES-20261117-QG24H-274 a sd:Design ;
+ dcterms:identifier "DES-20261117-QG24H-274" ;
+ sd:repositoryPath ".spiral/designs/DES-20261117-QG24H-274.md" ;
+ sd:status sd:Active ;
+    sd:derivedFrom [ a sd:ArtifactReference ;
+        sd:artifact project:SRC-20261117-QG24H-273 ;
+        sd:gitCommit "9baed86a56d1de675afb96184faffaaceebe0161" ] .
