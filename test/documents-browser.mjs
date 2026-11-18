@@ -92,10 +92,11 @@ const server = createServer(async (req, res) => {
       <http://www.w3.org/ns/ldp#contains> <${origin}/storage/report.pdf>.`);
     return;
   }
-  if (url.pathname === '/many-pages.pdf') {
+  if (['/many-pages.pdf', '/odd-pages.pdf'].includes(url.pathname)) {
+    const count = url.pathname === '/odd-pages.pdf' ? 25 : 24;
     const pages = [...objects];
     const references = ['3 0 R'];
-    for (let number = 2; number <= 24; number += 1) {
+    for (let number = 2; number <= count; number += 1) {
       references.push(pages.length + 1 + ' 0 R');
       let entry = objects[2].replace('/StructParents 0', '');
       if (number === 12) {
@@ -104,7 +105,11 @@ const server = createServer(async (req, res) => {
       pages.push(entry);
     }
     pages[1] =
-      '<< /Type /Pages /Kids [' + references.join(' ') + '] /Count 24 >>';
+      '<< /Type /Pages /Kids [' +
+      references.join(' ') +
+      '] /Count ' +
+      count +
+      ' >>';
     res
       .writeHead(200, { 'Content-Type': 'application/pdf' })
       .end(buildPdf(pages));
@@ -294,7 +299,7 @@ try {
       );
       bookmark.elements.label.value = 'Resume fixture';
       await app.commands.muzeDocumentsBookmark.call(app, bookmark);
-      await new Promise(resolve => setTimeout(resolve, 80));
+      await new Promise((resolve) => setTimeout(resolve, 80));
       const saved = app.data.muzeDocumentsBookmarks.find(
         (item) => item.label === 'Resume fixture'
       );
@@ -303,8 +308,13 @@ try {
       }
       await app.commands.muzeDocumentsOpenBookmark.call(app, null, saved.id);
       await app.commands.muzeDocumentsRemoveBookmark.call(app, null, saved.id);
-      for (let i = 0; i < 50 && app.data.muzeDocumentsBookmarks.some(item => item.id === saved.id); i += 1) {
-        await new Promise(resolve => setTimeout(resolve, 10));
+      for (
+        let i = 0;
+        i < 50 &&
+        app.data.muzeDocumentsBookmarks.some((item) => item.id === saved.id);
+        i += 1
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
       }
       if (
         app.data.muzeDocumentsBookmarks.some((item) => item.id === saved.id)
@@ -336,37 +346,75 @@ try {
             await app.commands.muzeDocumentsNavigation.call(app, null, mode);
             await new Promise((resolve) => setTimeout(resolve, 100));
             if (mode === 'bookmarks') {
-              const form = app.container.querySelector('[data-simply-command="muzeDocumentsBookmark"]');
+              const form = app.container.querySelector(
+                '[data-simply-command="muzeDocumentsBookmark"]'
+              );
               form.elements.label.value = '';
               await app.commands.muzeDocumentsBookmark.call(app, form);
               form.elements.label.value = 'Reading place';
               await app.commands.muzeDocumentsBookmark.call(app, form);
-              await new Promise(resolve => setTimeout(resolve, 100));
-              window.compactBookmarkIds = app.runtime.bookmarks.state.data.map(item => item.id);
+              await new Promise((resolve) => setTimeout(resolve, 100));
+              window.compactBookmarkIds = app.runtime.bookmarks.state.data.map(
+                (item) => item.id
+              );
               let open;
               for (let i = 0; i < 50; i += 1) {
-                open = [...app.container.querySelectorAll('.muze-documents-bookmark-open')]
-                  .find(button => button.innerText.trim() === 'Page 1');
-                if (open) { break; }
-                await new Promise(resolve => setTimeout(resolve, 10));
+                open = [
+                  ...app.container.querySelectorAll(
+                    '.muze-documents-bookmark-open'
+                  )
+                ].find((button) => button.innerText.trim() === 'Page 1');
+                if (open) {
+                  break;
+                }
+                await new Promise((resolve) => setTimeout(resolve, 10));
               }
-              if (!open) { throw new Error('Unnamed bookmark must display only its page.'); }
+              if (!open) {
+                throw new Error('Unnamed bookmark must display only its page.');
+              }
               const row = open.closest('.muze-documents-bookmark-row');
-              const remove = row.querySelector('.muze-documents-bookmark-remove');
-              if (open.innerText.trim() !== 'Page 1' ||
-                  getComputedStyle(remove).opacity !== '0' || row.offsetHeight > 52) {
-                throw new Error('Unnamed bookmark layout: ' + JSON.stringify({text:open.innerText, height:row.offsetHeight, opacity:getComputedStyle(remove).opacity, html:row.outerHTML}));
+              const remove = row.querySelector(
+                '.muze-documents-bookmark-remove'
+              );
+              if (
+                open.innerText.trim() !== 'Page 1' ||
+                getComputedStyle(remove).opacity !== '0' ||
+                row.offsetHeight > 52
+              ) {
+                throw new Error(
+                  'Unnamed bookmark layout: ' +
+                    JSON.stringify({
+                      text: open.innerText,
+                      height: row.offsetHeight,
+                      opacity: getComputedStyle(remove).opacity,
+                      html: row.outerHTML
+                    })
+                );
               }
               const list = row.closest('.muze-documents-bookmark-list');
-              if (Math.abs(row.getBoundingClientRect().left - list.getBoundingClientRect().left) > 1) {
-                throw new Error('Bookmark rows must have no extra list indentation.');
+              if (
+                Math.abs(
+                  row.getBoundingClientRect().left -
+                    list.getBoundingClientRect().left
+                ) > 1
+              ) {
+                throw new Error(
+                  'Bookmark rows must have no extra list indentation.'
+                );
               }
               const before = getComputedStyle(open).backgroundColor;
               open.focus();
-              if (getComputedStyle(remove).opacity !== '1' ||
-                  getComputedStyle(open).backgroundColor === before ||
-                  Math.abs(remove.getBoundingClientRect().top - row.getBoundingClientRect().top) > 1) {
-                throw new Error('Bookmark focus must reveal its overlay delete icon and menu background.');
+              if (
+                getComputedStyle(remove).opacity !== '1' ||
+                getComputedStyle(open).backgroundColor === before ||
+                Math.abs(
+                  remove.getBoundingClientRect().top -
+                    row.getBoundingClientRect().top
+                ) > 1
+              ) {
+                throw new Error(
+                  'Bookmark focus must reveal its overlay delete icon and menu background.'
+                );
               }
             }
             const panel = app.container.querySelector(
@@ -652,6 +700,125 @@ try {
     await page.evaluate(async () => {
       const app = muzeSolidDocumentsApp;
       await app.actions.muzeDocumentsLoad(location.origin + '/many-pages.pdf');
+      await app.actions.muzeDocumentsShow(13, 0.25);
+      const mode = app.container.querySelector('#muze-documents-reading-mode');
+      for (const value of ['single', 'spread', 'continuous']) {
+        mode.value = value;
+        await app.commands.muzeDocumentsReadingMode.call(app, mode);
+        const visible = [
+          ...app.container.querySelectorAll('[data-pdf-page]')
+        ].filter((node) => !node.hidden);
+        const expected = value === 'single' ? 1 : value === 'spread' ? 2 : 24;
+        if (visible.length !== expected || app.runtime.page !== 13) {
+          throw new Error(
+            'Reading mode must preserve page identity and visible page count: ' +
+              value
+          );
+        }
+        if (value !== 'continuous') {
+          const paper = app.container.querySelector(
+            '.muze-documents-paper-scroll'
+          );
+          if (
+            paper.scrollHeight > paper.clientHeight ||
+            paper.scrollWidth > paper.clientWidth
+          ) {
+            throw new Error(
+              'Whole pages must fit at default zoom: ' +
+                JSON.stringify({
+                  mode: value,
+                  client: [paper.clientWidth, paper.clientHeight],
+                  scroll: [paper.scrollWidth, paper.scrollHeight]
+                })
+            );
+          }
+        }
+        if (value === 'spread') {
+          const left = visible[0].getBoundingClientRect();
+          const right = visible[1].getBoundingClientRect();
+          if (Math.abs(left.top - right.top) > 1 || right.left < left.right) {
+            throw new Error(
+              'Spread pages must be side by side without overlap.'
+            );
+          }
+          const text = document
+            .createTreeWalker(
+              visible[1].querySelector('.textLayer'),
+              NodeFilter.SHOW_TEXT
+            )
+            .nextNode();
+          const selection = document.createRange();
+          selection.setStart(text, 0);
+          selection.setEnd(text, Math.min(10, text.length));
+          getSelection().removeAllRanges();
+          getSelection().addRange(selection);
+          if (app.runtime.pdf.selection()?.page !== 14) {
+            throw new Error(
+              'Text selections on the second spread page must retain that page identity.'
+            );
+          }
+          getSelection().removeAllRanges();
+          if (app.runtime.pdf.views.size > 2) {
+            throw new Error(
+              'Spread mode must retain only its visible page renderers.'
+            );
+          }
+        }
+      }
+      mode.value = 'spread';
+      await app.commands.muzeDocumentsReadingMode.call(app, mode);
+      app.container.querySelector('.muze-documents-paper-scroll').focus();
+      await app.commands.muzeDocumentsPage.call(app, null, 1);
+      if (app.runtime.page !== 15) {
+        throw new Error('Next spread must advance by two pages.');
+      }
+      await app.commands.muzeDocumentsPage.call(app, null, -1);
+      if (app.runtime.page !== 13) {
+        throw new Error('Previous spread must return to the prior pair.');
+      }
+      await app.actions.muzeDocumentsShow(24);
+      if (
+        app.runtime.page !== 24 ||
+        [...app.container.querySelectorAll('[data-pdf-page]')]
+          .filter((node) => !node.hidden)
+          .map((node) => Number(node.dataset.pdfPage))
+          .join(',') !== '23,24'
+      ) {
+        throw new Error(
+          'Direct navigation must retain the exact target in its spread.'
+        );
+      }
+      const previous = app.container.querySelector(
+        '.muze-documents-turn-previous'
+      );
+      const next = app.container.querySelector('.muze-documents-turn-next');
+      if (!next.hidden || previous.hidden) {
+        throw new Error('Only Back should be offered on the final spread.');
+      }
+      await app.actions.muzeDocumentsShow(2);
+      if (!previous.hidden || next.hidden) {
+        throw new Error('Only Forward should be offered on the first spread.');
+      }
+      await app.actions.muzeDocumentsLoad(location.origin + '/odd-pages.pdf');
+      if (app.runtime.readingMode !== 'spread') {
+        throw new Error('Reading mode must carry to another document.');
+      }
+      await app.actions.muzeDocumentsShow(25);
+      if (
+        [...app.container.querySelectorAll('[data-pdf-page]')].filter(
+          (node) => !node.hidden
+        ).length !== 1
+      ) {
+        throw new Error(
+          'The last odd spread must show its remaining page alone.'
+        );
+      }
+      await app.actions.muzeDocumentsLoad(location.origin + '/many-pages.pdf');
+      mode.value = 'continuous';
+      await app.commands.muzeDocumentsReadingMode.call(app, mode);
+      if (!previous.hidden || !next.hidden) {
+        throw new Error('Continuous scrolling should hide both edge chevrons.');
+      }
       const searchForm = app.container.querySelector(
         '[data-simply-command="muzeDocumentsSearch"]'
       );
@@ -702,24 +869,37 @@ try {
       );
       bookmarkForm.elements.label.value = 'Global reading place';
       await app.commands.muzeDocumentsBookmark.call(app, bookmarkForm);
-      await new Promise(resolve => setTimeout(resolve, 80));
+      await new Promise((resolve) => setTimeout(resolve, 80));
       window.resumeBookmark = app.data.muzeDocumentsBookmarks.find(
         (item) => item.label === 'Global reading place'
       ).id;
       for (const page of [15, 2, 1]) {
-        await app.runtime.readerState.save({ bookmark: {
-          document: app.runtime.document, digest: app.runtime.digest,
-          page, fraction: 0, readAt: Date.now(), id: 'urn:uuid:page-sort-' + page, label: ''
-        } });
+        await app.runtime.readerState.save({
+          bookmark: {
+            document: app.runtime.document,
+            digest: app.runtime.digest,
+            page,
+            fraction: 0,
+            readAt: Date.now(),
+            id: 'urn:uuid:page-sort-' + page,
+            label: ''
+          }
+        });
       }
       await app.actions.muzeDocumentsBookmarks();
-      await new Promise(resolve => setTimeout(resolve, 80));
-      const pages = app.data.muzeDocumentsBookmarks.filter(item => item.document === app.runtime.document).map(item => item.page);
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      const pages = app.data.muzeDocumentsBookmarks
+        .filter((item) => item.document === app.runtime.document)
+        .map((item) => item.page);
       if (pages.some((page, index) => index && page < pages[index - 1])) {
-        throw new Error('Bookmarks must sort numerically by page, starting at page 1.');
+        throw new Error(
+          'Bookmarks must sort numerically by page, starting at page 1.'
+        );
       }
       for (const page of [15, 2, 1]) {
-        await app.runtime.readerState.save({ removeBookmark: 'urn:uuid:page-sort-' + page });
+        await app.runtime.readerState.save({
+          removeBookmark: 'urn:uuid:page-sort-' + page
+        });
       }
       await app.actions.muzeDocumentsBookmarks();
 
@@ -782,6 +962,440 @@ try {
       }
       await app.actions.muzeDocumentsFlushReader();
     });
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      const mode = app.container.querySelector('#muze-documents-reading-mode');
+      mode.value = 'single';
+      await app.commands.muzeDocumentsReadingMode.call(app, mode);
+      app.container.querySelector('.muze-documents-paper-scroll').focus();
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'PageDown',
+      code: 'PageDown',
+      windowsVirtualKeyCode: 34
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'PageDown',
+      code: 'PageDown',
+      windowsVirtualKeyCode: 34
+    });
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      for (let i = 0; i < 100 && app.runtime.page !== 13; i += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      if (app.runtime.page !== 13) {
+        throw new Error('Native PageDown must navigate in single-page mode.');
+      }
+      const mode = app.container.querySelector('#muze-documents-reading-mode');
+      mode.value = 'spread';
+      await app.commands.muzeDocumentsReadingMode.call(app, mode);
+    });
+    await page.evaluate(() => {
+      const app = muzeSolidDocumentsApp;
+      const trigger = app.container.querySelector(
+        '#muze-documents-reading-mode'
+      );
+      const icon = trigger
+        .querySelector('.muze-documents-reading-icon')
+        .getBoundingClientRect();
+      const marker = trigger
+        .querySelector('.muze-documents-reading-chevron')
+        .getBoundingClientRect();
+      const box = trigger.getBoundingClientRect();
+      if (
+        trigger.innerText.trim() ||
+        box.height !== 44 ||
+        marker.bottom > box.bottom ||
+        marker.top < icon.bottom - 2
+      ) {
+        throw new Error(
+          'Reading mode needs an icon and downward marker within the standard toolbar height.'
+        );
+      }
+      trigger.focus();
+    });
+    // Give the same spread enough height to reach the full reference width.
+    await page.send('Emulation.setDeviceMetricsOverride', {
+      width: 1440, height: 1300, deviceScaleFactor: 1, mobile: false
+    });
+    const pressReaderKey = async (key, code, keyCode) => {
+      await page.send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key,
+        code,
+        windowsVirtualKeyCode: keyCode,
+        ...(key === 'Enter' ? { text: '\r' } : {})
+      });
+      await page.send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key,
+        code,
+        windowsVirtualKeyCode: keyCode
+      });
+    };
+    await pressReaderKey('Enter', 'Enter', 13);
+    for (
+      let i = 0;
+      i < 3 &&
+      (await page.evaluate(() => document.activeElement.textContent.trim())) !==
+        'Single page';
+      i += 1
+    ) {
+      await pressReaderKey('ArrowDown', 'ArrowDown', 40);
+    }
+    await pressReaderKey('Enter', 'Enter', 13);
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      for (
+        let i = 0;
+        i < 100 &&
+        (app.runtime.readingMode !== 'single' || app.runtime.positioning);
+        i += 1
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      const trigger = app.container.querySelector(
+        '#muze-documents-reading-mode'
+      );
+      if (
+        app.runtime.readingMode !== 'single' ||
+        document.activeElement !== trigger ||
+        app.container
+          .querySelector('#muze-documents-reading-menu')
+          .matches(':popover-open')
+      ) {
+        throw new Error(
+          'Keyboard mode selection: ' +
+            JSON.stringify({
+              mode: app.runtime.readingMode,
+              positioning: app.runtime.positioning,
+              open: app.container
+                .querySelector('#muze-documents-reading-menu')
+                .matches(':popover-open'),
+              focus: document.activeElement?.outerHTML,
+              status: app.data.muzeDocumentsStatus
+            })
+        );
+      }
+    });
+    await pressReaderKey('ArrowUp', 'ArrowUp', 38);
+    for (
+      let i = 0;
+      i < 3 &&
+      (await page.evaluate(() => document.activeElement.textContent.trim())) !==
+        'Two pages';
+      i += 1
+    ) {
+      await pressReaderKey('ArrowUp', 'ArrowUp', 38);
+    }
+    const modeMenuShot = await page.send('Page.captureScreenshot', {
+      format: 'png'
+    });
+    await writeFile(
+      '/tmp/cyc272-mode-menu.png',
+      Buffer.from(modeMenuShot.data, 'base64')
+    );
+    await pressReaderKey('Enter', 'Enter', 13);
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      for (
+        let i = 0;
+        i < 100 &&
+        (app.runtime.readingMode !== 'spread' ||
+          app.runtime.positioning);
+        i += 1
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      if (app.runtime.readingMode !== 'spread') {
+        throw new Error(
+          'Arrow navigation must permit selecting the two-page option.'
+        );
+      }
+      await app.commands.muzeDocumentsZoom.call(app, null, -0.25);
+      const viewport = app.container
+        .querySelector('.muze-documents-paper-scroll')
+        .getBoundingClientRect();
+      const pages = [
+        ...app.container.querySelectorAll('[data-pdf-page]')
+      ].filter((node) => !node.hidden);
+      window.spreadInitialWidth =
+        pages[1].getBoundingClientRect().right -
+        pages[0].getBoundingClientRect().left;
+      const paper = app.container.querySelector('.muze-documents-paper-scroll');
+      if (window.spreadInitialWidth < (paper.clientWidth - 24) * 0.95) {
+        throw new Error(
+          'The spread must use the available reading width by default.'
+        );
+      }
+      if (pages[1].getBoundingClientRect().right > viewport.right + 1) {
+        throw new Error(
+          'Two pages must fit the paper viewport at normal zoom: ' +
+            JSON.stringify({
+              zoom: app.runtime.zoom,
+              width: app.runtime.readerWidth,
+              viewport: viewport.toJSON(),
+              pages: pages.map((page) => page.getBoundingClientRect().toJSON())
+            })
+        );
+      }
+    });
+    const spreadShot = await page.send('Page.captureScreenshot', {
+      format: 'png'
+    });
+    await writeFile(
+      '/tmp/cyc272-spread.png',
+      Buffer.from(spreadShot.data, 'base64')
+    );
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      await app.commands.muzeDocumentsNavigation.call(app, null, 'bookmarks');
+      const paper = app.container.querySelector('.muze-documents-paper-scroll');
+      for (let i = 0; i < 100; i += 1) {
+        const pages = [
+          ...app.container.querySelectorAll('[data-pdf-page]')
+        ].filter((node) => !node.hidden);
+        const width =
+          pages[1].getBoundingClientRect().right -
+          pages[0].getBoundingClientRect().left;
+        if (
+          !app.runtime.positioning &&
+          width >= (paper.clientWidth - 24) * 0.95 &&
+          width > window.spreadInitialWidth + 100
+        ) {
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      throw new Error(
+        'Closing a sidebar must let the spread fill the newly available width.'
+      );
+    });
+    for (const [width, height] of [
+      [390, 844],
+      [2200, 1300],
+      [2200, 660],
+      [1440, 844]
+    ]) {
+      await page.send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height,
+        deviceScaleFactor: 1,
+        mobile: width === 390
+      });
+      await page.evaluate(async () => {
+        const app = muzeSolidDocumentsApp;
+        const expected = innerWidth < 720 ? 'single' : 'spread';
+        for (
+          let i = 0;
+          i < 100 &&
+          (app.runtime.effectiveReadingMode !== expected ||
+            app.runtime.positioning);
+          i += 1
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, 20));
+        }
+        if (
+          app.runtime.readingMode !== 'spread' ||
+          app.runtime.effectiveReadingMode !== expected ||
+          app.runtime.page !== 13
+        ) {
+          throw new Error(
+            'Spread preference must survive a narrow-screen fallback and widening.'
+          );
+        }
+      });
+      // The first spread opened at 1440px, where height limited its fit.
+      // A taller window can restore the full width originally requested.
+      await page.evaluate(async () => {
+        const paper = document.querySelector('.muze-documents-paper-scroll');
+        const spread = innerWidth >= 720;
+        const target = (1440 - 4) / 2;
+        for (let frame = 0; frame < 120; frame += 1) {
+          const pages = paper.querySelectorAll(
+            '[data-pdf-page]:not([hidden]) canvas'
+          );
+          const expected = Math.min(
+            target,
+            (paper.clientHeight * 400) / 500,
+            spread ? (paper.clientWidth - 4) / 2 : paper.clientWidth
+          );
+          if (
+            pages.length === (spread ? 2 : 1) &&
+            [...pages].every(
+              (canvas) =>
+                Math.abs(canvas.getBoundingClientRect().width - expected) <= 1
+            ) &&
+            paper.scrollHeight === paper.clientHeight &&
+            paper.scrollWidth === paper.clientWidth
+          ) {
+            return;
+          }
+          await new Promise(requestAnimationFrame);
+        }
+        throw new Error(
+          'The entire page or pair must fit up to its original target.'
+        );
+      });
+      // Exercise the actual hit targets, including the narrow single-page fallback.
+      for (const direction of ['next', 'previous']) {
+        const turns = await page.evaluate(() =>
+          Object.fromEntries(
+            [...document.querySelectorAll('.muze-documents-turn')].map(
+              (button) => [
+                button.dataset.simplyValue,
+                button.getBoundingClientRect().toJSON()
+              ]
+            )
+          )
+        );
+        const point = turns[direction === 'next' ? '1' : '-1'];
+        const x = point.x + point.width / 2;
+        const y = point.y + point.height / 2;
+        assert.ok(point.width >= 44 && point.height >= 44);
+        if (width === 390) {
+          await page.send('Input.dispatchTouchEvent', {
+            type: 'touchStart',
+            touchPoints: [{ x, y }]
+          });
+          await page.send('Input.dispatchTouchEvent', {
+            type: 'touchEnd',
+            touchPoints: []
+          });
+        }
+        else {
+          for (const type of ['mousePressed', 'mouseReleased']) {
+            await page.send('Input.dispatchMouseEvent', {
+              type,
+              x,
+              y,
+              button: 'left',
+              clickCount: 1
+            });
+          }
+        }
+        const expected =
+          direction === 'previous' ? 13 : width === 390 ? 14 : 15;
+        let current;
+        for (let attempt = 0; attempt < 100; attempt += 1) {
+          current = await page.evaluate(
+            () => muzeSolidDocumentsApp.runtime.page
+          );
+          if (current === expected) {
+            break;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 20));
+        }
+        assert.equal(
+          current,
+          expected,
+          'Edge chevron should turn the visible page or spread.'
+        );
+      }
+      if (width === 1440) {
+        await page.evaluate(async () => {
+          const app = muzeSolidDocumentsApp;
+          const paper = app.container.querySelector(
+            '.muze-documents-paper-scroll'
+          );
+          await app.commands.muzeDocumentsZoom.call(app, null, 0.25);
+          if (paper.scrollHeight <= paper.clientHeight) {
+            throw new Error('Explicit zoom-in should allow a taller page.');
+          }
+          await app.commands.muzeDocumentsZoom.call(app, null, -0.5);
+          const referencePageWidth = (1440 - 4) / 2;
+          const canvas = paper.querySelector(
+            '[data-pdf-page]:not([hidden]) canvas'
+          );
+          if (
+            Math.abs(
+              canvas.getBoundingClientRect().width - referencePageWidth * 0.75
+            ) > 1 ||
+            paper.scrollHeight !== paper.clientHeight
+          ) {
+            throw new Error(
+              'Zoom-out should honor the target size when it fits.'
+            );
+          }
+          await app.commands.muzeDocumentsZoom.call(app, null, 0.25);
+        });
+      }
+      const shot = await page.send('Page.captureScreenshot', { format: 'png' });
+      await writeFile(
+        '/tmp/cyc272-pages-' + width + '.png',
+        Buffer.from(shot.data, 'base64')
+      );
+    }
+    // Zoom while there is enough room, then narrow the reader while zoomed.
+    await page.send('Emulation.setDeviceMetricsOverride', {
+      width: 2200,
+      height: 844,
+      deviceScaleFactor: 1,
+      mobile: false
+    });
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      await app.commands.muzeDocumentsZoom.call(app, null, 0.25);
+    });
+    for (const width of [2200, 1200, 2200]) {
+      await page.send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height: 844,
+        deviceScaleFactor: 1,
+        mobile: false
+      });
+      await page.evaluate(async () => {
+        const app = muzeSolidDocumentsApp;
+        const expected = innerWidth === 1200 ? 'single' : 'spread';
+        const paper = app.container.querySelector(
+          '.muze-documents-paper-scroll'
+        );
+        for (let frame = 0; frame < 120; frame += 1) {
+          const pages = paper.querySelectorAll(
+            '[data-pdf-page]:not([hidden]) canvas'
+          );
+          if (
+            !app.runtime.positioning &&
+            app.runtime.effectiveReadingMode === expected &&
+            pages.length === (expected === 'spread' ? 2 : 1) &&
+            (expected === 'single' || paper.scrollWidth === paper.clientWidth) &&
+            app.runtime.page === 13 &&
+            app.runtime.zoom === 1.25 &&
+            app.runtime.readingMode === 'spread'
+          ) {
+            return;
+          }
+          await new Promise(requestAnimationFrame);
+        }
+        throw new Error(
+          'Zoomed spread must fall back before overflowing and return when it fits.'
+        );
+      });
+    }
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      await app.commands.muzeDocumentsZoom.call(app, null, -0.25);
+    });
+    await page.send('Emulation.setDeviceMetricsOverride', {
+      width: 1440,
+      height: 844,
+      deviceScaleFactor: 1,
+      mobile: false
+    });
+    await page.evaluate(async () => {
+      const app = muzeSolidDocumentsApp;
+      const mode = app.container.querySelector('#muze-documents-reading-mode');
+      mode.value = 'continuous';
+      await app.commands.muzeDocumentsReadingMode.call(app, mode);
+      await app.commands.muzeDocumentsZoom.call(app, null, 0.25);
+      await app.actions.muzeDocumentsShow(12, 0.25);
+      mode.value = 'spread';
+      await app.commands.muzeDocumentsReadingMode.call(app, mode);
+      await app.actions.muzeDocumentsFlushReader();
+    });
     await page.send('Page.reload');
     await page.ready();
     await page.evaluate(async () => {
@@ -793,16 +1407,28 @@ try {
       const position = app.actions.muzeDocumentsCapturePosition();
       if (
         app.runtime.zoom !== 1.25 ||
+        app.runtime.readingMode !== 'spread' ||
         position.page !== 12 ||
         Math.abs(position.fraction - 0.25) > 0.03 ||
         app.data.muzeDocumentsOutlinePanel.hidden !== null
       ) {
         throw new Error(
-          'Reader preferences or page position did not survive reload.'
+          'Reader preferences or page position did not survive reload: ' +
+            JSON.stringify({
+              position,
+              zoom: app.runtime.zoom,
+              mode: app.runtime.readingMode,
+              outline: app.data.muzeDocumentsOutlinePanel.hidden
+            })
         );
       }
       await app.runtime.readerState.save({
-        settings: { zoom: 1, outlineOpen: false, annotationsOpen: false }
+        settings: {
+          zoom: 1,
+          mode: 'continuous',
+          outlineOpen: false,
+          annotationsOpen: false
+        }
       });
       await app.actions.muzeDocumentsLoad(location.origin + '/report.pdf');
     });
@@ -1590,9 +2216,15 @@ try {
       );
       app.actions.muzeDocumentsRefresh();
       await app.actions.muzeDocumentsShow(24);
-      for (let i = 0; i < 50 && !app.data.muzeDocumentsNotes.some(note =>
-          note.html.includes('Last page only')); i += 1) {
-        await new Promise(resolve => setTimeout(resolve, 10));
+      for (
+        let i = 0;
+        i < 50 &&
+        !app.data.muzeDocumentsNotes.some((note) =>
+          note.html.includes('Last page only')
+        );
+        i += 1
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
       }
       if (
         !app.data.muzeDocumentsNotes.some((note) =>
@@ -1647,8 +2279,14 @@ try {
     await page.evaluate(async () => {
       const app = muzeSolidDocumentsApp;
       await new Promise((resolve) => setTimeout(resolve, 80));
-      const annotationPages = app.data.muzeDocumentsNotes.map(note => note.page);
-      if (annotationPages.some((page, index) => index && page < annotationPages[index - 1])) {
+      const annotationPages = app.data.muzeDocumentsNotes.map(
+        (note) => note.page
+      );
+      if (
+        annotationPages.some(
+          (page, index) => index && page < annotationPages[index - 1]
+        )
+      ) {
         throw new Error('Annotation list must sort numerically by page.');
       }
       if (
@@ -1893,9 +2531,16 @@ try {
         );
       }
       app.actions.muzeDocumentsHighlights();
-      for (let i = 0; i < 50 && !app.data.muzeDocumentsNotes.some(note =>
-          note.authorDetails.title === 'https://remote.example/#author'); i += 1) {
-        await new Promise(resolve => setTimeout(resolve, 10));
+      for (
+        let i = 0;
+        i < 50 &&
+        !app.data.muzeDocumentsNotes.some(
+          (note) =>
+            note.authorDetails.title === 'https://remote.example/#author'
+        );
+        i += 1
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
       }
       if (
         !app.data.muzeDocumentsNotes.some(
@@ -2353,7 +2998,11 @@ try {
     }
     const visibleInputs = [
       ...app.container.querySelectorAll('input, select')
-    ].filter((element) => element.checkVisibility());
+    ].filter(
+      (element) =>
+        element.checkVisibility() &&
+        element.id !== 'muze-documents-reading-mode'
+    );
     if (
       visibleInputs.length ||
       app.container.querySelector('details, summary') ||

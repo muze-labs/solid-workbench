@@ -39,6 +39,26 @@ export const muzeDocuments = {
     }
   },
   events: {
+    muzeDocumentsPaperResize: {
+      subscribe(notify) {
+        const observer = new ResizeObserver(notify);
+        observer.observe(
+          this.container.querySelector('.muze-documents-paper-frame')
+        );
+        observer.observe(
+          this.container.querySelector('.muze-documents-paper-scroll')
+        );
+        return () => observer.disconnect();
+      },
+      action: 'muzeDocumentsResizePaged'
+    },
+    muzeDocumentsPagedKeys: {
+      target() {
+        return this.container.querySelector('.muze-documents-paper-scroll');
+      },
+      type: 'keydown',
+      action: 'muzeDocumentsPagedKeys'
+    },
     muzeDocumentsNoteCards: {
       subscribe(notify) {
         const list = this.container.querySelector('.muze-documents-note-list');
@@ -191,10 +211,45 @@ export const muzeDocuments = {
     muzeDocumentsCancel() {
       this.runtime.loading?.abort();
     },
-    muzeDocumentsPage(_button, direction) {
-      return this.runtime.host.run(() =>
-        this.actions.muzeDocumentsShow(this.runtime.page + Number(direction))
-      );
+    muzeDocumentsReadingMode(button, value = button.value) {
+      return this.runtime.host.run(async () => {
+        const position = this.actions.muzeDocumentsCapturePosition();
+        await this.runtime.readerState.save({ settings: { mode: value } });
+        this.runtime.readingMode = value;
+        this.data.muzeDocumentsReadingMode = value;
+        this.actions.muzeDocumentsReadingChoices();
+        const menu = this.container.querySelector(
+          '#muze-documents-reading-menu'
+        );
+        if (menu.matches(':popover-open')) {
+          menu.hidePopover();
+          this.container.querySelector('#muze-documents-reading-mode').focus();
+        }
+        await this.actions.muzeDocumentsShow(
+          position?.page || this.runtime.page || 1,
+          position?.fraction || 0
+        );
+      });
+    },
+    muzeDocumentsPage(button, direction) {
+      const amount = Number(direction);
+      const page =
+        this.runtime.effectiveReadingMode === 'spread'
+          ? Math.floor((this.runtime.page - 1) / 2) * 2 + 1 + amount * 2
+          : this.runtime.page + amount;
+      const edgeFocused = button?.matches('.muze-documents-turn:focus');
+      return this.runtime.host.run(async () => {
+        await this.actions.muzeDocumentsShow(page);
+        if (
+          edgeFocused &&
+          button.hidden &&
+          document.activeElement === document.body
+        ) {
+          this.container
+            .querySelector('.muze-documents-paper-scroll')
+            .focus({ preventScroll: true });
+        }
+      });
     },
     muzeDocumentsZoom(_button, amount) {
       const position = this.actions.muzeDocumentsCapturePosition();
@@ -562,6 +617,132 @@ export const muzeDocuments = {
     }
   },
   actions: {
+    muzeDocumentsReadingChoices() {
+      const mode = this.runtime.readingMode || 'continuous';
+      this.data.muzeDocumentsReadingModes = [
+        { id: 'continuous', label: 'Scrolling' },
+        { id: 'single', label: 'Single page' },
+        { id: 'spread', label: 'Two pages' }
+      ].map((entry) => ({
+        ...entry,
+        selection: { 'aria-current': entry.id === mode ? 'true' : null }
+      }));
+    },
+    muzeDocumentsPagedLayout(number) {
+      const frame = this.container.querySelector('.muze-documents-paper-frame');
+      const wantsSpread = this.runtime.readingMode === 'spread';
+      const spread = wantsSpread && frame.clientWidth >= 720;
+      const first = spread ? number - ((number - 1) % 2) : number;
+      const pdf = this.runtime.pdf;
+      const pages = [first];
+      if (spread && first < pdf.document.numPages) {
+        pages.push(first + 1);
+      }
+      const tallest = Math.max(
+        ...pages.map((page) => {
+          const size = pdf.pageDimensions(page, this.runtime.rotation);
+          return size.height / size.width;
+        })
+      );
+      const gap = parseFloat(
+        getComputedStyle(frame.querySelector('.muze-documents-pages')).columnGap
+      );
+      const referenceWidth = this.runtime.spreadReferenceWidth;
+      const preferredWidth =
+        wantsSpread && referenceWidth
+          ? (referenceWidth - gap) / 2
+          : this.runtime.singleReferenceWidth;
+      const zoom = this.runtime.zoom;
+      const heightFit = frame.clientHeight / tallest;
+      const availableWidth = (frame.clientWidth - gap) / 2;
+      const zoomedWidth =
+        zoom <= 1
+          ? Math.min(preferredWidth * zoom, heightFit)
+          : Math.min(preferredWidth, heightFit) * zoom;
+      if (spread && (zoom <= 1 || zoomedWidth <= availableWidth)) {
+        // A vertical scrollbar can take space inside the paper frame.
+        const scroller = frame.querySelector('.muze-documents-paper-scroll');
+        const paperWidth = (scroller.clientWidth - gap) / 2;
+        return {
+          mode: 'spread',
+          width: Math.max(1, Math.min(zoomedWidth, availableWidth, paperWidth))
+        };
+      }
+
+      const page = pdf.pageDimensions(number, this.runtime.rotation);
+      const singleFit = Math.min(
+        frame.clientWidth,
+        (frame.clientHeight * page.width) / page.height
+      );
+      const width =
+        zoom <= 1
+          ? Math.min(preferredWidth * zoom, singleFit)
+          : Math.min(preferredWidth, singleFit) * zoom;
+      return { mode: 'single', width: Math.max(1, width) };
+    },
+    muzeDocumentsResizePaged() {
+      if (
+        !this.runtime.pdf ||
+        !this.runtime.readerReady ||
+        this.runtime.editing ||
+        this.runtime.effectiveReadingMode === 'continuous'
+      ) {
+        return;
+      }
+      if (this.runtime.positioning) {
+        this.runtime.pagedResizePending = true;
+        return;
+      }
+      const layout = this.actions.muzeDocumentsPagedLayout(this.runtime.page);
+      if (
+        layout.mode === this.runtime.effectiveReadingMode &&
+        Math.abs(layout.width - this.runtime.readerWidth) < 0.01
+      ) {
+        return;
+      }
+      const position = this.actions.muzeDocumentsCapturePosition();
+      return this.runtime.host.run(() =>
+        this.actions.muzeDocumentsShow(
+          position?.page || this.runtime.page,
+          position?.fraction || 0
+        )
+      );
+    },
+    muzeDocumentsPagedKeys(event) {
+      if (
+        this.runtime.effectiveReadingMode === 'continuous' ||
+        event.target !== event.currentTarget ||
+        event.isComposing ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        !this.runtime.pdf
+      ) {
+        return;
+      }
+      const directions = {
+        PageDown: 1,
+        ArrowRight: 1,
+        PageUp: -1,
+        ArrowLeft: -1
+      };
+      if (event.key in directions) {
+        event.preventDefault();
+        return this.commands.muzeDocumentsPage.call(
+          this,
+          null,
+          directions[event.key]
+        );
+      }
+      if (event.key === 'Home' || event.key === 'End') {
+        event.preventDefault();
+        return this.runtime.host.run(() =>
+          this.actions.muzeDocumentsShow(
+            event.key === 'Home' ? 1 : this.runtime.pdf.document.numPages
+          )
+        );
+      }
+    },
     muzeDocumentsNickname(value) {
       const name = String(value || '')
         .trim()
@@ -1174,8 +1355,10 @@ export const muzeDocuments = {
           }
           this.runtime.narrowReader = narrow;
           const preferred = this.runtime.preferredReaderWidth || nextWidth;
+          const fittedWidth = Math.min(preferred, nextWidth);
           const needsResize =
-            Math.min(preferred, nextWidth) !== this.runtime.readerWidth;
+            this.runtime.readingMode === 'continuous' &&
+            fittedWidth !== this.runtime.readerWidth;
           // Do not enlarge past the original fit width or disturb reading
           // position when the surrounding window merely gains extra space.
           if (
@@ -1289,6 +1472,8 @@ export const muzeDocuments = {
         this.runtime.readerReady = false;
         this.runtime.positioning = false;
         this.runtime.viewportToken = (this.runtime.viewportToken || 0) + 1;
+        this.data.muzeDocumentsPreviousTurn.hidden = '';
+        this.data.muzeDocumentsNextTurn.hidden = '';
         this.data.muzeDocumentsPages = [];
         this.data.muzeDocumentsOutline = [];
         this.data.muzeDocumentsOutlineEmpty = { hidden: null };
@@ -1311,6 +1496,7 @@ export const muzeDocuments = {
           owner
         );
         this.runtime.readerPosition = null;
+        this.runtime.singleReferenceWidth = null;
         this.actions.muzeDocumentsApplySettings(
           await this.runtime.readerState.read()
         );
@@ -1688,6 +1874,10 @@ export const muzeDocuments = {
       this.data.muzeDocumentsStatus = '';
     },
     muzeDocumentsApplySettings(settings) {
+      this.runtime.spreadReferenceWidth = settings.spreadReferenceWidth;
+      this.runtime.readingMode = settings.mode || 'continuous';
+      this.data.muzeDocumentsReadingMode = this.runtime.readingMode;
+      this.actions.muzeDocumentsReadingChoices();
       this.runtime.zoom = settings.zoom;
       this.data.muzeDocumentsOutlinePanel.hidden = settings.outlineOpen
         ? null
@@ -1722,17 +1912,27 @@ export const muzeDocuments = {
       if (!slot?.offsetHeight) {
         return null;
       }
+      // Removing the loading status can make the paper viewport taller after
+      // restoration. The browser then clamps scrollTop to its new maximum.
+      const anchor = Math.min(
+        this.runtime.pagedAnchorScroll || 0,
+        scroller.scrollHeight - scroller.clientHeight
+      );
       return {
         document: this.runtime.document,
         digest: this.runtime.digest,
         page,
-        fraction: Math.max(
-          0,
-          Math.min(
-            0.999,
-            (scroller.scrollTop - slot.offsetTop) / slot.offsetHeight
-          )
-        ),
+        fraction:
+          this.runtime.effectiveReadingMode !== 'continuous' &&
+          Math.abs(scroller.scrollTop - anchor) <= 1
+            ? this.runtime.pagedFraction || 0
+            : Math.max(
+                0,
+                Math.min(
+                  0.999,
+                  (scroller.scrollTop - slot.offsetTop) / slot.offsetHeight
+                )
+              ),
         readAt: Date.now()
       };
     },
@@ -1827,6 +2027,9 @@ export const muzeDocuments = {
       let currentVisiblePart = 0;
       let currentHeight = 0;
       for (const slot of this.container.querySelectorAll('[data-pdf-page]')) {
+        if (slot.hidden) {
+          continue;
+        }
         const bounds = slot.getBoundingClientRect();
         const visiblePart = Math.max(
           0,
@@ -1857,7 +2060,10 @@ export const muzeDocuments = {
       ) {
         current = this.runtime.page;
       }
-      if (scroller.scrollHeight > scroller.clientHeight + 1) {
+      if (
+        this.runtime.effectiveReadingMode === 'continuous' &&
+        scroller.scrollHeight > scroller.clientHeight + 1
+      ) {
         if (scroller.scrollTop <= 1) {
           current = 1;
         }
@@ -1867,6 +2073,9 @@ export const muzeDocuments = {
         ) {
           current = pdf.document.numPages;
         }
+      }
+      if (this.runtime.effectiveReadingMode !== 'continuous') {
+        current = this.runtime.page;
       }
       this.actions.muzeDocumentsActivate(current);
       pdf.retain(new Set(nearby.map((entry) => entry.number)));
@@ -1910,6 +2119,14 @@ export const muzeDocuments = {
         if (
           slots.length === this.data.muzeDocumentsPages.length &&
           slots.every((slot, index) => {
+            if (
+              this.data.muzeDocumentsPages[index].attributes.hidden !== null
+            ) {
+              return slot.hidden;
+            }
+            if (slot.hidden) {
+              return false;
+            }
             const size = this.runtime.pdf.size(
               index + 1,
               this.runtime.readerWidth,
@@ -1946,11 +2163,70 @@ export const muzeDocuments = {
           '.muze-documents-layout'
         ).clientWidth;
         this.runtime.preferredReaderWidth ||= availableWidth;
-        this.runtime.readerWidth = Math.min(
+        const mode = this.runtime.readingMode || 'continuous';
+        const paged = mode !== 'continuous';
+        let layout;
+        if (paged) {
+          this.runtime.singleReferenceWidth ||= availableWidth;
+          if (mode === 'spread' && availableWidth >= 720) {
+            if (!this.runtime.spreadReferenceWidth) {
+              const width = await this.runtime.readerState.save({
+                spreadReferenceWidth: availableWidth
+              });
+              if (
+                pdf !== this.runtime.pdf ||
+                token !== this.runtime.viewportToken
+              ) {
+                return;
+              }
+              this.runtime.spreadReferenceWidth = width;
+            }
+            const first = number - ((number - 1) % 2);
+            await pdf.measure(first);
+            if (first < pdf.document.numPages) {
+              await pdf.measure(first + 1);
+            }
+          }
+          else {
+            await pdf.measure(number);
+          }
+          if (
+            pdf !== this.runtime.pdf ||
+            token !== this.runtime.viewportToken
+          ) {
+            return;
+          }
+          layout = this.actions.muzeDocumentsPagedLayout(number);
+        }
+        const effectiveMode = layout?.mode || 'continuous';
+        this.runtime.effectiveReadingMode = effectiveMode;
+        pdf.readingMode = effectiveMode;
+        this.data.muzeDocumentsPageLayout = {
+          'data-reading-mode': effectiveMode
+        };
+        const first =
+          effectiveMode === 'spread'
+            ? Math.floor((number - 1) / 2) * 2 + 1
+            : number;
+        const last = effectiveMode === 'spread' ? first + 1 : first;
+        this.data.muzeDocumentsPreviousTurn.hidden =
+          paged && first > 1 ? null : '';
+        this.data.muzeDocumentsNextTurn.hidden =
+          paged && last < pdf.document.numPages ? null : '';
+        for (const row of this.data.muzeDocumentsPages) {
+          row.attributes.hidden =
+            effectiveMode === 'continuous' ||
+            row.id === first ||
+            (effectiveMode === 'spread' && row.id === first + 1)
+              ? null
+              : '';
+        }
+        this.runtime.readerWidth = layout?.width ?? Math.min(
           this.runtime.preferredReaderWidth,
           availableWidth
         );
         const key = [
+          effectiveMode,
           this.runtime.readerWidth,
           this.runtime.zoom,
           this.runtime.rotation
@@ -1976,9 +2252,35 @@ export const muzeDocuments = {
         if (pdf !== this.runtime.pdf || token !== this.runtime.viewportToken) {
           return;
         }
+        if (effectiveMode === 'spread') {
+          const other = number === first ? first + 1 : first;
+          if (other <= pdf.document.numPages) {
+            const otherSlot = this.container.querySelector(
+              '[data-pdf-page="' + other + '"]'
+            );
+            await pdf.render(
+              otherSlot.querySelector('[data-pdf-surface]'),
+              other,
+              this.runtime.readerWidth,
+              this.runtime.zoom,
+              this.runtime.rotation
+            );
+            this.actions.muzeDocumentsPageSize(other);
+          }
+        }
         this.actions.muzeDocumentsPageSize(number);
         await this.actions.muzeDocumentsReaderLayout();
+        if (pdf !== this.runtime.pdf || token !== this.runtime.viewportToken) {
+          return;
+        }
+        if (effectiveMode !== 'continuous') {
+          const retained =
+            effectiveMode === 'spread' ? [first, first + 1] : [number];
+          pdf.retain(new Set(retained));
+        }
         scroller.scrollTop = slot.offsetTop + slot.offsetHeight * fraction;
+        this.runtime.pagedFraction = fraction;
+        this.runtime.pagedAnchorScroll = scroller.scrollTop;
         this.runtime.readerReady = true;
         this.actions.muzeDocumentsActivate(number);
         this.actions.muzeDocumentsRememberPosition();
@@ -1987,6 +2289,12 @@ export const muzeDocuments = {
         if (token === this.runtime.viewportToken) {
           this.runtime.positioning = false;
           this.actions.muzeDocumentsScroll();
+          if (this.runtime.pagedResizePending) {
+            this.runtime.pagedResizePending = false;
+            requestAnimationFrame(() =>
+              this.actions.muzeDocumentsResizePaged()
+            );
+          }
         }
       }
     },

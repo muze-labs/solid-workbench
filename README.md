@@ -499,6 +499,23 @@ Bookmarks retain source URI/revision and scroll position across reload. Reopenin
 an uncached source needs network; changed documents retain their original
 bookmark with an explicit message. Bookmark Pod synchronization is future work.
 
+Use the reading-mode icon and its small down-chevron in the toolbar to choose
+Scrolling, Single page or Two pages. At default zoom, the whole page or pair
+fits in the reading area. The first wide two-page view sets the reference
+size for this account on this device, using the full reader as if the sidebars
+were closed. A smaller window shrinks the pages only as needed. More space
+restores them up to the chosen size. Zoom in above 100% to scroll a magnified
+page. In paged modes,
+use the chevrons at the edges of the paper to turn a page or a spread. Each
+chevron appears when there is another page in that direction. With the PDF
+region focused, PageUp/PageDown or Left/Right also turn pages and Home/End
+jump to the first or last page. Two-page spreads pair 1–2, 3–4,
+and so on. The reader switches to one page if the paper area is narrow or the
+zoomed spread would be too wide. The two-page preference stays selected and
+the spread returns when it fits again. Mode, zoom and page/fraction survive reload;
+switching modes retains the selected page. Only visible spread/page surfaces
+are rendered; document bytes still use the existing full download.
+
 Scroll continuously through lazily rendered pages, with an optional outline on
 the left. Opening sidebars keeps the paper scale stable. Zoom and sidebar
 settings carry across documents on this device; each account also remembers

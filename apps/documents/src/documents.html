@@ -59,8 +59,65 @@
       >
         <svg class="ds-icon ds-icon-feather" aria-hidden="true">
           <use href="../assets/feather-icons.svg#chevron-right"></use>
-        </svg></button
-      ><button
+        </svg>
+      </button>
+      <div
+        class="muze-solid-design-popup-scope muze-solid-design-dropdown"
+        data-simply-shortcuts="muzeSolidDesignDropdown"
+      >
+        <button
+          type="button"
+          id="muze-documents-reading-mode"
+          class="muze-solid-design-tool muze-solid-design-popup-trigger muze-documents-reading-trigger"
+          popovertarget="muze-documents-reading-menu"
+          aria-label="Reading mode"
+          title="Reading mode"
+        >
+          <svg
+            class="ds-icon ds-icon-feather muze-documents-reading-icon"
+            aria-hidden="true"
+          >
+            <use href="../assets/feather-icons.svg#book-open"></use>
+          </svg>
+          <svg
+            class="ds-icon ds-icon-feather muze-documents-reading-chevron"
+            aria-hidden="true"
+          >
+            <use href="../assets/feather-icons.svg#chevron-down"></use>
+          </svg>
+        </button>
+        <div
+          id="muze-documents-reading-menu"
+          popover="auto"
+          role="group"
+          aria-label="Reading mode choices"
+          class="muze-solid-design-popup muze-solid-design-popup-anchored swb-dropdown-menu muze-documents-reading-menu"
+        >
+          <ul
+            class="swb-dropdown-list"
+            data-simply-list="muzeDocumentsReadingModes"
+          >
+            <template
+              ><li class="swb-dropdown-item">
+                <button
+                  type="button"
+                  class="muze-solid-design-button-quiet muze-solid-design-button ds-button ds-button-naked ds-dropdown-link swb-dropdown-link"
+                  data-simply-command="muzeDocumentsReadingMode"
+                  data-simply-value=":value.id"
+                  data-simply-field="selection"
+                  data-simply-transform="attributes"
+                  data-simply-attributes="aria-current"
+                >
+                  <span
+                    data-simply-field="label"
+                    data-simply-transform="escape_html"
+                  ></span>
+                </button></li
+            ></template>
+          </ul>
+        </div>
+      </div>
+      <button
         type="button"
         class="muze-solid-design-tool"
         data-simply-command="muzeDocumentsZoom"
@@ -463,43 +520,79 @@
           ></template>
         </ol>
       </nav>
-      <div
-        class="muze-documents-paper-scroll"
-        tabindex="0"
-        role="region"
-        aria-label="PDF pages"
-      >
-        <div class="muze-documents-pages" data-simply-list="muzeDocumentsPages">
-          <template
-            ><div
-              class="muze-documents-page-slot"
-              role="group"
-              data-simply-field="attributes"
-              data-simply-transform="attributes"
-              data-simply-attributes="style data-pdf-page aria-label"
-            >
-              <div class="muze-documents-paper" data-pdf-surface></div>
-              <div
-                class="muze-documents-paragraph-controls"
-                data-simply-list="markers"
-              >
-                <template
-                  ><button
-                    type="button"
-                    class="muze-documents-paragraph-add"
-                    data-simply-command="muzeDocumentsInlineParagraph"
-                    data-simply-value=":value.key"
-                    data-simply-field="attributes"
-                    data-simply-transform="attributes"
-                    data-simply-attributes="style aria-label data-active"
-                  >
-                    +
-                  </button></template
-                >
-              </div>
-            </div></template
+      <div class="muze-documents-paper-frame">
+        <div
+          class="muze-documents-paper-scroll"
+          data-simply-field="muzeDocumentsPageLayout"
+          data-simply-transform="attributes"
+          data-simply-attributes="data-reading-mode"
+          tabindex="0"
+          role="region"
+          aria-label="PDF pages"
+        >
+          <div
+            class="muze-documents-pages"
+            data-simply-list="muzeDocumentsPages"
           >
+            <template
+              ><div
+                class="muze-documents-page-slot"
+                role="group"
+                data-simply-field="attributes"
+                data-simply-transform="attributes"
+                data-simply-attributes="style data-pdf-page aria-label hidden"
+              >
+                <div class="muze-documents-paper" data-pdf-surface></div>
+                <div
+                  class="muze-documents-paragraph-controls"
+                  data-simply-list="markers"
+                >
+                  <template
+                    ><button
+                      type="button"
+                      class="muze-documents-paragraph-add"
+                      data-simply-command="muzeDocumentsInlineParagraph"
+                      data-simply-value=":value.key"
+                      data-simply-field="attributes"
+                      data-simply-transform="attributes"
+                      data-simply-attributes="style aria-label data-active"
+                    >
+                      +
+                    </button></template
+                  >
+                </div>
+              </div></template
+            >
+          </div>
         </div>
+        <button
+          type="button"
+          class="muze-solid-design-tool muze-documents-turn muze-documents-turn-previous"
+          aria-label="Turn back"
+          title="Turn back"
+          data-simply-command="muzeDocumentsPage"
+          data-simply-value="-1"
+          data-simply-field="muzeDocumentsPreviousTurn"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+          hidden
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          class="muze-solid-design-tool muze-documents-turn muze-documents-turn-next"
+          aria-label="Turn forward"
+          title="Turn forward"
+          data-simply-command="muzeDocumentsPage"
+          data-simply-value="1"
+          data-simply-field="muzeDocumentsNextTurn"
+          data-simply-transform="attributes"
+          data-simply-attributes="hidden"
+          hidden
+        >
+          ›
+        </button>
       </div>
       <aside
         id="muze-documents-annotations"

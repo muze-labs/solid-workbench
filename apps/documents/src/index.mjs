@@ -6,7 +6,8 @@ import { shell } from '@muze-labs/solid-app-ui';
 import {
   muzeSolidDesignDialog,
   muzeSolidDesignListDetails,
-  muzeSolidDesignToolbar
+  muzeSolidDesignToolbar,
+  muzeSolidDesignDropdown
 } from '@muze-labs/solid-design';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import {
@@ -60,6 +61,7 @@ const definition = {
     muzeSolidDesignDialog,
     muzeSolidDesignListDetails,
     muzeSolidDesignToolbar,
+    muzeSolidDesignDropdown,
     muzeDocuments,
     muzeDocumentsNavigation
   },
@@ -74,6 +76,11 @@ const definition = {
     muzeDocumentsSearchStatus: '',
     muzeDocumentsBookmarks: [],
     muzeDocumentsBookmarksEmpty: '',
+    muzeDocumentsReadingMode: 'continuous',
+    muzeDocumentsReadingModes: [],
+    muzeDocumentsPreviousTurn: { hidden: '' },
+    muzeDocumentsNextTurn: { hidden: '' },
+    muzeDocumentsPageLayout: { 'data-reading-mode': 'continuous' },
     muzeDocumentsStatus: '',
     muzeDocumentsHighlightStyles: '',
     muzeDocumentsPages: [],
