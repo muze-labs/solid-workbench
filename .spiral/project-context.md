@@ -3484,3 +3484,53 @@ and empty unnamed labels; numeric page sorting for bookmarks and annotations.
 Final Documents Chrome, all-app layout and source/build checks pass. EVD270
 retains the broad Notebook title-split failure and intermediate test evidence.
 Cycle stays Active awaiting review; no delivery authorization is inferred.
+
+
+CYC272 paged reading is confirmed and Active on
+spiral/CYC-20261117-QG24H-272-paged-reading from accepted main 6e61f15.
+Continuous/single/spread modes, remembered preference and position, narrow-screen
+fallback, keyboard navigation and existing reader workflows are in scope.
+SRC273/DES274/IMP275/EVD276 record scope/evidence. No acceptance or commit inferred.
+
+
+CYC272 is ready for review: continuous/single/spread reading, compact toolbar
+mode selection, native page keys, bounded lazy page rendering, exact page and
+fraction preservation, remembered mode and narrow-screen single-page fallback
+without losing the spread preference. Source/build, final Documents and all-app
+layout pass; required broad browser command completes successfully. EVD276 keeps
+probe failures and verification limits. No manual AT/physical-device certification,
+acceptance, commit or integration is inferred; CYC272 stays Active.
+
+
+CYC272 sizing/menu review is ready: spreads use current paper width, compensate
+per-page padding and expand after sidebar closure, preserving zoom and position.
+Reading mode is an icon-only native dropdown with a small down-chevron inside
+the existing 44px height; shared styling and keyboard scope are reused. Final
+source/build, Documents native interaction and all-app layout checks pass. Final
+broad suite stops at Presenter phone-filmstrip visibility (:641), unclassified;
+EVD276 retains the failure and prior successful runs. CYC272 stays Active, with
+no acceptance or delivery authority inferred.
+
+CYC272 review now confirms stable zoom with a first-wide unobstructed spread
+reference, both axes fitted by default, and explicit zoom-in allowing overflow.
+Document-local edge chevrons turn pages or spreads and omit unavailable
+directions. The reference is account/device-local and survives reopening.
+Final source/build and focused phone/desktop Chrome checks pass. EVD276 retains
+the updated width/height, resize, navigation and reload evidence. The cycle
+remains Active for maintainer review.
+The final full browser run stops on a Launcher shortcut focus timeout. The
+Launcher retry and focused Documents scenario pass on the same build.
+
+CYC272 review after zooming and narrowing uses the paper frame for automatic
+single-page fallback and accounts for the scrollbar when fitting a spread.
+The saved mode, zoom and current page survive the fallback. Focused Chrome and
+source/build pass. CYC272 remains Active.
+
+## CYC272 accepted for integration, 2026-11-18
+
+The maintainer says “perfect. accepted.” ACC-20261118-QG24H-277 accepts implementation
+`eb6b541d2e95458795cedc0da0ed12e6fe5433dc` and verification
+`e67b38081e39172fd89f30e658cee9492372c7c5`. The accepted reader includes continuous
+reading, single pages and spreads, whole-page default fit, edge controls,
+and automatic fallback when a zoomed spread would overflow. Standing
+delivery authorization covers normal merge, push and merged-branch cleanup.
