@@ -1,3 +1,6 @@
+import {
+  shortcutMetadataEndpoint
+} from '@muze-labs/solid-preferences/providers.mjs';
 import styles from './providers.css' with { type: 'text' };
 import template from '../provider.html' with { type: 'text' };
 
@@ -89,6 +92,10 @@ export const swbProviderPreferences = {
       }
     },
     swb_providerLabel(value, key = this.actions.swb_providerKey()) {
+      if (key === 'shortcutMetadataProvider') {
+        const endpoint = shortcutMetadataEndpoint(value, location.origin);
+        return value ? endpoint : endpoint + ' (deployment default)';
+      }
       return value
         ? value.url + ' (' + value.application + ')'
         : key === 'browseProvider'
@@ -104,6 +111,13 @@ export const swbProviderPreferences = {
       }
       const key = this.actions.swb_providerKey();
       const choice = state.settings()[key];
+      const metadata = key === 'shortcutMetadataProvider';
+      this.data.swb_providerLabel = metadata ? 'Service' : 'Application';
+      this.data.swb_providerHelp = metadata
+        ? 'Use a shortcut metadata endpoint. It receives the public URLs you add.'
+        : 'Saved apps appear when they declare the selected operation. ' +
+          'A custom app must implement the Workbench selection protocol.';
+      this.data.swb_providerRefresh = { hidden: metadata ? '' : null };
       const rows = this.runtime.providerRows || [];
       const known = rows.find(
         (row) =>
@@ -124,7 +138,7 @@ export const swbProviderPreferences = {
         options: [
           { value: 'builtin', text: this.actions.swb_providerLabel(null) },
           ...rows.map((row) => ({ value: row.id, text: row.label })),
-          { value: 'custom', text: 'Custom app URL' }
+          { value: 'custom', text: metadata ? 'Custom service URL' : 'Custom app URL' }
         ],
         selected: custom ? 'custom' : known?.id || 'builtin'
       };
@@ -160,7 +174,12 @@ export const swbProviderPreferences = {
         if (state.owner !== owner) {
           throw new Error('preferences: Identity changed; reopen Preferences.');
         }
-        await state.change(this.actions.swb_providerKey(), choice);
+        const key = this.actions.swb_providerKey();
+        if (key === 'shortcutMetadataProvider' && choice
+          && new URL(choice.url).hash) {
+          throw new Error('preferences: Use a service endpoint without a fragment.');
+        }
+        await state.change(key, choice);
         this.runtime.customProvider = false;
         this.actions.swb_renderProvider();
         this.api.announcePreferences(owner);
@@ -185,6 +204,11 @@ export const swbProviderPreferences = {
       const key = this.actions.swb_providerKey();
       const capability = this.actions.swb_providerCapability();
       this.actions.swb_renderProvider();
+      if (key === 'shortcutMetadataProvider') {
+        this.runtime.providerModel.state.data = [];
+        this.data.swb_providerDiscovery = '';
+        return;
+      }
       const candidates = new Map();
       this.data.swb_providerDiscovery = 'Checking saved app declarations…';
       let unavailable = 0;

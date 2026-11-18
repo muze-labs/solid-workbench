@@ -285,10 +285,15 @@ export const shortcutMenu = {
       this.runtime.launcherDragPoint = { x: event.clientX, y: event.clientY };
       this.actions.muzeSolidLauncherDragScroll();
       const target = this.actions.swbShortcutDestination(event.target);
-      this.actions.swbShortcutPreview(target);
-      if (this.runtime.swbShortcutDragging && target) {
+      const internal = this.runtime.swbShortcutDragging;
+      const external = this.container.contains(event.target) &&
+        event.dataTransfer.types.some((type) =>
+          type === 'text/uri-list' || type === 'text/plain'
+        );
+      this.actions.swbShortcutPreview(target, external && !internal);
+      if ((internal || external) && target) {
         event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
+        event.dataTransfer.dropEffect = internal ? 'move' : 'copy';
       }
     },
     swbShortcutDragLeave(event) {
@@ -336,10 +341,11 @@ export const shortcutMenu = {
       }
       return '';
     },
-    swbShortcutPreview(target = '') {
+    swbShortcutPreview(target = '', external = false) {
       const moving =
         this.runtime.swbShortcutDragging || this.runtime.swbShortcutMoving;
-      const destination = moving && target !== moving ? target : '';
+      const destination = (moving || external) && target !== moving
+        ? target : '';
       if (!this.runtime.swbShortcutDragging) {
         this.runtime.shortcuts.state.options.insertBefore = destination;
         return;
@@ -358,8 +364,22 @@ export const shortcutMenu = {
     swbShortcutDrop(event) {
       const target = this.actions.swbShortcutDestination(event.target);
       const id = this.runtime.swbShortcutDragging;
-      if (!target || !id) {
+      if (!target) {
         return;
+      }
+      if (!id) {
+        const url = this.api.shortcutMetadata.droppedWebUrl(event.dataTransfer);
+        this.actions.swbShortcutClearPreview();
+        if (!url) {
+          return;
+        }
+        event.preventDefault();
+        const destination = target.startsWith('end:')
+          ? { group: target.slice(4) }
+          : { before: target };
+        return this.runtime.host.run(() =>
+          this.actions.addShortcut({ url, destination, mode: '' })
+        );
       }
       event.preventDefault();
       this.actions.swbShortcutDragEnd();

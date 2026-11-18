@@ -24,6 +24,7 @@ export const defaults = Object.freeze({
   noteBodyProvider: null,
   pdfViewProvider: null,
   browseProvider: null,
+  shortcutMetadataProvider: null,
   recipientProvider: null,
   viewProvider: null,
   textViewProvider: null,

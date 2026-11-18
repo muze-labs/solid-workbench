@@ -12,6 +12,7 @@ import {
 
 export const locationPredicate = prefixes.apps + 'launchParameterLocation';
 export const overridePredicate = locationPredicate + 'Override';
+export const webShortcutPredicate = prefixes.apps + 'webShortcut';
 export const anonymousPredicate = prefixes.apps + 'anonymousLaunch';
 const booleanType = 'http://www.w3.org/2001/XMLSchema#boolean';
 
@@ -74,6 +75,10 @@ export function shortcutLaunch(subject, webId) {
   const location =
     override || readMode(subject, locationPredicate) || 'fragment';
   const url = httpUrl(idOf(valueAt(subject, prefixes.schema + 'url')));
+  const web = String(valueAt(subject, webShortcutPredicate)) === 'true';
+  if (web && !override) {
+    return { href: url, override, location: '', anonymous, web };
+  }
   const fragment = readLaunchContext(url);
   const query = readLaunchContext(url, { parameterLocation: 'query' });
   if (

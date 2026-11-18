@@ -199,6 +199,10 @@ export function shell({
     host[name] = (...args) => view.actions[name](...args);
   }
   host.view = view;
+  host.readLocalPreferences = async () => {
+    const state = await runtime.preferences.refresh();
+    return { owner: state.owner, values: state.settings() };
+  };
   runtime.dialog = root.querySelector('.connect-dialog');
   runtime.menu = root.querySelector('#muze-solid-ui-account-menu');
   view.actions.muzeSolidUiInitializeAccount();

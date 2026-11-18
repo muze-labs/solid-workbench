@@ -11,6 +11,15 @@ export const shortcuts = {
     'launcher-navigation': sourceLauncherNavigation,
     'launcher-shortcuts': sourceLauncherShortcuts
   },
+  events: {
+    swbShortcutIconError: {
+      subscribe(notify) {
+        this.container.addEventListener('error', notify, true);
+        return () => this.container.removeEventListener('error', notify, true);
+      },
+      action: 'swbShortcutIconError'
+    }
+  },
   commands: {
     async muzeSolidLauncherAddDialog() {
       await this.commands.call('muzeSolidCatalogOpen');
@@ -48,6 +57,11 @@ export const shortcuts = {
             'launcher: This shortcut has a structured name and cannot be renamed here.'
           );
         }
+        const request = this.runtime.shortcutLookups?.get(id);
+        if (request) {
+          request.useTitle &&= name === String(previous);
+          request.useIcon &&= !icon;
+        }
         this.api.applyIconOverride(node, icon);
         node.schema$name = name;
         await this.runtime.store.collection.save(node);
@@ -77,6 +91,13 @@ export const shortcuts = {
         this.actions.swbShortcutCancelMove();
         return this.actions.swbMoveShortcut(moving, id);
       }
+      if (element.relList.contains('noopener')) {
+        return this.runtime.host.run(() => {
+          this.actions.swb_requireOwner();
+          window.open(element.href, '_blank', 'noopener,noreferrer');
+        });
+        return;
+      }
       this.runtime.host.run(() => {
         if (!element.getAttribute('href')) {
           throw new Error('launcher: Connect to Solid to open this resource.');
@@ -89,11 +110,12 @@ export const shortcuts = {
     add(form) {
       const values = {
         url: form.elements.url.value,
-        name: form.elements.name.value,
+        name: form.elements.name.value.trim(),
         mode: form.elements.launchMode.value,
         anonymous: form.elements.anonymous.checked,
         manifest: form.elements.manifest.value.trim(),
-        icon: form.elements.icon.value.trim()
+        icon: form.elements.icon.value.trim(),
+        localOnly: form.elements.localOnly.checked
       };
       return this.actions.muzeSolidCatalogOperation(async () => {
         await this.actions.addShortcut(values);
@@ -109,6 +131,18 @@ export const shortcuts = {
     }
   },
   actions: {
+    swbShortcutIconError(event) {
+      const image = event.target;
+      if (!image.matches?.('.swb-shortcut-image') ||
+          image.crossOrigin !== 'anonymous' || !image.currentSrc) {
+        return;
+      }
+      const failures = (this.runtime.shortcutIconFailures ||= new Set());
+      if (!failures.has(image.currentSrc)) {
+        failures.add(image.currentSrc);
+        this.actions.render();
+      }
+    },
     openApplication: function (href, options) {
       this.actions.swb_requireOwner();
       if (!this.runtime.workspace) {
@@ -149,6 +183,7 @@ export const shortcuts = {
       });
     },
     handleRemove(id) {
+      this.runtime.shortcutLookups?.delete(id);
       return this.runtime.host.run(async () => {
         await this.runtime.store.collection.delete(id);
         await this.actions.muzeSolidLauncherTrimScreens();
@@ -192,7 +227,9 @@ export const shortcuts = {
       anonymous,
       manifest = '',
       icon = '',
-      description
+      description,
+      localOnly = false,
+      destination
     }) {
       this.actions.swb_requireOwner();
       const override = icon;
@@ -213,17 +250,35 @@ export const shortcuts = {
       if (!['', 'fragment', 'query'].includes(mode)) {
         throw new Error('launcher: Choose a supported launch mode.');
       }
-      const subject = await this.runtime.store.collection.create({
+      const web = !manifest && (Boolean(destination) || (!mode && !anonymous)) &&
+        !this.api.shortcutMetadata.isWorkbenchLink(url, location.href);
+      const fallbackName = name || new URL(url).hostname;
+      const store = this.runtime.store;
+      const row = destination?.before && this.data.shortcuts.find(
+        (item) => item.id === destination.before
+      );
+      if (destination?.before && !row) {
+        throw new Error('launcher: The destination changed; drop the link again.');
+      }
+      let group = destination
+        ? row?.group ?? destination.group
+        : this.runtime.launcherAddScreen;
+      if (group === 'new') {
+        group = await this.actions.muzeSolidLauncherCreateScreen();
+      }
+      const subject = await store.collection.create({
         id: 'urn:uuid:' + crypto.randomUUID(),
         a: this.api.prefixes.schema + 'SoftwareApplication',
-        schema$name: name,
+        schema$name: fallbackName,
+        ...(web ? { [this.api.webShortcutPredicate]: true } : {}),
+        ...(group ? { [this.api.launcherGroups.groupPredicate]: { id: group } } : {}),
         schema$url: { id: url },
         ...(manifestIcon ? { schema$image: { id: manifestIcon } } : {}),
         ...(manifest
           ? { schema$subjectOf: { id: this.api.httpUrl(manifest) } }
           : {}),
         dcterms$modified: new Date().toISOString()
-      });
+      }, { save: !row });
       if (override) {
         this.api.applyIconOverride(subject, override);
       }
@@ -233,17 +288,84 @@ export const shortcuts = {
       if (anonymous) {
         this.api.applyAnonymousLaunch(subject, true);
       }
-      if (this.runtime.launcherAddScreen) {
-        this.api.launcherGroups.setShortcutGroup(
-          subject,
-          this.runtime.launcherAddScreen
-        );
+      if (row) {
+        const subjects = this.data.shortcuts
+          .filter((item) => item.group === group)
+          .map((item) => store.collection.get(item.id));
+        const index = subjects.findIndex((item) => item.id === row.id);
+        subjects.splice(index, 0, subject);
+        this.api.applyShortcutOrder(subjects);
       }
-      if (mode || anonymous || override || this.runtime.launcherAddScreen) {
-        await this.runtime.store.collection.save(subject);
+      if (mode || anonymous || override || row) {
+        await store.collection.save(subject);
       }
       this.actions.render();
       this.runtime.host.notify('Shortcut saved on this device.');
+      if (web && !localOnly && (!name || !icon)) {
+        const owner = this.runtime.host.selectedWebId;
+        this.actions.swbDiscoverShortcut({
+          store, owner, id: subject.id, url, fallbackName,
+          useTitle: !name, useIcon: !icon
+        });
+      }
+    },
+    async swbDiscoverShortcut(request) {
+      const { store, owner, id, url, fallbackName } = request;
+      const host = this.runtime.host;
+      const pending = (this.runtime.shortcutLookups ||= new Map());
+      pending.set(id, request);
+      const current = () => this.runtime.store === store &&
+        host.selectedWebId === owner && pending.get(id) === request;
+      try {
+        await host.ready;
+        if (!current() || !navigator.onLine) {
+          return;
+        }
+        const preferences = await host.readLocalPreferences();
+        if (!current() || preferences.owner !== owner) {
+          return;
+        }
+        const metadata = await this.api.shortcutMetadata.discoverShortcutMetadata(
+          url, preferences.values.shortcutMetadataProvider, location.origin
+        );
+        if (!current()) {
+          return;
+        }
+        const subject = store.collection.list().find((item) => item.id === id);
+        const { idOf, valueAt, prefixes } = this.api;
+        if (!subject || idOf(valueAt(subject, prefixes.schema + 'url')) !== url) {
+          return;
+        }
+        let changed = false;
+        if (request.useTitle && metadata.title
+          && String(valueAt(subject, prefixes.schema + 'name')) === fallbackName) {
+          subject.schema$name = metadata.title;
+          changed = true;
+        }
+        if (request.useIcon && metadata.icon
+          && !valueAt(subject, prefixes.apps + 'iconOverride')
+          && !valueAt(subject, prefixes.schema + 'image')) {
+          subject.graph.set(
+            id, prefixes.schema + 'image', subject.graph.addNamedNode(metadata.icon)
+          );
+          changed = true;
+        }
+        if (changed) {
+          subject.dcterms$modified = new Date().toISOString();
+          await store.collection.save(subject);
+          if (current()) {
+            this.actions.render();
+          }
+        }
+      }
+      catch {
+        // Discovery is optional. Keep the locally saved shortcut usable.
+      }
+      finally {
+        if (pending.get(id) === request) {
+          pending.delete(id);
+        }
+      }
     },
     shortcutRow(node) {
       const application = []
@@ -314,6 +436,10 @@ export const shortcuts = {
           }
         }
       }
+      const discoveredIcon = settings.web && icon && !override;
+      if (discoveredIcon && this.runtime.shortcutIconFailures?.has(icon)) {
+        icon = '';
+      }
       icon ||= sprite.href + '#grid';
       const usesSprite = icon.startsWith(sprite.href + '#');
       let order = null;
@@ -336,7 +462,11 @@ export const shortcuts = {
           class: 'swb-shortcut swb-list-item'
         },
         iconUrl: override,
-        icon: { src: usesSprite ? null : icon, hidden: usesSprite ? '' : null },
+        icon: {
+          src: usesSprite ? null : icon,
+          hidden: usesSprite ? '' : null,
+          crossorigin: !usesSprite && discoveredIcon ? 'anonymous' : null
+        },
         spriteIcon: { href: usesSprite ? icon : null },
         spriteVisibility: { hidden: usesSprite ? null : '' },
         label,
@@ -352,7 +482,7 @@ export const shortcuts = {
         link: {
           href: settings.href,
           target: '_blank',
-          rel: 'opener',
+          rel: settings.web ? 'noopener noreferrer' : 'opener',
           title: label
         }
       };
