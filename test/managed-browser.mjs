@@ -341,7 +341,8 @@ try {
   await authorizeWorkspace(launcher);
   await submit(launcher, '.muze-solid-catalog-manual-form', {
     name: 'Managed Files',
-    url: filesBase
+    url: filesBase,
+    launchMode: 'fragment'
   });
   await wait(
     launcher,

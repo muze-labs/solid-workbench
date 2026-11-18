@@ -4,7 +4,8 @@ import {
   StateGraph, named, literal, sameTerm
 } from '../packages/solid-app-data/src/state-rdf.mjs';
 import {
-  capabilityNamespace as cap, readProvider, writeProvider, validateProvider
+  capabilityNamespace as cap, readProvider, writeProvider, validateProvider,
+  providerCapabilities, shortcutMetadataEndpoint
 } from '../packages/solid-preferences/src/providers.mjs';
 import { WorkspaceBroker } from '../packages/solid-app-data/src/workspace-broker.mjs';
 import { browseCapability } from '../packages/solid-app-data/src/capabilities.mjs';
@@ -99,4 +100,24 @@ test('application identity may be a named URN without being treated as a launch 
   const provider = { ...choice, application: 'urn:example:picker' };
   writeProvider(graph, url, provider);
   assert.deepEqual(readProvider(graph, url), provider);
+});
+
+test('shortcut metadata has an independent provider binding and a deployment default', () => {
+  const capability = providerCapabilities.shortcutMetadataProvider;
+  const provider = {
+    application: 'https://discovery.example/shortcut-metadata',
+    url: 'https://discovery.example/shortcut-metadata'
+  };
+  const origin = 'https://workbench.example';
+  const graph = new StateGraph('', url);
+  writeProvider(graph, url, choice);
+  writeProvider(graph, url, provider, capability);
+  const restored = new StateGraph(graph.write(), url);
+  assert.deepEqual(readProvider(restored, url), choice);
+  assert.equal(shortcutMetadataEndpoint(readProvider(restored, url, capability),
+    origin), provider.url);
+  writeProvider(restored, url, null, capability);
+  assert.equal(shortcutMetadataEndpoint(readProvider(restored, url, capability),
+    origin), origin + '/shortcut-metadata');
+  assert.deepEqual(readProvider(restored, url), choice);
 });

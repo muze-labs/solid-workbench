@@ -9,6 +9,7 @@ export const providerCapabilities = Object.freeze({
   textCreateProvider: 'https://vocab.muze.nl/capabilities/create-text',
   textEditProvider: 'https://vocab.muze.nl/capabilities/edit-text',
   viewProvider: 'https://vocab.muze.nl/capabilities/view-resource',
+  shortcutMetadataProvider: 'https://vocab.muze.nl/capabilities/discover-shortcut-metadata',
   browseProvider: 'https://vocab.muze.nl/capabilities/browse',
   recipientProvider: 'https://vocab.muze.nl/capabilities/select-recipient'
 });
@@ -142,4 +143,8 @@ export function writeProvider(graph, url, choice, capability = browse) {
     graph.set(binding, capabilityNamespace + 'provides', named(capability));
   }
   setProviderChoice(graph, binding, choice);
+}
+
+export function shortcutMetadataEndpoint(choice, origin) {
+  return choice ? httpUrl(choice.url) : new URL('/shortcut-metadata', origin).href;
 }

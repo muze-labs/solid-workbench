@@ -3534,3 +3534,12 @@ The maintainer says “perfect. accepted.” ACC-20261118-QG24H-277 accepts impl
 reading, single pages and spreads, whole-page default fit, edge controls,
 and automatic fallback when a zoomed spread would overflow. Standing
 delivery authorization covers normal merge, push and merged-branch cleanup.
+
+## CYC278 accepted for integration, 2026-11-18
+
+The maintainer accepts dropping and pasting web shortcuts, optional anonymous
+metadata discovery and the per-identity service preference. The Trello check
+confirmed that a signed-in tab can show title details beyond the anonymous
+response. ACC-20261118-QG24H-281 records acceptance and EVD-20261118-QG24H-280
+records the broad-browser paging timeout and independent passes. Standing
+authorization covers normal merge, push and merged-branch cleanup.

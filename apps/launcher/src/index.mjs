@@ -1,3 +1,5 @@
+import * as shortcutMetadata from './shortcut-metadata.mjs';
+import shortcutMetadataSource from './shortcut-metadata.mjs?source';
 import * as launcherGroups from './groups.mjs';
 import { AppCatalog } from './catalog.mjs';
 import catalogSource from './catalog.mjs?source';
@@ -48,7 +50,8 @@ import {
   overridePredicate,
   applyAnonymousLaunch,
   applyIconOverride,
-  anonymousPredicate
+  anonymousPredicate,
+  webShortcutPredicate
 } from './shortcuts.mjs';
 import { app } from '@muze-labs/simplyflow/app';
 import {
@@ -162,6 +165,7 @@ const definition = {
     launchUrl,
     parseLaunchUrl,
     launcherGroups,
+    shortcutMetadata,
     batch,
     shortcutOrder,
     applyShortcutOrder,
@@ -171,7 +175,8 @@ const definition = {
     overridePredicate,
     applyAnonymousLaunch,
     applyIconOverride,
-    anonymousPredicate
+    anonymousPredicate,
+    webShortcutPredicate
   },
   runtime: { host }
 };
@@ -179,6 +184,15 @@ const ui = app(definition);
 exposeDefinition(ui, definition, sources);
 installEvents(ui);
 ui.definition.modules = {
+  shortcutMetadata: {
+    sourceUrl: shortcutMetadataSource,
+    origin: 'apps/launcher/src/shortcut-metadata.mjs',
+    dependencies: [
+      '@muze-labs/solid-app-data',
+      '@muze-labs/solid-app-data/url.mjs',
+      '@muze-labs/solid-preferences/providers.mjs'
+    ]
+  },
   catalog: {
     sourceUrl: catalogSource,
     origin: 'apps/launcher/src/catalog.mjs',
