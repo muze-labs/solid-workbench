@@ -39,6 +39,9 @@ cascade order `reset, setup, theme, base, component, page, utility`.
 Run `npm run dev` from the workspace and open `/design-examples/` or
 `/design-examples/simplyflow.html`. Both examples use local data and assets.
 Their source is in [examples](examples/).
+The SimplyFlow example puts its model in app data and binds the list to
+`resourceModel.view.current`. The search command changes the query option,
+and the model supplies the filtered rows directly to the template.
 Both examples use a native `search` landmark and labeled input. The plain
 example submits through `form` and the SimplyFlow example reports its filter
 result through `output`. Native buttons and link lists make up the popovers.

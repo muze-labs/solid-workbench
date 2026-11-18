@@ -8,6 +8,10 @@ import {
   solidToolbar
 } from '@muze-labs/solid-design';
 
+function matchesResource(row, query) {
+  return row.title.toLowerCase().includes(query);
+}
+
 app({
   container: document.querySelector('.solid-example'),
   components: {
@@ -16,12 +20,12 @@ app({
     solidTheme,
     solidToolbar
   },
-  data: { resources: [], status: '' },
+  data: { resourceModel: null, status: '' },
   runtime: {},
   api: { model, effect, destroy },
   commands: {
     solidExampleSearch(input) {
-      this.runtime.resources.state.options.query =
+      this.data.resourceModel.state.options.query =
         input.value.trim().toLowerCase();
     }
   },
@@ -32,27 +36,22 @@ app({
         options: { query: '' }
       });
       const { effect } = this.api;
-      resources.addEffect(function () {
-        return effect(() => this.state.data);
-      });
       resources.addEffect(function (input) {
         return effect(() => {
           const { query } = this.state.options;
-          return input.current.filter((row) =>
-            row.title.toLowerCase().includes(query)
-          );
+          return input.current.filter((row) => matchesResource(row, query));
         });
       });
-      this.runtime.resources = resources;
+      this.data.resourceModel = resources;
       this.runtime.results = effect(() => {
-        const rows = resources.view.current;
-        this.data.resources = rows;
-        this.data.status = rows.length ? '' : 'No matching resources.';
+        this.data.status = resources.view.current.length
+          ? ''
+          : 'No matching resources.';
       });
     },
     cleanup() {
       this.api.destroy(this.runtime.results);
-      for (const signal of this.runtime.resources.effects.slice(1)) {
+      for (const signal of this.data.resourceModel.effects.slice(1)) {
         this.api.destroy(signal);
       }
     }

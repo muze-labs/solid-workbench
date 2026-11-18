@@ -3550,3 +3550,9 @@ The maintainer accepts the Workbench design extension with the `solid` prefix
 and semantic HTML examples. ACC-20261118-QG24H-285 binds the implementation
 and verification. Standing authorization covers normal merge, push and
 merged-branch cleanup.
+
+## CYC286 accepted for integration, 2026-11-18
+
+The maintainer accepts direct model bindings in Contacts and the design
+example. ACC-20261118-QG24H-289 binds the implementation and verification.
+Standing authorization covers normal merge, push and merged-branch cleanup.

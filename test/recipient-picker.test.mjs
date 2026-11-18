@@ -19,11 +19,10 @@ function picker() {
       host: { selectedWebId: 'https://person.example/#me', task: false,
         managed: { respond: async (...args) => replies.push(args),
           presentationReady() {} } },
-      people: { state: { options: { search: 'original filter' } } },
       collectionKey: 'book', contactsResource: 'https://pod.example/book.ttl',
       store: { collection: { get: (key) => key === id ? node : null } }
     },
-    data: { search: 'original filter' },
+    data: { peopleModel: { state: { options: { search: 'original filter' } } } },
     api: { selectRecipientCapability: capability, recipientId, isPerson: () => true,
       describeRecipient: async () => ({ '@id': id, description: { turtle: '<urn:fixture> <urn:name> "Selected" .' } }) },
     actions: {}
@@ -31,7 +30,6 @@ function picker() {
   for (const [name, action] of Object.entries(swbRecipientPicker.actions)) {
     view.actions[name] = action.bind(view);
   }
-  view.actions.setSearch = (value) => { view.data.search = value; };
   return { view, replies };
 }
 test('recipient identities preserve named contacts and reject unsafe/nonidentities', () => {
@@ -48,13 +46,18 @@ test('selection is explicit, busy requests do not replace it, cancellation resto
   const request = { id: 'one', capability, input: {} };
   view.actions.swb_receiveRecipient(request);
   assert.equal(replies.length, 0);
+  const options = view.data.peopleModel.state.options;
+  assert.equal(options.search, 'original filter');
+  assert.equal(options.recipientSearch, '');
+  assert.equal(options.pickingRecipient, true);
   await view.actions.swb_receiveRecipient({ ...request, id: 'two' });
   assert.equal(replies[0][1].error.code, 'busy');
   assert.equal(view.runtime.recipientRequest, request);
   view.actions.swb_cancelRecipientRequest({ id: 'stale' });
   assert.equal(view.runtime.recipientRequest, request);
   view.actions.swb_cancelRecipientRequest(request);
-  assert.equal(view.data.search, 'original filter');
+  assert.equal(options.search, 'original filter');
+  assert.equal(options.pickingRecipient, false);
   assert.equal(view.runtime.recipientRequest, null);
 });
 test('changed owner or book cannot receive a late selected identity', async () => {
@@ -70,7 +73,7 @@ test('changed owner or book cannot receive a late selected identity', async () =
     }
     await view.actions.swb_returnRecipient();
     assert.equal(replies[0][1].error.code, 'cancelled');
-    assert.equal(view.data.search, 'original filter');
+    assert.equal(view.data.peopleModel.state.options.search, 'original filter');
   }
 });
 test('recipient preference cache and reset preserve browse and unknown RDF', async () => {
@@ -112,7 +115,7 @@ test('successful selection returns selected data and restores the filter', async
   view.runtime.preparedRecipient = expected;
   await view.actions.swb_returnRecipient();
   assert.deepEqual(replies, [['one', { result: expected }]]);
-  assert.equal(view.data.search, 'original filter');
+  assert.equal(view.data.peopleModel.state.options.search, 'original filter');
   assert.equal(view.runtime.recipientId, null);
   assert.equal(view.runtime.recipientRequest, null);
 });

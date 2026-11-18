@@ -56,28 +56,28 @@ test('Contacts retains filtering across source refresh without changing RDF', as
   try {
     view.actions.refreshPeople();
     assert.deepEqual(
-      view.data.people.map((row) => row.label),
+      view.data.peopleModel.view.current.map((row) => row.label),
       ['Alpha', 'Beta']
     );
     view.actions.setSearch('be');
     assert.deepEqual(
-      view.data.people.map((row) => row.label),
+      view.data.peopleModel.view.current.map((row) => row.label),
       ['Beta']
     );
     nodes = nodes.slice().reverse();
     view.actions.refreshPeople();
     assert.deepEqual(
-      view.data.people.map((row) => row.label),
+      view.data.peopleModel.view.current.map((row) => row.label),
       ['Beta']
     );
-    assert.equal(view.runtime.people.state.options.search, 'be');
+    assert.equal(view.data.peopleModel.state.options.search, 'be');
     assert.equal(await graph.write(), before);
     view.actions.setSearch('missing');
-    assert.equal(view.data.people.length, 0);
+    assert.equal(view.data.peopleModel.view.current.length, 0);
     assert.equal(view.data.empty, 'No contacts yet.');
   }
   finally {
-    stopList(view.runtime.people, view.runtime.listEffect);
+    stopList(view.data.peopleModel, view.runtime.emptyListEffect);
   }
 });
 

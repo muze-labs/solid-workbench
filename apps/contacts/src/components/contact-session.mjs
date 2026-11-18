@@ -102,7 +102,8 @@ export const contactSession = {
     captureState() {
       const state = this.runtime.appState;
       state.set(this.api.apps + 'selected', this.runtime.selected, 'iri');
-      state.set(this.api.apps + 'filter', this.data.search);
+      const search = this.data.peopleModel.state.options.search;
+      state.set(this.api.apps + 'filter', search);
       this.api.writeDraft(state, this.runtime.widget.draft());
       return state.snapshot();
     },
@@ -117,8 +118,8 @@ export const contactSession = {
     },
     cleanup() {
       this.runtime.widget.destroy();
-      this.api.destroy(this.runtime.listEffect);
-      for (const signal of this.runtime.people.effects.slice(1)) {
+      this.api.destroy(this.runtime.emptyListEffect);
+      for (const signal of this.data.peopleModel.effects.slice(1)) {
         this.api.destroy(signal);
       }
     }

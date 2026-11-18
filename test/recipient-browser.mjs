@@ -127,6 +127,21 @@ try {
   // Reload proves the selected book is durable before invoking a transient picker.
   await page.send('Page.reload');
   await until(page, 'window.solidContacts?.store?.collection.list().length===2');
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 390, height: 844, deviceScaleFactor: 1, mobile: true
+  });
+  await run(page, 'document.querySelector(".solid-list-search-input").focus();');
+  await page.send('Input.insertText', { text: 'beta' });
+  await until(page, `document.querySelectorAll('.swb-contacts-people li').length === 1 &&
+    document.querySelector('.swb-contacts-people').textContent.includes('Beta')`);
+  await run(page, `const contacts = solidContacts.ui;
+    window.savedContactSearch = contacts.actions.captureState();
+    contacts.actions.setSearch('missing');`);
+  await until(page, "document.querySelectorAll('.swb-contacts-people li').length === 0");
+  await run(page, 'solidContacts.ui.actions.restoreState(window.savedContactSearch);');
+  await until(page, `document.querySelector('.solid-list-search-input').value === 'beta' &&
+    document.querySelector('.swb-contacts-people').textContent.includes('Beta')`);
+  await page.send('Emulation.clearDeviceMetricsOverride');
   await run(page, 'location.href="/workbench/";');
   await until(page, 'window.solidLauncher?.workspace && solidLauncher.host.session');
   // The shipped presenter also hosts Contacts and delivers cancellation.
@@ -172,7 +187,13 @@ try {
   await until(files,'document.querySelector("iframe")?.contentWindow.muzeSolidContactsApp?.runtime.recipientRequest');
   await until(files,'document.querySelector("iframe").getAttribute("aria-busy")==="false"');
   await run(files, `const doc=document.querySelector('iframe').contentDocument;
-    doc.querySelectorAll('[data-simply-command=swb_chooseRecipient]')[1].click();`);
+    const search=doc.querySelector('.swb-recipient-picker input[type="search"]');
+    search.value='beta';
+    search.dispatchEvent(new Event('input',{bubbles:true}));`);
+  await until(files, `document.querySelector('iframe').contentDocument
+    .querySelectorAll('[data-simply-command=swb_chooseRecipient]').length===1`);
+  await run(files, `const doc=document.querySelector('iframe').contentDocument;
+    doc.querySelector('[data-simply-command=swb_chooseRecipient]').click();`);
   await until(files,'!document.querySelector("iframe").contentDocument.querySelector("[data-simply-command=swb_useRecipient]").disabled');
   assert.equal(await run(files, `return document.querySelector('iframe').contentWindow.muzeSolidContactsApp.data.swb_recipientDescription.includes('beta@example.org');`),true);
   assert.equal(await run(files, `return document.querySelector('iframe').contentWindow.muzeSolidContactsApp.data.swb_recipientDescription.includes('Alpha long');`),false);
