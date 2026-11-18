@@ -777,6 +777,12 @@ These checks establish app readiness; they do not claim an IDE already exists.
 - Open the IDE beside the app in the same page. Navigate components and named
   entries, show origins and active overrides, and offer an inspect mode that
   jumps from a rendered control to its template and active command.
+- Make selected Muze library APIs available as documented browser globals for
+  the IDE and developer console. Start with `window.metro` for inspecting
+  requests with `metro.trace`. Reuse the library instances already loaded by
+  Workbench so console tools and editable app code work with the same runtime.
+  Decide which globals to expose per library and check the download cost of
+  any additional API surface.
 - Create or import component datasets, register them, and let the user wire
   them into views. Export either the original component or a copy with that
   component's app overrides applied, in the same editable import format.
