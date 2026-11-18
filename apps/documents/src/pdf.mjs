@@ -68,7 +68,7 @@ class PdfPageView {
     this.document = document;
     this.generation = 0;
   }
-  async show(surface, number, width, zoom = 1, rotation = 0) {
+  async show(surface, number, scale, rotation) {
     this.surface = surface;
     const generation = ++this.generation;
     this.render?.cancel();
@@ -78,9 +78,6 @@ class PdfPageView {
       return;
     }
     const pageRotation = (page.rotate + rotation) % 360;
-    const natural = page.getViewport({ scale: 1, rotation: pageRotation });
-    const scale =
-      Math.min(2, Math.max(0.25, (width - 24) / natural.width)) * zoom;
     const viewport = page.getViewport({ scale, rotation: pageRotation });
     this.viewport = viewport;
     const pixelRatio = Math.min(devicePixelRatio || 1, 2);
@@ -263,15 +260,23 @@ class PdfSession {
     }
     return this.dimensions.get(number);
   }
-  size(number, width, zoom, rotation) {
+  pageDimensions(number, rotation) {
     // Unvisited pages reserve space using page one's dimensions. Learn each
     // page's own size when it approaches the viewport, without rendering all.
     const natural = this.dimensions.get(number) || this.dimensions.get(1);
     const sideways = rotation % 180 !== 0;
-    const pageWidth = sideways ? natural.height : natural.width;
-    const pageHeight = sideways ? natural.width : natural.height;
-    const scale = Math.min(2, Math.max(0.25, (width - 24) / pageWidth)) * zoom;
-    return { width: pageWidth * scale, height: pageHeight * scale };
+    return sideways
+      ? { width: natural.height, height: natural.width }
+      : natural;
+  }
+  size(number, width, zoom, rotation) {
+    const page = this.pageDimensions(number, rotation);
+    // Paged layout supplies the final zoomed width of a visible page.
+    const scale =
+      this.readingMode === 'continuous'
+        ? Math.min(2, Math.max(0.25, (width - 24) / page.width)) * zoom
+        : width / page.width;
+    return { width: page.width * scale, height: page.height * scale, scale };
   }
   async render(surface, number, width, zoom, rotation) {
     const key = [width, zoom, rotation].join('/');
@@ -290,7 +295,8 @@ class PdfSession {
       if (this.views.get(number) !== view) {
         return;
       }
-      await view.show(surface, number, width, zoom, rotation);
+      const { scale } = this.size(number, width, zoom, rotation);
+      await view.show(surface, number, scale, rotation);
     })();
     try {
       await view.pending;

@@ -8,6 +8,12 @@ import {
 const doc = 'https://vocab.muze.nl/documents#';
 const root = named('urn:muze:documents:reader');
 
+function validateSpreadWidth(width) {
+  if (!Number.isSafeInteger(width) || width < 720) {
+    throw new Error('documents/reader-state: Invalid spread reference width.');
+  }
+}
+
 function settings(graph) {
   const zoom = Number(graph.one(root, doc + 'zoom', 'decimal')?.value ?? 1);
   if (!Number.isFinite(zoom) || zoom < 0.5 || zoom > 3) {
@@ -20,7 +26,19 @@ function settings(graph) {
     }
     return value === 'true' || value === '1';
   };
+  const mode =
+    graph.one(root, doc + 'readingMode', 'string')?.value ?? 'continuous';
+  if (!['continuous', 'single', 'spread'].includes(mode)) {
+    throw new Error('documents/reader-state: Unsupported reading mode.');
+  }
+  const width = graph.one(root, doc + 'spreadReferenceWidth', 'integer');
+  const spreadReferenceWidth = width ? Number(width.value) : null;
+  if (width) {
+    validateSpreadWidth(spreadReferenceWidth);
+  }
   return {
+    spreadReferenceWidth,
+    mode,
     zoom,
     outlineOpen: boolean('outlineOpen'),
     annotationsOpen: boolean('annotationsOpen')
@@ -109,11 +127,29 @@ export class ReaderState {
             'documents/reader-state: Local storage coordination is unavailable.'
           );
         }
-        await this.locks.request(this.lockName, async () => {
+        return this.locks.request(this.lockName, async () => {
           const graph = new StateGraph((await this.store.load()) || '');
-          settings(graph);
+          let { spreadReferenceWidth } = settings(graph);
+          if (change.spreadReferenceWidth !== undefined && !spreadReferenceWidth) {
+            validateSpreadWidth(change.spreadReferenceWidth);
+            spreadReferenceWidth = change.spreadReferenceWidth;
+            graph.set(
+              root,
+              doc + 'spreadReferenceWidth',
+              literal(spreadReferenceWidth, xsd + 'integer')
+            );
+          }
           if (change.settings) {
-            const { zoom, outlineOpen, annotationsOpen } = change.settings;
+            const { zoom, outlineOpen, annotationsOpen, mode } =
+              change.settings;
+            if (mode !== undefined) {
+              if (!['continuous', 'single', 'spread'].includes(mode)) {
+                throw new Error(
+                  'documents/reader-state: Invalid reading mode.'
+                );
+              }
+              graph.set(root, doc + 'readingMode', literal(mode));
+            }
             if (zoom !== undefined) {
               if (!Number.isFinite(zoom) || zoom < 0.5 || zoom > 3) {
                 throw new Error('documents/reader-state: Invalid zoom.');
@@ -201,6 +237,7 @@ export class ReaderState {
             );
           }
           await this.store.save(graph.write());
+          return spreadReferenceWidth;
         });
       });
     return this.pending;

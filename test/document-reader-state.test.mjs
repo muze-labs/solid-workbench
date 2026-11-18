@@ -145,3 +145,34 @@ test('unnamed bookmarks retain an empty label without a generated page label', a
   });
   assert.equal((await reader.bookmarks())[0].label, '');
 });
+
+test('reading mode defaults to scrolling, survives reload and rejects invalid values atomically', async () => {
+  const f = fixture();
+  const reader = new ReaderState(f.store, 'owner', f.locks);
+  assert.equal((await reader.read()).mode, 'continuous');
+  await reader.save({ settings: { mode: 'spread' } });
+  assert.equal(
+    (await new ReaderState(f.store, 'owner', f.locks).read()).mode,
+    'spread'
+  );
+  const before = f.text();
+  await assert.rejects(reader.save({ settings: { mode: 'unknown' } }));
+  assert.equal(f.text(), before);
+});
+
+test('first wide spread reference survives competing windows and reload', async () => {
+  const f = fixture();
+  const a = new ReaderState(f.store, 'owner', f.locks);
+  const b = new ReaderState(f.store, 'owner', f.locks);
+  assert.equal((await a.read()).spreadReferenceWidth, null);
+  await assert.rejects(
+    a.save({ spreadReferenceWidth: 390 })
+  );
+  const first = 1440;
+  const results = await Promise.all([
+    a.save({ spreadReferenceWidth: first }),
+    b.save({ spreadReferenceWidth: 2400 })
+  ]);
+  assert.deepEqual(results, [first, first]);
+  assert.deepEqual((await b.read()).spreadReferenceWidth, first);
+});
