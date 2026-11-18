@@ -177,9 +177,9 @@ try {
     'Contacts search stays within phone thumb reach'
   );
   await evaluate(`(() => {
-    globalThis.muzeSolidContactsTestRows = solidContacts.ui.runtime.people.state.data;
+    globalThis.muzeSolidContactsTestRows = solidContacts.ui.data.peopleModel.state.data;
     const example = muzeSolidContactsTestRows[0];
-    solidContacts.ui.runtime.people.state.data = Array.from({ length: 50 }, (_, index) => ({
+    solidContacts.ui.data.peopleModel.state.data = Array.from({ length: 50 }, (_, index) => ({
       ...example, id: 'urn:contacts-scroll-fixture:' + index,
       label: 'Example contact ' + index
     }));
@@ -203,7 +203,7 @@ try {
     searchPosition.top
   );
   await evaluate(
-    'solidContacts.ui.runtime.people.state.data = muzeSolidContactsTestRows'
+    'solidContacts.ui.data.peopleModel.state.data = muzeSolidContactsTestRows'
   );
   await wait('document.querySelectorAll(".swb-contact-select").length === 1');
   await click('.swb-contacts-toolbar input[type="search"]');

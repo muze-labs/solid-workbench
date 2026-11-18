@@ -63,16 +63,14 @@ const definition = {
     swb_recipientPicker: { hidden: '' },
     swb_contactEditor: { hidden: host.task ? '' : null },
     swb_recipientUse: { disabled: '' },
-    swb_recipientSearch: '',
     swb_recipientSource: '',
     swb_recipientRequester: '',
     swb_recipientSelected: '',
     swb_recipientDescription: '',
     swb_recipientStatus: 'Waiting for a recipient request…',
     profile: profileDefaults(),
-    people: [],
+    peopleModel: null,
     empty: '',
-    search: '',
     visibility: { hidden: '' }
   },
   api: {

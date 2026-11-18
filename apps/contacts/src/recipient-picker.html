@@ -32,12 +32,12 @@
     <input
       type="search"
       class="solid-control swb-control swb-labeled-control"
-      data-simply-field="swb_recipientSearch"
+      data-simply-field="peopleModel.state.options.recipientSearch"
       data-simply-command="swb_searchRecipients"
       data-simply-immediate="true"
     />
   </label>
-  <ul class="swb-person-list" data-simply-list="people">
+  <ul class="swb-person-list" data-simply-list="peopleModel.view.current">
     <template
       ><li class="swb-list-item">
         <button

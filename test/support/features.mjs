@@ -117,7 +117,7 @@ export async function checkFeatureSources(page, appName) {
             'Find sample people'
           )
         },
-        data: { people: [], search: '', empty: '' },
+        data: { peopleModel: null, empty: '' },
         api: {
           model: owner.api.model,
           effect: owner.api.effect,
@@ -131,13 +131,15 @@ export async function checkFeatureSources(page, appName) {
       try {
         app.actions.initializeList();
         app.actions.refreshPeople();
-        app.actions.setSearch('be');
+        const input = mount.querySelector('input[type="search"]');
+        input.value = 'be';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
         await new Promise((resolve) => setTimeout(resolve, 100));
         return (
-          app.data.people.length === 1 &&
-          app.data.people[0].id === 'sample:b' &&
-          mount.querySelector('input[type="search"]')
-            ?.labels[0]?.textContent.trim() === 'Find sample people' &&
+          app.data.peopleModel.view.current.length === 1 &&
+          app.data.peopleModel.view.current[0].id === 'sample:b' &&
+          input.labels[0]?.textContent.trim() === 'Find sample people' &&
+          input.value === app.data.peopleModel.state.options.search &&
           mount
             .querySelector('.swb-person-list')
             .textContent.includes('Beta') &&
@@ -146,8 +148,8 @@ export async function checkFeatureSources(page, appName) {
         );
       }
       finally {
-        owner.api.destroy(app.runtime.listEffect);
-        for (const signal of app.runtime.people.effects.slice(1)) {
+        owner.api.destroy(app.runtime.emptyListEffect);
+        for (const signal of app.data.peopleModel.effects.slice(1)) {
           owner.api.destroy(signal);
         }
         app.destroy();

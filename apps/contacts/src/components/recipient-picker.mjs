@@ -6,8 +6,7 @@ export const swbRecipientPicker = {
   styles: { 'swb-contacts-recipient-picker': styles },
   commands: {
     swb_searchRecipients(input) {
-      this.data.swb_recipientSearch = input.value;
-      this.runtime.people.state.options.search = input.value;
+      this.data.peopleModel.state.options.recipientSearch = input.value;
     },
     swb_chooseRecipient(_button, id) {
       return this.runtime.host.run(() =>
@@ -75,12 +74,12 @@ export const swbRecipientPicker = {
       if (error) {
         return this.runtime.host.managed.respond(event.id, { error });
       }
-      this.runtime.recipientSearch = this.data.search;
       this.runtime.recipientOwner = this.runtime.host.selectedWebId || '';
       this.runtime.recipientBook = this.runtime.collectionKey;
       this.runtime.recipientRequest = event;
-      this.data.swb_recipientSearch = '';
-      this.runtime.people.state.options.search = '';
+      const options = this.data.peopleModel.state.options;
+      options.recipientSearch = '';
+      options.pickingRecipient = true;
       this.actions.swb_renderRecipientPicker();
       this.data.swb_recipientSource = this.runtime.contactsResource;
       this.data.swb_recipientRequester = event.requester?.origin || '';
@@ -93,7 +92,7 @@ export const swbRecipientPicker = {
         return;
       }
       this.runtime.recipientRequest = null;
-      this.actions.setSearch(this.runtime.recipientSearch || '');
+      this.data.peopleModel.state.options.pickingRecipient = false;
       this.actions.swb_renderRecipientPicker();
     },
     async swb_returnRecipient() {

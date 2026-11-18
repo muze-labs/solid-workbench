@@ -6,14 +6,20 @@ export const contactList = {
   templates: { 'contacts-list': sourceContactsList },
   actions: {
     initializeList() {
-      const model = this.api.model({ data: [], options: { search: '' } });
+      const model = this.api.model({
+        data: [],
+        options: { search: '', recipientSearch: '', pickingRecipient: false }
+      });
       const owner = this;
       model.addEffect(function () {
         return owner.api.effect(() => this.state.data);
       });
       model.addEffect(function (input) {
         return owner.api.effect(() => {
-          const search = this.state.options.search;
+          const options = this.state.options;
+          const search = options.pickingRecipient
+            ? options.recipientSearch
+            : options.search;
           return owner.api
             .from(input.current)
             .where((row) => owner.actions.matchesPerson(row, search))
@@ -21,14 +27,13 @@ export const contactList = {
             .toArray();
         });
       });
-      this.runtime.people = model;
-      this.runtime.listEffect = this.api.effect(() => {
-        this.data.people = model.view.current;
+      this.data.peopleModel = model;
+      this.runtime.emptyListEffect = this.api.effect(() => {
         this.data.empty = model.view.current.length ? '' : 'No contacts yet.';
       });
     },
     refreshPeople() {
-      this.runtime.people.state.data = this.api
+      this.data.peopleModel.state.data = this.api
         .from(this.runtime.store.collection.list())
         .where(this.api.isPerson)
         .select((node) => ({
@@ -44,13 +49,12 @@ export const contactList = {
         .toArray();
     },
     setSearch(value) {
-      this.data.search = value;
-      this.runtime.people.state.options.search = value;
+      this.data.peopleModel.state.options.search = value ?? '';
       return this.actions.publish();
     },
     selectContact(id) {
       this.runtime.selected = id;
-      for (const person of this.runtime.people.state.data) {
+      for (const person of this.data.peopleModel.state.data) {
         person.selection['aria-current'] = person.id === id ? 'page' : null;
       }
       const node = id ? this.runtime.store.collection.get(id) : null;

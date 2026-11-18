@@ -4,7 +4,7 @@
     aria-label="Contacts"
   >
     <div class="swb-contacts-scroll">
-      <ul class="swb-person-list swb-contacts-people" data-simply-list="people">
+      <ul class="swb-person-list swb-contacts-people" data-simply-list="peopleModel.view.current">
         <template
           ><li class="swb-list-item">
             <button
@@ -57,7 +57,7 @@
           class="solid-control swb-control solid-toolbar-input solid-list-search-input"
           type="search"
           placeholder="Search"
-          data-simply-field="search"
+          data-simply-field="peopleModel.state.options.search"
           data-simply-command="search"
           data-simply-immediate="true"
       /></label>
