@@ -250,7 +250,7 @@ try {
   await capture('launcher-four-column-labels-phone');
   await evaluate(`document.documentElement.style.fontSize='120%'`);
   assert.equal(await evaluate(`(() => {
-    const labels=[...document.querySelectorAll('.muze-solid-design-label-one-line')];
+    const labels=[...document.querySelectorAll('.solid-label-one-line')];
     return labels.some(label=>label.scrollWidth>label.clientWidth) &&
       labels.every(label=>getComputedStyle(label).textOverflow==='ellipsis' &&
         getComputedStyle(label).whiteSpace==='nowrap' && getComputedStyle(label).display==='block');
@@ -435,9 +435,9 @@ try {
       assert.equal(await evaluate('solidLauncher.ui.runtime.shortcuts.state.options.insertBefore'),previousPreview,
         'Brief traversal does not flash an intermediate marker');
     }
-    await wait(`document.querySelector('.muze-solid-design-insert-before')===document.querySelectorAll('[data-muze-solid-launcher-screen=""] [data-swb-shortcut]')[${index}]`);
+    await wait(`document.querySelector('.solid-insert-before')===document.querySelectorAll('[data-muze-solid-launcher-screen=""] [data-swb-shortcut]')[${index}]`);
     const marker=await evaluate(`(() => {
-      const row=document.querySelector('.muze-solid-design-insert-before');
+      const row=document.querySelector('.solid-insert-before');
       const style=getComputedStyle(row,'::before');
       return {height:style.height,left:style.left};
     })()`);

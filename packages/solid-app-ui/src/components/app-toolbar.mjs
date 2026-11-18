@@ -1,9 +1,9 @@
 import styles from './compact-header.css' with { type: 'text' };
-import { muzeSolidDesignToolbar } from '@muze-labs/solid-design';
+import { solidToolbar } from '@muze-labs/solid-design';
 
 export const muzeSolidUiAppToolbar = {
   styles: { 'muze-solid-ui-compact-header': styles },
-  components: { muzeSolidDesignToolbar },
+  components: { solidToolbar },
   commands: {
     muzeSolidUiAppAction(element, command) {
       // Native disclosure buttons keep their default toggle and focus behavior.

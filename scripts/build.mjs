@@ -27,6 +27,29 @@ await writeFile(
   path.join(root, 'www/assets/theds.css'),
   await theds.actions.dsBuildSheet.call({ css: localDesignStyles })
 );
+// The published example asset flattens the package's CSS entry. Workbench apps
+// use the same named source sheets through their editable feature datasets.
+const designDirectory = path.join(root, 'packages/solid-design/src');
+const extension = await readFile(path.join(designDirectory, 'styles.css'), 'utf8');
+const sheets = [...extension.matchAll(/^@import "\.\/([^"]+\.css)";$/gm)];
+await writeFile(
+  path.join(root, 'www/assets/workbench-design.css'),
+  await theds.actions.dsBuildSheet.call({
+    css: {
+      layers: extension.split('\n', 1)[0],
+      ...Object.fromEntries(await Promise.all(sheets.map(async ([, file]) => [
+        path.parse(file).name,
+        await readFile(path.join(designDirectory, file), 'utf8')
+      ])))
+    }
+  })
+);
+const designExamples = path.join(root, 'www/design-examples');
+await mkdir(designExamples, { recursive: true });
+for (const filename of ['index.html', 'simplyflow.html']) {
+  const source = path.join(root, 'packages/solid-design/examples', filename);
+  await writeFile(path.join(designExamples, filename), await composeTemplate(source));
+}
 await copyFile(
   path.join(root, 'packages/solid-app-ui/src/feather-icons.svg'),
   path.join(root, 'www/assets/feather-icons.svg')
@@ -104,7 +127,7 @@ for (const name of [
   }
   await writeFile(
     path.join(root, `www/${route}/index.html`),
-    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title>${faviconLinks}<link rel="describedby" type="text/turtle" href="manifest.ttl"><style>@layer reset, setup, theme, base, component, page, utility;</style><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto swb-${name}"><div id="app" class="swb-root muze-solid-design-theme">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
+    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${pageTitle}</title>${faviconLinks}<link rel="describedby" type="text/turtle" href="manifest.ttl"><style>@layer reset, setup, theme, base, component, page, utility;</style><link rel="stylesheet" href="../assets/theds.css"></head><body class="ds-darkmode-auto swb-${name}"><div id="app" class="swb-root solid-theme">${body}</div><script type="module" src="../assets/${name}/src/index${scriptSuffix}.js"></script></body></html>`
   );
 }
 const settingsContent = await composeTemplate(
@@ -120,7 +143,7 @@ await writeFile(
   '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">' +
     '<title>Files settings</title><link rel="stylesheet" href="../assets/theds.css">' +
-    '</head><body class="ds-darkmode-auto"><div id="app" class="swb-root muze-solid-design-theme">' +
+    '</head><body class="ds-darkmode-auto"><div id="app" class="swb-root solid-theme">' +
     settingsShell.replace('{{content}}', settingsContent) +
     '</div><script type="module" src="../assets/files/src/settings-entry' +
     scriptSuffix +

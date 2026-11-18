@@ -1,5 +1,5 @@
 import styles from './contact-list.css' with { type: 'text' };
-import sourceContactsList from '../list.html' with { type: 'text' };
+import sourceContactsList from '../list.html?template' with { type: 'text' };
 
 export const contactList = {
   styles: { 'swb-contact-list': styles },

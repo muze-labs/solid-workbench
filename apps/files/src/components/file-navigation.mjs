@@ -81,7 +81,7 @@ export const fileNavigation = {
           '[popovertarget="muze-solid-files-location-sheet"]:focus'
         ) || this.container.querySelector('.muze-solid-files-current-folder');
       this.data.muzeSolidFilesLocationPlacement = {
-        style: this.actions.muzeSolidDesignToolbarPlacement(
+        style: this.actions.solidToolbarPlacement(
           sheet,
           button.getBoundingClientRect()
         )

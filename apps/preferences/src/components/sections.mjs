@@ -54,18 +54,18 @@ export const sections = {
     swb_focusSelectedSection() {
       this.container
         .querySelector(
-          '[data-muze-solid-design-sections] [aria-current="page"]'
+          '[data-solid-sections] [aria-current="page"]'
         )
         ?.focus();
     },
     swb_focusSection(event) {
       const button = event.target.closest(
-        '[data-muze-solid-design-sections] button'
+        '[data-solid-sections] button'
       );
       if (!button || !this.container.contains(button)) {
         return;
       }
-      const id = button.dataset.muzeSolidDesignSection;
+      const id = button.dataset.solidSection;
       for (const entry of this.data.swb_sections) {
         entry.attributes.tabindex = entry.id === id ? '0' : '-1';
       }
@@ -98,9 +98,9 @@ export const sections = {
       for (const entry of this.data.swb_sections) {
         entry.attributes['aria-current'] = entry.id === id ? 'page' : null;
         entry.attributes.class =
-          'muze-solid-design-list-row muze-solid-design-list-state swb-section-choice';
+          'solid-list-row solid-list-state swb-section-choice';
         entry.attributes.tabindex = entry.id === id ? '0' : '-1';
-        entry.attributes['data-muze-solid-design-section'] = entry.id;
+        entry.attributes['data-solid-section'] = entry.id;
       }
       this.data.swb_workspaceVisibility = {
         hidden:

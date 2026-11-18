@@ -4,9 +4,9 @@ export { contactEditing } from './components/contact-editing.mjs';
 export { contactSession } from './components/contact-session.mjs';
 
 export {
-  muzeSolidDesignDialog,
-  muzeSolidDesignDropdown,
-  muzeSolidDesignListDetails
+  solidDialog,
+  solidDropdown,
+  solidListDetails
 } from '../../../packages/solid-design/src/features.mjs';
 
-export { muzeSolidDesignToolbar } from '../../../packages/solid-design/src/features.mjs';
+export { solidToolbar } from '../../../packages/solid-design/src/features.mjs';

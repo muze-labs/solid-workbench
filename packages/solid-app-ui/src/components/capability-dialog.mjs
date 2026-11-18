@@ -307,7 +307,7 @@ export const muzeSolidUiCapabilityDialog = {
         fallback: { href: providerUrl, hidden: '' },
         discard: { hidden: '' }
       });
-      this.actions.muzeSolidDesignOpenDialog(dialog);
+      this.actions.solidOpenDialog(dialog);
       try {
         if (!call.broker || !(call.broker.target || call.broker.ready)) {
           throw new Error(
@@ -482,7 +482,7 @@ export const muzeSolidUiCapabilityDialog = {
       clearInterval(call.popupTimer);
       call.popup?.close();
       if (close) {
-        await this.actions.muzeSolidDesignCloseDialog(
+        await this.actions.solidCloseDialog(
           this.runtime.muzeSolidUiDialog
         );
       }
@@ -498,7 +498,7 @@ export const muzeSolidUiCapabilityDialog = {
           await this.actions.muzeSolidUiReleaseCapability(call, true);
         }
         else {
-          await this.actions.muzeSolidDesignCloseDialog(
+          await this.actions.solidCloseDialog(
             this.runtime.muzeSolidUiDialog
           );
         }

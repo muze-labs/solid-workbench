@@ -28,7 +28,7 @@ export const shortcuts = {
     },
     swb_shortcutSettings(button) {
       button.closest('[popover]')?.hidePopover();
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         button.closest('li').querySelector('dialog')
       );
     },
@@ -65,7 +65,7 @@ export const shortcuts = {
         this.api.applyIconOverride(node, icon);
         node.schema$name = name;
         await this.runtime.store.collection.save(node);
-        await this.actions.muzeSolidDesignCloseDialog(details);
+        await this.actions.solidCloseDialog(details);
         this.actions.render();
       });
     },
@@ -120,7 +120,7 @@ export const shortcuts = {
       return this.actions.muzeSolidCatalogOperation(async () => {
         await this.actions.addShortcut(values);
         form.reset();
-        await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
+        await this.actions.solidCloseDialog(form.closest('dialog'));
       });
     },
     remove(_element, id) {
@@ -472,8 +472,8 @@ export const shortcuts = {
         label,
         labelAttributes: {
           class: 'muze-solid-launcher-label ' +
-            (/\s/.test(label) ? 'muze-solid-design-label-two-lines'
-              : 'muze-solid-design-label-one-line')
+            (/\s/.test(label) ? 'solid-label-two-lines'
+              : 'solid-label-one-line')
         },
         mode: settings.override,
         anonymous: settings.anonymous,
@@ -523,17 +523,17 @@ export const shortcuts = {
           firstInGroup.add(row.group);
           row.shortcutAttributes.class =
             row.id === target
-              ? 'swb-shortcut swb-list-item muze-solid-design-insert-before' +
-                (first ? ' muze-solid-design-insert-inside' : '')
+              ? 'swb-shortcut swb-list-item solid-insert-before' +
+                (first ? ' solid-insert-inside' : '')
               : 'swb-shortcut swb-list-item';
         }
 
         for (const screen of this.runtime.launcherScreens.view.current || []) {
           screen.endAttributes.class =
-            'muze-solid-design-tool muze-solid-launcher-screen-end' +
+            'solid-tool muze-solid-launcher-screen-end' +
             (target === 'end:' + screen.id
-              ? ' muze-solid-design-insert-before' +
-                (screen.shortcuts.length ? '' : ' muze-solid-design-insert-inside')
+              ? ' solid-insert-before' +
+                (screen.shortcuts.length ? '' : ' solid-insert-inside')
               : '');
         }
       });

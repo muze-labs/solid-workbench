@@ -2,12 +2,12 @@ import { render as renderCobalt } from '@muze-labs/cobalt-rich-text-note';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 import template from '../cobalt-editor.html' with { type: 'text' };
 import styles from './cobalt-editor.css' with { type: 'text' };
-import { muzeSolidDesignToolbar } from '@muze-labs/solid-design';
+import { solidToolbar } from '@muze-labs/solid-design';
 
 export const muzeSolidCobaltEditor = {
   templates: { 'muze-solid-cobalt-editor': template },
   styles: { 'muze-solid-cobalt-editor': styles },
-  components: { muzeSolidDesignToolbar },
+  components: { solidToolbar },
   transformers: {
     muzeSolidCobaltRender(context, next) {
       context.value = {
@@ -447,7 +447,7 @@ export const muzeSolidCobaltEditor = {
         'data-docked': this.runtime.cobaltDocked ? '' : null,
         style: this.runtime.cobaltDocked
           ? ''
-          : this.actions.muzeSolidDesignToolbarPlacement(toolbar, anchor)
+          : this.actions.solidToolbarPlacement(toolbar, anchor)
       };
     },
     muzeSolidCobaltLink() {

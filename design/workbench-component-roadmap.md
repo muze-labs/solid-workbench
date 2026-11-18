@@ -17,12 +17,12 @@ Choose by the task the person is doing. The first six exports below already live
 
 | I need to… | Reuse today | What the app supplies |
 | --- | --- | --- |
-| Edit or confirm one thing | `muzeSolidDesignDialog` with a native dialog | Accessible name, initial focus, draft, save, and a close decision if edits are pending. |
-| Offer secondary actions | `muzeSolidDesignDropdown` with a native popover | Unique trigger/target IDs, named commands and enabled states. Arrow navigation is included. |
-| Browse items and inspect one | `muzeSolidDesignListDetails` | Two panes, a model, selected resource ID, focus on selection and a Back control on phones. |
-| Announce a completed action | `muzeSolidDesignToast` | A short confirmation. Keep problems requiring action visible inline. |
-| Place compact page actions | `muzeSolidDesignToolbar` | Semantic buttons, labels, pressed state and the owning app's commands. Use the shell's app toolbar integration where appropriate. |
-| Style fields, rows and search consistently | `muzeSolidDesignTheme` | Native labeled inputs, field validation and the model's search options. Contacts is a working search example. |
+| Edit or confirm one thing | `solidDialog` with a native dialog | Accessible name, initial focus, draft, save, and a close decision if edits are pending. |
+| Offer secondary actions | `solidDropdown` with a native popover | Unique trigger/target IDs, named commands and enabled states. Arrow navigation is included. |
+| Browse items and inspect one | `solidListDetails` | Two panes, a model, selected resource ID, focus on selection and a Back control on phones. |
+| Announce a completed action | `solidToast` | A short confirmation. Keep problems requiring action visible inline. |
+| Place compact page actions | `solidToolbar` | Semantic buttons, labels, pressed state and the owning app's commands. Use the shell's app toolbar integration where appropriate. |
+| Style fields, rows and search consistently | `solidTheme` | Native labeled inputs, field validation and the model's search options. Contacts is a working search example. |
 | Browse named collections | `muzeSolidCollectionBrowser` in solid-app-ui | Project entries with stable identity, title and groups, supply the host commands and choose cards or rows. Follow Notebook's composition and compare Presenter's configuration. [Shared dataset](../packages/solid-app-ui/src/components/collection-browser.mjs) · [Notebook](../apps/notebook/src/collections.mjs) · [Presenter](../apps/presenter/src/collections.mjs) |
 | Choose a person, resource or editor | Invoke Contacts, Files or an editor provider through the capability host | Task input, cancellation handling and validation of the returned selection. Reuse the provider's entire workflow. [Recipient](../apps/contacts/src/components/recipient-picker.mjs) · [Resource](../apps/files/src/components/resource-picker.mjs) · [Editor](../apps/viewer/src/components/cobalt-editor.mjs) |
 
@@ -62,8 +62,8 @@ Prototype a read-only table on the installed SimplyFlow model API. Use instance-
 | Priority | Deliverable | Evidence to advance |
 | --- | --- | --- |
 | 1. Launch the web | Deliver paste/drop and the dedicated server-side title and icon lookup before expanding widget discovery. | An unmodified third-party app opens from a saved deep link on phone and desktop with its original URL. |
-| 2. Make existing components easy to use | Publish an in-repo author guide and runnable examples for the six design datasets, suite shell and collection browser. Link installation, template composition and app-owned actions end to end. | A hand-written app and an independently AI-assisted version complete the same Tasks workflow using the documented imports. Record where each author had to inspect implementation or duplicate UI. |
-| 3. Extract through real apps | Use Tasks to exercise search, detail, edit, inline errors and recovery. Use Time Tracking for date/time entry and a comparison table. Add Calendar patterns with the first event workflow. | New shared features have working consumers, editable datasets and focused documentation. Verify drafts survive reload, sign-in loss, reconnection and conflicting updates. |
+| 2. Extract the reusable UI | Build the [Workbench extension for The DS](workbench-ds-extension.md), with a CSS entry, reusable SimplyFlow behavior and working examples. Start with compact search and anchored menus used by existing apps. | Plain HTML can use the extension. Migrated apps share the styles and behavior, with their editable feature datasets and core interactions verified. |
+| 3. Extract through real apps | Use Tasks to exercise search, detail, edit, inline errors and recovery. Use Time Tracking for date/time entry and a comparison table. Add Calendar patterns with the first event workflow. | Hand-written and AI-assisted Tasks versions exercise the same documented imports. New shared features have working consumers, editable datasets and focused documentation. Verify drafts survive reload, sign-in loss, reconnection and conflicting updates. |
 | 4. Deliver large tables | Evaluate the EduLinq and SimplyFlow composition using a realistic time-entry collection and the checks above. | Report which mode works at each measured size and text scale, with keyboard and screen-reader observations. Ship the simplest mode that supports the workflow. |
 | 5. Enable independent authors | Review package exports, template assets, versions, licenses, external setup and publication readiness. Exercise a clean out-of-tree starter on published npm dependencies. | Someone outside the monorepo can build, host and add the app by URL using only the guide. Optional capabilities can be enabled separately. |
 

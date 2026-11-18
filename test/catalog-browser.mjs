@@ -142,7 +142,7 @@ async function category(id) {
     document.querySelector('.muze-solid-catalog-layout').scrollLeft > 10`);
   if (needsBack) {
     await click(
-      '.muze-solid-catalog-dialog [data-simply-command=muzeSolidDesignShowList]'
+      '.muze-solid-catalog-dialog [data-simply-command=solidShowList]'
     );
     await wait(
       'document.querySelector(".muze-solid-catalog-layout").scrollLeft < 2'
@@ -230,7 +230,7 @@ try {
   );
   assert.equal(
     await evaluate(
-      'document.querySelector(".muze-solid-catalog-dialog .muze-solid-design-dialog-close").getBoundingClientRect().right >= innerWidth - 2'
+      'document.querySelector(".muze-solid-catalog-dialog .solid-dialog-close").getBoundingClientRect().right >= innerWidth - 2'
     ),
     true
   );
@@ -255,7 +255,7 @@ try {
     downloadThroughput: -1,
     uploadThroughput: -1
   });
-  await click('[data-simply-command=muzeSolidDesignShowList]');
+  await click('[data-simply-command=solidShowList]');
   await wait('document.activeElement.getAttribute("aria-current") === "page"');
   await key('ArrowDown', 'ArrowDown', 40);
   assert.equal(
@@ -268,7 +268,7 @@ try {
   );
   await key('Tab', 'Tab', 9);
   await wait(
-    'document.activeElement.getAttribute("aria-label") === "Search apps"'
+    'document.activeElement.labels?.[0]?.textContent.trim() === "Search apps"'
   );
   await category('all');
   await click('[data-simply-command=muzeSolidCatalogInfo]');
@@ -295,7 +295,7 @@ try {
   await click('[data-simply-command=muzeSolidCatalogInfoBack]');
   await category('all');
   await screenshot('catalog-phone');
-  await click('[aria-label="Search apps"]');
+  await click('.muze-solid-catalog-dialog input[type="search"]');
   await key('Tab', 'Tab', 9);
   await key('Tab', 'Tab', 9);
   assert.equal(
@@ -336,7 +336,7 @@ try {
     'muzeSolidLauncherApp.runtime.catalogModel?.state.data.length === 11 && !muzeSolidLauncherApp.runtime.catalogBusy'
   );
   await category('all');
-  await click('[aria-label="Search apps"]');
+  await click('.muze-solid-catalog-dialog input[type="search"]');
   await page.send('Input.insertText', { text: 'Independent catalog' });
   await wait(
     'document.querySelectorAll(".muze-solid-catalog-card").length === 1'

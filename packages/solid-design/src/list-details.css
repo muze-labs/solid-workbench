@@ -1,6 +1,6 @@
 /* DS adapter: resolve host values at this component boundary. */
 @layer theme {
-  .muze-solid-design-list-details {
+  .solid-list-details {
     --swb-list-details-space: var(--ds-space);
     --swb-list-details-surface: var(--ds-color-background);
     --swb-list-details-space-small: var(--ds-space-d2);
@@ -9,7 +9,7 @@
 }
 
 @layer component {
-  .muze-solid-design-list-details {
+  .solid-list-details {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -33,11 +33,11 @@
     margin-bottom: 0;
     z-index: 2;
   }
-  .muze-solid-design-list-back {
+  .solid-list-back {
     display: block;
   }
   @media (min-width: 720px) {
-    .muze-solid-design-list-details {
+    .solid-list-details {
       display: grid;
       grid-template-columns: var(--swb-list-details-list-width, 20rem) minmax(
           0,
@@ -45,7 +45,7 @@
         );
       scroll-snap-type: none;
     }
-    .muze-solid-design-list-back {
+    .solid-list-back {
       display: none;
     }
   }
@@ -54,7 +54,7 @@
     width: 100%;
     white-space: normal;
   }
-  .muze-solid-design-list-preview {
+  .solid-list-preview {
     display: block;
     max-inline-size: 100%;
     max-block-size: 12rem;
@@ -62,14 +62,14 @@
   }
   @media (max-height: 400px) {
     /* A sticky toolbar must not fill the whole zoomed/landscape pane. */
-    .muze-solid-design-list-details {
+    .solid-list-details {
       --swb-list-toolbar-position: static;
     }
   }
 }
 
 @layer component {
-  .muze-solid-design-list-row {
+  .solid-list-row {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -82,7 +82,7 @@
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--muze-solid-design-text, CanvasText);
+    color: var(--solid-text, CanvasText);
     font: inherit;
     font-size: 0.875rem;
     text-align: start;
@@ -91,55 +91,32 @@
     overflow-wrap: anywhere;
     box-shadow: none;
   }
-  .muze-solid-design-list-state {
+  .solid-list-state {
     background: transparent;
   }
-  .muze-solid-design-list-state:hover {
-    background: var(--muze-solid-design-chrome, ButtonFace);
+  .solid-list-state:hover {
+    background: var(--solid-chrome, ButtonFace);
   }
-  .muze-solid-design-list-state[aria-current='page'],
-  .muze-solid-design-list-state[aria-current='true'],
-  .muze-solid-design-list-state[aria-selected='true'] {
-    background: var(--muze-solid-design-selected, Highlight);
-    color: var(--muze-solid-design-text, CanvasText);
+  .solid-list-state[aria-current='page'],
+  .solid-list-state[aria-current='true'],
+  .solid-list-state[aria-selected='true'] {
+    background: var(--solid-selected, Highlight);
+    color: var(--solid-text, CanvasText);
   }
-  .muze-solid-design-list-state:focus-visible {
-    outline: 2px solid var(--muze-solid-design-focus, Highlight);
+  .solid-list-state:focus-visible {
+    outline: 2px solid var(--solid-focus, Highlight);
     outline-offset: -3px;
   }
 }
 
 @layer component {
   .swb-list-pane.ds-panels-list {
-    background: var(--muze-solid-design-surface, Canvas);
-    border-inline-end: 1px solid var(--muze-solid-design-divider, GrayText);
+    background: var(--solid-surface, Canvas);
+    border-inline-end: 1px solid var(--solid-divider, GrayText);
   }
   @media (max-width: 719px) {
     .swb-list-pane.ds-panels-list {
       border-inline-end: 0;
     }
-  }
-}
-
-@layer component {
-  /* Compact list search is an inline field, not a stacked form label. */
-  .muze-solid-design-list-search {
-    position: relative;
-    display: flex;
-    align-items: center;
-    flex: 1;
-    min-inline-size: 0;
-    margin: 0;
-  }
-  .muze-solid-design-list-search-icon {
-    position: absolute;
-    inset-inline-start: 12px;
-    pointer-events: none;
-  }
-  .muze-solid-design-list-search-input {
-    min-inline-size: 0;
-    inline-size: 100%;
-    padding-inline-start: 40px;
-    background: transparent;
   }
 }

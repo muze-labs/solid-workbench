@@ -308,7 +308,7 @@ try {
   await section('background');
   await change('[name=swb_backgroundChoice]', 'bg6');
   await wait(
-    '!document.querySelector(".muze-solid-design-list-preview").hidden',
+    '!document.querySelector(".solid-list-preview").hidden',
     true
   );
   assert.equal(

@@ -201,7 +201,7 @@ try {
     for (const scale of [100, 120]) {
       const label = await evaluate(`(() => {
         document.documentElement.style.fontSize = '${scale}%';
-        const label = [...document.querySelectorAll('.muze-solid-design-label-two-lines')]
+        const label = [...document.querySelectorAll('.solid-label-two-lines')]
           .find(element => element.textContent.includes('deliberately long'));
         const style=getComputedStyle(label);
         return {headerSize:parseFloat(getComputedStyle(document.querySelector('.swb-header-title')).fontSize),
@@ -433,11 +433,11 @@ try {
         data: drag.data
       });
     }
-    await wait('document.querySelector(".muze-solid-design-insert-before")');
+    await wait('document.querySelector(".solid-insert-before")');
     assert.deepEqual(await order(), beforeDrag, 'Preview does not reorder data');
     assert.equal(
       await evaluate(`(() => {
-      const target=document.querySelector('.muze-solid-design-insert-before');
+      const target=document.querySelector('.solid-insert-before');
       return target===document.querySelector(${JSON.stringify(dropAtEnd ? '.muze-solid-launcher-screen-end' : '[data-swb-shortcut]')}) &&
         getComputedStyle(target,'::before').width==='4px';
     })()`),
@@ -461,7 +461,7 @@ try {
     );
     await wait(`document.activeElement.matches('.swb-shortcut-link') && document.activeElement.textContent.trim() === ${JSON.stringify(dropAtEnd ? beforeDrag[0] : beforeDrag.at(-1))}`);
     await page.send('Input.setInterceptDrags', { enabled: false });
-    await wait('!document.querySelector(".muze-solid-design-insert-before")');
+    await wait('!document.querySelector(".solid-insert-before")');
     console.log('PASS native mouse drag reorders the responsive grid');
   }
   const beforeMovePreview = await order();
@@ -473,9 +473,9 @@ try {
   }
   await key('Enter', 'Enter', 13, '\r');
   await key('Tab', 'Tab', 9);
-  await wait('document.querySelector(".muze-solid-design-insert-before")');
+  await wait('document.querySelector(".solid-insert-before")');
   await key('Escape', 'Escape', 27);
-  await wait('!document.querySelector(".muze-solid-design-insert-before")');
+  await wait('!document.querySelector(".solid-insert-before")');
   assert.deepEqual(await order(), beforeMovePreview);
   console.log('PASS keyboard move preview cancels without changing order');
 
@@ -529,8 +529,8 @@ try {
     if (route === 'contacts') {
       await wait('window.solidContacts?.store');
       const search = await evaluate(`(() => {
-        const input = document.querySelector('.muze-solid-design-list-search-input');
-        const icon = document.querySelector('.muze-solid-design-list-search-icon');
+        const input = document.querySelector('.solid-list-search-input');
+        const icon = document.querySelector('.solid-list-search-icon');
         const field = input.getBoundingClientRect();
         const glyph = icon.getBoundingClientRect();
         return {inside: glyph.left >= field.left && glyph.right <= field.right
@@ -551,9 +551,9 @@ try {
         .getAnimations({subtree:true}).map(animation => animation.finished))`);
       const dialogChrome = await evaluate(`(() => {
         const dialog = document.querySelector('.new-contact-dialog');
-        const header = dialog.querySelector('.muze-solid-design-dialog-header');
+        const header = dialog.querySelector('.solid-dialog-header');
         const title = header.querySelector('.swb-dialog-title');
-        const close = header.querySelector('.muze-solid-design-dialog-close');
+        const close = header.querySelector('.solid-dialog-close');
         return {font:getComputedStyle(title).fontSize,
           header:header.getBoundingClientRect().height,
           title:title.getBoundingClientRect().height,
@@ -567,17 +567,17 @@ try {
       assert.equal(dialogChrome.close, 44);
       assert.match(dialogChrome.slant, /polygon/);
       assert.notEqual(dialogChrome.background, 'rgba(0, 0, 0, 0)');
-      await checkMarker('.new-contact-dialog .muze-solid-design-marker-button');
+      await checkMarker('.new-contact-dialog .solid-marker-button');
       await click('.new-contact-dialog [name=name]');
       await page.send('Input.insertText', { text: 'UI review' });
       await key('Enter', 'Enter', 13, '\r');
       await wait('!document.querySelector(".new-contact-dialog").open');
     }
-    await wait('document.querySelector(".muze-solid-design-list-row")');
+    await wait('document.querySelector(".solid-list-row")');
     await evaluate(
       `document.body.classList.remove('ds-darkmode','ds-darkmode-auto'); document.body.classList.add('ds-lightmode')`
     );
-    const row = '.muze-solid-design-list-row';
+    const row = '.solid-list-row';
     await page.send('Input.dispatchMouseEvent', {
       type: 'mouseMoved',
       x: 0,
@@ -735,7 +735,7 @@ try {
     });
     const widths = await evaluate(`[
       '.swb-suite-header', '.swb-app-content',
-      '.muze-solid-files-context', '.muze-solid-design-list-details'
+      '.muze-solid-files-context', '.solid-list-details'
     ].map(selector => {
       const rect = document.querySelector(selector).getBoundingClientRect();
       return {selector, left:rect.left, width:rect.width};
@@ -759,13 +759,13 @@ try {
     'PASS resource/section/person tab titles describe current content'
   );
   await visit('notebook');
-  await wait('document.querySelector(".muze-solid-design-toolbar-floating")');
+  await wait('document.querySelector(".solid-toolbar-floating")');
   const shadows = {};
   for (const mode of ['light', 'dark']) {
     shadows[mode] = await evaluate(`(() => {
       document.body.classList.remove('ds-lightmode','ds-darkmode','ds-darkmode-auto');
       document.body.classList.add('ds-${mode}mode');
-      return getComputedStyle(document.querySelector('.muze-solid-design-toolbar-floating')).boxShadow;
+      return getComputedStyle(document.querySelector('.solid-toolbar-floating')).boxShadow;
     })()`);
   }
   assert.notEqual(shadows.light, shadows.dark);

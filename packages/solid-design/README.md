@@ -9,38 +9,64 @@ Register the components you use in your SimplyFlow app:
 
 ```js
 import {
-  muzeSolidDesignDialog,
-  muzeSolidDesignDropdown,
-  muzeSolidDesignListDetails
+  solidDialog,
+  solidDropdown,
+  solidListDetails
 } from '@muze-labs/solid-design';
 
 const components = {
-  muzeSolidDesignDialog,
-  muzeSolidDesignDropdown,
-  muzeSolidDesignListDetails
+  solidDialog,
+  solidDropdown,
+  solidListDetails
 };
 ```
 
 The suite loads the-ds base stylesheet. This package supplies the shared layout
-and interaction styles through SimplyFlow's `styles` entries. Existing component
-entries, commands, style identities and root classes retain their
-`muzeSolidDesign` / `muze-solid-design` prefixes. New part classes use `swb-`.
+and interaction styles through SimplyFlow's `styles` entries. Component
+entries and commands use the `solid` prefix. Style identities and root
+classes use `solid-`. New part classes use `swb-`.
 Existing the-ds classes and variables retain their `ds-` namespace.
 Keep app-specific bindings and commands in the owning app.
+
+## CSS entry and runnable examples
+
+Load the built The DS stylesheet, then `@muze-labs/solid-design/styles.css`
+through a package-aware build. The Workbench build emits the same extension as
+`/assets/workbench-design.css` for direct HTML linking. Add
+`solid-theme` to the themed root. The extension preserves the
+cascade order `reset, setup, theme, base, component, page, utility`.
+
+Run `npm run dev` from the workspace and open `/design-examples/` or
+`/design-examples/simplyflow.html`. Both examples use local data and assets.
+Their source is in [examples](examples/).
+Both examples use a native `search` landmark and labeled input. The plain
+example submits through `form` and the SimplyFlow example reports its filter
+result through `output`. Native buttons and link lists make up the popovers.
+The decorative search SVG is hidden from accessibility APIs. [HTML search](https://html.spec.whatwg.org/multipage/grouping-content.html#the-search-element)
+· [HTML output](https://html.spec.whatwg.org/multipage/form-elements.html#the-output-element)
+
+
+| Pattern | CSS and markup | SimplyFlow |
+| --- | --- | --- |
+| Compact search | Wrap a search input in a native label. Put the text in the label. Use the search icon partial if needed. | Include `solidListDetails` for the shared style in an app dataset. Bind an immediate command for model filtering or a form command for submitted search. |
+| Anchored popover | Use a button and `popovertarget` with a matching unique ID. The shared surface supports links, commands or a form. | Include `solidTheme` for the surface. For an action list, add `solidDropdown` and its keyboard scope. |
+| Dialog, panes, toast and toolbar | The same named sheets are included in the CSS entry. See the contracts below. | Use the matching exported datasets for behavior. |
+
+A plain page links the extension stylesheet. In a SimplyFlow app the named
+styles are installed from the datasets and remain editable. The two
+approaches use the same source sheets.
 
 ## Styling boundaries
 
 The generated shell declares `reset, setup, theme, base, component, page,
-utility` before loading DS styles. Named feature styles keep their existing
-SimplyFlow identities and source origins. Their `theme` sections adapt DS tokens
+utility` before loading DS styles. Named feature styles expose their SimplyFlow
+identities and source origins. Their `theme` sections adapt DS tokens
 on component roots; implementations use component-owned `--swb-*` properties
 with standalone fallbacks. Replace the adapter to connect another host design.
 Override a mapped property on its component root: an ancestor value cannot
 override a property initialized directly on that root.
 
-New part classes use the suite's shorter `swb-` namespace. Existing component
-identities, commands and public `muze-solid-design-*` roots are retained. These
-components still compose DS primitives; the variable boundary does not promise
+New part classes use the suite's `swb-` namespace. These components still compose DS primitives; the variable boundary does not promise
 that all DS markup can be removed without replacing that integration.
 
 | Component | Explicit styling/structure contract |
@@ -65,17 +91,17 @@ restorable in place; ordinary apps gain no stylesheet updater or IDE machinery.
 
 ## Dialogs
 
-Use a native `<dialog class="ds-dialog muze-solid-design-dialog">`. Its form or
-content contains `.muze-solid-design-dialog-header`,
-`.muze-solid-design-dialog-content` and `.muze-solid-design-dialog-footer`.
+Use a native `<dialog class="ds-dialog solid-dialog">`. Its form or
+content contains `.solid-dialog-header`,
+`.solid-dialog-content` and `.solid-dialog-footer`.
 Content scrolls within the viewport limit; the header and footer stay visible.
 The title is optional; give untitled dialogs an accessible label. A close button
-uses `.muze-solid-design-dialog-close` and an accessible name.
+uses `.solid-dialog-close` and an accessible name.
 
-Use `actions.muzeSolidDesignOpenDialog(dialog)` and
-`actions.muzeSolidDesignCloseDialog(dialog)` for shared native lifecycle motion.
+Use `actions.solidOpenDialog(dialog)` and
+`actions.solidCloseDialog(dialog)` for shared native lifecycle motion.
 The latter returns a promise that resolves after native close and focus return.
-The `muzeSolidDesignCloseDialog` command closes the nearest dialog through that
+The `solidCloseDialog` command closes the nearest dialog through that
 action. Use it only when closing is safe. Forms that have unsaved work or an in-flight save supply their own
 close command; the capability host checks its provider before closing. Opening,
 closing and focus remain native browser operations. SimplyFlow renders the
@@ -83,10 +109,10 @@ content and binds its state.
 
 ## Dropdowns
 
-Add `.muze-solid-design-dropdown` to a the-ds dropdown. Its link/button rows get
+Add `.solid-dropdown` to a the-ds dropdown. Its link/button rows get
 consistent full-width targets and clear blue hover, keyboard-focus and current
 item styling. Use the-ds markup with a native popover and a prefixed, unique ID.
-Use `data-simply-shortcuts="muzeSolidDesignDropdown"` on the dropdown wrapper
+Use `data-simply-shortcuts="solidDropdown"` on the dropdown wrapper
 to enable Arrow Down/Up on its trigger and rows. Arrows open the native popover,
 focus the first/last row and wrap through enabled visible rows. Native Tab,
 Enter/Space, Escape and outside-click behavior remains available. Pointer opening
@@ -96,24 +122,24 @@ system is needed.
 
 ## Lists and details
 
-Add `.muze-solid-design-list-details` to a container with two `.ds-panels-pane`
+Add `.solid-list-details` to a container with two `.ds-panels-pane`
 children, using `.ds-panels-list` and `.ds-panels-details`. On wider screens these
 are adjacent panes; on smaller screens they are horizontally scrollable panes
 with snap positions. Each pane scrolls independently. List toolbars stay visible
 at its lower edge.
 
-A details-pane Back button can use `.muze-solid-design-list-back` and the command
-`muzeSolidDesignShowList`. The app's selection command scrolls/focuses its details
+A details-pane Back button can use `.solid-list-back` and the command
+`solidShowList`. The app's selection command scrolls/focuses its details
 pane when appropriate. Lists, details and selection data remain owned by the app;
 this component provides presentation and navigation, not a parallel list model.
 
 
 ## Toasts
 
-Register `muzeSolidDesignToast` and mount its `muze-solid-design-toast` template in
-the owning app. Initialize `data.muzeSolidDesignNotice` to
+Register `solidToast` and mount its `solid-toast` template in
+the owning app. Initialize `data.solidNotice` to
 `{ text: '', visibility: { hidden: '' } }` and provide `runtime: {}`. Call
-`actions.muzeSolidDesignNotify(text)` for nonessential completion confirmations.
+`actions.solidNotify(text)` for nonessential completion confirmations.
 It replaces the current notice, announces through a polite atomic status region,
 and expires after eight seconds unless hovered/focused. Dismissal is labelled;
 keyboard dismissal returns focus to the previous control. Destroying the instance
@@ -130,7 +156,7 @@ not a persistent notification inbox.
 Shared dialogs use 300ms fade/scale and native backdrop animations; reduced
 motion skips them. Native modality remains until closing finishes. Simple dialogs
 can opt into animated Escape with
-`data-simply-behavior="muzeSolidDesignDialog"`. Guarded capability dialogs keep
+`data-simply-behavior="solidDialog"`. Guarded capability dialogs keep
 their own cancel listener and invoke the shared close action only after permission
 to close is established. Fullscreen phone layout applies below 720px. Native Web
 Animations fills Firefox's missing CSS deferred-overlay transition support;
@@ -138,13 +164,13 @@ no dialog method is patched and no backdrop DOM is constructed.
 
 ## Shared Workbench theme
 
-`muzeSolidDesignTheme` adapts the supplied
+`solidTheme` adapts the supplied
 `design/solid-workbench-theme.zip` into editable named styles. The suite opts in
-with `muze-solid-design-theme` on its root. Appearance classes on the containing
+with `solid-theme` on its root. Appearance classes on the containing
 body select light, dark or system mode through the existing Preferences API.
 The component maps the installed the-ds tokens; do not load the archive's vendor
 stylesheet or example script. All component classes and custom properties use
-the `muze-solid-design-` prefix.
+the `solid-` prefix.
 
 Forms use `-control`, `-label`, `-choice-input`, `-button`, `-button-primary` and
 `-button-quiet`. Native selects have a `-select-wrap` and decorative `-chevron`;
@@ -155,38 +181,40 @@ Thumbnail lists may use only the state class to preserve their content geometry.
 
 The viewport's main application bar holds buttons, text and status, never form
 inputs. Contextual forms belong in content panels or dialogs. Floating toolbar
-surfaces use `--muze-solid-design-elevation`: shadow in light mode, glow in dark.
+surfaces use `--solid-elevation`: shadow in light mode, glow in dark.
 Existing dialog lifecycle, focus restoration and draft-close guards are retained.
 
-List-details search uses `muze-solid-design-list-search` on its labelled field,
-`muze-solid-design-list-search-icon` on a decorative, aria-hidden SVG, and
-`muze-solid-design-list-search-input` alongside `muze-solid-design-control` on
-the native search input. Give the input an accessible name. This compact field
-keeps its icon inside, reserves text space to the right, and has a transparent
-background; its action row should also be transparent. Do not apply the stacked
-`muze-solid-design-label` class. Contacts supplies the current composition;
-filtering behavior remains owned by each app's SimplyFlow model.
+List-details search uses `solid-list-search` on the native label
+and `solid-list-search-input` with `solid-control`
+on the input. For a compact field, place the label text in a span with
+`solid-list-search-label`. Keep the label text meaningful.
+Include [search-icon.html](src/search-icon.html) immediately before the input
+to get a decorative icon and the corresponding input inset. The example
+sprite path is relative to the final page.
 
-Native popovers use `muze-solid-design-popup` for borderless, theme-aware medium
-shadow/glow. For CSS-anchored dropdowns, put `muze-solid-design-popup-scope` on
-the local wrapper, `muze-solid-design-popup-trigger` on its button and
-`muze-solid-design-popup-anchored` on the popover. Use native `popovertarget` and
-`popover="auto"`; positioning has inline/block fallbacks and a bounded scroll
-area. These are directly applied classes, without descendant overrides.
+Use `solid-popup` for the themed popover surface and
+`solid-popup-anchored` for bounded positioning. Add
+`solid-popup-scope` to the common wrapper and
+`solid-popup-trigger` to the button for the named anchor recipe.
+Set `--solid-popup-anchor` on each wrapper to a distinct
+dash-prefixed name. This also places the menus independently in browsers
+that support CSS anchors before supporting implicit popover anchoring.
+The trigger uses native `popovertarget` and the panel uses `popover="auto"`.
+In browsers without CSS anchor positioning the panel opens centered.
 The shared shell closes outside auto popovers when focus enters an owned iframe;
 it does not inspect frame contents or close a popover containing that iframe.
 Fixed toolbars are transparent by default; floating toolbars keep a surface.
-`muze-solid-design-toolbar-title` follows the shared 20px default title scale.
+`solid-toolbar-title` follows the shared 20px default title scale.
 
-Insertion markers use `--muze-solid-design-insert-height` (default `4rem`)
-independently of row text height. Apply `muze-solid-design-insert-inside` at
+Insertion markers use `--solid-insert-height` (default `4rem`)
+independently of row text height. Apply `solid-insert-inside` at
 a container's first slot to place the marker inside its boundary; other slots
 retain the between-item offset.
 
-`--muze-solid-design-toast-available-width` optionally reserves horizontal room
+`--solid-toast-available-width` optionally reserves horizontal room
 for a floating action while keeping the normal bottom-right toast position.
 Its default is `calc(100vw - 2rem)`; Launcher reserves its bottom-left Add action.
 
-Choose either `muze-solid-design-label-one-line` or
-`muze-solid-design-label-two-lines` for overflow ellipsis; the one-line utility
+Choose either `solid-label-one-line` or
+`solid-label-two-lines` for overflow ellipsis; the one-line utility
 uses block display and nowrap, and the two-line utility uses line clamping.

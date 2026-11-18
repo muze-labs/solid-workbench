@@ -1,89 +1,89 @@
 import template from '../toast.html' with { type: 'text' };
 import styles from '../toast.css' with { type: 'text' };
 
-export const muzeSolidDesignToast = {
-  templates: { 'muze-solid-design-toast': template },
-  styles: { 'muze-solid-design-toast': styles },
+export const solidToast = {
+  templates: { 'solid-toast': template },
+  styles: { 'solid-toast': styles },
   behaviors: {
-    muzeSolidDesignToast(element) {
-      this.runtime.muzeSolidDesignToastElement = element;
+    solidToast(element) {
+      this.runtime.solidToastElement = element;
       const rememberFocus = (event) => {
         if (!element.contains(event.relatedTarget)) {
-          this.runtime.muzeSolidDesignToastReturn = event.relatedTarget;
+          this.runtime.solidToastReturn = event.relatedTarget;
         }
       };
       element.addEventListener('focusin', rememberFocus);
       return () => {
-        clearTimeout(this.runtime.muzeSolidDesignToastTimer);
+        clearTimeout(this.runtime.solidToastTimer);
         element.removeEventListener('focusin', rememberFocus);
       };
     }
   },
   commands: {
-    muzeSolidDesignDismissToast() {
-      this.actions.muzeSolidDesignHideToast();
+    solidDismissToast() {
+      this.actions.solidHideToast();
     }
   },
   actions: {
-    muzeSolidDesignNotify(text) {
-      clearTimeout(this.runtime.muzeSolidDesignToastTimer);
+    solidNotify(text) {
+      clearTimeout(this.runtime.solidToastTimer);
       if (!text) {
-        this.actions.muzeSolidDesignHideToast();
+        this.actions.solidHideToast();
         return;
       }
-      this.data.muzeSolidDesignNotice.text = text;
-      this.data.muzeSolidDesignNotice.visibility = {
+      this.data.solidNotice.text = text;
+      this.data.solidNotice.visibility = {
         hidden: null,
         inert: null,
-        'data-muze-solid-design-toast-closing': null
+        'data-solid-toast-closing': null
       };
-      this.runtime.muzeSolidDesignToastTimer = setTimeout(
-        () => this.actions.muzeSolidDesignExpireToast(),
+      this.runtime.solidToastTimer = setTimeout(
+        () => this.actions.solidExpireToast(),
         8000
       );
     },
-    muzeSolidDesignExpireToast() {
-      const element = this.runtime.muzeSolidDesignToastElement;
+    solidExpireToast() {
+      const element = this.runtime.solidToastElement;
       if (element?.matches(':hover, :focus-within')) {
-        this.runtime.muzeSolidDesignToastTimer = setTimeout(
-          () => this.actions.muzeSolidDesignExpireToast(),
+        this.runtime.solidToastTimer = setTimeout(
+          () => this.actions.solidExpireToast(),
           1000
         );
         return;
       }
-      this.actions.muzeSolidDesignHideToast();
+      this.actions.solidHideToast();
     },
-    muzeSolidDesignHideToast() {
-      clearTimeout(this.runtime.muzeSolidDesignToastTimer);
-      const element = this.runtime.muzeSolidDesignToastElement;
+    solidHideToast() {
+      clearTimeout(this.runtime.solidToastTimer);
+      const element = this.runtime.solidToastElement;
       if (element?.contains(document.activeElement)) {
-        this.runtime.muzeSolidDesignToastReturn?.focus({ preventScroll: true });
+        this.runtime.solidToastReturn?.focus({ preventScroll: true });
       }
       if (
         !element ||
         element.hidden ||
         window.matchMedia('(prefers-reduced-motion: reduce)').matches
       ) {
-        this.actions.muzeSolidDesignFinishToast();
+        this.actions.solidFinishToast();
         return;
       }
-      this.data.muzeSolidDesignNotice.visibility = {
+      this.data.solidNotice.visibility = {
         hidden: null,
         inert: '',
-        'data-muze-solid-design-toast-closing': ''
+        'data-solid-toast-closing': ''
       };
-      this.runtime.muzeSolidDesignToastTimer = setTimeout(
-        () => this.actions.muzeSolidDesignFinishToast(),
+      this.runtime.solidToastTimer = setTimeout(
+        () => this.actions.solidFinishToast(),
         300
       );
     },
-    muzeSolidDesignFinishToast() {
-      this.data.muzeSolidDesignNotice.visibility = {
+    solidFinishToast() {
+      this.data.solidNotice.visibility = {
         hidden: '',
         inert: null,
-        'data-muze-solid-design-toast-closing': null
+        'data-solid-toast-closing': null
       };
-      this.data.muzeSolidDesignNotice.text = '';
+      this.data.solidNotice.text = '';
     }
   }
 };

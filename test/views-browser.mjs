@@ -371,7 +371,7 @@ try {
     `const account=${viewer}.runtime.host.view;
     account.actions.message('');
     const dialog=account.container.querySelector('.muze-solid-ui-recovery-dialog');
-    await account.actions.muzeSolidDesignOpenDialog(dialog);`
+    await account.actions.solidOpenDialog(dialog);`
   );
   await until(
     page,
@@ -390,7 +390,7 @@ try {
   await run(
     page,
     `const account=${viewer}.runtime.host.view;
-    await account.actions.muzeSolidDesignCloseDialog(
+    await account.actions.solidCloseDialog(
       account.container.querySelector('.muze-solid-ui-recovery-dialog'));`
   );
   const cold = await run(

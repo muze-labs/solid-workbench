@@ -1,10 +1,10 @@
 import styles from '../dialog.css' with { type: 'text' };
 
-export const muzeSolidDesignDialog = {
-  api: { muzeSolidDesignDialogClosing: new WeakMap() },
-  styles: { 'muze-solid-design-dialog': styles },
+export const solidDialog = {
+  api: { solidDialogClosing: new WeakMap() },
+  styles: { 'solid-dialog': styles },
   behaviors: {
-    muzeSolidDesignDialog(dialog) {
+    solidDialog(dialog) {
       const cancel = (event) => {
         // A nested app and its shell can both compose this behavior. Let the
         // first handler own cancellation, including its pending close animation.
@@ -12,7 +12,7 @@ export const muzeSolidDesignDialog = {
           return;
         }
         event.preventDefault();
-        this.actions.muzeSolidDesignCloseDialog(dialog);
+        this.actions.solidCloseDialog(dialog);
       };
       dialog.addEventListener('cancel', cancel);
       return () => {
@@ -24,35 +24,35 @@ export const muzeSolidDesignDialog = {
     }
   },
   commands: {
-    muzeSolidDesignCloseDialog(button) {
-      return this.actions.muzeSolidDesignCloseDialog(button.closest('dialog'));
+    solidCloseDialog(button) {
+      return this.actions.solidCloseDialog(button.closest('dialog'));
     }
   },
   actions: {
-    muzeSolidDesignOpenDialog(dialog) {
+    solidOpenDialog(dialog) {
       // Lifecycle belongs to the element even when two composed apps use it.
-      const pending = this.api.muzeSolidDesignDialogClosing.get(dialog);
+      const pending = this.api.solidDialogClosing.get(dialog);
       if (pending) {
         return pending.then(() =>
-          this.actions.muzeSolidDesignOpenDialog(dialog)
+          this.actions.solidOpenDialog(dialog)
         );
       }
       if (dialog.open) {
         return;
       }
       dialog.showModal();
-      return this.actions.muzeSolidDesignAnimateDialog(dialog, true);
+      return this.actions.solidAnimateDialog(dialog, true);
     },
-    muzeSolidDesignCloseDialog(dialog) {
+    solidCloseDialog(dialog) {
       if (!dialog.open) {
         return Promise.resolve();
       }
-      const closing = this.api.muzeSolidDesignDialogClosing;
+      const closing = this.api.solidDialogClosing;
       if (closing.has(dialog)) {
         return closing.get(dialog);
       }
       const completed = this.actions
-        .muzeSolidDesignAnimateDialog(dialog, false)
+        .solidAnimateDialog(dialog, false)
         .then(() => {
           dialog.close();
           closing.delete(dialog);
@@ -60,7 +60,7 @@ export const muzeSolidDesignDialog = {
       closing.set(dialog, completed);
       return completed;
     },
-    async muzeSolidDesignAnimateDialog(dialog, opening) {
+    async solidAnimateDialog(dialog, opening) {
       const surfaceStyle = getComputedStyle(dialog);
       const currentSurface = {
         opacity: surfaceStyle.opacity,

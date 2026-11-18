@@ -15,7 +15,7 @@ export const fileEditing = {
     },
     muzeSolidFilesNewFolder() {
       this.data.muzeSolidFilesCreateStatus = '';
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.muze-solid-files-create-dialog')
       );
     },
@@ -27,7 +27,7 @@ export const fileEditing = {
           await this.actions.makeFolder(name);
           this.data.muzeSolidFilesCreateStatus = '';
           form.reset();
-          await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
+          await this.actions.solidCloseDialog(form.closest('dialog'));
         }
         catch (error) {
           this.data.muzeSolidFilesCreateStatus =

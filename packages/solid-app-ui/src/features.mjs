@@ -7,10 +7,10 @@ export { accountLifecycle } from './components/account-lifecycle.mjs';
 export { muzeSolidUiCapabilityDialog } from './components/capability-dialog.mjs';
 
 export {
-  muzeSolidDesignDialog,
-  muzeSolidDesignToast,
-  muzeSolidDesignDropdown,
-  muzeSolidDesignListDetails
+  solidDialog,
+  solidToast,
+  solidDropdown,
+  solidListDetails
 } from '../../solid-design/src/features.mjs';
 
 export { sessionRecovery } from './components/session-recovery.mjs';

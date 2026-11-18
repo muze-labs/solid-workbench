@@ -90,7 +90,7 @@ export const muzeSolidUiAccountPresenter = {
         return;
       }
       this.data.muzeSolidUiAccountFrame = { src: 'about:blank', hidden: '' };
-      this.actions.muzeSolidDesignOpenDialog(this.runtime.dialog);
+      this.actions.solidOpenDialog(this.runtime.dialog);
       // Commit the blank binding before reloading, including on Retry.
       await new Promise((resolve) => setTimeout(resolve, 0));
       if (generation !== this.runtime.accountGeneration) {
@@ -218,7 +218,7 @@ export const muzeSolidUiAccountPresenter = {
       this.runtime.accountActivePopup?.close();
       this.runtime.accountPopup = null;
       // Keep the focused child document until native close restores its caller.
-      const closing = this.actions.muzeSolidDesignCloseDialog(this.runtime.dialog);
+      const closing = this.actions.solidCloseDialog(this.runtime.dialog);
       this.runtime.accountClosing = closing;
       await closing;
       if (this.runtime.accountClosing === closing) {

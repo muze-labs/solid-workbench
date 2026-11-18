@@ -8,11 +8,11 @@
   {{view:muze-solid-collection-browser:../../../packages/solid-app-ui/src/collection-browser.html}}
 </section>
 <dialog
-  class="ds-dialog muze-solid-design-dialog muze-solid-notebook-collection-dialog"
-  data-simply-behavior="muzeSolidDesignDialog"
+  class="ds-dialog solid-dialog muze-solid-notebook-collection-dialog"
+  data-simply-behavior="solidDialog"
   aria-labelledby="muze-solid-notebook-collection-options-heading"
 >
-  <header class="muze-solid-design-dialog-header">
+  <header class="solid-dialog-header">
     <h2
       id="muze-solid-notebook-collection-options-heading"
       tabindex="-1"
@@ -22,8 +22,8 @@
     </h2>
     <button
       type="button"
-      class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-      data-simply-command="muzeSolidDesignCloseDialog"
+      class="ds-button solid-marker-button solid-dialog-close"
+      data-simply-command="solidCloseDialog"
       aria-label="Close dialog"
     >
       <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -32,7 +32,7 @@
     </button>
   </header>
   <div
-    class="muze-solid-design-dialog-content muze-solid-notebook-collections-content"
+    class="solid-dialog-content muze-solid-notebook-collections-content"
   >
     <p
       data-simply-field="muzeSolidNotebookCollectionMessage"
@@ -46,28 +46,28 @@
     >
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeSolidNotebookCreateCollection"
       >
         Create collection
       </button>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeSolidNotebookOpenCollection"
       >
         Open collection
       </button>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeSolidNotebookDefaultCollection"
       >
         Make default
       </button>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeSolidNotebookSyncCollection"
       >
         Sync / retry
@@ -78,22 +78,22 @@
       data-simply-transform="attributes"
       data-simply-attributes="hidden"
     >
-      <label class="muze-solid-design-label"
+      <label class="solid-label"
         >Find notebook
         <input
           type="search"
-          class="muze-solid-design-control muze-solid-notebook-input"
+          class="solid-control muze-solid-notebook-input"
           data-simply-command="muzeSolidNotebookCollectionFilter"
           data-simply-immediate="true"
           data-simply-field="muzeSolidNotebookCollectionSearch"
           data-simply-transform="escape_html"
       /></label>
-      <label class="muze-solid-design-label"
+      <label class="solid-label"
         >Collection title
         <input
           name="title"
           required
-          class="muze-solid-design-control muze-solid-notebook-input"
+          class="solid-control muze-solid-notebook-input"
           data-simply-command="muzeSolidNotebookRenameCollection"
           data-simply-immediate="true"
           data-simply-field="muzeSolidNotebookCollectionName"
@@ -103,21 +103,21 @@
       <div class="muze-solid-notebook-collection-tools">
         <button
           type="button"
-          class="muze-solid-design-tool"
+          class="solid-tool"
           data-simply-command="muzeSolidNotebookCollectionAdd"
         >
           Add existing file
         </button>
         <button
           type="button"
-          class="muze-solid-design-tool"
+          class="solid-tool"
           data-simply-command="muzeSolidNotebookCollectionAddCurrent"
         >
           Add current notebook
         </button>
         <button
           type="button"
-          class="muze-solid-design-tool"
+          class="solid-tool"
           data-simply-command="muzeSolidNotebookCollectionDestination"
         >
           Creation folder
@@ -127,14 +127,14 @@
         data-simply-command="muzeSolidNotebookCollectionCreateGroup"
         class="muze-solid-notebook-collection-form"
       >
-        <label class="muze-solid-design-label"
+        <label class="solid-label"
           >New category
           <input
             name="title"
             required
-            class="muze-solid-design-control muze-solid-notebook-input"
+            class="solid-control muze-solid-notebook-input"
         /></label>
-        <button class="muze-solid-design-tool">Add category</button>
+        <button class="solid-tool">Add category</button>
       </form>
       <h3>Documents in this view</h3>
       <ul
@@ -145,7 +145,7 @@
           ><li>
             <button
               type="button"
-              class="muze-solid-design-tool"
+              class="solid-tool"
               data-simply-command="muzeSolidNotebookCollectionEntry"
               data-simply-value=":value.id"
               data-simply-field="actionAttributes"
@@ -172,14 +172,14 @@
       ></p>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeSolidNotebookOperationRetry"
       >
         Retry file operation
       </button>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeSolidNotebookOperationCancel"
       >
         Stop operation, retain files
@@ -188,11 +188,11 @@
   </div>
 </dialog>
 <dialog
-  class="ds-dialog muze-solid-design-dialog muze-solid-notebook-entry-dialog"
-  data-simply-behavior="muzeSolidDesignDialog"
+  class="ds-dialog solid-dialog muze-solid-notebook-entry-dialog"
+  data-simply-behavior="solidDialog"
   aria-labelledby="muze-solid-notebook-entry-heading"
 >
-  <header class="muze-solid-design-dialog-header">
+  <header class="solid-dialog-header">
     <h2
       id="muze-solid-notebook-entry-heading"
       class="swb-dialog-title"
@@ -201,8 +201,8 @@
     ></h2>
     <button
       type="button"
-      class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-      data-simply-command="muzeSolidDesignCloseDialog"
+      class="ds-button solid-marker-button solid-dialog-close"
+      data-simply-command="solidCloseDialog"
       aria-label="Close dialog"
     >
       <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -211,19 +211,19 @@
     </button>
   </header>
   <div
-    class="muze-solid-design-dialog-content muze-solid-notebook-collections-content"
+    class="solid-dialog-content muze-solid-notebook-collections-content"
   >
     <p
       data-simply-field="muzeSolidNotebookEntryUrl"
       data-simply-transform="escape_html"
     ></p>
-    <label class="muze-solid-design-label"
+    <label class="solid-label"
       >Add to category
-      <span class="muze-solid-design-select-wrap"
+      <span class="solid-select-wrap"
         ><select
           name="group"
           data-simply-command="muzeSolidNotebookCollectionAssignGroup"
-          class="muze-solid-design-select muze-solid-design-control muze-solid-notebook-input"
+          class="solid-select solid-control muze-solid-notebook-input"
           data-simply-list="muzeSolidCollectionEntryGroups"
         >
           <template
@@ -234,14 +234,14 @@
             ></option
           ></template></select
         ><span
-          class="muze-solid-design-chevron"
+          class="solid-chevron"
           aria-hidden="true"
         ></span></span
     ></label>
 
     <button
       type="button"
-      class="muze-solid-design-tool"
+      class="solid-tool"
       data-simply-command="muzeSolidNotebookCollectionRefresh"
     >
       Reload file (retain local drafts)
@@ -249,28 +249,28 @@
 
     <button
       type="button"
-      class="muze-solid-design-tool"
+      class="solid-tool"
       data-simply-command="muzeSolidNotebookCollectionClearGroups"
     >
       Clear all groups
     </button>
     <button
       type="button"
-      class="muze-solid-design-tool"
+      class="solid-tool"
       data-simply-command="muzeSolidNotebookCollectionRemove"
     >
       Remove from collection (keep file)
     </button>
     <button
       type="button"
-      class="muze-solid-design-tool"
+      class="solid-tool"
       data-simply-command="muzeSolidNotebookCollectionMove"
     >
       Move file…
     </button>
     <button
       type="button"
-      class="muze-solid-design-tool"
+      class="solid-tool"
       data-simply-command="muzeSolidNotebookCollectionDelete"
     >
       Permanently delete file…

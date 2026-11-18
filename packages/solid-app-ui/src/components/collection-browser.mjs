@@ -1,12 +1,12 @@
 import { untracked } from '@muze-labs/simplyflow/state';
 import template from '../collection-browser.html?template' with { type: 'text' };
 import styles from '../collection-browser.css' with { type: 'text' };
-import { muzeSolidDesignListDetails } from '@muze-labs/solid-design';
+import { solidListDetails } from '@muze-labs/solid-design';
 
 export const muzeSolidCollectionBrowser = {
   templates: { 'muze-solid-collection-browser': template },
   styles: { 'muze-solid-collection-browser': styles },
-  components: { muzeSolidDesignListDetails },
+  components: { solidListDetails },
   commands: {
     muzeSolidCollectionChoose(element, id) {
       const host = this.api.muzeSolidCollectionBrowser;

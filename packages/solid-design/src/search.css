@@ -1,0 +1,32 @@
+@layer component {
+  /* Compact list search is an inline field, not a stacked form label. */
+  .solid-list-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-inline-size: 0;
+    margin: 0;
+  }
+  .solid-list-search-label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .solid-list-search-icon {
+    position: absolute;
+    inset-inline-start: var(--solid-search-icon-inset, 12px);
+    pointer-events: none;
+  }
+  .solid-list-search-input {
+    min-inline-size: 0;
+    inline-size: 100%;
+    background: transparent;
+  }
+  .solid-list-search-icon + .solid-list-search-input {
+    padding-inline-start: var(--solid-search-text-inset, 40px);
+  }
+}

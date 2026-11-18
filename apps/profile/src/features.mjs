@@ -4,9 +4,9 @@ export { lifecycle } from './components/lifecycle.mjs';
 export { muzeSolidProfileCapability } from './components/profile-capability.mjs';
 
 export {
-  muzeSolidDesignDialog,
-  muzeSolidDesignDropdown,
-  muzeSolidDesignListDetails
+  solidDialog,
+  solidDropdown,
+  solidListDetails
 } from '../../../packages/solid-design/src/features.mjs';
 
-export { muzeSolidDesignToolbar } from '../../../packages/solid-design/src/features.mjs';
+export { solidToolbar } from '../../../packages/solid-design/src/features.mjs';

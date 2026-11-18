@@ -128,8 +128,8 @@
     max-inline-size: calc(100vw - 16px);
     max-block-size: calc(100dvh - 16px);
     overflow: auto;
-    background: var(--muze-solid-design-surface);
-    color: var(--muze-solid-design-text);
+    background: var(--solid-surface);
+    color: var(--solid-text);
     text-shadow: none;
   }
 }

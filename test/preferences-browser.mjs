@@ -140,14 +140,14 @@ async function change(key, value) {
 async function selectedSection(id) {
   await wait(
     `(() => {
-    const list = document.querySelector('[data-muze-solid-design-sections]');
+    const list = document.querySelector('[data-solid-sections]');
     const tabStops = list.querySelectorAll('button[tabindex="0"]');
     const selected = list.querySelectorAll('[aria-current="page"]');
     const panel = document.querySelector(
       '[data-simply-field="swb_panels.${id}"]'
     );
     return tabStops.length === 1 && selected.length === 1 &&
-      selected[0].dataset.muzeSolidDesignSection === ${JSON.stringify(id)} &&
+      selected[0].dataset.solidSection === ${JSON.stringify(id)} &&
       !panel.hidden;
   })()`,
     true
@@ -214,13 +214,13 @@ try {
   const firstOpen = await run('return performance.now();');
   await openPreferences();
   await wait(
-    'document.activeElement.dataset.muzeSolidDesignSection==="appearance"',
+    'document.activeElement.dataset.solidSection==="appearance"',
     true
   );
   // No setup click/focus: arrows must work as soon as Preferences opens.
   await key('ArrowDown');
   await wait(
-    'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+    'document.activeElement.dataset.solidSection==="language"',
     true
   );
   assert.equal(
@@ -229,7 +229,7 @@ try {
   );
   await key('ArrowUp');
   await wait(
-    'document.activeElement.dataset.muzeSolidDesignSection==="appearance"',
+    'document.activeElement.dataset.solidSection==="appearance"',
     true
   );
   const firstOpenCost = await run(
@@ -392,27 +392,27 @@ try {
       true
     );
     await wait(
-      'document.querySelector("[data-muze-solid-design-section=appearance]").getAttribute("aria-current")==="page"',
+      'document.querySelector("[data-solid-section=appearance]").getAttribute("aria-current")==="page"',
       true
     );
     await run(
-      'document.querySelector("[data-muze-solid-design-section=appearance]").focus();',
+      'document.querySelector("[data-solid-section=appearance]").focus();',
       true
     );
     await wait(
-      `document.querySelectorAll('[data-muze-solid-design-sections] button[tabindex="0"]').length===1 && document.querySelector('[data-muze-solid-design-section="appearance"]').tabIndex===0`,
+      `document.querySelectorAll('[data-solid-sections] button[tabindex="0"]').length===1 && document.querySelector('[data-solid-section="appearance"]').tabIndex===0`,
       true
     );
     assert.deepEqual(
       await run(
-        'return [...document.querySelectorAll("[data-muze-solid-design-sections] button")].map(b=>b.tabIndex);',
+        'return [...document.querySelectorAll("[data-solid-sections] button")].map(b=>b.tabIndex);',
         true
       ),
       [0, -1, -1, -1, -1]
     );
     await key('ArrowDown');
     await wait(
-      'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+      'document.activeElement.dataset.solidSection==="language"',
       true
     );
     assert.equal(
@@ -421,12 +421,12 @@ try {
     );
     await key('ArrowDown');
     await wait(
-      'document.activeElement.dataset.muzeSolidDesignSection==="opening"',
+      'document.activeElement.dataset.solidSection==="opening"',
       true
     );
     await key('ArrowUp');
     await wait(
-      'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+      'document.activeElement.dataset.solidSection==="language"',
       true
     );
     await run('window.swbFocusedSection=document.activeElement;', true);
@@ -442,7 +442,7 @@ try {
     );
     await key('ArrowDown');
     await wait(
-      'document.activeElement.dataset.muzeSolidDesignSection==="opening"',
+      'document.activeElement.dataset.solidSection==="opening"',
       true
     );
     assert.equal(
@@ -467,13 +467,13 @@ try {
     );
     await key('Tab', 8);
     await wait(
-      'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+      'document.activeElement.dataset.solidSection==="language"',
       true
     );
     await key('ArrowUp');
     await key('ArrowUp');
     await wait(
-      'document.activeElement.dataset.muzeSolidDesignSection==="contacts-storage"',
+      'document.activeElement.dataset.solidSection==="contacts-storage"',
       true
     );
     await key('Enter');
@@ -483,7 +483,7 @@ try {
     await key('Tab', 8);
     await key('ArrowDown');
     await wait(
-      'document.activeElement.dataset.muzeSolidDesignSection==="appearance"',
+      'document.activeElement.dataset.solidSection==="appearance"',
       true
     );
     await key('Enter');
@@ -501,7 +501,7 @@ try {
       'appearance'
     );
     const point = await run(
-      `const frame=document.querySelector('iframe');const button=frame.contentDocument.querySelector('[data-muze-solid-design-section="language"]');button.scrollIntoView({block:'nearest'});const r=button.getBoundingClientRect();const f=frame.getBoundingClientRect();return {x:f.x+r.x+r.width/2,y:f.y+r.y+r.height/2};`
+      `const frame=document.querySelector('iframe');const button=frame.contentDocument.querySelector('[data-solid-section="language"]');button.scrollIntoView({block:'nearest'});const r=button.getBoundingClientRect();const f=frame.getBoundingClientRect();return {x:f.x+r.x+r.width/2,y:f.y+r.y+r.height/2};`
     );
     for (const type of ['mousePressed', 'mouseReleased']) {
       await page.send('Input.dispatchMouseEvent', {
@@ -516,18 +516,18 @@ try {
     if (viewport.mobile) {
       await key('Tab', 8);
       await wait(
-        'document.activeElement.dataset.simplyCommand==="muzeSolidDesignShowList"',
+        'document.activeElement.dataset.simplyCommand==="solidShowList"',
         true
       );
       await key('Enter');
       await wait(
-        'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+        'document.activeElement.dataset.solidSection==="language"',
         true
       );
     } else {
       await key('Tab', 8);
       await wait(
-        'document.activeElement.dataset.muzeSolidDesignSection==="language"',
+        'document.activeElement.dataset.solidSection==="language"',
         true
       );
     }

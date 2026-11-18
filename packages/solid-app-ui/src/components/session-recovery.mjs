@@ -10,7 +10,7 @@ export const sessionRecovery = {
         // close that could dismiss a subsequently reopened recovery dialog.
         if (event.cancelable) {
           event.preventDefault();
-          this.actions.muzeSolidDesignCloseDialog(dialog);
+          this.actions.solidCloseDialog(dialog);
         }
       };
       dialog.addEventListener('cancel', cancelled);
@@ -38,7 +38,7 @@ export const sessionRecovery = {
         }
         await this.runtime.session.signIn(popup);
         this.actions.muzeSolidUiAuthenticationRestored();
-        await this.actions.muzeSolidDesignCloseDialog(
+        await this.actions.solidCloseDialog(
           this.runtime.root.querySelector('.muze-solid-ui-recovery-dialog')
         );
         this.actions.notify('Signed in again. Your edits are retained.');
@@ -61,7 +61,7 @@ export const sessionRecovery = {
     },
     muzeSolidUiCancelSignIn() {
       this.runtime.session?.cancelSignIn();
-      return this.actions.muzeSolidDesignCloseDialog(
+      return this.actions.solidCloseDialog(
         this.runtime.root.querySelector('.muze-solid-ui-recovery-dialog')
       );
     }
@@ -83,7 +83,7 @@ export const sessionRecovery = {
       const wasRequired =
         this.data.muzeSolidUiRecoveryVisibility.hidden === null;
       if (resumed) {
-        this.actions.muzeSolidDesignCloseDialog(
+        this.actions.solidCloseDialog(
           this.runtime.root.querySelector('.muze-solid-ui-recovery-dialog')
         );
       }
@@ -107,7 +107,7 @@ export const sessionRecovery = {
       }
       if (pending) {
         this.data.muzeSolidUiRecoveryError = '';
-        this.actions.muzeSolidDesignOpenDialog(
+        this.actions.solidOpenDialog(
           this.runtime.root.querySelector('.muze-solid-ui-recovery-dialog')
         );
       }

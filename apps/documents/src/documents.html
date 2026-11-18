@@ -16,12 +16,12 @@
     data-simply-attributes="hidden inert"
   >
     <nav
-      class="muze-solid-design-toolbar muze-documents-tools"
+      class="solid-toolbar muze-documents-tools"
       aria-label="Document controls"
     >
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsDialog"
         data-simply-value="open"
         aria-label="Open PDF"
@@ -35,7 +35,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsPage"
         data-simply-value="-1"
         aria-label="Previous page"
@@ -51,7 +51,7 @@
       ></span
       ><button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsPage"
         data-simply-value="1"
         aria-label="Next page"
@@ -62,13 +62,14 @@
         </svg>
       </button>
       <div
-        class="muze-solid-design-popup-scope muze-solid-design-dropdown"
-        data-simply-shortcuts="muzeSolidDesignDropdown"
+        class="solid-popup-scope solid-dropdown"
+        style="--solid-popup-anchor: --muze-documents-reading"
+        data-simply-shortcuts="solidDropdown"
       >
         <button
           type="button"
           id="muze-documents-reading-mode"
-          class="muze-solid-design-tool muze-solid-design-popup-trigger muze-documents-reading-trigger"
+          class="solid-tool solid-popup-trigger muze-documents-reading-trigger"
           popovertarget="muze-documents-reading-menu"
           aria-label="Reading mode"
           title="Reading mode"
@@ -91,7 +92,7 @@
           popover="auto"
           role="group"
           aria-label="Reading mode choices"
-          class="muze-solid-design-popup muze-solid-design-popup-anchored swb-dropdown-menu muze-documents-reading-menu"
+          class="solid-popup solid-popup-anchored swb-dropdown-menu muze-documents-reading-menu"
         >
           <ul
             class="swb-dropdown-list"
@@ -101,7 +102,7 @@
               ><li class="swb-dropdown-item">
                 <button
                   type="button"
-                  class="muze-solid-design-button-quiet muze-solid-design-button ds-button ds-button-naked ds-dropdown-link swb-dropdown-link"
+                  class="solid-button-quiet solid-button ds-button ds-button-naked ds-dropdown-link swb-dropdown-link"
                   data-simply-command="muzeDocumentsReadingMode"
                   data-simply-value=":value.id"
                   data-simply-field="selection"
@@ -119,7 +120,7 @@
       </div>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsZoom"
         data-simply-value="-0.25"
         aria-label="Zoom out"
@@ -130,7 +131,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsZoom"
         data-simply-value="0.25"
         aria-label="Zoom in"
@@ -141,7 +142,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsRotate"
         aria-label="Rotate"
         title="Rotate"
@@ -151,7 +152,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool muze-documents-panel-toggle"
+        class="solid-tool muze-documents-panel-toggle"
         data-simply-command="muzeDocumentsNavigation"
         data-simply-value="search"
         data-simply-field="muzeDocumentsSearchToggle"
@@ -165,7 +166,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool muze-documents-panel-toggle"
+        class="solid-tool muze-documents-panel-toggle"
         data-simply-command="muzeDocumentsToggleOutline"
         data-simply-field="muzeDocumentsOutlineToggle"
         data-simply-transform="attributes"
@@ -179,7 +180,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool muze-documents-panel-toggle"
+        class="solid-tool muze-documents-panel-toggle"
         data-simply-command="muzeDocumentsToggleThumbnails"
         data-simply-field="muzeDocumentsThumbnailsToggle"
         data-simply-transform="attributes"
@@ -193,7 +194,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsDownload"
         aria-label="Download original"
         title="Download original"
@@ -203,7 +204,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsPageNote"
         aria-label="Note on page"
         title="Note on page"
@@ -213,7 +214,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsSelectionNote"
         aria-label="Highlight selection"
         title="Highlight selection"
@@ -223,7 +224,7 @@
         </svg></button
       ><button
         type="button"
-        class="muze-solid-design-tool muze-documents-panel-toggle"
+        class="solid-tool muze-documents-panel-toggle"
         data-simply-command="muzeDocumentsNotes"
         data-simply-field="muzeDocumentsNotesToggle"
         data-simply-transform="attributes"
@@ -238,7 +239,7 @@
       </button>
       <button
         type="button"
-        class="muze-solid-design-tool muze-documents-panel-toggle"
+        class="solid-tool muze-documents-panel-toggle"
         data-simply-command="muzeDocumentsNavigation"
         data-simply-value="bookmarks"
         data-simply-field="muzeDocumentsBookmarksToggle"
@@ -255,7 +256,7 @@
     <div class="muze-documents-layout">
       <nav class="muze-documents-panel-handles" aria-label="Reader sidebars">
         <button
-          class="muze-solid-design-tool muze-documents-navigation-handle"
+          class="solid-tool muze-documents-navigation-handle"
           data-simply-command="muzeDocumentsNavigation"
           data-simply-value="search"
           title="Search document"
@@ -269,7 +270,7 @@
           </svg>
         </button>
         <button
-          class="muze-solid-design-tool muze-documents-navigation-handle"
+          class="solid-tool muze-documents-navigation-handle"
           data-simply-command="muzeDocumentsNavigation"
           data-simply-value="bookmarks"
           title="Bookmarks"
@@ -284,7 +285,7 @@
         </button>
 
         <button
-          class="muze-solid-design-tool muze-documents-panel-handle muze-documents-outline-handle"
+          class="solid-tool muze-documents-panel-handle muze-documents-outline-handle"
           data-simply-command="muzeDocumentsToggleOutline"
           aria-label="Document outline"
           data-simply-field="muzeDocumentsOutlineToggle"
@@ -297,7 +298,7 @@
           </svg>
         </button>
         <button
-          class="muze-solid-design-tool muze-documents-panel-handle muze-documents-thumbnails-handle"
+          class="solid-tool muze-documents-panel-handle muze-documents-thumbnails-handle"
           data-simply-command="muzeDocumentsToggleThumbnails"
           aria-label="Page thumbnails"
           data-simply-field="muzeDocumentsThumbnailsToggle"
@@ -310,7 +311,7 @@
           </svg>
         </button>
         <button
-          class="muze-solid-design-tool muze-documents-panel-handle muze-documents-notes-handle"
+          class="solid-tool muze-documents-panel-handle muze-documents-notes-handle"
           data-simply-command="muzeDocumentsNotes"
           data-simply-field="muzeDocumentsNotesToggle"
           data-simply-transform="attributes"
@@ -337,20 +338,20 @@
           data-simply-attributes="hidden"
         >
           <form
-            class="muze-solid-design-toolbar"
+            class="solid-toolbar"
             data-simply-command="muzeDocumentsSearch"
           >
-            <label class="muze-solid-design-list-search"
-              ><span class="swb-visually-hidden">Search document</span>
+            <label class="solid-list-search"
+              ><span class="solid-list-search-label">Search document</span>
               <input
-                class="muze-solid-design-control muze-solid-design-list-search-input"
+                class="solid-control solid-list-search-input"
                 type="search"
                 name="query"
                 placeholder="Search document"
                 required
             /></label>
             <button
-              class="muze-solid-design-tool"
+              class="solid-tool"
               title="Search"
               aria-label="Search"
             >
@@ -371,7 +372,7 @@
             <template
               ><li>
                 <button
-                  class="muze-solid-design-tool muze-documents-navigation-result"
+                  class="solid-tool muze-documents-navigation-result"
                   data-simply-command="muzeDocumentsSearchResult"
                   data-simply-value=":value.id"
                 >
@@ -389,15 +390,15 @@
           data-simply-attributes="hidden"
         >
           <form
-            class="muze-solid-design-toolbar"
+            class="solid-toolbar"
             data-simply-command="muzeDocumentsBookmark"
           >
             <label
               >Bookmark name<input
-                class="muze-solid-design-control"
+                class="solid-control"
                 name="label"
                 placeholder="Current position" /></label
-            ><button class="muze-solid-design-tool">Add bookmark</button>
+            ><button class="solid-tool">Add bookmark</button>
           </form>
           <label
             ><input
@@ -417,7 +418,7 @@
             <template
               ><li class="muze-documents-bookmark-row">
                 <button
-                  class="muze-solid-design-tool muze-solid-design-list-state muze-documents-bookmark-open"
+                  class="solid-tool solid-list-state muze-documents-bookmark-open"
                   data-simply-command="muzeDocumentsOpenBookmark"
                   data-simply-value=":value.id"
                   data-simply-field="selection"
@@ -434,7 +435,7 @@
                   ></span>
                 </button>
                 <button
-                  class="muze-solid-design-tool muze-documents-bookmark-remove"
+                  class="solid-tool muze-documents-bookmark-remove"
                   title="Remove bookmark"
                   aria-label="Remove bookmark"
                   data-simply-command="muzeDocumentsRemoveBookmark"
@@ -458,7 +459,7 @@
         data-simply-attributes="hidden"
       >
         <p
-          class="muze-solid-design-hint"
+          class="solid-hint"
           data-simply-field="muzeDocumentsOutlineEmpty"
           data-simply-transform="attributes"
           data-simply-attributes="hidden"
@@ -472,7 +473,7 @@
           <template
             ><li class="muze-documents-outline-item">
               <button
-                class="muze-solid-design-list-row muze-solid-design-list-state muze-documents-outline-link"
+                class="solid-list-row solid-list-state muze-documents-outline-link"
                 data-simply-command="muzeDocumentsOutline"
                 data-simply-value=":value.page"
                 data-simply-field="current"
@@ -567,7 +568,7 @@
         </div>
         <button
           type="button"
-          class="muze-solid-design-tool muze-documents-turn muze-documents-turn-previous"
+          class="solid-tool muze-documents-turn muze-documents-turn-previous"
           aria-label="Turn back"
           title="Turn back"
           data-simply-command="muzeDocumentsPage"
@@ -581,7 +582,7 @@
         </button>
         <button
           type="button"
-          class="muze-solid-design-tool muze-documents-turn muze-documents-turn-next"
+          class="solid-tool muze-documents-turn muze-documents-turn-next"
           aria-label="Turn forward"
           title="Turn forward"
           data-simply-command="muzeDocumentsPage"
@@ -603,10 +604,10 @@
         data-simply-transform="attributes"
         data-simply-attributes="hidden"
       >
-        <nav class="muze-solid-design-toolbar" aria-label="Annotation controls">
+        <nav class="solid-toolbar" aria-label="Annotation controls">
           <button
             type="button"
-            class="muze-solid-design-tool"
+            class="solid-tool"
             title="All annotations"
             aria-label="All annotations"
             aria-pressed="false"
@@ -621,7 +622,7 @@
           </button>
           <button
             type="button"
-            class="muze-solid-design-tool"
+            class="solid-tool"
             data-simply-command="muzeDocumentsDialog"
             data-simply-value="groups"
             aria-label="Manage annotation groups"
@@ -632,19 +633,14 @@
             </svg>
           </button>
         </nav>
-        <div class="muze-solid-design-toolbar muze-documents-note-filters">
-          <label class="muze-solid-design-list-search">
-            <span class="swb-visually-hidden">Search annotations</span>
-            <svg
-              class="ds-icon ds-icon-feather muze-solid-design-list-search-icon"
-              aria-hidden="true"
-            >
-              <use href="../assets/feather-icons.svg#search"></use>
-            </svg>
+        <div class="solid-toolbar muze-documents-note-filters">
+          <label class="solid-list-search">
+            <span class="solid-list-search-label">Search annotations</span>
+            {{include:../../../packages/solid-design/src/search-icon.html}}
             <input
               type="search"
               placeholder="Search"
-              class="muze-solid-design-control swb-control muze-solid-design-toolbar-input muze-solid-design-list-search-input"
+              class="solid-control swb-control solid-toolbar-input solid-list-search-input"
               data-simply-field="muzeDocumentsAnnotationSearch"
               data-simply-command="muzeDocumentsSearchAnnotations"
               data-simply-immediate="true"
@@ -697,7 +693,7 @@
               ></div>
               <button
                 type="button"
-                class="muze-solid-design-tool muze-documents-note-location"
+                class="solid-tool muze-documents-note-location"
                 data-simply-command="muzeDocumentsGoNote"
                 data-simply-value=":value.key"
                 data-simply-field="location"
@@ -710,7 +706,7 @@
                 ></span>
               </button>
               <button
-                class="muze-solid-design-tool muze-documents-note-edit"
+                class="solid-tool muze-documents-note-edit"
                 aria-label="Edit note"
                 title="Edit note"
                 data-simply-command="muzeDocumentsEditNote"
@@ -729,17 +725,17 @@
     </div>
   </div>
   <dialog
-    class="ds-dialog muze-solid-design-dialog"
-    data-simply-behavior="muzeSolidDesignDialog"
+    class="ds-dialog solid-dialog"
+    data-simply-behavior="solidDialog"
     data-document-dialog="open"
     aria-label="Open PDF"
   >
-    <div class="muze-solid-design-dialog-header">
+    <div class="solid-dialog-header">
       <h2 class="swb-dialog-title">Open PDF</h2>
       <button
         type="button"
-        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-        data-simply-command="muzeSolidDesignCloseDialog"
+        class="ds-button solid-marker-button solid-dialog-close"
+        data-simply-command="solidCloseDialog"
         aria-label="Close"
         title="Close"
       >
@@ -748,33 +744,33 @@
         </svg>
       </button>
     </div>
-    <div class="muze-solid-design-dialog-content muze-solid-design-fields">
+    <div class="solid-dialog-content solid-fields">
       <p>
         Notes stay on this device. Reopening a remote PDF requires a connection.
       </p>
       <form
-        class="muze-solid-design-fields"
+        class="solid-fields"
         data-simply-command="muzeDocumentsOpen"
       >
-        <label class="muze-solid-design-label muze-solid-design-field"
+        <label class="solid-label solid-field"
           >PDF URL
           <input
             type="url"
             name="url"
             required
-            class="muze-solid-design-control"
+            class="solid-control"
         /></label>
-        <button class="muze-solid-design-tool">Open PDF</button>
-        <label class="muze-solid-design-label muze-solid-design-field"
+        <button class="solid-tool">Open PDF</button>
+        <label class="solid-label solid-field"
           >Or local PDF
           <input
-            class="muze-solid-design-control"
+            class="solid-control"
             type="file"
             accept="application/pdf"
             data-document-file
         /></label>
         <button
-          class="muze-solid-design-tool"
+          class="solid-tool"
           type="button"
           data-simply-command="muzeDocumentsCancel"
         >
@@ -785,17 +781,17 @@
   </dialog>
 
   <dialog
-    class="ds-dialog muze-solid-design-dialog"
-    data-simply-behavior="muzeSolidDesignDialog"
+    class="ds-dialog solid-dialog"
+    data-simply-behavior="solidDialog"
     data-document-dialog="groups"
     aria-label="Annotation groups"
   >
-    <div class="muze-solid-design-dialog-header">
+    <div class="solid-dialog-header">
       <h2 class="swb-dialog-title">Annotation groups</h2>
       <button
         type="button"
-        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-        data-simply-command="muzeSolidDesignCloseDialog"
+        class="ds-button solid-marker-button solid-dialog-close"
+        data-simply-command="solidCloseDialog"
         aria-label="Close"
         title="Close"
       >
@@ -804,12 +800,12 @@
         </svg>
       </button>
     </div>
-    <div class="muze-solid-design-dialog-content muze-solid-design-fields">
-      <label class="muze-solid-design-label muze-solid-design-field"
+    <div class="solid-dialog-content solid-fields">
+      <label class="solid-label solid-field"
         >Writing group
-        <span class="muze-solid-design-select-wrap"
+        <span class="solid-select-wrap"
           ><select
-            class="muze-solid-design-control muze-solid-design-select"
+            class="solid-control solid-select"
             data-document-group
             data-simply-list="muzeDocumentsGroups"
           >
@@ -821,7 +817,7 @@
               ></option
             ></template></select
           ><span
-            class="muze-solid-design-chevron"
+            class="solid-chevron"
             aria-hidden="true"
           ></span></span
       ></label>
@@ -831,58 +827,58 @@
       ></p>
 
       <form
-        class="muze-solid-design-fields"
+        class="solid-fields"
         data-simply-command="muzeDocumentsNewGroup"
       >
-        <label class="muze-solid-design-label muze-solid-design-field"
+        <label class="solid-label solid-field"
           >New group name
           <input
-            class="muze-solid-design-control"
+            class="solid-control"
             name="name"
             required /></label
-        ><button class="muze-solid-design-tool">Create group</button>
+        ><button class="solid-tool">Create group</button>
       </form>
       <button
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsExport"
       >
         Export group Turtle
       </button>
-      <label class="muze-solid-design-label muze-solid-design-field"
+      <label class="solid-label solid-field"
         >Import group
         <input
-          class="muze-solid-design-control"
+          class="solid-control"
           type="file"
           accept=".ttl,text/turtle"
           data-group-file
       /></label>
       <form
-        class="muze-solid-design-fields"
+        class="solid-fields"
         data-simply-command="muzeDocumentsOpenGroup"
       >
-        <label class="muze-solid-design-label muze-solid-design-field"
+        <label class="solid-label solid-field"
           >Annotation file URL
           <input
-            class="muze-solid-design-control"
+            class="solid-control"
             type="url"
             name="url"
             required /></label
-        ><button class="muze-solid-design-tool">Add annotation file</button>
+        ><button class="solid-tool">Add annotation file</button>
       </form>
       <button
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsSave"
       >
         Save group to Pod
       </button>
       <form
-        class="muze-solid-design-fields"
+        class="solid-fields"
         data-simply-command="muzeDocumentsPublish"
       >
-        <label class="muze-solid-design-label muze-solid-design-field"
+        <label class="solid-label solid-field"
           >Separate annotations folder
           <input
-            class="muze-solid-design-control"
+            class="solid-control"
             type="url"
             name="folder"
             required
@@ -893,7 +889,7 @@
           This folder's existing permissions apply. Choose a private folder for
           personal notes.
         </p>
-        <button class="muze-solid-design-tool">
+        <button class="solid-tool">
           Create group resource in folder
         </button>
       </form>
@@ -909,7 +905,7 @@
             ></span>
             <button
               type="button"
-              class="muze-solid-design-tool"
+              class="solid-tool"
               data-simply-command="muzeDocumentsEnableWriting"
               data-simply-value=":value.id"
               data-simply-field="label"
@@ -920,23 +916,23 @@
     </div>
   </dialog>
   <dialog
-    class="ds-dialog muze-solid-design-dialog"
+    class="ds-dialog solid-dialog"
     data-document-dialog="destination"
-    data-simply-behavior="muzeSolidDesignDialog"
+    data-simply-behavior="solidDialog"
     aria-labelledby="muze-documents-destination-title"
   >
     <form
       class="swb-dialog-form"
       data-simply-command="muzeDocumentsChooseDestination"
     >
-      <header class="muze-solid-design-dialog-header">
+      <header class="solid-dialog-header">
         <h2 class="swb-dialog-title" id="muze-documents-destination-title">
           New annotation
         </h2>
         <button
           type="button"
-          class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-          data-simply-command="muzeSolidDesignCloseDialog"
+          class="ds-button solid-marker-button solid-dialog-close"
+          data-simply-command="solidCloseDialog"
           aria-label="Close"
         >
           <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -944,13 +940,13 @@
           </svg>
         </button>
       </header>
-      <div class="muze-solid-design-dialog-content">
-        <label class="muze-solid-design-label muze-solid-design-field"
+      <div class="solid-dialog-content">
+        <label class="solid-label solid-field"
           >Save annotation in
-          <span class="muze-solid-design-select-wrap"
+          <span class="solid-select-wrap"
             ><select
               name="destination"
-              class="muze-solid-design-control muze-solid-design-select"
+              class="solid-control solid-select"
               data-simply-list="muzeDocumentsDestinations"
             >
               <template
@@ -960,28 +956,28 @@
                   data-simply-attributes="value selected label"
                 ></option
               ></template></select
-            ><span class="muze-solid-design-chevron" aria-hidden="true"></span
+            ><span class="solid-chevron" aria-hidden="true"></span
           ></span>
         </label>
       </div>
-      <footer class="muze-solid-design-dialog-footer">
-        <button class="muze-solid-design-tool">Continue to editor</button>
+      <footer class="solid-dialog-footer">
+        <button class="solid-tool">Continue to editor</button>
       </footer>
     </form>
   </dialog>
   <dialog
-    class="ds-dialog muze-solid-design-dialog"
+    class="ds-dialog solid-dialog"
     data-document-dialog="annotation"
     data-simply-behavior="muzeDocumentsAnnotationDialog"
     aria-labelledby="muze-documents-annotation-title"
   >
-    <header class="muze-solid-design-dialog-header">
+    <header class="solid-dialog-header">
       <h2 class="swb-dialog-title" id="muze-documents-annotation-title">
         Annotation
       </h2>
       <button
         type="button"
-        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+        class="ds-button solid-marker-button solid-dialog-close"
         data-simply-command="muzeDocumentsCloseNote"
         aria-label="Close annotation"
       >
@@ -990,22 +986,22 @@
         </svg>
       </button>
     </header>
-    <div class="muze-solid-design-dialog-content">
+    <div class="solid-dialog-content">
       <p
-        class="muze-solid-design-status"
+        class="solid-status"
         role="status"
         data-simply-field="muzeDocumentsEditorStatus"
         data-simply-transform="escape_html"
       ></p>
       <label
-        class="muze-solid-design-label muze-solid-design-field"
+        class="solid-label solid-field"
         data-simply-field="muzeDocumentsDestinationField"
         data-simply-transform="attributes"
         data-simply-attributes="hidden"
         >Save annotation in
-        <span class="muze-solid-design-select-wrap"
+        <span class="solid-select-wrap"
           ><select
-            class="muze-solid-design-control muze-solid-design-select"
+            class="solid-control solid-select"
             data-note-destination
             data-simply-list="muzeDocumentsDestinations"
           >
@@ -1017,7 +1013,7 @@
               ></option
             ></template>
           </select>
-          <span class="muze-solid-design-chevron" aria-hidden="true"></span
+          <span class="solid-chevron" aria-hidden="true"></span
         ></span>
       </label>
       <div
@@ -1027,7 +1023,7 @@
       ></div>
     </div>
     <div
-      class="muze-solid-design-toolbar muze-solid-design-toolbar-floating"
+      class="solid-toolbar solid-toolbar-floating"
       data-note-formatting
       hidden
       data-simply-field="muzeDocumentsFormatting"
@@ -1038,7 +1034,7 @@
     >
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsFormat"
         data-simply-value="strong"
         data-simply-field="muzeDocumentsBold"
@@ -1053,7 +1049,7 @@
       </button>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsFormat"
         data-simply-value="em"
         data-simply-field="muzeDocumentsItalic"
@@ -1068,7 +1064,7 @@
       </button>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsLink"
         aria-label="Link"
         title="Link"
@@ -1078,10 +1074,10 @@
         </svg>
       </button>
     </div>
-    <footer class="muze-solid-design-dialog-footer">
+    <footer class="solid-dialog-footer">
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeDocumentsSaveNote"
         title="Save (Ctrl+Enter / Cmd+Enter)"
         aria-keyshortcuts="Control+Enter Meta+Enter"
@@ -1093,20 +1089,20 @@
     </footer>
   </dialog>
   <dialog
-    class="ds-dialog muze-solid-design-dialog"
+    class="ds-dialog solid-dialog"
     data-document-dialog="annotation-link"
-    data-simply-behavior="muzeSolidDesignDialog"
+    data-simply-behavior="solidDialog"
     aria-labelledby="muze-documents-link-title"
   >
     <form class="swb-dialog-form" data-simply-command="muzeDocumentsApplyLink">
-      <header class="muze-solid-design-dialog-header">
+      <header class="solid-dialog-header">
         <h2 class="swb-dialog-title" id="muze-documents-link-title">
           Hyperlink
         </h2>
         <button
           type="button"
-          class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-          data-simply-command="muzeSolidDesignCloseDialog"
+          class="ds-button solid-marker-button solid-dialog-close"
+          data-simply-command="solidCloseDialog"
           aria-label="Close hyperlink"
         >
           <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -1114,11 +1110,11 @@
           </svg>
         </button>
       </header>
-      <div class="muze-solid-design-dialog-content">
-        <label class="muze-solid-design-label muze-solid-design-field"
+      <div class="solid-dialog-content">
+        <label class="solid-label solid-field"
           >Address
           <input
-            class="muze-solid-design-control"
+            class="solid-control"
             type="url"
             name="href"
             required
@@ -1126,14 +1122,14 @@
           />
         </label>
         <p
-          class="muze-solid-design-status"
+          class="solid-status"
           role="status"
           data-simply-field="muzeDocumentsLinkStatus"
           data-simply-transform="escape_html"
         ></p>
       </div>
-      <footer class="muze-solid-design-dialog-footer">
-        <button class="muze-solid-design-tool">Add link</button>
+      <footer class="solid-dialog-footer">
+        <button class="solid-tool">Add link</button>
       </footer>
     </form>
   </dialog>

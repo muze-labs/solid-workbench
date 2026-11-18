@@ -197,7 +197,7 @@ export const shortcutMenu = {
         (item) => item.id === shortcut.dataset.swbShortcut
       );
       row.menuPlacement = {
-        style: this.actions.muzeSolidDesignToolbarPlacement(
+        style: this.actions.solidToolbarPlacement(
           menu,
           link.getBoundingClientRect()
         )

@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { actions } from '@muze-labs/simplyflow-app/action';
 import { accountLifecycle } from '../packages/solid-app-ui/src/components/account-lifecycle.mjs';
 import { lifecycle as filesLifecycle } from '../apps/files/src/components/lifecycle.mjs';
-import { muzeSolidDesignToast } from '../packages/solid-design/src/components/toast.mjs';
+import { solidToast } from '../packages/solid-design/src/components/toast.mjs';
 import { AppState } from '../packages/solid-app-data/src/app-state.mjs';
 
 function ownerFor(definitions, properties = {}) {
@@ -238,24 +238,24 @@ test('a scheduled toast invokes the current expiry action and restores normal ex
     return scheduled.length;
   });
   t.mock.method(globalThis, 'clearTimeout', () => {});
-  const owner = ownerFor(muzeSolidDesignToast.actions, {
-    data: { muzeSolidDesignNotice: { text: '', visibility: { hidden: '' } } }
+  const owner = ownerFor(solidToast.actions, {
+    data: { solidNotice: { text: '', visibility: { hidden: '' } } }
   });
-  owner.actions.muzeSolidDesignNotify('First');
+  owner.actions.solidNotify('First');
   let expired = 0;
-  owner.actions.muzeSolidDesignExpireToast = function () {
+  owner.actions.solidExpireToast = function () {
     assert.equal(this, owner);
     expired += 1;
   };
   scheduled.shift()();
   assert.equal(expired, 1);
-  assert.equal(owner.data.muzeSolidDesignNotice.text, 'First');
-  owner.actions.muzeSolidDesignExpireToast =
-    muzeSolidDesignToast.actions.muzeSolidDesignExpireToast;
-  owner.actions.muzeSolidDesignNotify('Second');
+  assert.equal(owner.data.solidNotice.text, 'First');
+  owner.actions.solidExpireToast =
+    solidToast.actions.solidExpireToast;
+  owner.actions.solidNotify('Second');
   scheduled.shift()();
-  assert.equal(owner.data.muzeSolidDesignNotice.visibility.hidden, '');
-  assert.equal(owner.data.muzeSolidDesignNotice.text, '');
+  assert.equal(owner.data.solidNotice.visibility.hidden, '');
+  assert.equal(owner.data.solidNotice.text, '');
   assert.equal(expired, 1);
 });
 

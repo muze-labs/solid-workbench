@@ -173,11 +173,11 @@ try {
     'document.querySelector("[data-simply-command=preferences]").click()'
   );
   await wait(
-    'document.querySelector("[data-muze-solid-design-section=files-storage]")',
+    'document.querySelector("[data-solid-section=files-storage]")',
     '/preferences/'
   );
   await run(
-    'document.querySelector("[data-muze-solid-design-section=files-storage]").click()',
+    'document.querySelector("[data-solid-section=files-storage]").click()',
     '/preferences/'
   );
   await wait(
@@ -252,15 +252,15 @@ try {
     '/files/settings.html'
   );
   await run(
-    'document.querySelector("[data-muze-solid-design-section=appearance]").click()',
+    'document.querySelector("[data-solid-section=appearance]").click()',
     '/preferences/'
   );
   await wait(
-    'document.querySelector("[aria-current=page]").dataset.muzeSolidDesignSection==="appearance"',
+    'document.querySelector("[aria-current=page]").dataset.solidSection==="appearance"',
     '/preferences/'
   );
   await run(
-    'document.querySelector("[data-muze-solid-design-section=files-storage]").click()',
+    'document.querySelector("[data-solid-section=files-storage]").click()',
     '/preferences/'
   );
   await wait(
@@ -273,18 +273,18 @@ try {
   await run('document.querySelector("#open").click()');
   await new Promise((resolve) => setTimeout(resolve, 1500));
   await wait(
-    'document.querySelector("[data-muze-solid-design-section=notes-settings]")',
+    'document.querySelector("[data-solid-section=notes-settings]")',
     '/preferences/'
   );
   await run(
-    'document.querySelector("[data-muze-solid-design-section=notes-settings]").click()',
+    'document.querySelector("[data-solid-section=notes-settings]").click()',
     '/preferences/'
   );
   await wait('document.body.dataset.ready==="true"', '/section');
   await run('document.querySelector("input").focus()', '/section');
   await page.send('Input.insertText', { text: 'Keep this draft' });
   await run(
-    'document.querySelector("[data-muze-solid-design-section=appearance]").click()',
+    'document.querySelector("[data-solid-section=appearance]").click()',
     '/preferences/'
   );
   await wait(
@@ -293,18 +293,18 @@ try {
   );
   assert.equal(
     await run(
-      'document.querySelector("[aria-current=page]").dataset.muzeSolidDesignSection',
+      'document.querySelector("[aria-current=page]").dataset.solidSection',
       '/preferences/'
     ),
     'notes-settings'
   );
   await run('document.querySelector("#save").click()', '/section');
   await run(
-    'document.querySelector("[data-muze-solid-design-section=appearance]").click()',
+    'document.querySelector("[data-solid-section=appearance]").click()',
     '/preferences/'
   );
   await wait(
-    'document.querySelector("[aria-current=page]").dataset.muzeSolidDesignSection==="appearance"',
+    'document.querySelector("[aria-current=page]").dataset.solidSection==="appearance"',
     '/preferences/'
   );
   await page.send('Emulation.setDeviceMetricsOverride', {
@@ -314,7 +314,7 @@ try {
     mobile: true
   });
   const point = await run(`(() => {
-    const button=document.querySelector('[data-muze-solid-design-section=notes-settings]');
+    const button=document.querySelector('[data-solid-section=notes-settings]');
     button.scrollIntoView({block:'center'});
     const r=button.getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2};
   })()`, '/preferences/');
@@ -348,12 +348,12 @@ try {
     await run('document.querySelector("#open").click()');
     await wait('document.querySelector("[data-simply-field=swb_applicationChoice]")?.hidden', '/preferences/');
     if (mode === 'missing') {
-      await wait('document.querySelector("[data-muze-solid-design-section=notes-settings]")', '/preferences/');
-      await run('document.querySelector("[data-muze-solid-design-section=notes-settings]").click()', '/preferences/');
+      await wait('document.querySelector("[data-solid-section=notes-settings]")', '/preferences/');
+      await run('document.querySelector("[data-solid-section=notes-settings]").click()', '/preferences/');
       await wait('document.querySelector(".muze-solid-preferences-contribution").src.includes("/missing")', '/preferences/');
-      await run('document.querySelector("[data-muze-solid-design-section=appearance]").click()', '/preferences/');
+      await run('document.querySelector("[data-solid-section=appearance]").click()', '/preferences/');
     }
-    await wait('document.querySelector("[aria-current=page]")?.dataset.muzeSolidDesignSection==="appearance"', '/preferences/');
+    await wait('document.querySelector("[aria-current=page]")?.dataset.solidSection==="appearance"', '/preferences/');
     assert.equal(await run('document.querySelector("[name=theme]").disabled', '/preferences/'), false);
   }
   console.log('PASS no-contribution and unavailable startup leave common settings usable');

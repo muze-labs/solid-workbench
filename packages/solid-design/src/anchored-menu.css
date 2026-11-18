@@ -1,0 +1,49 @@
+@layer page {
+  /* Surface for both anchored and app-positioned popovers. */
+  .solid-popup {
+    border: 0;
+    box-shadow: var(--solid-popup-elevation);
+  }
+}
+
+@layer component {
+  .solid-popup-scope {
+    anchor-scope: var(--solid-popup-anchor, --solid-popup);
+  }
+  .solid-popup-trigger {
+    anchor-name: var(--solid-popup-anchor, --solid-popup);
+  }
+  .solid-popup-scope > .solid-popup-anchored {
+    position-anchor: var(--solid-popup-anchor, --solid-popup);
+  }
+  .solid-popup-anchored {
+    position: fixed;
+    position-anchor: auto;
+    position-area: block-end span-inline-end;
+    position-try-fallbacks:
+      flip-inline,
+      flip-block,
+      flip-inline flip-block,
+      block-end,
+      block-start;
+    justify-self: start;
+    inset: 0;
+    margin: auto;
+    padding: 12px;
+    box-sizing: border-box;
+    width: min(24rem, calc(100vw - 16px));
+    max-block-size: calc(100dvh - 16px);
+    overflow: auto;
+    background: var(--solid-surface, Canvas);
+    color: var(--solid-text, CanvasText);
+  }
+}
+
+@supports (position-area: block-end) {
+  @layer component {
+    .solid-popup-anchored {
+      inset: auto;
+      margin: var(--solid-popup-gap, 4px);
+    }
+  }
+}

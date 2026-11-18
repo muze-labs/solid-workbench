@@ -134,6 +134,9 @@ export async function bundleApplications(root) {
   );
   input['files/src/settings-entry'] = path.join(root,
     'apps/files/src/settings-entry.mjs');
+  input['design-examples/simplyflow'] = path.join(
+    root, 'packages/solid-design/examples/simplyflow.mjs'
+  );
   input.redirect = path.join(root, 'packages/solid-app-data/src/redirect.mjs');
   const bundle = await rollup({
     input,

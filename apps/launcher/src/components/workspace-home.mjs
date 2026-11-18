@@ -11,7 +11,7 @@ export const workspaceHome = {
   },
   actions: {
     swb_openDiagnostics() {
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.swb-diagnostics')
       );
     },

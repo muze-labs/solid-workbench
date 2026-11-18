@@ -12,10 +12,10 @@ import { readApplicationManifest } from './manifests.mjs';
 import * as directory from '@muze-labs/solid-app-data/workspace-directory.mjs';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import {
-  muzeSolidDesignDialog,
-  muzeSolidDesignListDetails,
-  muzeSolidDesignDropdown,
-  muzeSolidDesignToolbar
+  solidDialog,
+  solidListDetails,
+  solidDropdown,
+  solidToolbar
 } from '@muze-labs/solid-design';
 import shortcutSource from './shortcuts.mjs?source';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
@@ -77,10 +77,10 @@ const host = shell({
 const definition = {
   container: host.main,
   components: {
-    muzeSolidDesignDialog,
-    muzeSolidDesignListDetails,
-    muzeSolidDesignToolbar,
-    muzeSolidDesignDropdown,
+    solidDialog,
+    solidListDetails,
+    solidToolbar,
+    solidDropdown,
     workspaceControls,
     workspaceSettingsService,
     workspaceHome,

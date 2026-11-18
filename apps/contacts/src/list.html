@@ -8,7 +8,7 @@
         <template
           ><li class="swb-list-item">
             <button
-              class="swb-contact-select swb-list-action muze-solid-design-list-row muze-solid-design-list-state"
+              class="swb-contact-select swb-list-action solid-list-row solid-list-state"
               data-simply-field="selection"
               data-simply-transform="attributes"
               data-simply-attributes="aria-current"
@@ -39,7 +39,7 @@
           address book. The previous copy is retained.
         </p>
         <button
-          class="muze-solid-design-button ds-button"
+          class="solid-button ds-button"
           data-simply-command="swb_recoverContacts"
         >
           Import previous device contacts
@@ -47,28 +47,22 @@
       </details>
     </div>
     <div
-      class="swb-contacts-toolbar muze-solid-design-toolbar"
+      class="swb-contacts-toolbar solid-toolbar"
       role="group"
       aria-label="Contact actions"
     >
-      <label class="muze-solid-design-list-search"
-        ><span class="swb-visually-hidden">Search contacts</span
-        ><svg
-          class="ds-icon ds-icon-feather muze-solid-design-list-search-icon"
-          aria-hidden="true"
-        >
-          <use href="../assets/feather-icons.svg#search"></use></svg
-        ><input
-          class="muze-solid-design-control swb-control muze-solid-design-toolbar-input muze-solid-design-list-search-input"
+      <label class="solid-list-search"
+        ><span class="solid-list-search-label">Search contacts</span
+        >{{include:../../../packages/solid-design/src/search-icon.html}}<input
+          class="solid-control swb-control solid-toolbar-input solid-list-search-input"
           type="search"
-          aria-label="Search contacts"
           placeholder="Search"
           data-simply-field="search"
           data-simply-command="search"
           data-simply-immediate="true"
       /></label>
       <button
-        class="muze-solid-design-tool"
+        class="solid-tool"
         type="button"
         data-simply-command="newContact"
         aria-label="Add contact"
@@ -79,7 +73,7 @@
         </svg>
       </button>
       <button
-        class="muze-solid-design-tool"
+        class="solid-tool"
         type="button"
         data-simply-command="sync"
         aria-label="Sync with Solid"
@@ -91,15 +85,15 @@
       </button>
     </div>
     <dialog
-      data-simply-behavior="muzeSolidDesignDialog"
-      class="ds-dialog new-contact-dialog muze-solid-design-dialog"
+      data-simply-behavior="solidDialog"
+      class="ds-dialog new-contact-dialog solid-dialog"
     >
       <form class="swb-dialog-form" data-simply-command="add">
-        <header class="muze-solid-design-dialog-header">
+        <header class="solid-dialog-header">
           <h2 class="swb-dialog-title">New contact</h2>
           <button
             type="button"
-            class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+            class="ds-button solid-marker-button solid-dialog-close"
             data-simply-command="cancelNew"
             aria-label="Close new contact dialog"
           >
@@ -108,21 +102,21 @@
             </svg>
           </button>
         </header>
-        <div class="muze-solid-design-dialog-content">
-          <label class="muze-solid-design-label"
+        <div class="solid-dialog-content">
+          <label class="solid-label"
             >Name<input
-              class="muze-solid-design-control swb-control swb-labeled-control"
+              class="solid-control swb-control swb-labeled-control"
               name="name"
               placeholder="Name (optional)"
           /></label>
         </div>
-        <footer class="muze-solid-design-dialog-footer">
+        <footer class="solid-dialog-footer">
           <button
-            class="muze-solid-design-button ds-button ds-button-primary muze-solid-design-button-primary"
+            class="solid-button ds-button ds-button-primary solid-button-primary"
           >
             Add contact</button
           ><button
-            class="muze-solid-design-button ds-button"
+            class="solid-button ds-button"
             type="button"
             data-simply-command="cancelNew"
           >

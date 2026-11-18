@@ -1,14 +1,14 @@
 import template from './notebook.html?template' with { type: 'text' };
 import styles from './notebook.css' with { type: 'text' };
 import {
-  muzeSolidDesignDialog,
-  muzeSolidDesignToolbar
+  solidDialog,
+  solidToolbar
 } from '@muze-labs/solid-design';
 
 export const muzeSolidNotebook = {
   templates: { 'muze-solid-notebook': template },
   styles: { 'muze-solid-notebook': styles },
-  components: { muzeSolidDesignDialog, muzeSolidDesignToolbar },
+  components: { solidDialog, solidToolbar },
   api: {
     muzeSolidNotebookStatusIcons: {
       local: { icon: 'hard-drive', label: 'Saved on this device' },
@@ -93,7 +93,7 @@ export const muzeSolidNotebook = {
         this.actions.muzeSolidNotebookShowEditor();
       });
       if (selected && dialog) {
-        await this.actions.muzeSolidDesignCloseDialog(dialog);
+        await this.actions.solidCloseDialog(dialog);
         this.actions.muzeSolidNotebookMount();
       }
     },
@@ -113,7 +113,7 @@ export const muzeSolidNotebook = {
       if (!this.runtime.busy) {
         this.runtime.documentsList.state.data =
           this.runtime.documents.entries();
-        return this.actions.muzeSolidDesignOpenDialog(
+        return this.actions.solidOpenDialog(
           this.container.querySelector('.muze-solid-notebook-document-dialog')
         );
       }
@@ -131,7 +131,7 @@ export const muzeSolidNotebook = {
       };
       this.data.muzeSolidNotebookLinkDraft = { value: '' };
       await new Promise((resolve) => requestAnimationFrame(resolve));
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.muze-solid-notebook-link-dialog')
       );
     },
@@ -152,7 +152,7 @@ export const muzeSolidNotebook = {
           id: this.runtime.active,
           range: { start: offset, end: offset }
         };
-        await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
+        await this.actions.solidCloseDialog(form.closest('dialog'));
       }
     }
   },

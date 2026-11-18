@@ -2,14 +2,14 @@ import template from './collections.html?template' with { type: 'text' };
 import styles from './collections.css' with { type: 'text' };
 import { muzeSolidCollectionBrowser } from '@muze-labs/solid-app-ui/components/collection-browser.mjs';
 import { muzeSolidPresenterPreviews } from './previews.mjs';
-import { muzeSolidDesignDialog } from '@muze-labs/solid-design';
+import { solidDialog } from '@muze-labs/solid-design';
 
 export const muzeSolidPresenterCollections = {
   templates: { 'muze-solid-presenter-collections': template },
   styles: { 'muze-solid-presenter-collections': styles },
   components: {
     muzeSolidCollectionBrowser,
-    muzeSolidDesignDialog,
+    solidDialog,
     muzeSolidPresenterPreviews
   },
   api: {
@@ -58,7 +58,7 @@ export const muzeSolidPresenterCollections = {
     },
     muzeSolidPresenterCollectionTools() {
       this.actions.muzeSolidPresenterProjectCollection();
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.muze-solid-presenter-collection-dialog')
       );
     },
@@ -190,7 +190,7 @@ export const muzeSolidPresenterCollections = {
       this.runtime.collectionEntry = id;
       this.data.muzeSolidPresenterEntryTitle = entry.title;
       this.data.muzeSolidPresenterEntryUrl = entry.document;
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.muze-solid-presenter-entry-dialog')
       );
     },
@@ -974,7 +974,7 @@ export const muzeSolidPresenterCollections = {
       ]) {
         const dialog = this.container.querySelector(selector);
         if (dialog.open) {
-          await this.actions.muzeSolidDesignCloseDialog(dialog);
+          await this.actions.solidCloseDialog(dialog);
         }
       }
     },

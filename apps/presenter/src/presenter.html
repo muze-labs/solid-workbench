@@ -12,16 +12,16 @@
     data-simply-attributes="data-muze-solid-presenting"
   >
     <div
-      class="muze-solid-presenter-slide-tools muze-solid-presenter-editing muze-solid-design-toolbar"
+      class="muze-solid-presenter-slide-tools muze-solid-presenter-editing solid-toolbar"
       aria-label="Deck and slide actions"
     >
       <span
-        class="muze-solid-design-toolbar-title muze-solid-presenter-title"
+        class="solid-toolbar-title muze-solid-presenter-title"
         data-simply-field="muzeSolidPresenterTitle"
         data-simply-transform="escape_html"
       ></span>
       <button
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="muzeSolidPresenterEditTitle"
         aria-label="Edit deck title"
         title="Edit deck title"
@@ -30,51 +30,52 @@
           <use href="../assets/feather-icons.svg#edit-2"></use>
         </svg>
       </button>
-      <div class="muze-solid-design-popup-scope muze-solid-presenter-deck-menu">
+      <div class="solid-popup-scope muze-solid-presenter-deck-menu"
+        style="--solid-popup-anchor: --muze-solid-presenter-deck-menu">
         <button
           type="button"
-          class="muze-solid-design-tool muze-solid-design-popup-trigger"
+          class="solid-tool solid-popup-trigger"
           popovertarget="muze-solid-presenter-deck-sheet"
         >
           Deck
         </button>
         <div
-          class="muze-solid-design-popup muze-solid-design-popup-anchored muze-solid-presenter-deck-sheet"
+          class="solid-popup solid-popup-anchored muze-solid-presenter-deck-sheet"
           id="muze-solid-presenter-deck-sheet"
           popover="auto"
           role="group"
           aria-label="Deck settings"
         >
-          <label class="muze-solid-design-label"
+          <label class="solid-label"
             >Deck document URL<input
-              class="muze-solid-design-control"
+              class="solid-control"
               type="url"
               data-simply-field="muzeSolidPresenterUrl"
               data-simply-transform="escape_html"
           /></label>
-          <div class="muze-solid-design-toolbar">
+          <div class="solid-toolbar">
             <button
-              class="muze-solid-design-tool"
+              class="solid-tool"
               data-simply-command="muzeSolidPresenterSave"
             >
               Save to Pod
             </button>
             <button
-              class="muze-solid-design-tool"
+              class="solid-tool"
               data-simply-command="muzeSolidPresenterOpen"
             >
               Open from Pod
             </button>
           </div>
-          <div class="muze-solid-design-toolbar">
+          <div class="solid-toolbar">
             <button
-              class="muze-solid-design-tool"
+              class="solid-tool"
               data-simply-command="muzeSolidPresenterNew"
             >
               New deck
             </button>
             <button
-              class="muze-solid-design-tool"
+              class="solid-tool"
               data-simply-command="muzeSolidPresenterImportLocal"
             >
               Copy signed-out deck
@@ -89,7 +90,7 @@
         data-simply-attributes="hidden"
       >
         <button
-          class="muze-solid-design-tool"
+          class="solid-tool"
           data-simply-command="muzeSolidPresenterBackground"
           data-simply-field="muzeSolidPresenterBackgroundVisibility"
           data-simply-transform="attributes"
@@ -100,7 +101,7 @@
           >Background
         </button>
         <button
-          class="muze-solid-design-tool"
+          class="solid-tool"
           data-simply-command="muzeSolidPresenterMove"
           data-simply-value="-1"
           aria-label="Move slide earlier"
@@ -112,7 +113,7 @@
           Move earlier
         </button>
         <button
-          class="muze-solid-design-tool"
+          class="solid-tool"
           data-simply-command="muzeSolidPresenterMove"
           data-simply-value="1"
           aria-label="Move slide later"
@@ -124,7 +125,7 @@
           Move later
         </button>
         <button
-          class="muze-solid-design-tool"
+          class="solid-tool"
           data-simply-command="muzeSolidPresenterRemove"
           aria-label="Remove slide"
           title="Remove slide"
@@ -134,17 +135,18 @@
           </svg>
         </button>
         <div
-          class="muze-solid-design-popup-scope muze-solid-presenter-view-options"
+          class="solid-popup-scope muze-solid-presenter-view-options"
+        style="--solid-popup-anchor: --muze-solid-presenter-view-options"
         >
           <button
             type="button"
-            class="muze-solid-design-tool muze-solid-design-popup-trigger"
+            class="solid-tool solid-popup-trigger"
             popovertarget="muze-solid-presenter-view-sheet"
           >
             View options
           </button>
           <div
-            class="muze-solid-design-popup muze-solid-design-popup-anchored muze-solid-presenter-deck-sheet"
+            class="solid-popup solid-popup-anchored muze-solid-presenter-deck-sheet"
             id="muze-solid-presenter-view-sheet"
             popover="auto"
             role="group"
@@ -158,21 +160,21 @@
                   data-simply-transform="escape_html"
                 ></span>
                 <button
-                  class="muze-solid-design-tool"
+                  class="solid-tool"
                   data-simply-command="muzeSolidPresenterRetryRegion"
                   data-simply-value=":value.id"
                 >
                   Retry
                 </button>
                 <button
-                  class="muze-solid-design-tool"
+                  class="solid-tool"
                   data-simply-command="muzeSolidPresenterUseProvider"
                   data-simply-value=":value.id"
                 >
                   Use preferred provider
                 </button>
                 <button
-                  class="muze-solid-design-tool"
+                  class="solid-tool"
                   data-simply-command="muzeSolidPresenterDiscardRegion"
                   data-simply-value=":value.id"
                   hidden
@@ -200,7 +202,7 @@
           <template
             ><li>
               <button
-                class="muze-solid-presenter-slide-button muze-solid-design-list-state"
+                class="muze-solid-presenter-slide-button solid-list-state"
                 data-simply-command="muzeSolidPresenterSelect"
                 data-simply-value=":value.id"
                 data-simply-field="attributes"
@@ -241,11 +243,11 @@
           {{view:muze-solid-presenter-regions:./regions.html}}
         </div>
         <nav
-          class="muze-solid-presenter-navigation muze-solid-design-toolbar"
+          class="muze-solid-presenter-navigation solid-toolbar"
           aria-label="Presentation controls"
         >
           <button
-            class="muze-solid-design-tool"
+            class="solid-tool"
             data-simply-command="muzeSolidPresenterStep"
             data-simply-value="-1"
             aria-label="Previous slide"
@@ -260,7 +262,7 @@
             data-simply-transform="escape_html"
           ></span>
           <button
-            class="muze-solid-design-tool"
+            class="solid-tool"
             data-simply-command="muzeSolidPresenterStep"
             data-simply-value="1"
             aria-label="Next slide"
@@ -270,7 +272,7 @@
             </svg>
           </button>
           <button
-            class="muze-solid-design-tool"
+            class="solid-tool"
             data-simply-command="muzeSolidPresenterExit"
           >
             Exit presentation
@@ -285,7 +287,7 @@
       >
         <p>Start with a slide.</p>
         <button
-          class="muze-solid-design-tool"
+          class="solid-tool"
           data-simply-command="muzeSolidPresenterAdd"
           data-simply-value="image"
         >
@@ -303,22 +305,22 @@
 </fieldset>
 
 <dialog
-  class="ds-dialog muze-solid-design-dialog muze-solid-presenter-title-dialog"
-  data-simply-behavior="muzeSolidDesignDialog"
+  class="ds-dialog solid-dialog muze-solid-presenter-title-dialog"
+  data-simply-behavior="solidDialog"
   aria-labelledby="muze-solid-presenter-title-heading"
 >
   <form
     class="swb-dialog-form"
     data-simply-command="muzeSolidPresenterSaveTitle"
   >
-    <header class="muze-solid-design-dialog-header">
+    <header class="solid-dialog-header">
       <h2 id="muze-solid-presenter-title-heading" class="swb-dialog-title">
         Deck title
       </h2>
       <button
         type="button"
-        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-        data-simply-command="muzeSolidDesignCloseDialog"
+        class="ds-button solid-marker-button solid-dialog-close"
+        data-simply-command="solidCloseDialog"
         aria-label="Close deck title"
       >
         <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -326,10 +328,10 @@
         </svg>
       </button>
     </header>
-    <div class="muze-solid-design-dialog-content">
-      <label class="muze-solid-design-label"
+    <div class="solid-dialog-content">
+      <label class="solid-label"
         >Title<input
-          class="muze-solid-design-control"
+          class="solid-control"
           name="deck-title"
           data-simply-field="muzeSolidPresenterTitleDraft"
           autofocus
@@ -340,17 +342,17 @@
         data-simply-transform="escape_html"
       ></p>
     </div>
-    <footer class="muze-solid-design-dialog-footer">
+    <footer class="solid-dialog-footer">
       <button
         type="submit"
-        class="ds-button muze-solid-design-button muze-solid-design-button-primary"
+        class="ds-button solid-button solid-button-primary"
       >
         Apply
       </button>
       <button
         type="button"
-        class="ds-button muze-solid-design-button"
-        data-simply-command="muzeSolidDesignCloseDialog"
+        class="ds-button solid-button"
+        data-simply-command="solidCloseDialog"
       >
         Cancel
       </button>

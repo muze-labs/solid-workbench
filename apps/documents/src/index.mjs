@@ -4,10 +4,10 @@ import { effect, batch } from '@muze-labs/simplyflow/state';
 import { installEvents } from '@muze-labs/simplyflow-events';
 import { shell } from '@muze-labs/solid-app-ui';
 import {
-  muzeSolidDesignDialog,
-  muzeSolidDesignListDetails,
-  muzeSolidDesignToolbar,
-  muzeSolidDesignDropdown
+  solidDialog,
+  solidListDetails,
+  solidToolbar,
+  solidDropdown
 } from '@muze-labs/solid-design';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import {
@@ -58,10 +58,10 @@ const host = shell({
 const definition = {
   container: host.main.querySelector('[data-documents-app]'),
   components: {
-    muzeSolidDesignDialog,
-    muzeSolidDesignListDetails,
-    muzeSolidDesignToolbar,
-    muzeSolidDesignDropdown,
+    solidDialog,
+    solidListDetails,
+    solidToolbar,
+    solidDropdown,
     muzeDocuments,
     muzeDocumentsNavigation
   },

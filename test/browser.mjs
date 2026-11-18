@@ -931,7 +931,7 @@ try {
     'document.querySelector("[data-simply-command=sync]").click();'
   );
   await wait(
-    'document.querySelector(".muze-solid-design-toast").textContent.includes("Contacts synchronized")'
+    'document.querySelector(".solid-toast").textContent.includes("Contacts synchronized")'
   );
   assert.match(
     String(resources.get(base + '/contacts.ttl').body),
@@ -1122,7 +1122,7 @@ try {
   assert.equal(
     await evaluate(`
       const dialog = document.querySelector('.muze-solid-ui-capability-dialog');
-      const close = dialog.querySelector('.muze-solid-design-dialog-close');
+      const close = dialog.querySelector('.solid-dialog-close');
       const bounds = dialog.getBoundingClientRect();
       const button = close.getBoundingClientRect();
       const style = getComputedStyle(dialog);
@@ -1138,7 +1138,7 @@ try {
       const edit = provider.document.querySelector('[data-simply-command=editProfile]');
       return Boolean(edit.querySelector('svg use')) &&
         parseFloat(provider.getComputedStyle(edit).minHeight) >= 44 &&
-        edit.classList.contains('muze-solid-design-tool');
+        edit.classList.contains('solid-tool');
     `),
     true,
     'Edit profile uses the shared icon control with a 44px target'
@@ -1169,7 +1169,7 @@ try {
     await evaluate(
       'const provider=' +
         profileFrame +
-        ';const footer=provider.document.querySelector(".swb-profile-card form .muze-solid-design-dialog-footer").getBoundingClientRect();return footer.top>=0 && footer.bottom<=provider.innerHeight;'
+        ';const footer=provider.document.querySelector(".swb-profile-card form .solid-dialog-footer").getBoundingClientRect();return footer.top>=0 && footer.bottom<=provider.innerHeight;'
     ),
     true,
     'Profile actions stay visible on mobile without scrolling the form'
@@ -1564,7 +1564,7 @@ try {
     'document.querySelector("[data-simply-command=sync]").click();'
   );
   await wait(
-    'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
+    'document.querySelector(".solid-toast").textContent.includes("Shortcuts synchronized")'
   );
   assert.match(
     String(resources.get(base + '/launcher.ttl').body),
@@ -1756,7 +1756,7 @@ try {
   );
   await click('.swb-diagnostics [data-simply-command=sync]');
   await wait(
-    'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
+    'document.querySelector(".solid-toast").textContent.includes("Shortcuts synchronized")'
   );
   await visit('workbench/');
   await wait(
@@ -1788,7 +1788,7 @@ try {
   );
   await click('.swb-diagnostics [data-simply-command=sync]');
   await wait(
-    'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
+    'document.querySelector(".solid-toast").textContent.includes("Shortcuts synchronized")'
   );
   assert.match(
     String(resources.get(base + '/launcher.ttl').body),
@@ -1873,7 +1873,7 @@ try {
   await wait('new URL(' + anonymousLink + '.href).searchParams.has("webid")');
   await click('.swb-diagnostics [data-simply-command=sync]');
   await wait(
-    'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
+    'document.querySelector(".solid-toast").textContent.includes("Shortcuts synchronized")'
   );
   await visit('workbench/');
   await wait(
@@ -1894,7 +1894,7 @@ try {
   );
   await click('.swb-diagnostics [data-simply-command=sync]');
   await wait(
-    'document.querySelector(".muze-solid-design-toast").textContent.includes("Shortcuts synchronized")'
+    'document.querySelector(".solid-toast").textContent.includes("Shortcuts synchronized")'
   );
   await visit('workbench/');
   await wait(
@@ -1986,7 +1986,7 @@ try {
     'document.querySelector("[data-simply-command=remove]").click();'
   );
   await wait(
-    'document.querySelector(".muze-solid-design-toast").textContent.includes("Marked deleted")'
+    'document.querySelector(".solid-toast").textContent.includes("Marked deleted")'
   );
   await wait(
     '!document.querySelector(".swb-file-list").textContent.includes("test.txt")'
@@ -2001,7 +2001,7 @@ try {
     `const input=document.querySelector('input[type=file]');const transfer=new DataTransfer();transfer.items.add(new File([new Uint8Array([0,255,7,128])],'bytes.bin',{type:'application/octet-stream'}));input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));`
   );
   await wait(
-    'document.querySelector(".muze-solid-design-toast").textContent.includes("1 files uploaded")'
+    'document.querySelector(".solid-toast").textContent.includes("1 files uploaded")'
   );
   assert.deepEqual(
     [...resources.get(base + '/storage/bytes.bin').body],
@@ -2059,20 +2059,20 @@ try {
   );
   await wait('!document.querySelector("dialog:modal")');
   await evaluate(
-    `window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`
+    `window.solidContacts.host.view.actions.solidHideToast();`
   );
-  await wait('document.querySelector(".muze-solid-design-toast").hidden');
+  await wait('document.querySelector(".solid-toast").hidden');
   await evaluate(`
-    document.querySelector('.muze-solid-design-list-search-input').focus();
+    document.querySelector('.solid-list-search-input').focus();
     window.solidContacts.host.message('Persistent recovery guidance');
     window.solidContacts.host.notify('Contact changes saved.');
   `);
   await wait(
-    'document.querySelector(".muze-solid-design-toast").hidden===false'
+    'document.querySelector(".solid-toast").hidden===false'
   );
   assert.equal(
     await evaluate(`
-    const toast = document.querySelector('.muze-solid-design-toast');
+    const toast = document.querySelector('.solid-toast');
     const style = getComputedStyle(toast);
     return parseFloat(style.opacity) < 1 &&
       new DOMMatrixReadOnly(style.transform).m42 > 0 &&
@@ -2083,10 +2083,10 @@ try {
   );
   assert.equal(
     await evaluate(`
-      const region = document.querySelector('.muze-solid-design-toasts');
+      const region = document.querySelector('.solid-toasts');
       return region.getAttribute('role') === 'status' &&
         region.getAttribute('aria-live') === 'polite' &&
-        document.activeElement.matches('.muze-solid-design-list-search-input') &&
+        document.activeElement.matches('.solid-list-search-input') &&
         document.querySelector('.swb-suite-status').textContent === 'Persistent recovery guidance';
     `),
     true,
@@ -2094,23 +2094,23 @@ try {
   );
   await capture('contacts-toast');
   await evaluate(
-    `document.querySelector('.muze-solid-design-toast button').focus();`
+    `document.querySelector('.solid-toast button').focus();`
   );
   await new Promise((resolve) => setTimeout(resolve, 8200));
   assert.equal(
     await evaluate(
-      'return document.querySelector(".muze-solid-design-toast").hidden;'
+      'return document.querySelector(".solid-toast").hidden;'
     ),
     false,
     'A focused toast does not disappear on its timer'
   );
-  await click('.muze-solid-design-toast button');
+  await click('.solid-toast button');
   await wait(
-    'document.querySelector(".muze-solid-design-toast").hasAttribute("data-muze-solid-design-toast-closing")'
+    'document.querySelector(".solid-toast").hasAttribute("data-solid-toast-closing")'
   );
   assert.equal(
     await evaluate(`
-    const toast = document.querySelector('.muze-solid-design-toast');
+    const toast = document.querySelector('.solid-toast');
     return !toast.hidden && toast.inert &&
       toast.textContent.includes('Contact changes saved.') &&
       toast.getAnimations().some(animation => animation.playState === 'running');
@@ -2118,10 +2118,10 @@ try {
     true,
     'Dismissal animates before removing the notification'
   );
-  await wait('document.querySelector(".muze-solid-design-toast").hidden');
+  await wait('document.querySelector(".solid-toast").hidden');
   assert.equal(
     await evaluate(
-      'return document.activeElement.matches(".muze-solid-design-list-search-input");'
+      'return document.activeElement.matches(".solid-list-search-input");'
     ),
     true,
     'Dismissing a keyboard-focused toast restores the previous focus'
@@ -2135,17 +2135,17 @@ try {
     `window.solidContacts.host.notify('Nonessential confirmation');`
   );
   await wait(
-    'document.querySelector(".muze-solid-design-toast").hidden===false'
+    'document.querySelector(".solid-toast").hidden===false'
   );
   await new Promise((resolve) => setTimeout(resolve, 8200));
-  await wait('document.querySelector(".muze-solid-design-toast").hidden');
+  await wait('document.querySelector(".solid-toast").hidden');
   await evaluate(`window.solidContacts.host.notify('First notification');`);
-  await wait('!document.querySelector(".muze-solid-design-toast").hidden');
+  await wait('!document.querySelector(".solid-toast").hidden');
   await evaluate(
-    `window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`
+    `window.solidContacts.host.view.actions.solidHideToast();`
   );
   await wait(
-    'document.querySelector(".muze-solid-design-toast").hasAttribute("data-muze-solid-design-toast-closing")'
+    'document.querySelector(".solid-toast").hasAttribute("data-solid-toast-closing")'
   );
   await evaluate(
     `window.solidContacts.host.notify('Replacement notification');`
@@ -2153,7 +2153,7 @@ try {
   await new Promise((resolve) => setTimeout(resolve, 400));
   assert.equal(
     await evaluate(`
-    const toast = document.querySelector('.muze-solid-design-toast');
+    const toast = document.querySelector('.solid-toast');
     return !toast.hidden && !toast.inert &&
       toast.textContent.includes('Replacement notification');
   `),
@@ -2164,24 +2164,24 @@ try {
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }]
   });
   await evaluate(
-    `window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`
+    `window.solidContacts.host.view.actions.solidHideToast();`
   );
-  await wait('document.querySelector(".muze-solid-design-toast").hidden');
+  await wait('document.querySelector(".solid-toast").hidden');
   await evaluate(
     `window.solidContacts.host.notify('Reduced motion notification');`
   );
-  await wait('!document.querySelector(".muze-solid-design-toast").hidden');
+  await wait('!document.querySelector(".solid-toast").hidden');
   assert.equal(
     await evaluate(`
-    return document.querySelector('.muze-solid-design-toast').getAnimations().length;
+    return document.querySelector('.solid-toast').getAnimations().length;
   `),
     0,
     'Reduced motion skips toast animation'
   );
   await evaluate(
-    `window.solidContacts.host.view.actions.muzeSolidDesignHideToast();`
+    `window.solidContacts.host.view.actions.solidHideToast();`
   );
-  await wait('document.querySelector(".muze-solid-design-toast").hidden');
+  await wait('document.querySelector(".solid-toast").hidden');
   await page.send('Emulation.setEmulatedMedia', { features: [] });
   await evaluate(`window.solidContacts.host.message('');`);
   await click('.swb-account-button');
@@ -2281,7 +2281,7 @@ try {
   await click('[data-simply-command=preferences]');
   assert.equal(
     await evaluate(`
-      return ['.swb-account-button', '.muze-solid-ui-capability-dialog .muze-solid-design-dialog-close'].every(selector => {
+      return ['.swb-account-button', '.muze-solid-ui-capability-dialog .solid-dialog-close'].every(selector => {
         const button = document.querySelector(selector).getBoundingClientRect();
         const icon = document.querySelector(selector + ' svg').getBoundingClientRect();
         return Math.abs((icon.top + icon.bottom) / 2 - (button.top + button.bottom) / 2) < 1;

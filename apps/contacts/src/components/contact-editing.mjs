@@ -67,12 +67,12 @@ export const contactEditing = {
   },
   commands: {
     newContact() {
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.new-contact-dialog')
       );
     },
     cancelNew() {
-      return this.actions.muzeSolidDesignCloseDialog(
+      return this.actions.solidCloseDialog(
         this.container.querySelector('.new-contact-dialog')
       );
     },
@@ -81,7 +81,7 @@ export const contactEditing = {
       return this.runtime.host.run(async () => {
         await this.actions.addContact(name);
         form.reset();
-        await this.actions.muzeSolidDesignCloseDialog(
+        await this.actions.solidCloseDialog(
           this.container.querySelector('.new-contact-dialog')
         );
       });

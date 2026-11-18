@@ -37,7 +37,7 @@ export const muzeSolidNotebookCollections = {
   commands: {
     muzeSolidNotebookCollectionTools() {
       this.actions.muzeSolidNotebookProjectCollection();
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.muze-solid-notebook-collection-dialog')
       );
     },
@@ -243,7 +243,7 @@ export const muzeSolidNotebookCollections = {
       this.runtime.collectionEntry = id;
       this.data.muzeSolidNotebookEntryTitle = entry.title;
       this.data.muzeSolidNotebookEntryUrl = entry.document;
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.muze-solid-notebook-entry-dialog')
       );
     },
@@ -271,7 +271,7 @@ export const muzeSolidNotebookCollections = {
         await this.actions
           .muzeSolidNotebookRequireCollection()
           .removeReference(this.runtime.collectionEntry);
-        await this.actions.muzeSolidDesignCloseDialog(
+        await this.actions.solidCloseDialog(
           this.container.querySelector('.muze-solid-notebook-entry-dialog')
         );
       });
@@ -726,7 +726,7 @@ export const muzeSolidNotebookCollections = {
       ]) {
         const dialog = this.container.querySelector(selector);
         if (dialog.open) {
-          await this.actions.muzeSolidDesignCloseDialog(dialog);
+          await this.actions.solidCloseDialog(dialog);
         }
       }
     },
@@ -735,7 +735,7 @@ export const muzeSolidNotebookCollections = {
         '.muze-solid-collection-browser-categories a[aria-current="page"]'
       );
       if (category && !category.closest('[hidden]')) {
-        this.commands.call('muzeSolidDesignShowList', category);
+        this.commands.call('solidShowList', category);
       }
     },
     muzeSolidNotebookDocumentRoute() {
@@ -984,7 +984,7 @@ export const muzeSolidNotebookCollections = {
         '.muze-solid-notebook-entry-dialog'
       );
       if (dialog.open) {
-        await this.actions.muzeSolidDesignCloseDialog(dialog);
+        await this.actions.solidCloseDialog(dialog);
       }
     },
     async muzeSolidNotebookChooseResource(mode, suggestedName, title) {

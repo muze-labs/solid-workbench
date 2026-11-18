@@ -1,17 +1,17 @@
 <div class="muze-solid-notebook-body">
   <dialog
-    class="ds-dialog muze-solid-design-dialog muze-solid-notebook-document-dialog"
-    data-simply-behavior="muzeSolidDesignDialog"
+    class="ds-dialog solid-dialog muze-solid-notebook-document-dialog"
+    data-simply-behavior="solidDialog"
     aria-labelledby="muze-solid-notebook-document-heading"
   >
-    <header class="muze-solid-design-dialog-header">
+    <header class="solid-dialog-header">
       <h2 id="muze-solid-notebook-document-heading" class="swb-dialog-title">
         Notebooks on this device
       </h2>
       <button
         type="button"
-        class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-        data-simply-command="muzeSolidDesignCloseDialog"
+        class="ds-button solid-marker-button solid-dialog-close"
+        data-simply-command="solidCloseDialog"
         aria-label="Close dialog"
       >
         <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -19,7 +19,7 @@
         </svg>
       </button>
     </header>
-    <div class="muze-solid-design-dialog-content">
+    <div class="solid-dialog-content">
       <ul
         class="muze-solid-notebook-documents"
         data-simply-list="muzeSolidNotebookDocuments"
@@ -28,7 +28,7 @@
           ><li>
             <button
               type="button"
-              class="muze-solid-design-tool"
+              class="solid-tool"
               data-simply-command="muzeSolidNotebookSelect"
               data-simply-value=":value.id"
               data-simply-field="title"
@@ -44,19 +44,19 @@
     </div>
   </dialog>
   <dialog
-    class="ds-dialog muze-solid-design-dialog muze-solid-notebook-link-dialog"
-    data-simply-behavior="muzeSolidDesignDialog"
+    class="ds-dialog solid-dialog muze-solid-notebook-link-dialog"
+    data-simply-behavior="solidDialog"
     aria-labelledby="muze-solid-notebook-link-heading"
   >
     <form class="swb-dialog-form" data-simply-command="muzeSolidNotebookLink">
-      <header class="muze-solid-design-dialog-header">
+      <header class="solid-dialog-header">
         <h2 id="muze-solid-notebook-link-heading" class="swb-dialog-title">
           Add link
         </h2>
         <button
           type="button"
-          class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-          data-simply-command="muzeSolidDesignCloseDialog"
+          class="ds-button solid-marker-button solid-dialog-close"
+          data-simply-command="solidCloseDialog"
           aria-label="Close dialog"
         >
           <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -64,11 +64,11 @@
           </svg>
         </button>
       </header>
-      <div class="muze-solid-design-dialog-content">
-        <label class="muze-solid-design-label"
+      <div class="solid-dialog-content">
+        <label class="solid-label"
           >Link address
           <input
-            class="muze-solid-design-control muze-solid-notebook-input"
+            class="solid-control muze-solid-notebook-input"
             type="url"
             name="href"
             required
@@ -84,15 +84,15 @@
           data-simply-transform="escape_html"
         ></p>
       </div>
-      <footer class="muze-solid-design-dialog-footer">
-        <button class="muze-solid-design-tool">Apply link</button>
+      <footer class="solid-dialog-footer">
+        <button class="solid-tool">Apply link</button>
       </footer>
     </form>
   </dialog>
   <section
     id="muze-solid-notebook-status"
     popover
-    class="muze-solid-design-popup muze-solid-notebook-status"
+    class="solid-popup muze-solid-notebook-status"
     aria-labelledby="muze-solid-notebook-status-heading"
   >
     <h2 id="muze-solid-notebook-status-heading">Notebook status</h2>

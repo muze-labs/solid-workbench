@@ -1,6 +1,6 @@
 /* DS adapter: resolve host values at this component boundary. */
 @layer theme {
-  .muze-solid-design-dialog,
+  .solid-dialog,
   .swb-dialog-footer-standalone {
     --swb-dialog-space-small: var(--ds-space-d2);
     --swb-dialog-space: var(--ds-space);
@@ -12,7 +12,7 @@
 
 @layer component {
   /* the-ds supplies colors, typography and native dialog primitives. */
-  .muze-solid-design-dialog[open] {
+  .solid-dialog[open] {
     display: flex;
     flex-direction: column;
     max-height: calc(100dvh - 2rem);
@@ -26,13 +26,13 @@
     min-height: 0;
     overflow: hidden;
   }
-  .muze-solid-design-dialog-header,
-  .muze-solid-design-dialog-footer {
+  .solid-dialog-header,
+  .solid-dialog-footer {
     flex: none;
     padding: var(--swb-dialog-space-small, 0.5rem) var(--swb-dialog-space, 1rem);
     background: transparent;
   }
-  .muze-solid-design-dialog-header {
+  .solid-dialog-header {
     position: relative;
     box-sizing: border-box;
     min-height: 2.75rem;
@@ -51,12 +51,12 @@
     min-inline-size: 0;
     margin: 0;
     font: inherit;
-    font-size: var(--muze-solid-design-title-size, 1.25rem);
+    font-size: var(--solid-title-size, 1.25rem);
     font-weight: 500;
     line-height: 1.4;
     overflow-wrap: anywhere;
   }
-  .muze-solid-design-dialog-close {
+  .solid-dialog-close {
     margin: 0;
     position: absolute;
     inset-block-start: 0;
@@ -75,12 +75,12 @@
     color: white;
     box-shadow: none;
   }
-  .muze-solid-design-dialog-content {
+  .solid-dialog-content {
     min-height: 0;
     overflow: auto;
     padding: var(--swb-dialog-content-padding, var(--swb-dialog-space, 1rem));
   }
-  .muze-solid-design-dialog-footer {
+  .solid-dialog-footer {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -92,7 +92,7 @@
     flex-basis: 100%;
   }
   @media (max-width: 719px) {
-    .muze-solid-design-dialog[open] {
+    .solid-dialog[open] {
       width: 100%;
       height: 100dvh;
       max-height: 100dvh;
@@ -105,7 +105,7 @@
     display: none;
   }
 
-  .muze-solid-design-dialog {
+  .solid-dialog {
     width: min(90vw, 45rem);
     min-width: 0;
     max-height: 90dvh;
@@ -113,31 +113,31 @@
     padding: var(--swb-dialog-space, 1rem);
     border-radius: 0;
   }
-  .muze-solid-design-dialog::backdrop {
+  .solid-dialog::backdrop {
     background: #0007;
     backdrop-filter: blur(3px);
   }
 }
 
 @layer component {
-  .muze-solid-design-dialog {
-    background: var(--muze-solid-design-chrome, Canvas);
-    color: var(--muze-solid-design-text, CanvasText);
-    border: 1px solid var(--muze-solid-design-divider, GrayText);
-    box-shadow: var(--muze-solid-design-elevation);
+  .solid-dialog {
+    background: var(--solid-chrome, Canvas);
+    color: var(--solid-text, CanvasText);
+    border: 1px solid var(--solid-divider, GrayText);
+    box-shadow: var(--solid-elevation);
   }
 
 }
 
 @layer component {
-  .muze-solid-design-dialog-header > button {
+  .solid-dialog-header > button {
     box-sizing: border-box;
     align-self: stretch;
     min-block-size: 2.75rem;
     margin-block: 0;
     padding-block: 0;
   }
-  .muze-solid-design-dialog-close {
+  .solid-dialog-close {
     block-size: 100%;
   }
 }

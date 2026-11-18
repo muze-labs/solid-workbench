@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import template from './documents.html' with { type: 'text' };
+import template from './documents.html?template' with { type: 'text' };
 import styles from './documents.css' with { type: 'text' };
 
 const viewCapability = 'https://vocab.muze.nl/capabilities/view-resource';
@@ -170,7 +170,7 @@ export const muzeDocuments = {
       const dialog = this.container.querySelector(
         '[data-document-dialog="' + name + '"]'
       );
-      return this.actions.muzeSolidDesignOpenDialog(dialog);
+      return this.actions.solidOpenDialog(dialog);
     },
     async muzeDocumentsNotes() {
       if (
@@ -284,7 +284,7 @@ export const muzeDocuments = {
         );
         if (page) {
           await this.actions.muzeDocumentsShow(page);
-          await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
+          await this.actions.solidCloseDialog(form.closest('dialog'));
         }
         else {
           this.data.muzeDocumentsStatus =
@@ -332,7 +332,7 @@ export const muzeDocuments = {
       const anchor = this.runtime.pendingAnchor;
       this.runtime.pendingAnchor = null;
       this.runtime.group = group;
-      await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
+      await this.actions.solidCloseDialog(form.closest('dialog'));
       return this.runtime.host.run(() =>
         this.actions.muzeDocumentsAddNote(anchor, true)
       );
@@ -588,7 +588,7 @@ export const muzeDocuments = {
       // The dialog moves focus away from Cobalt and changes its selection.
       this.runtime.noteLinkRange = { ...range };
       this.data.muzeDocumentsLinkStatus = '';
-      await this.actions.muzeSolidDesignOpenDialog(dialog);
+      await this.actions.solidOpenDialog(dialog);
       dialog.querySelector('input').focus();
     },
     async muzeDocumentsApplyLink(form) {
@@ -606,7 +606,7 @@ export const muzeDocuments = {
             }
           ]
         });
-        await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
+        await this.actions.solidCloseDialog(form.closest('dialog'));
         editor.focus(range.start, range.end);
         editor.applyCommand('link', range, href);
         this.actions.muzeDocumentsNoteSelection();
@@ -1189,7 +1189,7 @@ export const muzeDocuments = {
       }
       this.data.muzeDocumentsFormatting = {
         ...this.data.muzeDocumentsFormatting,
-        style: this.actions.muzeSolidDesignToolbarPlacement(toolbar, anchor)
+        style: this.actions.solidToolbarPlacement(toolbar, anchor)
       };
     },
     muzeDocumentsNoteGuard(event) {
@@ -1851,7 +1851,7 @@ export const muzeDocuments = {
       this.actions.muzeDocumentsApplySettings(savedReader);
       this.runtime.readerPosition = null;
       this.runtime.rotation = 0;
-      await this.actions.muzeSolidDesignCloseDialog(
+      await this.actions.solidCloseDialog(
         this.container.querySelector('[data-document-dialog="open"]')
       );
       this.data.muzeDocumentsOutline = await pdf.outline();
@@ -2620,7 +2620,7 @@ export const muzeDocuments = {
       ) {
         this.runtime.pendingAnchor = anchor;
         this.data.muzeDocumentsDestinations = this.data.muzeDocumentsGroups;
-        await this.actions.muzeSolidDesignOpenDialog(
+        await this.actions.solidOpenDialog(
           this.container.querySelector('[data-document-dialog="destination"]')
         );
         return;
@@ -2652,7 +2652,7 @@ export const muzeDocuments = {
     },
     async muzeDocumentsEdit(id) {
       for (const dialog of this.container.querySelectorAll('dialog[open]')) {
-        await this.actions.muzeSolidDesignCloseDialog(dialog);
+        await this.actions.solidCloseDialog(dialog);
       }
       if (this.runtime.saving) {
         throw new Error('documents: Wait for the group save before editing.');
@@ -2782,7 +2782,7 @@ export const muzeDocuments = {
         this.data.muzeDocumentsEditorStatus =
           'This recovered draft conflicts with a newer note. The draft is retained on this device; saving is blocked.';
       }
-      await this.actions.muzeSolidDesignOpenDialog(
+      await this.actions.solidOpenDialog(
         this.container.querySelector('[data-document-dialog="annotation"]')
       );
       const editor = this.runtime.noteEditor.editor;
@@ -2890,10 +2890,10 @@ export const muzeDocuments = {
       if ((apply || wasNew) && !this.runtime.noteRequest) {
         await this.runtime.editorSource.save('');
       }
-      await this.actions.muzeSolidDesignCloseDialog(
+      await this.actions.solidCloseDialog(
         this.container.querySelector('[data-document-dialog="annotation-link"]')
       );
-      await this.actions.muzeSolidDesignCloseDialog(
+      await this.actions.solidCloseDialog(
         this.container.querySelector('[data-document-dialog="annotation"]')
       );
       this.runtime.noteEditor.editor.destroy();

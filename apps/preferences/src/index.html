@@ -1,19 +1,19 @@
 <div
-  class="swb-split-view ds-panels muze-solid-design-list-details"
-  data-simply-shortcuts="muzeSolidDesignSections"
+  class="swb-split-view ds-panels solid-list-details"
+  data-simply-shortcuts="solidSections"
 >
   <nav
     class="ds-panels-pane ds-panels-list ds-navbar-side swb-list-pane muze-solid-preferences-navigation"
     aria-label="Preferences sections"
   >
     <label
-      class="muze-solid-design-label"
+      class="solid-label"
       data-simply-field="swb_applicationChoice"
       data-simply-transform="attributes"
       data-simply-attributes="hidden"
-      >Application<span class="muze-solid-design-select-wrap"
+      >Application<span class="solid-select-wrap"
         ><select
-          class="muze-solid-design-select muze-solid-design-control swb-control swb-labeled-control"
+          class="solid-select solid-control swb-control swb-labeled-control"
           data-simply-field="swb_app"
           data-simply-command="swb_chooseApp"
           aria-label="Application settings"
@@ -26,13 +26,13 @@
           <option value="notebook">Notebook</option>
           <option value="viewer">Resource Viewer</option></select
         ><span
-          class="muze-solid-design-chevron"
+          class="solid-chevron"
           aria-hidden="true"
         ></span></span
     ></label>
     <ul
       class="ds-navbar-nav"
-      data-muze-solid-design-sections
+      data-solid-sections
       data-simply-list="swb_sections"
     >
       <template
@@ -43,7 +43,7 @@
             data-simply-value=":value.id"
             data-simply-field="attributes"
             data-simply-transform="attributes"
-            data-simply-attributes="aria-current class tabindex data-muze-solid-design-section"
+            data-simply-attributes="aria-current class tabindex data-solid-section"
           >
             <span
               data-simply-field="label"
@@ -59,8 +59,8 @@
   >
     <button
       type="button"
-      class="muze-solid-design-tool muze-solid-design-list-back"
-      data-simply-command="muzeSolidDesignShowList"
+      class="solid-tool solid-list-back"
+      data-simply-command="solidShowList"
     >
       Back to sections
     </button>
@@ -83,21 +83,21 @@
       data-simply-attributes="hidden"
       hidden
     >
-      <label class="muze-solid-design-label"
-        >Editing workspace<span class="muze-solid-design-select-wrap"
+      <label class="solid-label"
+        >Editing workspace<span class="solid-select-wrap"
           ><select
-            class="muze-solid-design-select muze-solid-design-control swb-control swb-labeled-control"
+            class="solid-select solid-control swb-control swb-labeled-control"
             data-simply-field="swb_workspaceSelect"
             data-simply-command="swb_chooseWorkspace"
           ></select
           ><span
-            class="muze-solid-design-chevron"
+            class="solid-chevron"
             aria-hidden="true"
           ></span></span
       ></label>
       <button
         type="button"
-        class="muze-solid-design-tool"
+        class="solid-tool"
         data-simply-command="swb_refreshWorkspace"
       >
         Refresh workspace settings
@@ -126,7 +126,7 @@
           <p data-simply-field="label" data-simply-transform="escape_html"></p>
           <button
             type="button"
-            class="muze-solid-design-tool"
+            class="solid-tool"
             data-simply-command="swb_keepLocal"
             data-simply-value=":value.id"
           >
@@ -134,7 +134,7 @@
           </button>
           <button
             type="button"
-            class="muze-solid-design-tool"
+            class="solid-tool"
             data-simply-command="swb_useRemote"
             data-simply-value=":value.id"
           >
@@ -145,7 +145,7 @@
     </ul>
     <button
       type="button"
-      class="muze-solid-design-tool"
+      class="solid-tool"
       data-simply-command="swb_retrySync"
     >
       Retry synchronization

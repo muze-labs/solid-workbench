@@ -1,7 +1,7 @@
 import {
-  muzeSolidDesignToolbar,
-  muzeSolidDesignDialog,
-  muzeSolidDesignListDetails
+  solidToolbar,
+  solidDialog,
+  solidListDetails
 } from '@muze-labs/solid-design';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import { writeDraft, readDraft } from '@muze-labs/solid-profile/state.mjs';
@@ -38,9 +38,9 @@ const host = shell({
 const definition = {
   container: host.main,
   components: {
-    muzeSolidDesignToolbar,
-    muzeSolidDesignDialog,
-    muzeSolidDesignListDetails,
+    solidToolbar,
+    solidDialog,
+    solidListDetails,
     ...profileComponents,
     profileResource,
     lifecycle,

@@ -370,7 +370,7 @@ and their evidence are retained in `.spiral/moldability-refactor-investigation.m
 
 The experimental [solid-design package](packages/solid-design/README.md) provides
 shared dialogs, dropdown styling and list/details panes on top of the-ds. Public
-design entries use `muzeSolidDesign` / `muze-solid-design` prefixes. The running
+design entries use `solid` / `solid-` prefixes. The running
 app handles use `muzeSolidLauncherApp`, `muzeSolidContactsApp`, `muzeSolidFilesApp`
 and `muzeSolidProfileApp`; existing `solidLauncher`/`solidContacts`/`solidFiles`/
 `solidProfile` diagnostic handles remain prefixed compatibility interfaces.

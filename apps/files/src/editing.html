@@ -1,12 +1,12 @@
 <div style="display: contents">
   <div
     id="muze-solid-files-more-menu"
-    class="muze-solid-design-popup muze-solid-files-more-menu"
+    class="solid-popup muze-solid-files-more-menu"
     popover
   >
     <button
       type="button"
-      class="muze-solid-design-tool muze-solid-files-folder-option"
+      class="solid-tool muze-solid-files-folder-option"
       data-simply-command="muzeSolidFilesRefresh"
     >
       <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -23,22 +23,22 @@
     data-simply-command="upload"
   />
   <dialog
-    class="ds-dialog muze-solid-design-dialog muze-solid-files-create-dialog"
-    data-simply-behavior="muzeSolidDesignDialog"
+    class="ds-dialog solid-dialog muze-solid-files-create-dialog"
+    data-simply-behavior="solidDialog"
     aria-labelledby="muze-solid-files-create-title"
   >
     <form
       class="swb-dialog-form muze-solid-files-create-form"
       data-simply-command="mkdir"
     >
-      <header class="muze-solid-design-dialog-header">
+      <header class="solid-dialog-header">
         <h2 id="muze-solid-files-create-title" class="swb-dialog-title">
           New folder
         </h2>
         <button
           type="button"
-          class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
-          data-simply-command="muzeSolidDesignCloseDialog"
+          class="ds-button solid-marker-button solid-dialog-close"
+          data-simply-command="solidCloseDialog"
           aria-label="Close new folder dialog"
         >
           <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -46,10 +46,10 @@
           </svg>
         </button>
       </header>
-      <div class="muze-solid-design-dialog-content">
-        <label class="muze-solid-design-label"
+      <div class="solid-dialog-content">
+        <label class="solid-label"
           >New folder name<input
-            class="muze-solid-design-control swb-control swb-labeled-control"
+            class="solid-control swb-control swb-labeled-control"
             name="name"
             aria-describedby="muze-solid-files-create-status"
             required
@@ -62,16 +62,16 @@
           data-simply-transform="escape_html"
         ></p>
       </div>
-      <footer class="muze-solid-design-dialog-footer">
-        <button type="submit" class="muze-solid-design-tool">
+      <footer class="solid-dialog-footer">
+        <button type="submit" class="solid-tool">
           <svg class="ds-icon ds-icon-feather" aria-hidden="true">
             <use href="../assets/feather-icons.svg#check"></use></svg
           >Create folder
         </button>
         <button
           type="button"
-          class="muze-solid-design-tool"
-          data-simply-command="muzeSolidDesignCloseDialog"
+          class="solid-tool"
+          data-simply-command="solidCloseDialog"
         >
           Cancel
         </button>

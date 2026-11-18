@@ -1,11 +1,11 @@
 import styles from '../toolbar.css' with { type: 'text' };
 
-export const muzeSolidDesignToolbar = {
-  styles: { 'muze-solid-design-toolbar': styles },
+export const solidToolbar = {
+  styles: { 'solid-toolbar': styles },
   actions: {
     // Geometry only: the owning feature binds these attributes with SimplyFlow.
     // Stay within this document's visual viewport, including phone keyboards.
-    muzeSolidDesignToolbarPlacement(toolbar, anchor) {
+    solidToolbarPlacement(toolbar, anchor) {
       const viewport = window.visualViewport;
       const left = viewport?.offsetLeft || 0;
       const top = viewport?.offsetTop || 0;

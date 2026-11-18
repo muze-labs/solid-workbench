@@ -206,7 +206,7 @@ try {
     'solidContacts.ui.runtime.people.state.data = muzeSolidContactsTestRows'
   );
   await wait('document.querySelectorAll(".swb-contact-select").length === 1');
-  await click('[aria-label="Search contacts"]');
+  await click('.swb-contacts-toolbar input[type="search"]');
   await page.send('Input.insertText', { text: 'missing contact' });
   await wait('!document.querySelector(".swb-contact-select")');
   await key('Escape', 'Escape', 27);
