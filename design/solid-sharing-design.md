@@ -98,6 +98,16 @@ The recipient needs an authenticatable identity. The workflow must not require t
 
 An optional contact update can associate the WebID with the owner's existing contact, recording how and when the association was established. Updating an address book requires its own configured authority and must not block the access grant. It creates no additional sharing rights.
 
+### Worked example — sharing a PDF with an email-only contact
+
+Alex picks a PDF in Files and chooses Robin from Contacts. Today Files can already resolve that selection and display Robin's email and WebID, when present. Its workflow currently ends at “Recipient selected. Permissions unchanged.” The proposed sharing interface takes over there. Alex sees the PDF, Robin's selected email address, **Read**, and the invitation provider before pressing **Send invitation**. Only the selected PDF is in scope. Its annotation files can be shared separately. [Current Files action](../apps/files/src/components/file-sharing.mjs)
+
+Robin opens the email on a phone. The landing page offers **Sign in** and **Create a Solid identity**. After either route, Robin sees which WebID will receive access and can switch accounts before accepting. If Robin leaves during registration, the original email can reopen the unclaimed invitation until it expires. Once the Pod update is confirmed, **Open document** opens the original PDF, directly or through the recipient's chosen viewer. Pass only the resource URI to a viewer selected through trusted app routing. The viewer establishes its own recipient session if required. [Workbench Open With design](solid-semantic-open-with-design.md)
+
+The acceptance record means “this invitation sent to Robin's address was claimed with this WebID.” A forwarded email can produce the same evidence. When Alex next opens Contacts, offer to save the association privately, showing the address, claimed WebID and verification method. If the contact already lists a different WebID, present both for review. Keep this decision independent of Robin's access and avoid a provider-wide email lookup directory.
+
+On a phone, keep recipient selection, review and acceptance usable with native labeled controls, keyboard focus and a screen-reader announcement of the outcome. Offline, Alex can retain a private local draft. Sending requires a connection and explicit confirmation. If the connection drops after confirmation, recover the outcome using the same submission identifier before offering to send again.
+
 ### 5.3 Verification choices
 
 | Requirement | Meaning |
@@ -108,6 +118,18 @@ An optional contact update can associate the WebID with the owner's existing con
 The owner selects or accepts a default verification policy when sharing. Second-channel codes are sent to the contact information in the approved invitation, never a replacement number supplied during acceptance. Verification must be bound to the invitation and accepting WebID; changing identity invalidates that binding.
 
 These checks establish control of channels and an identity, not an absolute proof of the person's real-world identity. Email or phone fields asserted in a recipient-controlled WebID profile are not sufficient verification.
+
+### 5.4 Connect first through SAI, then share
+
+Offer **Connect** in Contacts and **Share** in resource apps. Alex can email Robin either kind of invitation. The email for a connection asks Robin to establish an ongoing relationship. The email for a document identifies a particular offer of access. Robin can accept the document invitation without setting up an Agent Registry. Either person can propose a connection later.
+
+With **Connect**, Alex's SAI Authorization Agent creates a Social Agent Invitation and Alex sends its secret link to Robin. Robin opens or pastes the link into their own compatible Authorization Agent and chooses the identity to use. On acceptance, each agent maintains a Social Agent Registration for the other party in its owner's registry. Each registration links to its counterpart through `interop:reciprocalRegistration`. In Pavlik's SAI-JS integration test the initial acceptance acknowledges queued work, then the test waits for reciprocal links on both sides. Workbench should show **Connection pending** during that interval and recover interrupted setup through the agents. [SAI Authorization Agent Primer §6.2–6.3](https://solidproject.org/TR/sai-primer-authorization-agent) · [SAI-JS invitation integration test](https://github.com/elf-pavlik/sai-js/blob/487882d0712b71833ef9f18546e5787c4f9979fd/test/invitation.test.ts)
+
+Later, Alex selects a document, picks the connected Robin and approves read access. The connection supplies Robin's WebID, so sharing needs no second identity invitation. For SAI-managed data, hand the decision to Alex's Authorization Agent, which manages the Access Grant and its scoped Data Grants. Use that path when the agent can represent the exact selection and access mode. SAI-JS's resource-sharing implementation works with registered data instances, shape trees and authorization scopes. A loose PDF URL in Files may lack that metadata. For such a PDF, offer the ordinary WebID permission through Alex's configured sharing provider when it manages the target. Choose one grant path per decision and record which component owns revocation. [SAI specification](https://solidproject.org/TR/sai) · [SAI-JS resource sharing](https://github.com/elf-pavlik/sai-js/blob/487882d0712b71833ef9f18546e5787c4f9979fd/packages/components/src/services/ShareResource.ts)
+
+Contacts may display a connection alongside the local address-book entry. Its status comes from the Authorization Agent. Saving a WebID after an email share cannot establish the reciprocal links. Likewise, connecting alone authorizes no document sharing in either direction. Show active shares separately when disconnecting so the owner can choose which grants to revoke.
+
+Verify interoperability by connecting a Workbench user with a separately operated SAI-JS agent. Check both registrations, confirm the private document is still inaccessible, then grant read access and verify it as Robin. Repeat with a second document using the established connection, revoke only the first grant, and verify the second share and the relationship survive. Also exercise the email-only route with a recipient who has no SAI agent. These are proposed checks. Cross-deployment compatibility still needs a live trial.
 
 ## 6. Lightweight application interface
 
@@ -225,7 +247,7 @@ The provider is trusted with contact information and sharing metadata as well as
 
 An LWS grant is an authorization record rather than a token presented for resource access. The proposal expects underlying policy changes when grants are created or revoked [7]. That matches the separation between workflow records and enforced pod permissions, but does not make its draft endpoints an established dependency.
 
-SAI and LWS alignment remains active work [8]. The specific social-network extension mentioned in discussion has not yet been identified precisely. Do not assume social connections imply access, transitive trust or permission to re-share.
+SAI and LWS alignment remains active work [8]. The connection-first flow in §5.4 uses reciprocal Social Agent Registrations. It confers no transitive trust or permission to re-share.
 
 Refresh this research when implementation begins, including current SAI invitation semantics, provider APIs, delegated grants and actual server compatibility. References below were reviewed during the design discussion; they are not a conformance claim for the proposed service.
 
@@ -250,7 +272,7 @@ Acceptance requires observed evidence that:
 - Accepted access survives the invitation provider becoming unavailable.
 - Provider disconnection removes the intended management authority, and cancellation/revocation results distinguish actual policy changes from requests merely queued.
 
-Open decisions for implementation: exact provider discovery and API contract; private preference and share-inventory storage; supported service authentication deployments; first SAI integration point; default verification policy; and how folder sharing will describe exceptions.
+Open implementation decisions include provider discovery and API contracts, private preference and share-inventory storage, supported service authentication deployments, the handoff to independently operated SAI Authorization Agents, default verification policy and how folder sharing will describe exceptions.
 
 ## References
 
