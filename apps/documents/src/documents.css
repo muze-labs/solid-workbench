@@ -1,9 +1,9 @@
 @layer theme {
   .muze-documents {
-    --muze-documents-surface: var(--muze-solid-design-surface, Canvas);
-    --muze-documents-chrome: var(--muze-solid-design-chrome, Canvas);
-    --muze-documents-text: var(--muze-solid-design-text, CanvasText);
-    --muze-documents-border: var(--muze-solid-design-divider, GrayText);
+    --muze-documents-surface: var(--solid-surface, Canvas);
+    --muze-documents-chrome: var(--solid-chrome, Canvas);
+    --muze-documents-text: var(--solid-text, CanvasText);
+    --muze-documents-border: var(--solid-divider, GrayText);
   }
 }
 @layer component {
@@ -514,11 +514,11 @@
 @layer theme {
   .muze-documents-bookmark-row {
     --muze-documents-bookmark-hover: var(
-      --muze-solid-design-chrome,
+      --solid-chrome,
       ButtonFace
     );
     --muze-documents-bookmark-selected: var(
-      --muze-solid-design-selected,
+      --solid-selected,
       Highlight
     );
   }

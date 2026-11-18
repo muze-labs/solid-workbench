@@ -3543,3 +3543,10 @@ confirmed that a signed-in tab can show title details beyond the anonymous
 response. ACC-20261118-QG24H-281 records acceptance and EVD-20261118-QG24H-280
 records the broad-browser paging timeout and independent passes. Standing
 authorization covers normal merge, push and merged-branch cleanup.
+
+## CYC282 accepted for integration, 2026-11-18
+
+The maintainer accepts the Workbench design extension with the `solid` prefix
+and semantic HTML examples. ACC-20261118-QG24H-285 binds the implementation
+and verification. Standing authorization covers normal merge, push and
+merged-branch cleanup.

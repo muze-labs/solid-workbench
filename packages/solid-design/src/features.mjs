@@ -1,6 +1,6 @@
-export { muzeSolidDesignDialog } from './components/dialog.mjs';
-export { muzeSolidDesignListDetails } from './components/list-details.mjs';
-export { muzeSolidDesignDropdown } from './components/dropdown.mjs';
-export { muzeSolidDesignToast } from './components/toast.mjs';
-export { muzeSolidDesignToolbar } from './components/toolbar.mjs';
-export { muzeSolidDesignTheme } from './components/theme.mjs';
+export { solidDialog } from './components/dialog.mjs';
+export { solidListDetails } from './components/list-details.mjs';
+export { solidDropdown } from './components/dropdown.mjs';
+export { solidToast } from './components/toast.mjs';
+export { solidToolbar } from './components/toolbar.mjs';
+export { solidTheme } from './components/theme.mjs';

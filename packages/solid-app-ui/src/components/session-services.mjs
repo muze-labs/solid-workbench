@@ -1,7 +1,7 @@
 export const sessionServices = {
   actions: {
     notify(text) {
-      this.actions.muzeSolidDesignNotify(text);
+      this.actions.solidNotify(text);
     },
     message(text) {
       // Account state is already exposed by the toolbar. Keep unrelated errors.

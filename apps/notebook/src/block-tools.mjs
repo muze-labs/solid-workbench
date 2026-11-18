@@ -1,11 +1,11 @@
 import template from './block-tools.html?template' with { type: 'text' };
 import styles from './block-tools.css' with { type: 'text' };
-import { muzeSolidDesignToolbar } from '@muze-labs/solid-design';
+import { solidToolbar } from '@muze-labs/solid-design';
 
 export const muzeSolidNotebookBlockTools = {
   templates: { 'muze-solid-notebook-block-tools': template },
   styles: { 'muze-solid-notebook-block-tools': styles },
-  components: { muzeSolidDesignToolbar },
+  components: { solidToolbar },
   events: {
     muzeSolidNotebookToolsEvents: {
       subscribe(notify) {
@@ -356,7 +356,7 @@ export const muzeSolidNotebookBlockTools = {
           'px;max-block-size:' +
           height +
           'px;' +
-          this.actions.muzeSolidDesignToolbarPlacement(toolbar, anchor);
+          this.actions.solidToolbarPlacement(toolbar, anchor);
       }
       if (this.runtime.toolsFocusRequested) {
         const root = this.runtime.toolsDocked

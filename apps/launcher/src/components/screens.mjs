@@ -152,7 +152,7 @@ export const launcherScreens = {
               .where((row) => row.group === group.id)
               .toArray(),
             endAttributes: {
-              class: 'muze-solid-design-tool muze-solid-launcher-screen-end'
+              class: 'solid-tool muze-solid-launcher-screen-end'
             }
           }));
         });

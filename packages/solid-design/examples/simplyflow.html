@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SimplyFlow Workbench components</title>
+  <link rel="stylesheet" href="../assets/theds.css">
+  <style>
+    @layer page {
+      .solid-example-filter {
+        flex: 1;
+        min-inline-size: 0;
+      }
+      .solid-example-page {
+        min-block-size: 100dvh;
+      }
+      .solid-example {
+        max-inline-size: 42rem;
+        margin-inline: auto;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="ds-darkmode-auto solid-theme solid-example-page">
+  <main class="solid-example">
+    <h1>SimplyFlow Workbench components</h1>
+    <p><a href="./">Try the native HTML example</a></p>
+    <div class="solid-toolbar">
+      <search class="solid-example-filter">
+        <label class="solid-list-search">
+          <span class="solid-list-search-label">Filter resources</span>
+          {{include:../src/search-icon.html}}
+          <input class="solid-control solid-list-search-input"
+            type="search" id="solid-example-query" placeholder="Filter resources"
+            data-simply-command="solidExampleSearch"
+            data-simply-immediate="true">
+        </label>
+      </search>
+      <div class="solid-dropdown solid-popup-scope"
+        style="--solid-popup-anchor: --solid-example-menu"
+        data-simply-shortcuts="solidDropdown">
+        <button type="button" class="solid-tool solid-popup-trigger"
+          popovertarget="solid-example-menu">Resources</button>
+        <ul id="solid-example-menu"
+          class="solid-popup solid-popup-anchored" popover="auto">
+          <li class="swb-dropdown-item">
+            <a class="ds-dropdown-link solid-button solid-button-quiet" href="./">Native HTML example</a>
+          </li>
+          <li class="swb-dropdown-item">
+            <a class="ds-dropdown-link solid-button solid-button-quiet" href="#results">Results</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <output for="solid-example-query" data-simply-field="status"
+      data-simply-transform="escape_html"></output>
+    <ul id="results" data-simply-list="resources">
+      <template>
+        <li data-simply-field="title" data-simply-transform="escape_html"></li>
+      </template>
+    </ul>
+  </main>
+  <script type="module" src="../assets/design-examples/simplyflow.min.js"></script>
+</body>
+</html>

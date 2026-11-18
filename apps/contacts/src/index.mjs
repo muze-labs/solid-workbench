@@ -4,9 +4,9 @@ import {
   recipientId
 } from '@muze-labs/solid-app-data/capabilities.mjs';
 import {
-  muzeSolidDesignDialog,
-  muzeSolidDesignListDetails,
-  muzeSolidDesignToolbar
+  solidDialog,
+  solidListDetails,
+  solidToolbar
 } from '@muze-labs/solid-design';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import { app } from '@muze-labs/simplyflow/app';
@@ -50,9 +50,9 @@ const host = shell({
 const definition = {
   container: host.main,
   components: {
-    muzeSolidDesignDialog,
-    muzeSolidDesignListDetails,
-    muzeSolidDesignToolbar,
+    solidDialog,
+    solidListDetails,
+    solidToolbar,
     ...profileComponents,
     contactList,
     contactEditing,

@@ -2,14 +2,14 @@ import { batch, untracked } from '@muze-labs/simplyflow/state';
 import { render as renderCobalt } from '@muze-labs/cobalt-rich-text-note';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 import {
-  muzeSolidDesignToolbar,
-  muzeSolidDesignDialog
+  solidToolbar,
+  solidDialog
 } from '@muze-labs/solid-design';
 import template from '../presenter.html?template' with { type: 'text' };
 import styles from './presenter.css' with { type: 'text' };
 
 export const muzeSolidPresenter = {
-  components: { muzeSolidDesignToolbar, muzeSolidDesignDialog },
+  components: { solidToolbar, solidDialog },
   transformers: {
     muzeSolidPresenterRichText(context, next) {
       context.value = {
@@ -39,7 +39,7 @@ export const muzeSolidPresenter = {
   commands: {
     muzeSolidPresenterEditTitle() {
       this.data.muzeSolidPresenterTitleDraft = this.runtime.deck.title;
-      return this.actions.muzeSolidDesignOpenDialog(
+      return this.actions.solidOpenDialog(
         this.container.querySelector('.muze-solid-presenter-title-dialog')
       );
     },
@@ -49,7 +49,7 @@ export const muzeSolidPresenter = {
         async () => {
           this.runtime.deck.change(this.runtime.deck.root.id, 'title', title);
           await this.actions.muzeSolidPresenterPersist();
-          await this.actions.muzeSolidDesignCloseDialog(form.closest('dialog'));
+          await this.actions.solidCloseDialog(form.closest('dialog'));
         },
         { disableControls: false }
       );

@@ -136,7 +136,8 @@ export async function checkFeatureSources(page, appName) {
         return (
           app.data.people.length === 1 &&
           app.data.people[0].id === 'sample:b' &&
-          mount.querySelector('[aria-label="Find sample people"]') !== null &&
+          mount.querySelector('input[type="search"]')
+            ?.labels[0]?.textContent.trim() === 'Find sample people' &&
           mount
             .querySelector('.swb-person-list')
             .textContent.includes('Beta') &&

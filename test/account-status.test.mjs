@@ -127,7 +127,7 @@ test('late startup discovery cannot restore an account after logout', async (t) 
   view.api = {
     connectSession: () => new Promise((resolve) => { finishDiscovery = resolve; })
   };
-  view.actions.muzeSolidDesignCloseDialog = () => Promise.resolve();
+  view.actions.solidCloseDialog = () => Promise.resolve();
   const restoring = view.actions.restoreAccount(view.runtime.host.selectedWebId);
   view.actions.muzeSolidUiSignedOut();
   finishDiscovery({ cancelSignIn() { cancelled = true; } });
@@ -183,7 +183,7 @@ test('logging out preserves a different remembered identity', async (t) => {
   localStorage.setItem('solid-apps.webId', other);
   const cleared = [];
   view.api = { logoutAccount: (webId) => cleared.push(webId) };
-  view.actions.muzeSolidDesignCloseDialog = () => Promise.resolve();
+  view.actions.solidCloseDialog = () => Promise.resolve();
   await account.commands.logout.call(view);
   assert.deepEqual(cleared, [view.runtime.host.selectedWebId]);
   assert.equal(localStorage.getItem('solid-apps.webId'), other);
@@ -250,7 +250,7 @@ test('explicit sign-in reconciles auth feedback without a successful resource ca
   view.runtime.session = { signIn: async () => {}, hasUsableAccessToken: true };
   view.runtime.preferences = { recover: async () => {} };
   view.runtime.root = { querySelector: () => ({}) };
-  view.actions.muzeSolidDesignCloseDialog = async () => {};
+  view.actions.solidCloseDialog = async () => {};
   view.actions.notify = () => {};
   await sessionRecovery.commands.muzeSolidUiSignInAgain.call(view);
   assert.equal(view.data.message, '');
@@ -335,7 +335,7 @@ test('closing Account releases its popup and port without touching the active ed
   let closed = 0;
   view.runtime.accountPeer.close = () => { closed += 1; };
   view.runtime.accountActivePopup = { close() { closed += 1; } };
-  view.actions.muzeSolidDesignCloseDialog = () => Promise.resolve();
+  view.actions.solidCloseDialog = () => Promise.resolve();
   await view.actions.muzeSolidUiCloseAccount();
   assert.equal(closed, 2);
   assert.equal(view.runtime.accountPeer, null);
@@ -349,7 +349,7 @@ test('Account retains its focused frame until native dialog close completes', as
   view.data.muzeSolidUiAccountFrame = current;
   view.runtime.accountPeer.close = () => {};
   let finish;
-  view.actions.muzeSolidDesignCloseDialog = () => new Promise(resolve => {
+  view.actions.solidCloseDialog = () => new Promise(resolve => {
     finish = resolve;
   });
   const closing = view.actions.muzeSolidUiCloseAccount();
@@ -382,10 +382,10 @@ test('a coordinated reopen waits for previous native closure', async (t) => {
   view.data.muzeSolidUiAccountFrame = current;
   let finish;
   let opens = 0;
-  view.actions.muzeSolidDesignCloseDialog = () => new Promise(resolve => {
+  view.actions.solidCloseDialog = () => new Promise(resolve => {
     finish = resolve;
   });
-  view.actions.muzeSolidDesignOpenDialog = () => { opens += 1; };
+  view.actions.solidOpenDialog = () => { opens += 1; };
   const closing = view.actions.muzeSolidUiCloseAccount();
   const reopening = view.actions.muzeSolidUiOpenAccount();
   assert.equal(opens, 0);
@@ -602,7 +602,7 @@ test('new authorization loss toasts once and retains the native retry dialog', (
   let opened = 0;
   view.actions.notify = (text) => notices.push(text);
   view.runtime.root = { querySelector: () => ({}) };
-  view.actions.muzeSolidDesignOpenDialog = () => { opened += 1; };
+  view.actions.solidOpenDialog = () => { opened += 1; };
   view.actions.muzeSolidUiAuthenticationRequired({ pending: false });
   view.actions.muzeSolidUiAuthenticationRequired({ pending: false });
   assert.equal(notices.length, 1);

@@ -1,14 +1,14 @@
 @layer theme {
-  .muze-solid-design-toolbar,
-  .muze-solid-design-tool {
-    --muze-toolbar-background: var(--muze-solid-design-surface, var(--ds-color-background, Canvas));
-    --muze-toolbar-color: var(--muze-solid-design-text, var(--ds-color, CanvasText));
+  .solid-toolbar,
+  .solid-tool {
+    --muze-toolbar-background: var(--solid-surface, var(--ds-color-background, Canvas));
+    --muze-toolbar-color: var(--solid-text, var(--ds-color, CanvasText));
     --muze-toolbar-hover: color-mix(in srgb, currentColor 12%, transparent);
     --muze-toolbar-selected: color-mix(in srgb, currentColor 22%, transparent);
   }
 }
 @layer component {
-  .muze-solid-design-toolbar {
+  .solid-toolbar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -20,10 +20,10 @@
     box-sizing: border-box;
   }
   /* Structural controls, such as phone-only Back, retain display ownership. */
-  :where(.muze-solid-design-tool) {
+  :where(.solid-tool) {
     display: inline-flex;
   }
-  .muze-solid-design-tool {
+  .solid-tool {
     align-items: center;
     justify-content: center;
     gap: 6px;
@@ -38,31 +38,31 @@
     font-size: 0.875rem;
     white-space: nowrap;
   }
-  .muze-solid-design-tool:hover,
-  .muze-solid-design-tool[aria-expanded='true'] {
+  .solid-tool:hover,
+  .solid-tool[aria-expanded='true'] {
     background: var(--muze-toolbar-hover);
   }
-  .muze-solid-design-tool[aria-pressed='true'] {
+  .solid-tool[aria-pressed='true'] {
     background: var(--muze-toolbar-selected);
   }
-  .muze-solid-design-tool:focus-visible {
+  .solid-tool:focus-visible {
     outline: 2px solid currentColor;
     outline-offset: -3px;
   }
-  .muze-solid-design-tool:disabled {
+  .solid-tool:disabled {
     opacity: 0.5;
   }
-  .muze-solid-design-tool-stacked {
+  .solid-tool-stacked {
     flex-direction: column;
     font-size: 0.75rem;
     min-width: 50px;
     min-height: 52px;
     gap: 3px;
   }
-  .muze-solid-design-toolbar-floating {
+  .solid-toolbar-floating {
     position: fixed;
     z-index: 5;
-    box-shadow: var(--muze-solid-design-elevation, 0 3px 12px #0004);
+    box-shadow: var(--solid-elevation, 0 3px 12px #0004);
     inline-size: fit-content;
     max-inline-size: 100%;
     background: var(--muze-toolbar-background, Canvas);
@@ -70,7 +70,7 @@
 }
 
 @layer component {
-  .muze-solid-design-toolbar-field {
+  .solid-toolbar-field {
     display: flex;
     align-items: center;
     flex: 1 1 12rem;
@@ -78,7 +78,7 @@
     min-inline-size: 0;
     margin: 0;
   }
-  .muze-solid-design-toolbar-input {
+  .solid-toolbar-input {
     flex: 1;
     min-inline-size: 0;
     inline-size: 100%;
@@ -86,7 +86,7 @@
     margin: 0;
     box-sizing: border-box;
   }
-  .muze-solid-design-toolbar-group {
+  .solid-toolbar-group {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -96,9 +96,9 @@
 }
 
 @layer component {
-  .muze-solid-design-toolbar-title {
+  .solid-toolbar-title {
     min-inline-size: 0;
     overflow-wrap: anywhere;
-    font-size: var(--muze-solid-design-title-size, 1.25rem);
+    font-size: var(--solid-title-size, 1.25rem);
   }
 }

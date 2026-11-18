@@ -505,12 +505,17 @@ try {
       assert.equal(
         await run(`const sheet=document.querySelector(
         ${JSON.stringify(menu + ' .muze-solid-presenter-deck-sheet')});
+        const trigger=sheet.parentElement.querySelector('button[popovertarget]');
         const box=sheet.getBoundingClientRect();
         const style=getComputedStyle(sheet);
+        const anchor=getComputedStyle(trigger).anchorName;
+        const otherAnchors=[...document.querySelectorAll('.solid-popup-trigger')]
+          .filter((button)=>button!==trigger)
+          .map((button)=>getComputedStyle(button).anchorName);
         return style.borderTopWidth==='0px' && style.boxShadow!=='none' &&
           box.left>=0 && box.right<=innerWidth && box.top>=0 &&
-          box.bottom<=innerHeight && style.positionAnchor===
-          '--muze-solid-design-popup';`),
+          box.bottom<=innerHeight && anchor.startsWith('--') &&
+          style.positionAnchor===anchor && !otherAnchors.includes(anchor);`),
         true,
         menu + ' stays anchored inside the viewport on resize'
       );
@@ -715,10 +720,10 @@ try {
   });
   await idle();
   await click(
-    '.muze-solid-presenter-entry-dialog [data-simply-command="muzeSolidDesignCloseDialog"]'
+    '.muze-solid-presenter-entry-dialog [data-simply-command="solidCloseDialog"]'
   );
   await click(
-    '.muze-solid-presenter-collection-dialog [data-simply-command="muzeSolidDesignCloseDialog"]'
+    '.muze-solid-presenter-collection-dialog [data-simply-command="solidCloseDialog"]'
   );
   // Chrome retains touch's no-hover media after disabling touch. A fresh tab
   // shares persisted app data while restoring the launch-time desktop pointer.

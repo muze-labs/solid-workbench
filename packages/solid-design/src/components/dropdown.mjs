@@ -1,27 +1,34 @@
 import styles from '../dropdown.css' with { type: 'text' };
 
-export const muzeSolidDesignDropdown = {
-  styles: { 'muze-solid-design-dropdown': styles },
+export const solidDropdown = {
+  styles: { 'solid-dropdown': styles },
   shortcuts: {
-    'muzeSolidDesignDropdown.arrowdown': function (event) {
-      return this.actions.muzeSolidDesignMoveDropdown(event, 1);
+    'solidDropdown.arrowdown': function (event) {
+      return this.actions.solidMoveDropdown(event, 1);
     },
-    'muzeSolidDesignDropdown.arrowup': function (event) {
-      return this.actions.muzeSolidDesignMoveDropdown(event, -1);
+    'solidDropdown.arrowup': function (event) {
+      return this.actions.solidMoveDropdown(event, -1);
     }
   },
   actions: {
-    muzeSolidDesignMoveDropdown(event, direction) {
+    solidMoveDropdown(event, direction) {
       if (!this.container.contains(event.target)) {
         return true;
       }
-      const dropdown = event.target.closest('.muze-solid-design-dropdown');
+      const dropdown = event.target.closest('.solid-dropdown');
       const menu = dropdown?.querySelector('[popover]');
       const trigger = dropdown?.querySelector('[popovertarget]');
-      if (!menu || (event.target !== trigger && !menu.contains(event.target))) {
+      if (!menu || !trigger ||
+          (event.target !== trigger && !menu.contains(event.target))) {
         return true;
       }
-      menu.showPopover();
+      if (!menu.matches(':popover-open')) {
+        // The native invoker supplies the popover's implicit anchor and focus.
+        trigger.click();
+      }
+      if (!menu.matches(':popover-open')) {
+        return true;
+      }
       const items = [];
       for (const item of menu.querySelectorAll('.ds-dropdown-link')) {
         if (!item.matches(':disabled') && item.getClientRects().length) {

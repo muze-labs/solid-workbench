@@ -26,7 +26,7 @@
     overflow: visible;
   }
   .swb-header-title {
-    color: var(--muze-solid-design-text, CanvasText);
+    color: var(--solid-text, CanvasText);
     display: var(--swb-header-title-display, flex);
     align-items: center;
     flex: 0 1 auto;
@@ -37,7 +37,7 @@
     font: inherit;
     font-size: var(
       --swb-header-title-size,
-      var(--muze-solid-design-title-size, 1.25rem)
+      var(--solid-title-size, 1.25rem)
     );
     font-weight: 500;
     line-height: 1.4;

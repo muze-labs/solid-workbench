@@ -1,27 +1,31 @@
 import styles from '../list-details.css' with { type: 'text' };
+import search from '../search.css' with { type: 'text' };
 
-export const muzeSolidDesignListDetails = {
-  styles: { 'muze-solid-design-list-details': styles },
+export const solidListDetails = {
+  styles: {
+    'solid-list-details': styles,
+    'solid-search': search
+  },
   shortcuts: {
-    'muzeSolidDesignSections.arrowdown': function (event) {
-      return this.actions.muzeSolidDesignMoveSection(event, 1);
+    'solidSections.arrowdown': function (event) {
+      return this.actions.solidMoveSection(event, 1);
     },
-    'muzeSolidDesignSections.arrowup': function (event) {
-      return this.actions.muzeSolidDesignMoveSection(event, -1);
+    'solidSections.arrowup': function (event) {
+      return this.actions.solidMoveSection(event, -1);
     },
-    'muzeSolidDesignSections.tab': function (event) {
-      return this.actions.muzeSolidDesignSectionControls(event);
+    'solidSections.tab': function (event) {
+      return this.actions.solidSectionControls(event);
     },
-    'muzeSolidDesignSections.Shift+tab': function (event) {
-      return this.actions.muzeSolidDesignReturnSection(event);
+    'solidSections.Shift+tab': function (event) {
+      return this.actions.solidReturnSection(event);
     }
   },
   actions: {
-    muzeSolidDesignMoveSection(event, direction) {
+    solidMoveSection(event, direction) {
       if (!this.container.contains(event.target)) {
         return true;
       }
-      const list = event.target.closest('[data-muze-solid-design-sections]');
+      const list = event.target.closest('[data-solid-sections]');
       const current = event.target.closest('button');
       if (!list || !current) {
         return true;
@@ -45,7 +49,7 @@ export const muzeSolidDesignListDetails = {
       }
       buttons[next].focus();
     },
-    muzeSolidDesignFirstSectionControl(layout) {
+    solidFirstSectionControl(layout) {
       const details = layout.querySelector('.ds-panels-details');
       const controls =
         details?.querySelectorAll(
@@ -55,7 +59,7 @@ export const muzeSolidDesignListDetails = {
         if (
           control.tabIndex >= 0 &&
           !control.matches(':disabled') &&
-          !control.classList.contains('muze-solid-design-list-back') &&
+          !control.classList.contains('solid-list-back') &&
           !control.closest('[inert]') &&
           control.getClientRects().length
         ) {
@@ -63,29 +67,29 @@ export const muzeSolidDesignListDetails = {
         }
       }
     },
-    muzeSolidDesignSectionControls(event) {
+    solidSectionControls(event) {
       if (
         !this.container.contains(event.target) ||
-        !event.target.closest('[data-muze-solid-design-sections] button')
+        !event.target.closest('[data-solid-sections] button')
       ) {
         return true;
       }
-      const layout = event.target.closest('.muze-solid-design-list-details');
-      const control = this.actions.muzeSolidDesignFirstSectionControl(layout);
+      const layout = event.target.closest('.solid-list-details');
+      const control = this.actions.solidFirstSectionControl(layout);
       if (!control) {
         return true;
       }
       control.focus();
     },
-    muzeSolidDesignReturnSection(event) {
+    solidReturnSection(event) {
       if (!this.container.contains(event.target)) {
         return true;
       }
-      const layout = event.target.closest('.muze-solid-design-list-details');
-      const list = layout?.querySelector('[data-muze-solid-design-sections]');
+      const layout = event.target.closest('.solid-list-details');
+      const list = layout?.querySelector('[data-solid-sections]');
       if (
         !list ||
-        event.target !== this.actions.muzeSolidDesignFirstSectionControl(layout)
+        event.target !== this.actions.solidFirstSectionControl(layout)
       ) {
         return true;
       }
@@ -98,8 +102,8 @@ export const muzeSolidDesignListDetails = {
     }
   },
   commands: {
-    muzeSolidDesignShowList(button) {
-      const layout = button.closest('.muze-solid-design-list-details');
+    solidShowList(button) {
+      const layout = button.closest('.solid-list-details');
       layout
         .querySelector('.ds-panels-list')
         .scrollIntoView({ block: 'nearest' });

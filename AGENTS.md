@@ -193,8 +193,9 @@ moldability, not just a contributor preference.
 Prefix globally exposed app handles and reusable design-component names so
 loading a component into another app cannot cause accidental collisions. Shared
 design exports, commands, actions, template/style entries, CSS classes/properties
-and HTML IDs use a library/component prefix, such as `muzeSolidDesign` or
-`muze-solid-design`. Keep the existing `ds-` namespace for the-ds primitives.
+and HTML IDs use a library/component prefix, such as `solid` in JavaScript or
+`solid-` in CSS and markup. Keep the existing `ds-` namespace for The DS
+primitives.
 App-instance state and local variables remain scoped and should use clear names.
 Scope component DOM queries to their owning container rather than assuming a
 single global instance.

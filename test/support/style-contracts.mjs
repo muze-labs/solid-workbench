@@ -139,7 +139,7 @@ export async function checkStyleContracts(page) {
       }
     }
 
-    const layout = document.querySelector('.muze-solid-design-list-details');
+    const layout = document.querySelector('.solid-list-details');
     let localTheme = true;
     let independentMapping = true;
     if (layout) {

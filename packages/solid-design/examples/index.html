@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Native Workbench components</title>
+  <link rel="stylesheet" href="../assets/theds.css">
+  <link rel="stylesheet" href="../assets/workbench-design.css">
+  <style>
+    @layer page {
+      .solid-example-page {
+        min-block-size: 100dvh;
+      }
+      .solid-example {
+        max-inline-size: 42rem;
+        margin-inline: auto;
+        padding: 1rem;
+      }
+      .solid-example-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body class="ds-darkmode-auto solid-theme solid-example-page">
+  <main class="solid-example">
+    <h1>Native Workbench components</h1>
+    <p><a href="./simplyflow.html">Try the SimplyFlow example</a></p>
+    <search>
+      <form class="solid-example-tools" method="get">
+        <label class="solid-list-search">
+          <span class="solid-list-search-label">Search example</span>
+          {{include:../src/search-icon.html}}
+          <input class="solid-control solid-list-search-input"
+            type="search" name="query" placeholder="Search example">
+        </label>
+        <button type="submit" class="solid-button ds-button">Submit</button>
+      </form>
+    </search>
+    <div class="solid-example-tools">
+      <div class="solid-popup-scope"
+        style="--solid-popup-anchor: --solid-example-first">
+        <button type="button" class="solid-tool solid-popup-trigger"
+          popovertarget="solid-example-first">Resources</button>
+        <ul id="solid-example-first"
+          class="solid-popup solid-popup-anchored" popover="auto">
+          <li class="swb-dropdown-item">
+            <a class="ds-dropdown-link solid-button solid-button-quiet"
+              href="./simplyflow.html">SimplyFlow example</a>
+          </li>
+        </ul>
+      </div>
+      <div class="solid-popup-scope"
+        style="--solid-popup-anchor: --solid-example-second">
+        <button type="button" class="solid-tool solid-popup-trigger"
+          popovertarget="solid-example-second">Help</button>
+        <ul id="solid-example-second"
+          class="solid-popup solid-popup-anchored" popover="auto">
+          <li class="swb-dropdown-item">
+            <a class="ds-dropdown-link solid-button solid-button-quiet" href="#usage">Usage</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p id="usage">This search field submits a form. The browser opens and dismisses both menus.</p>
+  </main>
+</body>
+</html>

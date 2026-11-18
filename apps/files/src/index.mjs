@@ -8,9 +8,9 @@ import { readRecipient } from '@muze-labs/solid-app-data/recipient.mjs';
 import { readProfile } from '@muze-labs/solid-profile';
 import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import {
-  muzeSolidDesignDialog,
-  muzeSolidDesignListDetails,
-  muzeSolidDesignToolbar
+  solidDialog,
+  solidListDetails,
+  solidToolbar
 } from '@muze-labs/solid-design';
 import fileDataSource from './data.mjs?source';
 import { listFolder, readDownload, uploadFiles } from './data.mjs';
@@ -56,9 +56,9 @@ const definition = {
   // The browser's own mode attribute must also be inside the binding scope.
   container: host.main,
   components: {
-    muzeSolidDesignDialog,
-    muzeSolidDesignListDetails,
-    muzeSolidDesignToolbar,
+    solidDialog,
+    solidListDetails,
+    solidToolbar,
     muzeSolidFileDetails,
     swbFileSharing,
     fileNavigation,

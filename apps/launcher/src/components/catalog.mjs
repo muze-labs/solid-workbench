@@ -10,7 +10,7 @@ export const muzeSolidLauncherCatalog = {
   styles: { 'muze-solid-launcher-catalog': styles },
   commands: {
     async muzeSolidCatalogOpen() {
-      this.actions.muzeSolidDesignOpenDialog(
+      this.actions.solidOpenDialog(
         this.container.querySelector('.muze-solid-catalog-dialog')
       );
       return this.actions.muzeSolidCatalogOperation(async () => {
@@ -33,7 +33,7 @@ export const muzeSolidLauncherCatalog = {
       });
     },
     muzeSolidCatalogClose(button) {
-      return this.actions.muzeSolidDesignCloseDialog(button.closest('dialog'));
+      return this.actions.solidCloseDialog(button.closest('dialog'));
     },
     muzeSolidCatalogCategory(_button, id, event) {
       this.actions.muzeSolidCatalogSelectCategory(id);
@@ -136,7 +136,7 @@ export const muzeSolidLauncherCatalog = {
           ? description.name + ' is already in your apps.'
           : description.name + ' added to your apps.';
         this.runtime.host.notify(this.data.muzeSolidCatalogStatus);
-        await this.actions.muzeSolidDesignCloseDialog(
+        await this.actions.solidCloseDialog(
           this.container.querySelector('.muze-solid-catalog-dialog')
         );
       });
@@ -198,7 +198,7 @@ export const muzeSolidLauncherCatalog = {
         ...choice,
         attributes: {
           class:
-            'muze-solid-design-list-row muze-solid-design-list-state swb-section-choice',
+            'solid-list-row solid-list-state swb-section-choice',
           'data-muze-solid-catalog-category': choice.id,
           'aria-current': choice.id === selected ? 'page' : null,
           tabindex: choice.id === selected ? '0' : '-1'

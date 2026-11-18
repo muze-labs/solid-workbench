@@ -190,9 +190,9 @@ async function wait(code, embedded = false, attempts = 300) {
     await run('return document.body.innerText;', embedded) +
     '\nFocus diagnostic: ' + JSON.stringify(await run(`return {
       active: document.activeElement?.tagName,
-      activeSection: document.activeElement?.dataset.muzeSolidDesignSection,
+      activeSection: document.activeElement?.dataset.solidSection,
       focused: document.hasFocus(),
-      selected: document.querySelector('[data-muze-solid-design-sections] [aria-current="page"]')?.dataset.muzeSolidDesignSection,
+      selected: document.querySelector('[data-solid-sections] [aria-current="page"]')?.dataset.solidSection,
       section: window.swbPreferencesApp?.runtime.section
     };`, embedded)) + '\nPresenter diagnostic: ' + JSON.stringify(await run(`return {
       active: document.activeElement?.tagName,
@@ -229,8 +229,8 @@ async function openPreferences() {
   await wait('document.querySelector("iframe").contentWindow.swbPreferencesApp');
   await wait('swbPreferencesApp.runtime.request', true);
   await wait('document.querySelector("iframe").getAttribute("aria-busy")==="false"');
-  await wait('document.activeElement.dataset.muzeSolidDesignSection==="appearance"', true);
-  await run('document.querySelector("[data-muze-solid-design-section=providers]").focus();', true);
+  await wait('document.activeElement.dataset.solidSection==="appearance"', true);
+  await run('document.querySelector("[data-solid-section=providers]").focus();', true);
   await page.send('Input.dispatchKeyEvent', {
     type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r'
   });
@@ -400,9 +400,9 @@ try {
   assert(editable > 5);
   // Focus uses the bound current section. Wait for its ARIA projection before
   // setting up native keyboard input, rather than focusing the departing row.
-  await wait('document.querySelector("[data-muze-solid-design-section=providers]").getAttribute("aria-current")==="page"', true);
+  await wait('document.querySelector("[data-solid-section=providers]").getAttribute("aria-current")==="page"', true);
   await run('swbPreferencesApp.actions.swb_focusSelectedSection();', true);
-  await wait('document.activeElement.dataset.muzeSolidDesignSection==="providers"', true);
+  await wait('document.activeElement.dataset.solidSection==="providers"', true);
   for (const [step, key] of ['Tab', 'Tab', 'ArrowDown'].entries()) {
     for (const type of ['keyDown', 'keyUp']) {
       await page.send('Input.dispatchKeyEvent', {type, key, code:key,

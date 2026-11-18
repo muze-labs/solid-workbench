@@ -69,6 +69,7 @@ test('readable and minified apps preserve isolated module graphs', async () => {
         ...apps.map((name) => filename(name + '/src/index')),
         ...[
           'files/src/settings-entry',
+          'design-examples/simplyflow',
           'redirect',
           'shared/data',
           'shared/ui',
@@ -114,6 +115,8 @@ test('readable and minified apps preserve isolated module graphs', async () => {
     const moduleOwners = new Map();
     for (const [name, chunk] of chunks) {
       assert(!chunk.imports.some((file) => file.startsWith('authoring/')));
+      assert(![...chunk.imports, ...chunk.dynamicImports].some((file) =>
+        file.startsWith('design-examples/')));
       assert(
         !chunk.dynamicImports.some((file) => file.startsWith('authoring/'))
       );

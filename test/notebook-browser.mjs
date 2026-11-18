@@ -1795,7 +1795,7 @@ async function closeCollectionOptions(page) {
     page,
     `const dialog=document.querySelector(
     '.muze-solid-notebook-collection-dialog');
-    const button=dialog.querySelector('.muze-solid-design-dialog-close');
+    const button=dialog.querySelector('.solid-dialog-close');
     const rect=button.getBoundingClientRect();
     const header=dialog.querySelector('header').getBoundingClientRect();
     if(rect.right<header.right-40 || rect.top>header.bottom){

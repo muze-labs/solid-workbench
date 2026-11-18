@@ -1,7 +1,7 @@
 <nav class="muze-solid-files-location" aria-label="Folder location">
   <button
     type="button"
-    class="muze-solid-design-tool"
+    class="solid-tool"
     data-simply-command="up"
     aria-label="Parent folder"
     title="Parent folder"
@@ -22,7 +22,7 @@
         ><span class="muze-solid-files-crumb-part">
           <button
             type="button"
-            class="muze-solid-design-tool muze-solid-files-crumb"
+            class="solid-tool muze-solid-files-crumb"
             data-simply-command="muzeSolidFilesBrowseFolder"
             data-simply-value=":value.url"
           >
@@ -37,7 +37,7 @@
     </span>
     <button
       type="button"
-      class="muze-solid-design-tool muze-solid-files-ancestors"
+      class="solid-tool muze-solid-files-ancestors"
       popovertarget="muze-solid-files-location-sheet"
       aria-label="Show full folder path"
       title="Show full folder path"
@@ -48,7 +48,7 @@
     </button>
     <button
       type="button"
-      class="muze-solid-design-tool muze-solid-files-current-folder"
+      class="solid-tool muze-solid-files-current-folder"
       popovertarget="muze-solid-files-location-sheet"
     >
       <span
@@ -63,7 +63,7 @@
   </div>
   <button
     type="button"
-    class="muze-solid-design-tool muze-solid-files-location-edit"
+    class="solid-tool muze-solid-files-location-edit"
     popovertarget="muze-solid-files-location-sheet"
     aria-label="Edit folder address"
     title="Edit folder address"
@@ -75,7 +75,7 @@
   </button>
   <div
     id="muze-solid-files-location-sheet"
-    class="muze-solid-design-popup muze-solid-files-location-sheet"
+    class="solid-popup muze-solid-files-location-sheet"
     popover
     data-simply-field="muzeSolidFilesLocationPlacement"
     data-simply-transform="attributes"
@@ -90,7 +90,7 @@
         ><li>
           <button
             type="button"
-            class="muze-solid-design-tool muze-solid-files-folder-option"
+            class="solid-tool muze-solid-files-folder-option"
             data-simply-command="muzeSolidFilesBrowseFolder"
             data-simply-value=":value.url"
             data-simply-field="attributes"
@@ -107,10 +107,10 @@
       ></template>
     </ul>
     <form class="muze-solid-files-location-form" data-simply-command="browse">
-      <label class="muze-solid-design-label muze-solid-files-url-label"
+      <label class="solid-label muze-solid-files-url-label"
         >Folder URL
         <input
-          class="muze-solid-design-control swb-control swb-labeled-control"
+          class="solid-control swb-control swb-labeled-control"
           name="url"
           type="url"
           required
@@ -118,7 +118,7 @@
           aria-label="Folder URL"
         />
       </label>
-      <button class="muze-solid-design-tool">Open folder</button>
+      <button class="solid-tool">Open folder</button>
     </form>
   </div>
 </nav>

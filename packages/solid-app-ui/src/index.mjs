@@ -21,9 +21,9 @@ import { parseLaunchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import { ManagedApp } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import {
-  muzeSolidDesignDialog,
-  muzeSolidDesignDropdown,
-  muzeSolidDesignToast,
+  solidDialog,
+  solidDropdown,
+  solidToast,
   account,
   muzeSolidUiAppToolbar,
   muzeSolidUiCapabilityDialog,
@@ -105,9 +105,9 @@ export function shell({
   const definition = {
     container: root.querySelector('.swb-suite-account-owner'),
     components: {
-      muzeSolidDesignDialog,
-      muzeSolidDesignDropdown,
-      muzeSolidDesignToast,
+      solidDialog,
+      solidDropdown,
+      solidToast,
       muzeSolidUiAppToolbar,
       account: {
         ...account,
@@ -127,7 +127,7 @@ export function shell({
       muzeSolidUiAppToolbar: { hidden: '' },
       // Capture the app heading before its tab follows the active content.
       muzeSolidUiTitle: document.title,
-      muzeSolidDesignNotice: { text: '', visibility: { hidden: '' } },
+      solidNotice: { text: '', visibility: { hidden: '' } },
       muzeSolidUiEmbedded: { hidden: host.embedded ? null : '' },
       muzeSolidUiHeader: {
         'data-muze-solid-ui-content-view':

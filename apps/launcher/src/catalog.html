@@ -1,15 +1,15 @@
 <dialog
-  class="ds-dialog muze-solid-design-dialog muze-solid-catalog-dialog"
-  data-simply-behavior="muzeSolidDesignDialog"
+  class="ds-dialog solid-dialog muze-solid-catalog-dialog"
+  data-simply-behavior="solidDialog"
   aria-labelledby="muze-solid-catalog-title"
 >
-  <header class="muze-solid-design-dialog-header">
+  <header class="solid-dialog-header">
     <h2 id="muze-solid-catalog-title" class="swb-dialog-title">
       Choose an app to add to Workbench
     </h2>
     <button
       type="button"
-      class="ds-button muze-solid-design-marker-button muze-solid-design-dialog-close"
+      class="ds-button solid-marker-button solid-dialog-close"
       data-simply-command="muzeSolidCatalogClose"
       aria-label="Close app catalog"
     >
@@ -32,8 +32,8 @@
   >
     <legend class="swb-visually-hidden">App catalog</legend>
     <div
-      class="ds-panels muze-solid-design-list-details muze-solid-catalog-layout"
-      data-simply-shortcuts="muzeSolidDesignSections"
+      class="ds-panels solid-list-details muze-solid-catalog-layout"
+      data-simply-shortcuts="solidSections"
     >
       <nav
         class="ds-panels-pane ds-panels-list ds-navbar-side swb-list-pane muze-solid-catalog-categories"
@@ -41,7 +41,7 @@
       >
         <ul
           class="ds-navbar-nav"
-          data-muze-solid-design-sections
+          data-solid-sections
           data-simply-list="muzeSolidCatalogCategories"
         >
           <template
@@ -68,8 +68,8 @@
       >
         <button
           type="button"
-          class="muze-solid-design-tool muze-solid-design-list-back"
-          data-simply-command="muzeSolidDesignShowList"
+          class="solid-tool solid-list-back"
+          data-simply-command="solidShowList"
         >
           Back to categories
         </button>
@@ -84,26 +84,23 @@
           data-simply-transform="attributes"
           data-simply-attributes="hidden"
         >
-          <div class="muze-solid-design-toolbar">
+          <div class="solid-toolbar">
             <label
-              class="muze-solid-design-list-search"
+              class="solid-list-search"
             >
-              <svg class="ds-icon ds-icon-feather muze-solid-design-list-search-icon" aria-hidden="true">
-                <use href="../assets/feather-icons.svg#search"></use>
-              </svg>
-              <span class="swb-visually-hidden">Search apps</span>
+              <span class="solid-list-search-label">Search apps</span>
+              {{include:../../../packages/solid-design/src/search-icon.html}}
               <input
                 type="search"
-                class="muze-solid-design-control swb-control muze-solid-design-toolbar-input muze-solid-design-list-search-input"
+                class="solid-control swb-control solid-toolbar-input solid-list-search-input"
                 placeholder="Search apps"
-                aria-label="Search apps"
                 data-simply-command="muzeSolidCatalogSearch"
                 data-simply-immediate="true"
               />
             </label>
             <button
               type="button"
-              class="muze-solid-design-tool"
+              class="solid-tool"
               data-simply-command="muzeSolidCatalogRefresh"
             >
               <svg class="ds-icon ds-icon-feather" aria-hidden="true">
@@ -138,11 +135,11 @@
                   data-simply-transform="escape_html"
                 ></p>
                 <div
-                  class="muze-solid-design-toolbar-group muze-solid-catalog-actions"
+                  class="solid-toolbar-group muze-solid-catalog-actions"
                 >
                   <button
                     type="button"
-                    class="muze-solid-design-tool"
+                    class="solid-tool"
                     data-simply-field="addAttributes"
                     data-simply-transform="attributes"
                     data-simply-attributes="aria-label"
@@ -203,7 +200,7 @@
                   ></p>
                   <button
                     type="button"
-                    class="muze-solid-design-tool"
+                    class="solid-tool"
                     data-simply-command="muzeSolidCatalogRemoveSource"
                     data-simply-value=":value.id"
                   >
@@ -213,21 +210,21 @@
               >
             </ul>
             <form
-              class="muze-solid-design-toolbar"
+              class="solid-toolbar"
               data-simply-command="muzeSolidCatalogAddSource"
             >
               <label
-                class="muze-solid-design-label muze-solid-design-toolbar-field"
+                class="solid-label solid-toolbar-field"
                 ><span>Catalog URL</span>
                 <input
-                  class="muze-solid-design-control swb-control muze-solid-design-toolbar-input"
+                  class="solid-control swb-control solid-toolbar-input"
                   type="url"
                   name="catalogUrl"
                   required
                   placeholder="https://example.org/apps/index.ttl"
                 />
               </label>
-              <button class="muze-solid-design-tool">Add source</button>
+              <button class="solid-tool">Add source</button>
             </form>
             <p>
               Sources and saved listings stay on this device. Added apps stay in
@@ -243,7 +240,7 @@
         >
           <button
             type="button"
-            class="muze-solid-design-tool"
+            class="solid-tool"
             data-simply-command="muzeSolidCatalogInfoBack"
           >
             Back to apps
@@ -267,7 +264,7 @@
           />
           <button
             type="button"
-            class="muze-solid-design-button ds-button ds-button-primary muze-solid-design-button-primary"
+            class="solid-button ds-button ds-button-primary solid-button-primary"
             data-simply-command="muzeSolidCatalogAdd"
             data-simply-field="muzeSolidCatalogInfo.add"
             data-simply-transform="attributes"

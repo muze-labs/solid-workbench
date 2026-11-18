@@ -1,7 +1,7 @@
 import styles from './suite-appearance.css' with { type: 'text' };
-import { muzeSolidDesignTheme } from '@muze-labs/solid-design';
+import { solidTheme } from '@muze-labs/solid-design';
 
 export const suiteAppearance = {
-  components: { muzeSolidDesignTheme },
+  components: { solidTheme },
   styles: { 'swb-foundation': styles }
 };

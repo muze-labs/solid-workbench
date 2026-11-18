@@ -470,7 +470,7 @@ try {
         );
         const bounds = dialog.getBoundingClientRect();
         const content = dialog.querySelector(
-          '.muze-solid-design-dialog-content'
+          '.solid-dialog-content'
         );
         if (
           bounds.left < 0 ||
@@ -491,7 +491,7 @@ try {
       );
       await page.evaluate(async () => {
         const app = muzeSolidDocumentsApp;
-        await app.actions.muzeSolidDesignCloseDialog(
+        await app.actions.solidCloseDialog(
           app.container.querySelector('[data-document-dialog="groups"]')
         );
       });

@@ -1,6 +1,6 @@
 /* DS adapter: resolve host values at this component boundary. */
 @layer theme {
-  .muze-solid-design-dropdown {
+  .solid-dropdown {
     --swb-dropdown-space-small: var(--ds-space-d2);
     --swb-dropdown-space: var(--ds-space);
     --swb-dropdown-accent: var(--ds-primary);
