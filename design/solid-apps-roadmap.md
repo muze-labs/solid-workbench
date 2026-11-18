@@ -1,5 +1,7 @@
 # Solid Workbench and apps roadmap
 
+The [open-web Launcher and reusable app components roadmap](workbench-component-roadmap.md) inventories existing app UI and proposes the next personal-app work on web shortcuts, author documentation, component extraction and large tables.
+
 Naming update, 2026-11-07: the repository is now
 [muze-labs/solid-workbench](https://github.com/muze-labs/solid-workbench), and
 the Launcher is named **Solid Workbench**. Earlier references to Launcher

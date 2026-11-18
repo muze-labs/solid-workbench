@@ -1,0 +1,70 @@
+# Open-web Launcher and reusable app components
+
+Proposed sequence for the personal-app roadmap, 18 November 2026. The first user outcome is to put an existing web app beside Files or Notebook and open it again. The first author outcome is to build a small, useful Workbench app from documented components. Someone writing the app by hand and someone asking an AI to build it should be able to use the same examples and verify the same result.
+
+## Start with any web app
+
+The Launcher already has a manual Add action that accepts an HTTP(S) URL, an optional manifest and an optional icon. It creates a SoftwareApplication entry, supports a selected screen and saves the shortcut on the device. Its launch action currently requires a workspace and routes through workspace opening. The product work is to make an ordinary URL the easy path and verify the whole journey with an independent site. [Shortcut commands and persistence](../apps/launcher/src/components/shortcuts.mjs) · [Agreed link and widget interactions](solid-workbench-launcher-links-and-widgets.md)
+
+1. Let a person paste a URL on a phone or drop a browser link at a screen position. Preserve its path, query and fragment. Offer an editable name with a hostname fallback and a default icon. Save placement even if metadata discovery is slow, blocked by CORS or unavailable offline.
+2. Open an ordinary shortcut through top-level browser navigation. Preserve the site's own sign-in and deep link. Keep WebID, workspace context, message ports and Pod credentials confined to explicitly configured integrations. A website that forbids framing remains fully usable this way.
+3. Treat a discovered title, favicon or web app manifest as optional presentation data. Retain the URL the person chose even if a manifest advertises another start page. On add, invoke the [server-side shortcut metadata capability](solid-workbench-launcher-links-and-widgets.md#automatic-shortcut-metadata) to populate the tile automatically. Resolve the user’s service choice in Preferences, using the deployment default when unset. Offer widgets and Workbench capabilities when the target supports them.
+4. Verify with an external deep link, a site with no manifest, a site that refuses embedding, and a Workbench resource link. Reload and check the original screen, title override and target. Exercise phone paste and keyboard placement alongside desktop drop. With the network disconnected, distinguish a locally saved shortcut from the availability of the destination itself.
+
+## Author's component index
+
+Choose by the task the person is doing. The first six exports below already live in the private suite package. Their markup, styling hooks, dependencies and lifecycle are documented in the [design package guide](../packages/solid-design/README.md) and the [export list](../packages/solid-design/src/features.mjs).
+
+| I need to… | Reuse today | What the app supplies |
+| --- | --- | --- |
+| Edit or confirm one thing | `muzeSolidDesignDialog` with a native dialog | Accessible name, initial focus, draft, save, and a close decision if edits are pending. |
+| Offer secondary actions | `muzeSolidDesignDropdown` with a native popover | Unique trigger/target IDs, named commands and enabled states. Arrow navigation is included. |
+| Browse items and inspect one | `muzeSolidDesignListDetails` | Two panes, a model, selected resource ID, focus on selection and a Back control on phones. |
+| Announce a completed action | `muzeSolidDesignToast` | A short confirmation. Keep problems requiring action visible inline. |
+| Place compact page actions | `muzeSolidDesignToolbar` | Semantic buttons, labels, pressed state and the owning app's commands. Use the shell's app toolbar integration where appropriate. |
+| Style fields, rows and search consistently | `muzeSolidDesignTheme` | Native labeled inputs, field validation and the model's search options. Contacts is a working search example. |
+| Browse named collections | `muzeSolidCollectionBrowser` in solid-app-ui | Project entries with stable identity, title and groups, supply the host commands and choose cards or rows. Follow Notebook's composition and compare Presenter's configuration. [Shared dataset](../packages/solid-app-ui/src/components/collection-browser.mjs) · [Notebook](../apps/notebook/src/collections.mjs) · [Presenter](../apps/presenter/src/collections.mjs) |
+| Choose a person, resource or editor | Invoke Contacts, Files or an editor provider through the capability host | Task input, cancellation handling and validation of the returned selection. Reuse the provider's entire workflow. [Recipient](../apps/contacts/src/components/recipient-picker.mjs) · [Resource](../apps/files/src/components/resource-picker.mjs) · [Editor](../apps/viewer/src/components/cobalt-editor.mjs) |
+
+### Where to extract next
+
+| Existing apps | Evidence and decision |
+| --- | --- |
+| Contacts and Profile | Profile editing already belongs to solid-profile. Use Contacts' searchable list as the first recipe for pairing a native search field with a SimplyFlow model. Preserve identity, edit drafts and address-book policy in the host. [Contact list](../apps/contacts/src/components/contact-list.mjs) · [Shared profile features](../packages/solid-profile/src/components/) |
+| Files and Launcher | Both select and act on resources. Reuse Files' picker through capabilities. Catalog entries and shortcut placements have distinct meanings from files. A common resource row is worth extracting if both can supply a label, icon, destination and secondary actions without sharing storage code. [Files](../apps/files/src/components/) · [Launcher](../apps/launcher/src/components/) |
+| Notebook and Presenter | Already provide two consumers for collection browsing. Document their configurations as the reference pair. Keep block editing and slide regions with their apps. |
+| Documents and Viewer | Documents has sidebars, search hits, thumbnails and a note editor. Viewer handles text/editor provider tasks. Candidate patterns are a responsive side panel and a compact hit list. Keep page selection, PDF layout, annotation anchors and Cobalt conversion with their owners. [Documents navigation](../apps/documents/src/navigation.mjs) · [Viewer](../apps/viewer/src/components/) |
+| Account and Preferences | Reuse the suite's existing account presenter, session recovery, capability dialog and appearance integration. Preferences' provider choices are an example of selecting an installed capability. Account and permission decisions require their existing host. [Shell features](../packages/solid-app-ui/src/features.mjs) · [Preferences](../apps/preferences/src/components/) |
+
+### How to use the catalog to build an app
+
+For a first Tasks app, compose the app toolbar, list/details and dialog datasets. Start with the Contacts list and the package's list/details markup. Give each task a stable resource ID, bind the list to the model view and route selection through an app command. Put the title and completion control in the detail pane. Use a native labeled input in the edit dialog. Let Tasks own saving, local drafts and conflict recovery. If a task links to a document, invoke the Files picker. This recipe also makes a concrete brief for an AI author.
+
+Document each reusable feature next to its package with its exact import, template inclusion, initial data, host actions, input/output example, keyboard and phone behavior, styling hooks and a link to a real consumer. Include a minimal working example with sample data and an empty or failure state. Label each entry **available in this workspace**, **candidate** or **published**. Keep the task index in Markdown so humans and tools can find the same contract. Check the example against the package version in CI and keep examples and inspection sources off the app's startup path. The current collection template inclusion uses a repository-relative path. An external author needs a supported package asset/build path before that recipe is portable. [Notebook template inclusion](../apps/notebook/src/collections.html) · [Moldable app rules](Moldable-Solid-Apps.md)
+
+## Gaps and prior art
+
+| User need | Comparison and Workbench decision |
+| --- | --- |
+| Correct invalid input or recover a draft | GOV.UK documents both individual field errors and a summary, with usage guidance and coded examples. Document a native field/error recipe and a persistent save/retry surface for Tasks and Contacts. Link each summary entry to the field and preserve entered values. [GOV.UK components](https://design-system.service.gov.uk/components/) · [Recovery patterns](https://design-system.service.gov.uk/patterns/) |
+| Browse large lists on a phone | USWDS distinguishes collections, tables, pagination and combo boxes. Use list/details for reading one record, a table for comparing columns, and a paged option for keyboard and assistive-technology access across the dataset. Test ordinary search before introducing a custom combobox. [USWDS components](https://designsystem.digital.gov/components/) |
+| Record dates and times | Native date/time fields cover the first task due date and time-entry form. Calendar range selection, time zones and validation need a documented workflow with Calendar and Time Tracking. Compare USWDS single-date and range pickers when the native controls leave a demonstrated gap. [USWDS components](https://designsystem.digital.gov/components/) |
+| Find the right building block | GOV.UK distinguishes a component from a task pattern. USWDS publishes maturity per component. Provide both a task index and individual contracts, with visible availability so an AI can avoid inventing an import. [GOV.UK patterns](https://design-system.service.gov.uk/patterns/) · [USWDS status](https://designsystem.digital.gov/components/status/) |
+
+### Virtual table investigation
+
+SimplyFlow's datagrid example uses a semantic table bound to the model's current rows. It sorts the whole model, windows rows with the scroll effect, and projects visible columns. The example uses a 26px row height and a dedicated scrollbar element. EduLinq's dashboard applies this to actual users and reports. Its users model filters by group and properties, sorts, projects columns and applies the scroll window. Its table adds per-column filters and a row action. These are concrete starting points for comparing many time entries or report rows. [SimplyFlow example at inspected revision](https://github.com/muze-labs/simplyflow/blob/7fefa52/examples/datagrid/virtual-scroll.html) · [EduLinq users model](https://gitlab.muze.nl/edulinq/dashboard2025/-/blob/aa82f98/components/gebruikers/actions/getUsersModel.js) · [EduLinq table markup](https://gitlab.muze.nl/edulinq/dashboard2025/-/blob/aa82f98/components/gebruikers/componentTemplates/users-datatable.html)
+
+Prototype a read-only table on the installed SimplyFlow model API. Use instance-scoped scroll containers, named column definitions, stable row IDs and native buttons inside sortable headers. Give row navigation an actual link or button. Bind sort direction on the active header. Compare ordinary, paged and windowed modes on the same local data. Verify sorting and filtering across the entire dataset, focus and selection after recycling, last-row reachability, two simultaneous instances and cleanup on close. Measure rendered rows, input latency and first useful paint on a phone. Check wrapping and enlarged text against the fixed-height assumption. Offer paged rows when reliable measurement or accessible navigation cannot be maintained. Virtual scrolling bounds DOM size. Data fetching and offline availability need a separate decision for collections too large to load locally.
+
+## Proposed delivery sequence
+
+| Priority | Deliverable | Evidence to advance |
+| --- | --- | --- |
+| 1. Launch the web | Deliver paste/drop and the dedicated server-side title and icon lookup before expanding widget discovery. | An unmodified third-party app opens from a saved deep link on phone and desktop with its original URL. |
+| 2. Make existing components easy to use | Publish an in-repo author guide and runnable examples for the six design datasets, suite shell and collection browser. Link installation, template composition and app-owned actions end to end. | A hand-written app and an independently AI-assisted version complete the same Tasks workflow using the documented imports. Record where each author had to inspect implementation or duplicate UI. |
+| 3. Extract through real apps | Use Tasks to exercise search, detail, edit, inline errors and recovery. Use Time Tracking for date/time entry and a comparison table. Add Calendar patterns with the first event workflow. | New shared features have working consumers, editable datasets and focused documentation. Verify drafts survive reload, sign-in loss, reconnection and conflicting updates. |
+| 4. Deliver large tables | Evaluate the EduLinq and SimplyFlow composition using a realistic time-entry collection and the checks above. | Report which mode works at each measured size and text scale, with keyboard and screen-reader observations. Ship the simplest mode that supports the workflow. |
+| 5. Enable independent authors | Review package exports, template assets, versions, licenses, external setup and publication readiness. Exercise a clean out-of-tree starter on published npm dependencies. | Someone outside the monorepo can build, host and add the app by URL using only the guide. Optional capabilities can be enabled separately. |
+
+For each implementation cycle, measure cold first-load resources and time to the phone's core task. Keep the existing advisory target below 200,000 gzipped JavaScript bytes per complete app graph including authentication callback. Test with keyboard and assistive technology as well as automated browser checks. This inventory is based on source inspection. Runtime measurements, external installation and accessibility observations belong to the proposed cycles. [App priorities](solid-workbench-app-priorities.md) · [Standing guardrails](solid-apps-roadmap.md#standing-feature-guardrails)
