@@ -4,10 +4,13 @@
 
 The maintainer selects a sidebar for every top-level app and a popup
 with a Dock as sidebar control. The inspector starts closed and opens
-from Inspect alongside Preferences. CYC305 runs on
+from Inspect alongside Preferences. CYC305 ran on
 `spiral/CYC-20261119-QG24H-305-dockable-inspector` from `94a3e9c`.
 SRC306 records scope. IMP307 and EVD308 record the shared inspector,
-SimplyFlow 0.10.7 adoption and verification. Human acceptance is pending.
+SimplyFlow 0.10.7 adoption and verification. The maintainer accepted
+the cycle on 19 November 2026. ACC309 binds the implementation and
+verification. The Calendar, picker upload and Presenter background
+items are separate roadmap follow-ups.
 Preserve the unrelated vision document.
 
 ## CYC300 Presenter live-template edit and undo, 2026-11-19
