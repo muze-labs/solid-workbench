@@ -3,13 +3,14 @@
 ## CYC295 SimplyFlow release adoption, 2026-11-19
 
 The maintainer confirms adopting SimplyFlow 0.10.6 across Workbench after
-publication. CYC295 is Active on
+publication. CYC295 ran on
 `spiral/CYC-20261119-QG24H-295-simplyflow-adoption` from `d1a6c8e`.
 SRC296 records scope and IMP297 describes the replacement of model and app
 lifecycle workarounds, the Presenter transformer bridge and row cache, and
 binding waits in Presenter and Launcher. EVD298 records verification and
 download measurements. Runtime template editing is outside the cycle.
-Human acceptance is pending. Preserve the unrelated vision document.
+The maintainer accepted the cycle on 19 November 2026. ACC299 binds the
+implementation and verification. Preserve the unrelated vision document.
 
 ## CYC290 runtime globals and replaceable functions, 2026-11-19
 
