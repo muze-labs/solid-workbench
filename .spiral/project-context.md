@@ -3,10 +3,11 @@
 ## CYC300 Presenter live-template edit and undo, 2026-11-19
 
 The maintainer selects the single Presenter thumbnail proof after CYC295.
-CYC300 runs on `spiral/CYC-20261119-QG24H-300-presenter-live-template` from
+CYC300 ran on `spiral/CYC-20261119-QG24H-300-presenter-live-template` from
 `c194fa6`. SRC301 records the choice. IMP302 exposes the named template and
 EVD303 tracks the production-browser proof and its verification limits.
-Preserve the unrelated vision document. Human acceptance is pending.
+The maintainer accepted the cycle on 19 November 2026. ACC304 binds the
+implementation and verification. Preserve the unrelated vision document.
 
 ## CYC295 SimplyFlow release adoption, 2026-11-19
 
