@@ -479,6 +479,105 @@ try {
     await run(page, `return ${app}.data.muzeSolidPresenterPosition`),
     '1 / 2'
   );
+  const writesBeforeTemplateEdit = writes.length;
+  await page.evaluate(async () => {
+    const owner = globalThis.muzeSolidPresenterApp;
+    await owner.binding.whenIdle();
+    const name = 'muze-solid-presenter-thumbnail';
+    const list = owner.container.querySelector('.muze-solid-presenter-list');
+    const template = owner.container.querySelector('template#' + name);
+    const authored = owner.components.muzeSolidPresenter.templates;
+    const original = authored[name];
+    const originalMarkup = template.innerHTML;
+    const parsed = document.createElement('template');
+    parsed.innerHTML = original;
+    if (
+      owner.templates[name] !== original ||
+      originalMarkup !== parsed.innerHTML
+    ) {
+      throw new Error('Presenter did not mount the named thumbnail definition.');
+    }
+    const selected = owner.runtime.selected;
+    const deck = owner.runtime.deck;
+    const native = await deck.graph.write();
+    const frame = owner.container.querySelector('[data-kind="text"] iframe');
+    const editor = frame.contentWindow.muzeSolidViewerApp.runtime.cobaltEditor;
+    const draft = JSON.stringify(editor.getValue());
+    const buttons = () => [...list.querySelectorAll('button')];
+    const ids = () => buttons().map((button) => button.dataset.muzeSolidSlide);
+    const slideIds = ids();
+    const focusId = slideIds.find((id) => id !== selected);
+    const focusTarget = () => buttons().find(
+      (button) => button.dataset.muzeSolidSlide === focusId
+    );
+    const toolbar = owner.container.querySelector(
+      '.muze-solid-presenter-deck-menu > button'
+    );
+    const focused = focusTarget();
+    focused.focus();
+    if (
+      document.activeElement !== focused ||
+      owner.binding.rerender(list, template) ||
+      !focused.isConnected
+    ) {
+      throw new Error('SimplyFlow did not preserve the focused thumbnail.');
+    }
+
+    async function refresh(markup) {
+      toolbar.focus();
+      owner.templates[name] = markup;
+      template.innerHTML = markup;
+      if (!owner.binding.rerender(list, template)) {
+        throw new Error('SimplyFlow did not refresh the thumbnail template.');
+      }
+      await owner.binding.whenIdle();
+      if (document.activeElement !== toolbar) {
+        throw new Error('Refreshing thumbnails displaced focus outside them.');
+      }
+      const replacement = focusTarget();
+      replacement.focus();
+      const current = list.querySelector('[aria-current="true"]');
+      if (
+        document.activeElement !== replacement ||
+        JSON.stringify(ids()) !== JSON.stringify(slideIds) ||
+        owner.runtime.selected !== selected ||
+        current?.dataset.muzeSolidSlide !== selected
+      ) {
+        throw new Error('Refreshing thumbnails changed order, focus or selection.');
+      }
+      if (
+        owner.runtime.deck !== deck ||
+        (await deck.graph.write()) !== native ||
+        owner.container.querySelector('[data-kind="text"] iframe') !== frame ||
+        JSON.stringify(editor.getValue()) !== draft
+      ) {
+        throw new Error('Refreshing thumbnails changed the deck or open draft.');
+      }
+    }
+
+    const edited = original.replace(
+      '</li>',
+      '<small data-template-preview aria-hidden="true">Preview</small></li>'
+    );
+    await refresh(edited);
+    const previews = [...list.querySelectorAll('[data-template-preview]')];
+    if (
+      previews.length !== slideIds.length ||
+      previews.some((element) => !element.checkVisibility())
+    ) {
+      throw new Error('The live template edit did not render every thumbnail.');
+    }
+    await refresh(authored[name]);
+    if (
+      list.querySelector('[data-template-preview]') ||
+      owner.templates[name] !== original ||
+      template.innerHTML !== originalMarkup
+    ) {
+      throw new Error('Undo did not restore the original thumbnail template.');
+    }
+  });
+  assert.equal(writes.length, writesBeforeTemplateEdit);
+  console.log('PASS live thumbnail template edit and undo with focus and deck continuity');
   const originalOrder = await run(
     page,
     `return ${app}.runtime.slides.view.current.map(slide=>slide.id)`

@@ -200,37 +200,7 @@
           data-simply-list="muzeSolidPresenterSlides"
           data-simply-list-key="id"
         >
-          <template
-            ><li>
-              <button
-                class="muze-solid-presenter-slide-button solid-list-state"
-                data-simply-command="muzeSolidPresenterSelect"
-                data-simply-value=":value.id"
-                data-simply-field="attributes"
-                data-simply-transform="attributes"
-                data-simply-attributes="aria-current aria-label title data-muze-solid-slide"
-              >
-                <span class="muze-solid-presenter-thumbnail" aria-hidden="true">
-                  <img
-                    class="muze-solid-presenter-thumbnail-image"
-                    alt=""
-                    data-simply-field="image"
-                    data-simply-transform="attributes"
-                    data-simply-attributes="src hidden"
-                  />
-                  <span
-                    class="muze-solid-presenter-thumbnail-text"
-                    data-simply-field="fragment"
-                    data-simply-transform="muzeSolidPresenterRichText"
-                  ></span>
-                </span>
-                <span
-                  class="muze-solid-presenter-thumbnail-number"
-                  data-simply-field="number"
-                  data-simply-transform="escape_html"
-                ></span>
-              </button></li
-          ></template>
+          <template rel="muze-solid-presenter-thumbnail"></template>
         </ol>
       </nav>
       <section
