@@ -233,7 +233,12 @@ export function editableSources() {
                 declaration.id.name +
                 '.entries.js',
               source:
-                'export default ' + JSON.stringify(sections, null, 2) + ';\n'
+                'export default ' + JSON.stringify(sections, null, 2) + ';\n' +
+                'export const definition = ' + JSON.stringify({
+                  source: 'export ' + statement.declaration.kind + ' ' +
+                    source.slice(declaration.start, declaration.end),
+                  origin: path.relative(process.cwd(), filename)
+                }) + ';\n'
             });
             metadataExports.push(
               JSON.stringify(declaration.id.name) +

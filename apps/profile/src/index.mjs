@@ -71,6 +71,7 @@ const definition = {
 };
 const ui = simply.app(prepareDefinition(definition));
 exposeDefinition(ui, { ...profileSources, ...sources });
+host.inspectApp = ui;
 await ui.actions.initialize();
 ui.definition.instances = {
   account: host.view

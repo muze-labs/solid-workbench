@@ -37,6 +37,13 @@ function entryOwners(id, getModuleInfo) {
 }
 
 function sharedChunk(id, { getModuleInfo }) {
+  if (
+    /\/solid-app-ui\/src\/inspector\/(host|bridge|relationships|data-preview)\.mjs$/
+      .test(id) ||
+    id.endsWith('/solid-app-ui/src/sidebar-resize.mjs')
+  ) {
+    return 'inspector/host';
+  }
   if (id.includes('/node_modules/pdfjs-dist/')) {
     return 'documents/pdf-engine';
   }
@@ -138,6 +145,9 @@ export async function bundleApplications(root) {
     root, 'packages/solid-design/examples/simplyflow.mjs'
   );
   input.redirect = path.join(root, 'packages/solid-app-data/src/redirect.mjs');
+  input['inspector/panel'] = path.join(
+    root, 'packages/solid-app-ui/src/inspector/panel.mjs'
+  );
   const bundle = await rollup({
     input,
     preserveEntrySignatures: false,
@@ -204,9 +214,9 @@ export async function bundleApplications(root) {
         data.imports.length ||
         data.dynamicImports.length ||
         ui.imports.some((name) => name !== data.fileName) ||
-        ui.dynamicImports.length
+        ui.dynamicImports.some((name) => name !== 'inspector/host' + suffix + '.js')
       ) {
-        throw new Error('bundle: Shared bundles must depend only UI → data.');
+        throw new Error('bundle: Unexpected dependency in shared data or UI.');
       }
       for (const chunk of chunks.values()) {
         for (const dependency of [...chunk.imports, ...chunk.dynamicImports]) {
