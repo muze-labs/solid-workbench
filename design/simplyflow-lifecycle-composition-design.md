@@ -162,6 +162,30 @@ override/removal in one instance, nested hosting, and embedded documents.
 Preserve the existing standalone binding use case. This does not require a new
 component instance framework merely to solve template lookup.
 
+### Scoped follow-up for rendered template names
+
+The maintainer approved scoping this separately on 19 November 2026.
+SimplyFlow 0.10.6 resolves named templates inside the binding's container.
+The [Presenter browser proof](../.spiral/evidence/EVD-20261119-QG24H-303.md)
+found that a generated element root has a private template reference only.
+An inspector needs the actual template name, especially when a list
+chooses among several templates.
+
+Expose the resolved template's ID on its rendered element root. Use
+`data-simply-template` for app bindings and the configured binding prefix
+plus `-template` for other bindings. Treat the attribute as renderer-owned
+inspection metadata. Resolve its value in the owning app so two apps can
+use the same name. Keep internal template references authoritative for
+rendering and rerendering.
+
+Verify that direct and `rel` references mark the root with the resolved ID,
+including after rerender and keyed reordering. Check two app containers
+with the same template name and a standalone custom-prefix binding.
+Include an anonymous template whose generated root has no marker and
+an empty named template whose existing encoded comment still identifies
+it after an empty-to-element rerender. Inspect a descendant to confirm
+that its closest marked ancestor identifies the active template.
+
 ## 4. Optional app services instead of mandatory coupling
 
 ### Observed boundary and proposal

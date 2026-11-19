@@ -5,6 +5,7 @@ import {
   solidDialog
 } from '@muze-labs/solid-design';
 import template from '../presenter.html?template' with { type: 'text' };
+import thumbnail from '../thumbnail.html' with { type: 'text' };
 import styles from './presenter.css' with { type: 'text' };
 
 export const muzeSolidPresenter = {
@@ -20,7 +21,10 @@ export const muzeSolidPresenter = {
       return next(context);
     }
   },
-  templates: { 'muze-solid-presenter': template },
+  templates: {
+    'muze-solid-presenter': template,
+    'muze-solid-presenter-thumbnail': thumbnail
+  },
   styles: { 'muze-solid-presenter': styles },
   events: {
     muzeSolidPresenterFullscreen: {
