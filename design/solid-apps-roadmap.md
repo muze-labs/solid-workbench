@@ -238,6 +238,13 @@ restyle in the active Notebook collections cycle.
 
 ## Applications
 
+### Calendar
+
+Add a Calendar app for personal appointments and events, with a path to
+shared and business use. The [agreed application priorities](solid-workbench-app-priorities.md#recorded-decisions)
+record this direction. The first workflow and implementation cycle are
+open for planning.
+
 ### Zett
 
 Bring the maintainer's unfinished Zett application into the suite's roadmap.
@@ -271,6 +278,12 @@ open/save through the preferred file picker. Portable collection files, default
 collection launch and shared document lifecycle are follow-up work under
 [collection-based document management](#collection-based-document-management).
 
+### Files picker
+
+Maintainer follow-up, 2026-11-19. The Files picker is missing an upload
+action. Add a way to upload a local file into the chosen folder and
+select the uploaded resource without leaving the picker.
+
 ### Solid Presenter
 
 Retain a separate presentation app owning decks, slide order, templates and
@@ -286,6 +299,10 @@ recoverable edits rather than overwriting them when starting a new deck.
 A subsequent version should offer a template picker with a default set of
 templates. Keep the initial blank-slide flow usable without that picker;
 choose the initial template set and its offline availability during design.
+
+Maintainer follow-up, 2026-11-19. Adding a background to a slide shows
+it in the thumbnail, but the slide canvas does not display it. Check
+how both views render the same slide background and correct the canvas.
 
 Investigate linking parts of a presentation (individual slides, groups of slides
 or slide content) or a whole presentation from another location, including a
