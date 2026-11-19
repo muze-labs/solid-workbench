@@ -38,7 +38,10 @@ import {
   resourcePicker,
   lifecycle
 } from './features.mjs';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import sources from './features.mjs?entries';
 const host = shell({
   acceptLaunch: true,
@@ -127,8 +130,8 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = simply.app(definition);
-exposeDefinition(ui, definition, sources);
+const ui = simply.app(prepareDefinition(definition));
+exposeDefinition(ui, sources);
 ui.definition.modules = {
   fileData: {
     sourceUrl: fileDataSource,

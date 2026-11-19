@@ -47,9 +47,7 @@ simply.app({
     },
     cleanup() {
       simply.destroy(this.runtime.results);
-      for (const signal of this.data.resourceModel.effects.slice(1)) {
-        simply.destroy(signal);
-      }
+      this.data.resourceModel.destroy();
     }
   }
 }).actions.initialize();

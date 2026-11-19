@@ -36,7 +36,10 @@ import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import { httpUrl } from '@muze-labs/solid-app-data';
 import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import { DocumentSession } from '@muze-labs/solid-app-data/document-session.mjs';
 import documentSessionSource from '../../../packages/solid-app-data/src/document-session.mjs?source';
 import { PresenterDecks } from './deck-drafts.mjs';
@@ -99,8 +102,6 @@ const definition = {
     DocumentSession,
     renderCobalt,
     validateFragment,
-    muzeSolidPresenterRichText:
-      muzeSolidPresenter.transformers.muzeSolidPresenterRichText,
     createSolidMetroClient,
     requireOk,
     DeckDocument,
@@ -121,19 +122,8 @@ const definition = {
   },
   runtime: { host, views: new Map(), selected: '', busy: false }
 };
-let ui;
-ui = simply.app({
-  ...definition,
-  transformers: {
-    // SimplyFlow copies the transformer map into its binding. Keep this
-    // entry stable and resolve the current implementation from the live app.
-    muzeSolidPresenterRichText(context, next) {
-      const api = ui?.api ?? definition.api;
-      return api.muzeSolidPresenterRichText.call(this, context, next, api);
-    }
-  }
-});
-exposeDefinition(ui, definition, sources);
+const ui = simply.app(prepareDefinition(definition));
+exposeDefinition(ui, sources);
 ui.definition.modules = {
   collectionFileOperation: {
     sourceUrl: collectionOperationSource,

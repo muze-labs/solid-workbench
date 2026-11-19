@@ -65,9 +65,6 @@ export const swbProviderPreferences = {
     swb_initializeProviders() {
       const owner = this;
       const list = simply.model({ data: [], options: {} });
-      list.addEffect(function () {
-        return simply.effect(() => this.state.data);
-      });
       list.addEffect(function (input) {
         return simply.effect(() =>
           jaqt.from(input.current)
@@ -88,9 +85,7 @@ export const swbProviderPreferences = {
       this.runtime.providerGeneration =
         (this.runtime.providerGeneration || 0) + 1;
       simply.destroy(this.runtime.providerEffect);
-      for (const effect of this.runtime.providerModel.effects.slice(1)) {
-        simply.destroy(effect);
-      }
+      this.runtime.providerModel.destroy();
     },
     swb_providerLabel(value, key = this.actions.swb_providerKey()) {
       if (key === 'shortcutMetadataProvider') {

@@ -122,9 +122,6 @@ export const launcherScreens = {
     muzeSolidLauncherInitializeScreens() {
       const owner = this;
       const screens = simply.model({ data: [] });
-      screens.addEffect(function () {
-        return simply.effect(() => this.state.data);
-      });
       screens.addEffect(function (input) {
         return simply.effect(() => {
           const shortcuts = owner.runtime.shortcuts.view.current;

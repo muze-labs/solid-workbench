@@ -18,7 +18,10 @@ import {
   browseCapability,
   selectionUrl
 } from '@muze-labs/solid-app-data/capabilities.mjs';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import { DocumentSession } from '@muze-labs/solid-app-data/document-session.mjs';
 import documentSessionSource from '../../../packages/solid-app-data/src/document-session.mjs?source';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
@@ -109,8 +112,8 @@ const definition = {
   },
   runtime: { host, busy: false }
 };
-const ui = simply.app(definition);
-exposeDefinition(ui, definition, sources);
+const ui = simply.app(prepareDefinition(definition));
+exposeDefinition(ui, sources);
 ui.definition.modules = {
   collectionFileOperation: {
     sourceUrl: collectionOperationSource,

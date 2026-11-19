@@ -4,16 +4,19 @@ import { readFile } from 'node:fs/promises';
 // Load the exact experimental package in a disposable host, without exporting
 // test-only APIs or changing the deployed application's dependency graph.
 export async function checkEventBindings(page) {
-  const source = await readFile(
-    new URL('../../packages/simplyflow-events/src/index.mjs', import.meta.url),
-    'utf8'
-  );
-  const moduleUrl = 'data:text/javascript;base64,' +
-    Buffer.from(source).toString('base64');
+  const [extension, definition] = await Promise.all([
+    '../../packages/simplyflow-events/src/index.mjs',
+    '../../packages/solid-app-data/src/definition.mjs'
+  ].map(async (path) => {
+    const source = await readFile(new URL(path, import.meta.url), 'utf8');
+    return 'data:text/javascript;base64,' +
+      Buffer.from(source).toString('base64');
+  }));
   const result = await page.send('Runtime.evaluate', {
     expression: '(async () => { const { installEvents } = await import(' +
-      JSON.stringify(moduleUrl) + '); return (' + checkInBrowser.toString() +
-      ')(installEvents); })()',
+      JSON.stringify(extension) + '); const { prepareDefinition } = await import(' +
+      JSON.stringify(definition) + '); return (' + checkInBrowser.toString() +
+      ')(installEvents, prepareDefinition); })()',
     awaitPromise: true,
     returnByValue: true
   });
@@ -22,7 +25,7 @@ export async function checkEventBindings(page) {
   assert.equal(result.result.value, true);
 }
 
-async function checkInBrowser(installEvents) {
+async function checkInBrowser(installEvents, prepareDefinition) {
   function check(condition, message) {
     if (!condition) {
       throw new Error('events-test: ' + message);
@@ -75,7 +78,9 @@ async function checkInBrowser(installEvents) {
   let retained;
   let unsubscriptions = 0;
   let calls = [];
+  const service = new WeakMap();
   const component = {
+    api: { service },
     events: {
       swbTestCustom: {
         target() { return this.runtime.source; },
@@ -101,18 +106,23 @@ async function checkInBrowser(installEvents) {
       }
     }
   };
-  const view = simply.app({
+  const view = simply.app(prepareDefinition({
     container: element,
     components: { swbTestEvents: component },
     events: { swbTestCustom: { type: 'resource-changed' } },
+    api: { label: 'Fixture' },
     runtime: { source: target, acceptLaunch: false },
     data: { draft: 'unsaved', nativeIdentity: 'urn:fixture:subject' }
-  });
+  }));
   const original = component.actions.receive;
   const bindings = installEvents(view);
   try {
-    check(view.events.swbTestCustom.action === 'receive',
-      'app override retains composed descriptor fields');
+    check(view.api.service === service && view.api.label === 'Fixture',
+      'component and app API entries compose without cloning the service');
+    check(view.events.swbTestCustom.action === 'receive' &&
+      view.events.swbTestCustom.type === 'resource-changed' &&
+      component.events.swbTestCustom.type === 'document-changed',
+    'partial app override retains descriptor fields and preserves its source');
     bindings.start();
     bindings.start();
     const payload = { resource: 'urn:fixture:changed', unknown: ['keep'] };
@@ -154,9 +164,9 @@ async function checkInBrowser(installEvents) {
 
   const lateElement = document.createElement('section');
   document.body.append(lateElement);
-  const late = simply.app({ container: lateElement, events: {
+  const late = simply.app(prepareDefinition({ container: lateElement, events: {
     swbTestLate: { target: () => target, type: 'late', action: 'receive' }
-  }, actions: { receive() { throw new Error('events-test: stale delivery'); } } });
+  }, actions: { receive() { throw new Error('events-test: stale delivery'); } } }));
   const lateBindings = installEvents(late);
   const startup = Promise.resolve().then(() => lateBindings.start());
   late.destroy();

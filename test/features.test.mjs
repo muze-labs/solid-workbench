@@ -33,9 +33,7 @@ function actionContext(components, { data = {}, api = {}, runtime = {} } = {}) {
 }
 function stopList(list, signal) {
   destroy(signal);
-  for (const result of list.effects.slice(1)) {
-    destroy(result);
-  }
+  list.destroy();
 }
 const turtle = `@prefix v: <http://www.w3.org/2006/vcard/ns#>.
   <#b> a v:Individual; v:fn "Beta"; <https://example.test/unknown> "Keep".

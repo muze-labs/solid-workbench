@@ -10,7 +10,8 @@ import styles from './presenter.css' with { type: 'text' };
 export const muzeSolidPresenter = {
   components: { solidToolbar, solidDialog },
   transformers: {
-    muzeSolidPresenterRichText(context, next, api) {
+    muzeSolidPresenterRichText(context, next) {
+      const api = this.app.api;
       context.value = {
         innerHTML: api.renderCobalt(
           api.validateFragment(context.value || { text: '', annotations: [] })
@@ -287,9 +288,6 @@ export const muzeSolidPresenter = {
       host.view.data.muzeSolidUiAppToolbar = { hidden: null };
       this.runtime.thumbnailUrls = new Map();
       const slides = simply.model({ data: [], options: {} });
-      slides.addEffect(function () {
-        return simply.effect(() => this.state.data);
-      });
       slides.addEffect(function (input) {
         return simply.effect(() =>
           jaqt.from(input.current)
@@ -478,58 +476,44 @@ export const muzeSolidPresenter = {
         }
       }
     },
+    cleanup() {
+      if (this.runtime.slideEffect) {
+        simply.destroy(this.runtime.slideEffect);
+      }
+      this.runtime.slides?.destroy();
+    },
     muzeSolidPresenterProject() {
       const deck = this.runtime.deck;
       this.data.muzeSolidPresenterTitle = deck.title || 'Untitled presentation';
       if (this.data.muzeSolidPresenterEditorVisibility?.hidden !== '') {
         document.title = deck.title.trim() || 'Untitled presentation';
       }
-      // Stable projection rows let SimplyFlow move existing thumbnail nodes.
-      simply.batch(() =>
-        simply.untracked(() => {
-          const previous =
-            this.runtime.slideProjection?.deck === deck
-              ? this.runtime.slideProjection.rows
-              : new Map();
-          const rows = deck.slides().map((slide) => {
-            const regions = deck.regions(slide.id);
-            const text = regions.find((region) => region.name === 'title');
-            const image = regions.find((region) => region.kind === 'image');
-            const number = slide.position + 1;
-            const url =
-              image?.resource && this.runtime.thumbnailUrls.get(image.resource);
-            const fields = {
-              ...slide,
-              number,
-              fragment: text?.fragment || { text: '', annotations: [] },
-              image: { src: url || null, hidden: url ? null : '' },
-              attributes: {
-                'data-muze-solid-slide': slide.id,
-                'aria-current':
-                  slide.id === this.runtime.selected ? 'true' : null,
-                'aria-label':
-                  'Slide ' +
-                  number +
-                  (text?.fragment.text ? ': ' + text.fragment.text : ''),
-                title: text?.fragment.text || 'Slide ' + number
-              }
-            };
-            const row = previous.get(slide.id);
-            if (row) {
-              Object.assign(row, fields);
-              return row;
+      simply.untracked(() => {
+        this.runtime.slides.state.data = deck.slides().map((slide) => {
+          const regions = deck.regions(slide.id);
+          const text = regions.find((region) => region.name === 'title');
+          const image = regions.find((region) => region.kind === 'image');
+          const number = slide.position + 1;
+          const url =
+            image?.resource && this.runtime.thumbnailUrls.get(image.resource);
+          return {
+            ...slide,
+            number,
+            fragment: text?.fragment || { text: '', annotations: [] },
+            image: { src: url || null, hidden: url ? null : '' },
+            attributes: {
+              'data-muze-solid-slide': slide.id,
+              'aria-current':
+                slide.id === this.runtime.selected ? 'true' : null,
+              'aria-label':
+                'Slide ' +
+                number +
+                (text?.fragment.text ? ': ' + text.fragment.text : ''),
+              title: text?.fragment.text || 'Slide ' + number
             }
-            return fields;
-          });
-          this.runtime.slides.state.data = rows;
-          this.runtime.slideProjection = {
-            deck,
-            rows: new Map(
-              this.runtime.slides.state.data.map((row) => [row.id, row])
-            )
           };
-        })
-      );
+        });
+      });
       this.actions.muzeSolidPresenterThumbnails();
       const ordered = jaqt.from(deck.slides())
         .orderBy({ position: jaqt.asc })
@@ -626,34 +610,23 @@ export const muzeSolidPresenter = {
     async muzeSolidPresenterRevealSlide() {
       const deck = this.runtime.deck;
       const selected = this.runtime.selected;
-      const slide = deck.slides().find((slide) => slide.id === selected);
-      if (!slide) {
+      if (!deck.slides().some((slide) => slide.id === selected)) {
         return;
       }
-      for (let attempt = 0; attempt < 120; attempt++) {
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-        if (this.runtime.deck !== deck || this.runtime.selected !== selected) {
-          return;
-        }
-        const button = this.container.querySelector(
-          '[data-muze-solid-slide="' + CSS.escape(selected) + '"]'
-        );
-        const number = button
-          ?.querySelector('.muze-solid-presenter-thumbnail-number')
-          ?.textContent.trim();
-        // SimplyFlow binds lists later. Wait for this slide's new position
-        // before scrolling, so a later list update cannot move it out again.
-        if (number === String(slide.position + 1)) {
-          button.scrollIntoView({
-            block: 'nearest',
-            inline: 'nearest',
-            behavior: 'instant'
-          });
-          return;
-        }
+      await this.binding.whenIdle();
+      if (this.runtime.deck !== deck || this.runtime.selected !== selected) {
+        return;
       }
+      const button = this.container.querySelector(
+        '[data-muze-solid-slide="' + CSS.escape(selected) + '"]'
+      );
+      button?.scrollIntoView({
+        block: 'nearest',
+        inline: 'nearest',
+        behavior: 'instant'
+      });
     },
-    muzeSolidPresenterFocus(selector, presenting, selectText = false) {
+    async muzeSolidPresenterFocus(selector, presenting, selectText = false) {
       const deck = this.runtime.deck;
       const focus = () => {
         if (
@@ -668,7 +641,6 @@ export const muzeSolidPresenter = {
         if (!button?.isConnected) {
           return;
         }
-        // State is synchronous; SimplyFlow applies control bindings later.
         if (button.matches(':disabled') || !button.checkVisibility()) {
           requestAnimationFrame(focus);
           return;
@@ -678,7 +650,11 @@ export const muzeSolidPresenter = {
           button.select?.();
         }
       };
-      requestAnimationFrame(focus);
+      await Promise.all([
+        this.binding.whenIdle(),
+        this.runtime.host.view.binding.whenIdle()
+      ]);
+      focus();
     },
     async muzeSolidPresenterExit() {
       this.runtime.presenting = false;

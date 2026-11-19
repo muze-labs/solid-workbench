@@ -62,9 +62,7 @@ export const profileDetails = {
     },
     cleanupProfile() {
       simply.destroy(this.runtime.profile.detailEffect);
-      for (const signal of this.runtime.profile.details.effects.slice(1)) {
-        simply.destroy(signal);
-      }
+      this.runtime.profile.details.destroy();
     },
     hasProfileDetail(field, values) {
       return Boolean(values[field.name]);

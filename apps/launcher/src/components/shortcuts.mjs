@@ -495,9 +495,6 @@ export const shortcuts = {
     initializeShortcuts() {
       const owner = this;
       const list = simply.model({ data: [], options: { insertBefore: '' } });
-      list.addEffect(function () {
-        return simply.effect(() => this.state.data);
-      });
       list.addEffect(function (input) {
         return simply.effect(() =>
           jaqt.from(input.current)

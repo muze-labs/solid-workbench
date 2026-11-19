@@ -42,9 +42,7 @@ export const lifecycle = {
     },
     cleanup() {
       simply.destroy(this.runtime.listEffect);
-      for (const signal of this.runtime.files.effects.slice(1)) {
-        simply.destroy(signal);
-      }
+      this.runtime.files.destroy();
     },
     captureState() {
       this.runtime.appState.set(

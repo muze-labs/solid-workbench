@@ -340,23 +340,14 @@ try {
     );
     const deck = owner.runtime.deck;
     const native = await deck.graph.write();
-    const original = owner.api[name];
+    const original = owner.transformers[name];
     const fragment = row.fragment;
     const frame = owner.container.querySelector('[data-kind="text"] iframe');
     const editor = frame?.contentWindow?.muzeSolidViewerApp?.runtime.cobaltEditor;
     const draft = JSON.stringify(editor.getValue());
-    async function waitFor(test) {
-      for (let attempt = 0; attempt < 50; attempt += 1) {
-        if (test()) {
-          return;
-        }
-        await new Promise((resolve) => setTimeout(resolve, 20));
-      }
-      throw new Error('Unexpected Presenter thumbnail: ' + element.innerHTML);
-    }
     const reconstruct = (body) => Function('return (' + body + ')')();
     try {
-      owner.api[name] = reconstruct(
+      owner.transformers[name] = reconstruct(
         source.replace(
           'return next(context);',
           'context.value.innerHTML = "<mark>" + context.value.innerHTML + "</mark>";\n' +
@@ -365,13 +356,16 @@ try {
       );
       const previewText = 'Replacement thumbnail';
       row.fragment = { text: previewText, annotations: [] };
-      await waitFor(
-        () => element.querySelector('mark')?.textContent === previewText
-      );
-      owner.api[name] = original;
+      await owner.binding.whenIdle();
+      if (element.querySelector('mark')?.textContent !== previewText) {
+        throw new Error('Replacement did not render the current thumbnail.');
+      }
+      owner.transformers[name] = original;
       row.fragment = fragment;
-      await waitFor(() => !element.querySelector('mark') &&
-        element.textContent === fragment.text);
+      await owner.binding.whenIdle();
+      if (element.querySelector('mark') || element.textContent !== fragment.text) {
+        throw new Error('Restoring the transformer did not restore the thumbnail.');
+      }
       if (
         owner.runtime.deck !== deck || (await deck.graph.write()) !== native ||
         frame !== owner.container.querySelector('[data-kind="text"] iframe') ||
@@ -381,7 +375,7 @@ try {
       }
     }
     finally {
-      owner.api[name] = original;
+      owner.transformers[name] = original;
       row.fragment = fragment;
     }
   });

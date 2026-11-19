@@ -20,7 +20,10 @@ import {
 import { prefixes } from '@muze-labs/solid-app-data';
 import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import {
   profileLabel,
   readProfile,
@@ -92,8 +95,8 @@ const definition = {
   },
   runtime: { host, selected: null }
 };
-const ui = simply.app(definition);
-exposeDefinition(ui, definition, { ...profileSources, ...sources });
+const ui = simply.app(prepareDefinition(definition));
+exposeDefinition(ui, { ...profileSources, ...sources });
 ui.definition.modules = {
   collection: {
     sourceUrl: collectionSource,

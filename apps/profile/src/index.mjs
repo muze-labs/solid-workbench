@@ -29,7 +29,10 @@ import {
   lifecycle,
   muzeSolidProfileCapability
 } from './features.mjs';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import sources from './features.mjs?entries';
 const host = shell({
   acceptLaunch: true,
@@ -66,8 +69,8 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = simply.app(definition);
-exposeDefinition(ui, definition, { ...profileSources, ...sources });
+const ui = simply.app(prepareDefinition(definition));
+exposeDefinition(ui, { ...profileSources, ...sources });
 await ui.actions.initialize();
 ui.definition.instances = {
   account: host.view

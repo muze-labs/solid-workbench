@@ -19,7 +19,10 @@ import {
   solidListDetails,
   solidToolbar
 } from '@muze-labs/solid-design';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import { editPreferencesCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { PreferenceDrafts } from '@muze-labs/solid-preferences/drafts.mjs';
 import { PreferenceState } from '@muze-labs/solid-preferences/state.mjs';
@@ -106,8 +109,8 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = simply.app(definition);
-exposeDefinition(ui, definition, sources);
+const ui = simply.app(prepareDefinition(definition));
+exposeDefinition(ui, sources);
 simply.installEvents(ui);
 host.onOpenPreferences = () => ui.actions.swb_selectSection('appearance');
 await ui.actions.swb_initializePreferences();

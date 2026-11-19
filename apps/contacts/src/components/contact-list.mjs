@@ -13,9 +13,6 @@ export const contactList = {
         options: { search: '', recipientSearch: '', pickingRecipient: false }
       });
       const owner = this;
-      model.addEffect(function () {
-        return simply.effect(() => this.state.data);
-      });
       model.addEffect(function (input) {
         return simply.effect(() => {
           const options = this.state.options;

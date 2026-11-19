@@ -32,7 +32,10 @@ import {
   viewAppearance,
   viewPresentation
 } from '@muze-labs/solid-app-data/embedded-view.mjs';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import {
   muzeSolidViewer,
@@ -95,8 +98,8 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = simply.app(definition);
-exposeDefinition(ui, definition, sources);
+const ui = simply.app(prepareDefinition(definition));
+exposeDefinition(ui, sources);
 simply.installEvents(ui);
 await ui.actions.muzeSolidViewerInitialize();
 globalThis.muzeSolidViewerApp = ui;

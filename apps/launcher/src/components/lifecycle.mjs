@@ -130,14 +130,10 @@ export const lifecycle = {
       this.runtime.selection?.abort();
       this.runtime.workspace?.dispose();
       simply.destroy(this.runtime.launcherScreenEffect);
-      for (const signal of this.runtime.launcherScreens.effects.slice(1)) {
-        simply.destroy(signal);
-      }
+      this.runtime.launcherScreens.destroy();
       simply.destroy(this.runtime.shortcutEffect);
       simply.destroy(this.runtime.shortcutPreviewEffect);
-      for (const signal of this.runtime.shortcuts.effects.slice(1)) {
-        simply.destroy(signal);
-      }
+      this.runtime.shortcuts.destroy();
     }
   }
 };

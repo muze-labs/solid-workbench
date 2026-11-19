@@ -12,7 +12,7 @@
     "@muze-labs/jsfs-solid": "^0.1.1",
     "@muze-labs/metro-solid": "^0.1.0",
     "@muze-labs/oldm-turtle": "^0.4.5",
-    "@muze-labs/simplyflow": "^0.10.4",
+    "@muze-labs/simplyflow": "^0.10.6",
     "@muze-labs/simplyflow-events": "0.1.0",
     "@muze-labs/simplysolid": "^0.2.2",
     "@muze-labs/solid-workspace": "^0.2.2",

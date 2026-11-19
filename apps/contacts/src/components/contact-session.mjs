@@ -120,9 +120,7 @@ export const contactSession = {
     cleanup() {
       this.runtime.widget.destroy();
       simply.destroy(this.runtime.emptyListEffect);
-      for (const signal of this.data.peopleModel.effects.slice(1)) {
-        simply.destroy(signal);
-      }
+      this.data.peopleModel.destroy();
     }
   }
 };

@@ -2,10 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { actions } from '@muze-labs/simplyflow/actions';
 import { installEvents } from '../packages/simplyflow-events/src/index.mjs';
-import { exposeDefinition } from '../packages/solid-app-data/src/definition.mjs';
+import '../packages/solid-app-data/src/simply-runtime.mjs';
+import { prepareDefinition } from '../packages/solid-app-data/src/definition.mjs';
 
 function createApp(events, definitions = {}, onError) {
   const window = new EventTarget();
+  const definition = prepareDefinition({ events });
   const app = {
     container: { ownerDocument: { defaultView: window } },
     events,
@@ -14,7 +16,10 @@ function createApp(events, definitions = {}, onError) {
     onError,
     destroyed: false,
     destroy() {
-      this.destroyed = true;
+      if (!this.destroyed) {
+        this.destroyed = true;
+        definition.destroy.call(this);
+      }
     }
   };
   app.actions = actions({ app, actions: definitions });
@@ -244,7 +249,6 @@ test('suite cleanup errors still destroy native bindings and SimplyFlow resource
       throw failure;
     }
   });
-  exposeDefinition(app, {}, {});
   installEvents(app).start();
   assert.throws(() => app.destroy(), (error) => error === failure);
   assert.equal(app.destroyed, true);
