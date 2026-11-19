@@ -1,5 +1,16 @@
 # Solid Workbench project context
 
+## CYC295 SimplyFlow release adoption, 2026-11-19
+
+The maintainer confirms adopting SimplyFlow 0.10.6 across Workbench after
+publication. CYC295 is Active on
+`spiral/CYC-20261119-QG24H-295-simplyflow-adoption` from `d1a6c8e`.
+SRC296 records scope and IMP297 describes the replacement of model and app
+lifecycle workarounds, the Presenter transformer bridge and row cache, and
+binding waits in Presenter and Launcher. EVD298 records verification and
+download measurements. Runtime template editing is outside the cycle.
+Human acceptance is pending. Preserve the unrelated vision document.
+
 ## CYC290 runtime globals and replaceable functions, 2026-11-19
 
 The maintainer confirms the four runtime globals for apps and shared modules
