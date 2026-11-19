@@ -70,7 +70,7 @@ export const muzeSolidLauncherCatalog = {
     async muzeSolidCatalogInfoBack() {
       const id = this.runtime.catalogInfo;
       this.actions.muzeSolidCatalogPanels('apps');
-      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await this.binding.whenIdle();
       const links = this.container.querySelectorAll(
         '[data-simply-command="muzeSolidCatalogInfo"]'
       );
@@ -153,7 +153,7 @@ export const muzeSolidLauncherCatalog = {
       }
     },
     async muzeSolidCatalogFocusDetails(heading = 'h3') {
-      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await this.binding.whenIdle();
       const pane = this.container.querySelector('.muze-solid-catalog-details');
       pane.scrollIntoView({ block: 'nearest' });
       pane.querySelector(heading).focus({ preventScroll: true });
@@ -266,9 +266,6 @@ export const muzeSolidLauncherCatalog = {
       const list = simply.model({
         data: [],
         options: { search: '', category: this.runtime.catalogCategory || 'all' }
-      });
-      list.addEffect(function () {
-        return simply.effect(() => this.state.data);
       });
       list.addEffect(function (input) {
         return simply.effect(() =>

@@ -241,9 +241,6 @@ export const muzeSolidNotebook = {
       this.actions.muzeSolidNotebookInitializeTools();
       for (const key of ['blocks', 'documentsList']) {
         const projection = simply.model({ data: [], options: {} });
-        projection.addEffect(function () {
-          return simply.effect(() => this.state.data);
-        });
         projection.addEffect(function (input) {
           return simply.effect(() =>
             [...input.current].sort((a, b) =>

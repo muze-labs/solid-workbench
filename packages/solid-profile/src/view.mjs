@@ -1,5 +1,8 @@
 import '@muze-labs/solid-app-data/simply-runtime.mjs';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import { fields, readProfile, profileLabel } from './index.mjs';
 import { profileDetails, profileEditing } from './features.mjs';
 import sources from './features.mjs?entries';
@@ -50,8 +53,8 @@ export function profileView(
       runtime: {},
       ...overrides
     };
-    view = simply.app(definition);
-    exposeDefinition(view, definition, sources);
+    view = simply.app(prepareDefinition(definition));
+    exposeDefinition(view, sources);
   }
   view.api.profile = { ...profileApi, onChange };
   view.runtime.profile = {

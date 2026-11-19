@@ -252,9 +252,7 @@ export async function checkFeatureSources(page, appName) {
       }
       finally {
         simply.destroy(app.runtime.emptyListEffect);
-        for (const signal of app.data.peopleModel.effects.slice(1)) {
-          simply.destroy(signal);
-        }
+        app.data.peopleModel.destroy();
         app.destroy();
         mount.remove();
       }

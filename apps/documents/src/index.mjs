@@ -6,7 +6,10 @@ import {
   solidToolbar,
   solidDropdown
 } from '@muze-labs/solid-design';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import {
   StateGraph,
   named,
@@ -130,8 +133,8 @@ const definition = {
   },
   runtime: { host, groups: new Map(), page: 1, zoom: 1, rotation: 0 }
 };
-const ui = simply.app(definition);
-exposeDefinition(ui, definition, sources);
+const ui = simply.app(prepareDefinition(definition));
+exposeDefinition(ui, sources);
 ui.definition.modules = {
   readerState: {
     sourceUrl: readerSource,

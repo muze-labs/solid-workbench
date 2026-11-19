@@ -209,31 +209,6 @@ export function installEvents(app) {
       return disposed;
     }
   };
-  const destroy = app.destroy.bind(app);
-  let destroying = false;
-  app.destroy = () => {
-    if (destroying || app.destroyed) {
-      return;
-    }
-    destroying = true;
-    const errors = [];
-    try {
-      controller.destroy();
-    }
-    catch (error) {
-      errors.push(error);
-    }
-    try {
-      destroy();
-    }
-    catch (error) {
-      errors.push(error);
-    }
-    finally {
-      destroying = false;
-    }
-    throwFailures(errors);
-  };
   installations.set(app, controller);
   app.eventBindings = controller;
   return controller;

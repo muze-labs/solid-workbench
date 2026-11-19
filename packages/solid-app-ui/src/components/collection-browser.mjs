@@ -49,9 +49,6 @@ export const muzeSolidCollectionBrowser = {
           data: [],
           options: { search: '', group: '' }
         });
-        projection.addEffect(function () {
-          return simply.effect(() => this.state.data);
-        });
         projection.addEffect(function (input) {
           return simply.effect(() => {
             const search = this.state.options.search.toLocaleLowerCase();
@@ -149,9 +146,6 @@ export const muzeSolidCollectionBrowser = {
       }
       if (!browser.groups) {
         const groups = simply.model({ data: [], options: {} });
-        groups.addEffect(function () {
-          return simply.effect(() => this.state.data);
-        });
         groups.addEffect(function (input) {
           return simply.effect(() =>
             input.current

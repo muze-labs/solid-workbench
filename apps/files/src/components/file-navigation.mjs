@@ -259,9 +259,6 @@ export const fileNavigation = {
         data: [],
         options: { picker: false, pickerMode: 'resource' }
       });
-      list.addEffect(function () {
-        return simply.effect(() => this.state.data);
-      });
       list.addEffect(function (input) {
         return simply.effect(() => {
           const picking = this.state.options.picker;

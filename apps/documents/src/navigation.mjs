@@ -189,9 +189,6 @@ export const muzeDocumentsNavigation = {
     async muzeDocumentsBookmarks() {
       if (!this.runtime.bookmarks) {
         const model = simply.model({ data: [], options: { document: '' } });
-        model.addEffect(function () {
-          return simply.effect(() => this.state.data);
-        });
         model.addEffect(function (input) {
           return simply.effect(() =>
             input.current.filter(

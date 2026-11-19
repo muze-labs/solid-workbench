@@ -1,5 +1,5 @@
 import { installEvents } from '@muze-labs/simplyflow-events';
-import { exposeDefinition } from '../packages/solid-app-data/src/definition.mjs';
+import { prepareDefinition } from '../packages/solid-app-data/src/definition.mjs';
 import { fileEditing } from '../apps/files/src/components/file-editing.mjs';
 import { fileNavigation } from '../apps/files/src/components/file-navigation.mjs';
 import { resourcePicker } from '../apps/files/src/components/resource-picker.mjs';
@@ -118,10 +118,11 @@ test('existing account listeners use current actions once and stop after cleanup
   const ownerDocument = new EventTarget();
   ownerDocument.defaultView = target;
   owner.container = { ownerDocument };
+  const definition = prepareDefinition({ events: owner.events });
   owner.destroy = () => {
     owner.destroyed = true;
+    definition.destroy.call(owner);
   };
-  exposeDefinition(owner, {}, {});
   installEvents(owner);
   owner.actions.initialize();
   const event = new Event('storage');

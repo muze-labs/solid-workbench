@@ -1291,9 +1291,6 @@ export const muzeDocuments = {
         data: [],
         options: { document: '', visible: [], scope: 'visible', search: '' }
       });
-      list.addEffect(function () {
-        return simply.effect(() => this.state.data);
-      });
       list.addEffect(simply.model.sort({ sortBy: 'page', direction: 'asc' }));
       list.addEffect(function (input) {
         return simply.effect(() =>
@@ -1312,9 +1309,6 @@ export const muzeDocuments = {
       });
       this.runtime.notes = list;
       const groups = simply.model({ data: [], options: { document: '' } });
-      groups.addEffect(function () {
-        return simply.effect(() => this.state.data);
-      });
       groups.addEffect(function (input) {
         return simply.effect(() =>
           input.current.filter(

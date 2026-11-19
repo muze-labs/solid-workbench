@@ -18,7 +18,10 @@ import { preferenceConsumer } from '@muze-labs/solid-preferences/consumer.mjs';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
 import { parseLaunchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import { ManagedApp } from '@muze-labs/solid-app-data/capabilities.mjs';
-import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
+import {
+  exposeDefinition,
+  prepareDefinition
+} from '@muze-labs/solid-app-data/definition.mjs';
 import {
   solidDialog,
   solidDropdown,
@@ -108,10 +111,9 @@ export function shell({
       solidDropdown,
       solidToast,
       muzeSolidUiAppToolbar,
-      account: {
-        ...account,
-        templates: { 'suite-account': templates.account }
-      },
+      account: templates.account === undefined
+        ? account
+        : { ...account, templates: { 'suite-account': templates.account } },
       sessionServices,
       sessionRecovery,
       accountLifecycle,
@@ -175,8 +177,8 @@ export function shell({
     runtime,
     ...overrides
   };
-  const view = simply.app(definition);
-  exposeDefinition(view, definition, {
+  const view = simply.app(prepareDefinition(definition));
+  exposeDefinition(view, {
     ...sources,
     ...accountOptions.sources,
     account: {

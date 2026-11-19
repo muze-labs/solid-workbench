@@ -4,15 +4,17 @@ Private Workbench workspace package. It extends the installed SimplyFlow app
 without changing SimplyFlow core, rendering content or introducing an event bus.
 It is not published or committed to a stable public API.
 
-Components declare named `events`; SimplyFlow composes them with app overrides.
-Install the extension after the suite's definition/cleanup adapter and before
-explicit initialization. Start when the app is ready to receive notifications:
+Components declare named `events`. Workbench's `prepareDefinition()` opts
+the maps and descriptors into SimplyFlow composition and supplies the app
+`destroy` hook. Install the extension after creating the app and start it
+when the app is ready to receive notifications.
 
 ```js
-import { app } from '@muze-labs/simplyflow/app';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import { prepareDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import { installEvents } from '@muze-labs/simplyflow-events';
 
-const view = app({
+const view = simply.app(prepareDefinition({
   container,
   events: {
     swbDocumentChanged: {
@@ -30,7 +32,7 @@ const view = app({
   },
   api: { documents },
   data: { title: '' }
-});
+}));
 installEvents(view);
 view.eventBindings.start();
 ```
@@ -74,8 +76,8 @@ function. Cleanup must finish synchronously and should not throw.
 - `stop()` disables forwarding before unsubscribing all active sources. It is
   idempotent; a later start reevaluates declarations/conditions.
 - `destroy()` permanently disposes the controller. Later activation is a no-op.
-  The extension wraps app destruction to dispose bindings before app cleanup.
-  Always destroy through `view.destroy()` to also release SimplyFlow resources.
+  The app's `destroy` hook calls this method. Use `view.destroy()` for full
+  app shutdown.
 
 Installation alone attaches no listeners. Installing again returns the same
 controller; installation after disposal/destruction is refused. Start-after-app-
@@ -87,9 +89,9 @@ Each notification resolves `view.actions[name]` at invocation. Action replacemen
 and restoration work in an existing instance; source metadata alone does not
 apply an override. Descriptors are copied at activation, so editing declarations
 requires stop/start. Component originals remain available through SimplyFlow's
-normal composition. Its recursive merge rules also apply to descriptors; an app
-override of `action` retains existing target/type fields. There is no special
-entry deletion syntax or live descriptor observer.
+normal composition. Workbench marks descriptors as mergeable, so overriding
+`action` preserves the existing target and type. To apply a changed
+declaration, stop the controller and start it again.
 
 Failed activation rolls back connections whose cleanup was returned. Stop and
 destroy attempt every cleanup even after a failure. Retained callbacks become
