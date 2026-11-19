@@ -20,6 +20,11 @@ Put app-owned code, markup, and styles in named entries in `simply.app()`, direc
 
 Editable code can use the context SimplyFlow supplies and call names available in public scope. A private module helper can stay private when it serves the implementation. If users need to change what the helper does, put that behavior in an editable entry. In particular, avoid making a replacement function depend on a private module closure that the IDE cannot recreate. Explicit libraries such as Metro and oldm provide callable APIs. Their source lies outside the app's editing boundary.
 
+The [Workbench roadmap](solid-apps-roadmap.md#foundations-to-maintain-in-every-app)
+defines the planned dependency contract for Metro, jaqt, oldm and SimplyFlow.
+App and module code and user-supplied replacements will call the same runtime
+globals without library imports in that code.
+
 ### Separate commands, actions, and data access
 
 Keep DOM access and UI feedback in commands. Put app behavior and state changes in actions that commands, shortcuts, and routes can reuse. Have actions call the data API for storage operations. Keep details such as HTTP requests and authentication behind the data API or the Solid workspace and transport libraries it uses. These roles can live in the same vertical slice. [SimplyCode architecture](https://github.com/SimplyEdit/simplycode/blob/ce16ec7f21bd97e3a6fb1ff04fd25e23f75fed8c/README.md#L10-L56)
@@ -34,7 +39,7 @@ A component can carry sample data for its templates and tests for its commands a
 
 ### Register components and wire them into views explicitly
 
-A newly authored or imported slice is a component dataset. Include it in `app.components`. If an existing template or view should offer the new feature, edit that template or view to include it. A component may provide a `start` hook that uses JavaScript's `import()` to load a library when needed.
+A newly authored or imported slice is a component dataset. Include it in `app.components`. If an existing template or view should offer the new feature, edit that template or view to include it. A component may provide a `start` hook to load an optional dependency outside the planned Workbench globals.
 
 ### Load overrides last
 

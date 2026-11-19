@@ -1,5 +1,20 @@
 # Solid Workbench project context
 
+## CYC290 runtime globals and replaceable functions, 2026-11-19
+
+The maintainer confirms the four runtime globals for apps and shared modules
+and asks to start the cycle after the roadmap review. CYC290 is Active on
+`spiral/CYC-20261119-QG24H-290-runtime-globals` from `30c246a`. SRC291 records
+the direction. IMP292 and EVD293 record the global migration, the live
+Contacts search and data-helper proof, and the remaining suite-wide function
+replacement work. Preserve the unrelated untracked vision document.
+
+The maintainer added two proofs. Launcher resolves its current group reader
+when checking a move, and Presenter's thumbnail transformer receives the live
+app API through a binding bridge. Both focused Chrome scenarios pass.
+The maintainer approved separate scoping for SimplyFlow's app context and
+live named-transformer lookup in the lifecycle and composition design.
+
 ## CYC266 accepted for delivery, 2026-11-17
 
 The maintainer says “accepted”. ACC271 accepts implementation

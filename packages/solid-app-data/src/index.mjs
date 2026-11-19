@@ -1,18 +1,13 @@
+import './metro-runtime.mjs';
 import { httpUrl, documentUrl } from './url.mjs';
 export { httpUrl, documentUrl } from './url.mjs';
-import oldm from './oldm.mjs';
 import { sameGraph } from './state-rdf.mjs';
-import { oidcStore } from '@muze-nl/metro-oidc';
-import { client as metroClient } from '@muze-nl/metro-core';
-import { isExpired } from '@muze-nl/metro-oauth2/oauth2';
 import {
   authorizationTransport,
   refreshAuthorizationUrl
 } from './authorization.mjs';
-import { tokenStore } from '@muze-nl/metro-oauth2/tokenstore';
-import { solidApi } from '@muze-labs/metro-solid';
 import { createSolidMetroClient, authorizePopup } from '@muze-labs/jsfs-solid';
-export { oldm };
+export { default as oldm } from './oldm.mjs';
 export { SolidAdapter, createSolidMetroClient } from '@muze-labs/jsfs-solid';
 export const prefixes = {
   vcard: 'http://www.w3.org/2006/vcard/ns#',
@@ -157,7 +152,7 @@ export function logoutAccount(webId, issuer) {
     return;
   }
   const account = issuer + '|' + webId;
-  const oauth = tokenStore(account);
+  const oauth = metro.tokenStore(account);
   for (const name of [
     'access_token',
     'refresh_token',
@@ -167,7 +162,7 @@ export function logoutAccount(webId, issuer) {
     oauth.tokens.delete(name);
   }
   oauth.state.delete();
-  const identity = oidcStore(account);
+  const identity = metro.oidcStore(account);
   for (const name of ['id_token', 'id_token_claims', 'pending_nonce']) {
     identity.set(name, null);
   }
@@ -196,7 +191,7 @@ export async function connectSession(
     }
   }
   requireConnected();
-  const discovery = solidApi(webId);
+  const discovery = metro.solidApi(webId);
   const profile = await discovery.discoverWebId(webId);
   localStorage.setItem('solid-apps.issuer:' + webId, profile.issuer || '');
   let authPopup = popup;
@@ -208,7 +203,7 @@ export async function connectSession(
   let cancellationGeneration = 0;
   const base = profile.storage[0] || documentUrl(webId);
   const account = profile.issuer + '|' + webId;
-  const oauth = tokenStore(account);
+  const oauth = metro.tokenStore(account);
   function signInRequired() {
     const error = new Error(
       'solid-app-data: Sign in again to continue. Your edits are retained.'
@@ -281,7 +276,7 @@ export async function connectSession(
     return error;
   }
   function sessionClient(forceAuthorization = false) {
-    return metroClient(base).with(async (request) => {
+    return metro.client(base).with(async (request) => {
       const generation = cancellationGeneration;
       function requireCurrentAttempt() {
         requireActive();
@@ -295,7 +290,9 @@ export async function connectSession(
       const transport = options.client.with(async (outgoing, next) => {
         requireCurrentAttempt();
         const response = await next(outgoing);
-        const metadata = oidcStore(profile.issuer).get('openid_configuration');
+        const metadata = metro
+          .oidcStore(profile.issuer)
+          .get('openid_configuration');
         if (outgoing.url === metadata?.token_endpoint) {
           requireCurrentAttempt();
         }
@@ -357,7 +354,7 @@ export async function connectSession(
     storage: profile.storage,
     issuer: profile.issuer,
     client,
-    solid: solidApi(client),
+    solid: metro.solidApi(client),
     preferencesUrl: idOf(
       many(valueAt(profile.profile, prefixes.pim + 'preferencesFile'))[0]
     ),
@@ -368,7 +365,7 @@ export async function connectSession(
     },
     get hasUsableAccessToken() {
       const token = oauth.tokens.get('access_token');
-      return Boolean(token && !isExpired(token));
+      return Boolean(token && !metro.isExpired(token));
     },
     get disconnected() {
       return localStorage.getItem(disconnectKey) === 'true';

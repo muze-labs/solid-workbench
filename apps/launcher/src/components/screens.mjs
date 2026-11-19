@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 const container = function () {
   return this.container;
 };
@@ -119,15 +121,14 @@ export const launcherScreens = {
     },
     muzeSolidLauncherInitializeScreens() {
       const owner = this;
-      const screens = this.api.model({ data: [] });
+      const screens = simply.model({ data: [] });
       screens.addEffect(function () {
-        return owner.api.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
       screens.addEffect(function (input) {
-        return owner.api.effect(() => {
+        return simply.effect(() => {
           const shortcuts = owner.runtime.shortcuts.view.current;
-          const descriptions = owner.api
-            .from(input.current)
+          const descriptions = jaqt.from(input.current)
             .orderBy({ order: owner.actions.swbCompareShortcutOrder })
             .toArray();
           const known = new Set(descriptions.map((group) => group.id));
@@ -147,8 +148,7 @@ export const launcherScreens = {
               'aria-label': 'Screen ' + (index + 1),
               class: 'muze-solid-launcher-screen'
             },
-            shortcuts: owner.api
-              .from(shortcuts)
+            shortcuts: jaqt.from(shortcuts)
               .where((row) => row.group === group.id)
               .toArray(),
             endAttributes: {
@@ -158,7 +158,7 @@ export const launcherScreens = {
         });
       });
       this.runtime.launcherScreens = screens;
-      this.runtime.launcherScreenEffect = this.api.effect(() => {
+      this.runtime.launcherScreenEffect = simply.effect(() => {
         this.data.muzeSolidLauncherScreens = screens.view.current;
         cancelAnimationFrame(this.runtime.launcherScreenLayout);
         this.runtime.launcherScreenLayout = requestAnimationFrame(() => {
@@ -178,10 +178,9 @@ export const launcherScreens = {
               .concat(subject.a || [])
               .includes(this.api.prefixes.schema + 'SoftwareApplication')
           )
-          .map(this.api.launcherGroups.shortcutGroup)
+          .map((subject) => this.api.launcherGroups.shortcutGroup(subject))
       );
-      const groups = this.api
-        .from(subjects)
+      const groups = jaqt.from(subjects)
         .select(this.api.launcherGroups.groupDescription)
         .where(Boolean)
         .orderBy({ order: this.actions.swbCompareShortcutOrder })

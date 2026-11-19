@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import template from '../sharing.html' with { type: 'text' };
 import styles from './file-sharing.css' with { type: 'text' };
 
@@ -37,7 +38,7 @@ export const swbFileSharing = {
         throw new Error('files: Open Files from Workbench to choose a recipient.');
       }
       const resource = this.actions.inside(url);
-      const entry = this.api.from(this.runtime.files.state.data)
+      const entry = jaqt.from(this.runtime.files.state.data)
         .where({ url: resource }).toArray()[0];
       if (!entry || entry.deleted) {
         throw new Error('files: Choose a resource from this folder.');

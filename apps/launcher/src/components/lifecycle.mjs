@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 export const lifecycle = {
   events: {
     swbWorkspaceOnline: {
@@ -128,14 +129,14 @@ export const lifecycle = {
       clearTimeout(this.runtime.settingsSyncTimer);
       this.runtime.selection?.abort();
       this.runtime.workspace?.dispose();
-      this.api.destroy(this.runtime.launcherScreenEffect);
+      simply.destroy(this.runtime.launcherScreenEffect);
       for (const signal of this.runtime.launcherScreens.effects.slice(1)) {
-        this.api.destroy(signal);
+        simply.destroy(signal);
       }
-      this.api.destroy(this.runtime.shortcutEffect);
-      this.api.destroy(this.runtime.shortcutPreviewEffect);
+      simply.destroy(this.runtime.shortcutEffect);
+      simply.destroy(this.runtime.shortcutPreviewEffect);
       for (const signal of this.runtime.shortcuts.effects.slice(1)) {
-        this.api.destroy(signal);
+        simply.destroy(signal);
       }
     }
   }

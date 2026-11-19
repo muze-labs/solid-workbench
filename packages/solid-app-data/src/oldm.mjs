@@ -1,5 +1,6 @@
 /** The RDF backend selected by this application's build and Node tests. */
 import * as coreModule from '@muze-nl/oldm-core';
+import { relativeIRI, turtlePrefixedIRI } from '@muze-nl/oldm-core/iri';
 import {
   turtleParser,
   turtleWriter,
@@ -8,8 +9,13 @@ import {
 
 const { default: createContext, ...core } = coreModule;
 
-export default {
+const oldm = {
   ...core,
+  relativeIRI,
+  turtlePrefixedIRI,
+  turtleParser,
+  turtleWriter,
+  turtlePatchWriter,
   context({
     parser = turtleParser,
     writer = turtleWriter,
@@ -19,3 +25,6 @@ export default {
     return createContext({ ...options, parser, writer, patchWriter });
   }
 };
+
+globalThis.oldm = oldm;
+export default oldm;

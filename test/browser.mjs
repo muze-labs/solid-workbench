@@ -11,7 +11,9 @@ import {
   checkCurrentActions,
   checkRetainedProfileDraft
 } from './support/action-dispatch.mjs';
-import { checkFeatureSources } from './support/features.mjs';
+import {
+  checkFeatureSources, checkLiveContactFunctions
+} from './support/features.mjs';
 import { spawn } from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import * as http from 'node:http';
@@ -856,6 +858,7 @@ try {
     ).includes('Unsaved workspace draft')
   );
   await checkRetainedProfileDraft(page);
+  await checkLiveContactFunctions(page);
   await submit('.swb-profile-card form', {
     name: 'Edited contact',
     email: 'first@example.org\nsecond@example.org'

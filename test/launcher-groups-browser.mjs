@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile, writeFile } from 'node:fs/promises';
+import { parseAst } from 'rollup/parseAst';
 import { startChrome } from './support/chrome.mjs';
 
 let origin;
 let authoringRequests = 0;
+let allowAuthoring = false;
 let remoteApps = '<#root> <urn:unrelated> "preserve".';
 let remoteVersion = 1;
 const folders = new Set();
@@ -12,8 +14,10 @@ const server = createServer(async (request, response) => {
   const url = new URL(request.url, origin);
   if (url.pathname.startsWith('/assets/authoring/')) {
     authoringRequests += 1;
-    response.writeHead(404).end('Optional authoring sources unavailable');
-    return;
+    if (!allowAuthoring) {
+      response.writeHead(404).end('Optional authoring sources unavailable');
+      return;
+    }
   }
 
   response.setHeader('Cache-Control', 'no-store');
@@ -209,6 +213,66 @@ try {
   await wait(
     'document.querySelector("[data-simply-command=muzeSolidLauncherPreviousScreen]").hidden && document.querySelector("[data-simply-command=muzeSolidLauncherNextScreen]").hidden'
   );
+  assert.equal(authoringRequests, 0, 'Normal use leaves authoring sources alone');
+  allowAuthoring = true;
+  const groupSource = await page.evaluate(async () => {
+    const { sourceUrl } = solidLauncher.ui.definition.modules.launcherGroups;
+    return (await import(sourceUrl)).default;
+  });
+  const reader = parseAst(groupSource).body.find(
+    (entry) => entry.declaration?.id?.name === 'shortcutGroup'
+  ).declaration;
+  const verifyGroupReplacement = async (source) => {
+    const app = solidLauncher.ui;
+    const groups = app.api.launcherGroups;
+    const assign = groups.setShortcutGroup.bind(groups);
+    const original = groups.shortcutGroup;
+    const subject = app.runtime.store.collection.get(app.data.shortcuts[0].id);
+    const previous = groups.shortcutGroup(subject);
+    const snapshot = await subject.graph.write();
+    const read = Function('return (' + source + ')')();
+    try {
+      groups.shortcutGroup = function (entry) {
+        if (read.call(this, entry) === previous) {
+          throw new Error('Membership change declined by replacement');
+        }
+      };
+      let message;
+      try {
+        assign(subject, new URL('#fixture-group', location.href).href);
+      }
+      catch (error) {
+        message = error.message;
+      }
+      const unchangedAfterRejection = (await subject.graph.write()) === snapshot;
+      groups.shortcutGroup = original;
+      assign(subject, previous);
+      return {
+        message,
+        unchangedAfterRejection,
+        restored: groups.shortcutGroup(subject) === previous,
+        unchangedAfterRestore: (await subject.graph.write()) === snapshot
+      };
+    }
+    finally {
+      groups.shortcutGroup = original;
+    }
+  };
+  assert.deepEqual(
+    await page.evaluate(
+      '() => (' + verifyGroupReplacement + ')(' +
+        JSON.stringify(groupSource.slice(reader.start, reader.end)) + ')'
+    ),
+    {
+      message: 'Membership change declined by replacement',
+      unchangedAfterRejection: true,
+      restored: true,
+      unchangedAfterRestore: true
+    }
+  );
+  allowAuthoring = false;
+  assert.equal(authoringRequests, 1);
+  console.log('PASS live Launcher group reader replacement and native RDF preservation');
   const floating = {};
   for (const mode of ['light', 'dark']) {
     floating[mode] = await evaluate(`(() => {
@@ -761,6 +825,7 @@ try {
   console.log(
     'PASS native drag scrolls down/up/right/left and cancellation saves no empty group'
   );
+
 }
 finally {
   await chrome?.close();

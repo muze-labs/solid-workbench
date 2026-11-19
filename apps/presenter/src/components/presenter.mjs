@@ -1,6 +1,5 @@
-import { batch, untracked } from '@muze-labs/simplyflow/state';
-import { render as renderCobalt } from '@muze-labs/cobalt-rich-text-note';
-import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import {
   solidToolbar,
   solidDialog
@@ -11,10 +10,10 @@ import styles from './presenter.css' with { type: 'text' };
 export const muzeSolidPresenter = {
   components: { solidToolbar, solidDialog },
   transformers: {
-    muzeSolidPresenterRichText(context, next) {
+    muzeSolidPresenterRichText(context, next, api) {
       context.value = {
-        innerHTML: renderCobalt(
-          validateFragment(context.value || { text: '', annotations: [] })
+        innerHTML: api.renderCobalt(
+          api.validateFragment(context.value || { text: '', annotations: [] })
         )
       };
       return next(context);
@@ -253,7 +252,7 @@ export const muzeSolidPresenter = {
       const statusTool = host.view.data.muzeSolidUiAppTools.find(
         (tool) => tool.command === 'muzeSolidPresenterStatus'
       );
-      this.api.effect(() => {
+      simply.effect(() => {
         const overview =
           this.data.muzeSolidPresenterOverviewVisibility.hidden !== '';
         this.data.muzeSolidPresenterStatusDisplay = overview
@@ -287,21 +286,19 @@ export const muzeSolidPresenter = {
       });
       host.view.data.muzeSolidUiAppToolbar = { hidden: null };
       this.runtime.thumbnailUrls = new Map();
-      const owner = this;
-      const slides = this.api.model({ data: [], options: {} });
+      const slides = simply.model({ data: [], options: {} });
       slides.addEffect(function () {
-        return owner.api.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
       slides.addEffect(function (input) {
-        return owner.api.effect(() =>
-          owner.api
-            .from(input.current)
-            .orderBy({ position: owner.api.asc })
+        return simply.effect(() =>
+          jaqt.from(input.current)
+            .orderBy({ position: jaqt.asc })
             .toArray()
         );
       });
       this.runtime.slides = slides;
-      this.runtime.slideEffect = this.api.effect(() => {
+      this.runtime.slideEffect = simply.effect(() => {
         this.data.muzeSolidPresenterSlides = slides.view.current;
       });
       this.runtime.appState = new this.api.AppState();
@@ -488,8 +485,8 @@ export const muzeSolidPresenter = {
         document.title = deck.title.trim() || 'Untitled presentation';
       }
       // Stable projection rows let SimplyFlow move existing thumbnail nodes.
-      batch(() =>
-        untracked(() => {
+      simply.batch(() =>
+        simply.untracked(() => {
           const previous =
             this.runtime.slideProjection?.deck === deck
               ? this.runtime.slideProjection.rows
@@ -534,9 +531,8 @@ export const muzeSolidPresenter = {
         })
       );
       this.actions.muzeSolidPresenterThumbnails();
-      const ordered = this.api
-        .from(deck.slides())
-        .orderBy({ position: this.api.asc })
+      const ordered = jaqt.from(deck.slides())
+        .orderBy({ position: jaqt.asc })
         .toArray();
       this.data.muzeSolidPresenterPosition =
         ordered.findIndex((slide) => slide.id === this.runtime.selected) +
@@ -562,9 +558,8 @@ export const muzeSolidPresenter = {
       await this.actions.muzeSolidPresenterShowSlide();
     },
     async muzeSolidPresenterShowSlide() {
-      const slides = this.api
-        .from(this.runtime.deck.slides())
-        .orderBy({ position: this.api.asc })
+      const slides = jaqt.from(this.runtime.deck.slides())
+        .orderBy({ position: jaqt.asc })
         .toArray();
       const slide =
         slides.find((slide) => slide.id === this.runtime.selected) || slides[0];

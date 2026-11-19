@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/oldm.mjs';
 import DOMPurify from 'dompurify';
 import template from './documents.html?template' with { type: 'text' };
 import styles from './documents.css' with { type: 'text' };
@@ -845,7 +847,7 @@ export const muzeDocuments = {
               subject = currentSession.profile;
             }
             else if (cached) {
-              subject = this.api.oldm
+              subject = oldm
                 .context({})
                 .parse(cached, id, 'text/turtle')
                 .get(id);
@@ -1279,23 +1281,22 @@ export const muzeDocuments = {
       const host = this.runtime.host;
       this.runtime.generation = 0;
       this.eventBindings.start();
-      host.documentsApi = this.api;
       host.capabilityBroker = new this.api.WorkspaceBroker({
         resolveProvider: (capability) =>
           capability === editCapability
             ? host.preferences.noteBodyProvider?.url || location.href
             : undefined
       });
-      const list = this.api.model({
+      const list = simply.model({
         data: [],
         options: { document: '', visible: [], scope: 'visible', search: '' }
       });
       list.addEffect(function () {
-        return host.documentsApi.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
-      list.addEffect(this.api.sort({ sortBy: 'page', direction: 'asc' }));
+      list.addEffect(simply.model.sort({ sortBy: 'page', direction: 'asc' }));
       list.addEffect(function (input) {
-        return host.documentsApi.effect(() =>
+        return simply.effect(() =>
           input.current.filter(
             (note) =>
               note.document === this.state.options.document &&
@@ -1310,26 +1311,26 @@ export const muzeDocuments = {
         );
       });
       this.runtime.notes = list;
-      const groups = this.api.model({ data: [], options: { document: '' } });
+      const groups = simply.model({ data: [], options: { document: '' } });
       groups.addEffect(function () {
-        return host.documentsApi.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
       groups.addEffect(function (input) {
-        return host.documentsApi.effect(() =>
+        return simply.effect(() =>
           input.current.filter(
             (group) => group.document === this.state.options.document
           )
         );
       });
       this.runtime.groupList = groups;
-      this.runtime.panelToggleEffect = this.api.effect(() => {
+      this.runtime.panelToggleEffect = simply.effect(() => {
         this.data.muzeDocumentsNotesToggle = {
           'aria-expanded': String(
             this.data.muzeDocumentsNotesPanel.hidden === null
           )
         };
       });
-      this.runtime.notesEffect = this.api.effect(() => {
+      this.runtime.notesEffect = simply.effect(() => {
         this.data.muzeDocumentsNotes = list.view.current;
         this.data.muzeDocumentsNotesEmpty = list.view.current.length
           ? ''
@@ -2335,7 +2336,7 @@ export const muzeDocuments = {
         }
       }));
       // Publish the source and its viewport filter as one model change.
-      this.api.batch(() => {
+      simply.batch(() => {
         this.runtime.notes.state.options.document = this.runtime.document || '';
         this.runtime.notes.state.data = sources.flatMap((group) =>
           group.annotations().map((note) => ({

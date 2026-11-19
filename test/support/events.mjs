@@ -101,7 +101,7 @@ async function checkInBrowser(installEvents) {
       }
     }
   };
-  const view = owner.api.app({
+  const view = simply.app({
     container: element,
     components: { swbTestEvents: component },
     events: { swbTestCustom: { type: 'resource-changed' } },
@@ -154,7 +154,7 @@ async function checkInBrowser(installEvents) {
 
   const lateElement = document.createElement('section');
   document.body.append(lateElement);
-  const late = owner.api.app({ container: lateElement, events: {
+  const late = simply.app({ container: lateElement, events: {
     swbTestLate: { target: () => target, type: 'late', action: 'receive' }
   }, actions: { receive() { throw new Error('events-test: stale delivery'); } } });
   const lateBindings = installEvents(late);

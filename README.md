@@ -332,6 +332,34 @@ is no automatic loader or IDE UI. `size-report.json` reports full runtime graphs
 including auth callbacks and optional source-file costs separately. Source maps
 also remain separate; normal app startup does not fetch them.
 
+Workbench's runtime initializes four library globals. App code and replacement
+functions can call them directly.
+
+| Global | Available APIs |
+| --- | --- |
+| `metro` | `Client`, `client`, `response`, `trace`, `solidApi`, `oidcStore`, `tokenStore` and `isExpired`. Use the app's configured data APIs and session client for Solid requests. |
+| `jaqt` | The installed jaqt module API, including `from` and `asc`. |
+| `oldm` | OLDM core types, the Workbench `context()` with the Turtle backend, and the Turtle parser and writer helpers. |
+| `simply` | `app`, `model`, `model.sort`, `signal`, `effect`, `batch`, `untracked`, `destroy`, `installEvents` and `solid`. |
+
+The Workbench bootstrap modules initialize these globals from the installed npm
+packages. A replacement function can use `jaqt.from(rows)` or
+`simply.effect(callback)` directly. App-specific dependencies still come
+from the named actions and data APIs in its SimplyFlow context.
+
+Launcher exposes its group helpers at `this.api.launcherGroups`. Call
+`shortcutGroup` as a method of that object so it receives the group's
+predicate and RDF reader. An existing `setShortcutGroup` caller resolves
+the current reader before changing membership. The authored module is
+available through `definition.modules.launcherGroups`.
+
+Presenter's thumbnail transformer is available at
+`api.muzeSolidPresenterRichText`. It receives the SimplyFlow binding as
+`this` and takes `(context, next, api)`. The third argument supplies
+`renderCobalt` and `validateFragment`. SimplyFlow calls the current
+function on the next thumbnail render. The original source is available
+from the `muzeSolidPresenter` descriptor in `definition.sources`.
+
 HTML remains in authored `.html` files. `{{view:name:./feature.html}}` wires a named
 view at build time to an ordinary SimplyFlow field/template binding. The generated
 page contains the template markup for useful View Source. Runtime template entries

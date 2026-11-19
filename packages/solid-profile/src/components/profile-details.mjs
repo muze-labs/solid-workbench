@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import styles from './profile-details.css' with { type: 'text' };
 import editorTemplate from '../editor.html' with { type: 'text' };
 
@@ -7,14 +9,14 @@ export const profileDetails = {
   actions: {
     initializeProfileDetails() {
       const owner = this;
-      const list = this.api.profile.model({
+      const list = simply.model({
         data: this.api.profile.fields,
         options: { values: {} }
       });
       list.addEffect(function (input) {
-        return owner.api.profile.effect(() => {
+        return simply.effect(() => {
           const values = this.state.options.values;
-          return owner.api.profile
+          return jaqt
             .from(input.current)
             .where((field) => owner.actions.hasProfileDetail(field, values))
             .select((field) => owner.actions.profileDetail(field, values))
@@ -22,7 +24,7 @@ export const profileDetails = {
         });
       });
       this.runtime.profile.details = list;
-      this.runtime.profile.detailEffect = this.api.profile.effect(() => {
+      this.runtime.profile.detailEffect = simply.effect(() => {
         this.data.profile.details = list.view.current;
       });
     },
@@ -59,9 +61,9 @@ export const profileDetails = {
       });
     },
     cleanupProfile() {
-      this.api.profile.destroy(this.runtime.profile.detailEffect);
+      simply.destroy(this.runtime.profile.detailEffect);
       for (const signal of this.runtime.profile.details.effects.slice(1)) {
-        this.api.profile.destroy(signal);
+        simply.destroy(signal);
       }
     },
     hasProfileDetail(field, values) {

@@ -1,4 +1,4 @@
-import { untracked } from '@muze-labs/simplyflow/state';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import template from '../collection-browser.html?template' with { type: 'text' };
 import styles from '../collection-browser.css' with { type: 'text' };
 import { solidListDetails } from '@muze-labs/solid-design';
@@ -45,16 +45,15 @@ export const muzeSolidCollectionBrowser = {
           : 'list'
       };
       if (!browser.entries) {
-        const projection = this.api.model({
+        const projection = simply.model({
           data: [],
           options: { search: '', group: '' }
         });
-        const api = this.api;
         projection.addEffect(function () {
-          return api.effect(() => this.state.data);
+          return simply.effect(() => this.state.data);
         });
         projection.addEffect(function (input) {
-          return api.effect(() => {
+          return simply.effect(() => {
             const search = this.state.options.search.toLocaleLowerCase();
             const group = this.state.options.group;
             return input.current
@@ -68,7 +67,7 @@ export const muzeSolidCollectionBrowser = {
           });
         });
         browser.entries = projection;
-        this.api.effect(() => {
+        simply.effect(() => {
           this.data.muzeSolidCollectionManagementEntries =
             projection.view.current.filter(
               (entry) => entry.management !== false
@@ -127,7 +126,7 @@ export const muzeSolidCollectionBrowser = {
           const rows = this.api.muzeSolidCollectionBrowser.cards
             ? [creationEntry, ...entries]
             : [...entries, creationEntry];
-          untracked(() => {
+          simply.untracked(() => {
             const previous = browser.entryRows || new Map();
             const next = rows.map((row) => {
               const existing = previous.get(row.id);
@@ -149,20 +148,19 @@ export const muzeSolidCollectionBrowser = {
         });
       }
       if (!browser.groups) {
-        const groups = this.api.model({ data: [], options: {} });
-        const api = this.api;
+        const groups = simply.model({ data: [], options: {} });
         groups.addEffect(function () {
-          return api.effect(() => this.state.data);
+          return simply.effect(() => this.state.data);
         });
         groups.addEffect(function (input) {
-          return api.effect(() =>
+          return simply.effect(() =>
             input.current
               .filter((group) => !group.deleted)
               .sort((a, b) => a.title.localeCompare(b.title))
           );
         });
         browser.groups = groups;
-        this.api.effect(() => {
+        simply.effect(() => {
           const selected = browser.entries.state.options.group;
           const options = groups.view.current.map((group) => ({
             option: {

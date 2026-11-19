@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import {
   solidToolbar,
   solidDialog,
@@ -22,7 +23,6 @@ import {
   profileSources
 } from '@muze-labs/solid-profile/view.mjs';
 import { scalarPredicates, applyProfileEdits } from '@muze-labs/solid-profile';
-import { app } from '@muze-labs/simplyflow/app';
 import { editProfileCapability } from '@muze-labs/solid-app-data/capabilities.mjs';
 import {
   profileResource,
@@ -48,7 +48,6 @@ const definition = {
   },
   data: { profile: profileDefaults(), url: '' },
   api: {
-    app,
     editProfileCapability,
     writeDraft,
     readDraft,
@@ -67,7 +66,7 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, { ...profileSources, ...sources });
 await ui.actions.initialize();
 ui.definition.instances = {

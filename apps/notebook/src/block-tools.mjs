@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import template from './block-tools.html?template' with { type: 'text' };
 import styles from './block-tools.css' with { type: 'text' };
 import { solidToolbar } from '@muze-labs/solid-design';
@@ -102,7 +103,7 @@ export const muzeSolidNotebookBlockTools = {
       this.runtime.toolsDocked = false;
       this.runtime.toolsRows = [];
       this.runtime.toolsContext = '';
-      this.runtime.toolsDockControl = this.api.signal({
+      this.runtime.toolsDockControl = simply.signal({
         id: 'Dock',
         command: 'block:Dock',
         icon: { href: '../assets/feather-icons.svg#layout' },
@@ -110,7 +111,7 @@ export const muzeSolidNotebookBlockTools = {
           'data-muze-solid-action': 'muzeSolidNotebookBlockDock'
         }
       });
-      this.api.effect(() => {
+      simply.effect(() => {
         this.data.muzeSolidNotebookBusy.disabled;
         this.actions.muzeSolidNotebookScheduleTools();
       });
@@ -221,7 +222,7 @@ export const muzeSolidNotebookBlockTools = {
           this.runtime.toolsFocusRequested = false;
         }
         this.runtime.toolsDismissed = '';
-        this.runtime.toolsRows = this.api.signal(
+        this.runtime.toolsRows = simply.signal(
           definition
             ? definition.tools.map((tool) => ({
                 id: tool.id,

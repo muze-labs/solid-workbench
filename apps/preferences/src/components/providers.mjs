@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import {
   shortcutMetadataEndpoint
 } from '@muze-labs/solid-preferences/providers.mjs';
@@ -62,20 +64,19 @@ export const swbProviderPreferences = {
     },
     swb_initializeProviders() {
       const owner = this;
-      const list = this.api.model({ data: [], options: {} });
+      const list = simply.model({ data: [], options: {} });
       list.addEffect(function () {
-        return owner.api.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
       list.addEffect(function (input) {
-        return owner.api.effect(() =>
-          owner.api
-            .from(input.current)
+        return simply.effect(() =>
+          jaqt.from(input.current)
             .where(owner.actions.swb_isProvider)
             .toArray()
         );
       });
       this.runtime.providerModel = list;
-      this.runtime.providerEffect = this.api.effect(() => {
+      this.runtime.providerEffect = simply.effect(() => {
         this.runtime.providerRows = list.view.current;
         this.actions.swb_renderProvider();
       });
@@ -86,9 +87,9 @@ export const swbProviderPreferences = {
     swb_cleanupProviders() {
       this.runtime.providerGeneration =
         (this.runtime.providerGeneration || 0) + 1;
-      this.api.destroy(this.runtime.providerEffect);
+      simply.destroy(this.runtime.providerEffect);
       for (const effect of this.runtime.providerModel.effects.slice(1)) {
-        this.api.destroy(effect);
+        simply.destroy(effect);
       }
     },
     swb_providerLabel(value, key = this.actions.swb_providerKey()) {

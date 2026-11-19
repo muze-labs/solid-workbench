@@ -1,5 +1,5 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import { PortConnection } from '@muze-labs/solid-app-data/capabilities.mjs';
-import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   editProfileCapability,
   editPreferencesCapability,
@@ -7,7 +7,6 @@ import {
 } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { launchUrl } from '@muze-labs/solid-app-data/launch.mjs';
 import { loadDocument } from '@muze-labs/solid-app-data';
-import { app } from '@muze-labs/simplyflow/app';
 import { readProfile } from '@muze-labs/solid-profile';
 import {
   connectSession,
@@ -176,7 +175,7 @@ export function shell({
     runtime,
     ...overrides
   };
-  const view = app(definition);
+  const view = simply.app(definition);
   exposeDefinition(view, definition, {
     ...sources,
     ...accountOptions.sources,
@@ -187,7 +186,7 @@ export function shell({
       }
     }
   });
-  installEvents(view);
+  simply.installEvents(view);
   for (const name of [
     'manage',
     'message',

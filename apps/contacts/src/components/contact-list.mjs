@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import styles from './contact-list.css' with { type: 'text' };
 import sourceContactsList from '../list.html?template' with { type: 'text' };
 
@@ -6,36 +8,42 @@ export const contactList = {
   templates: { 'contacts-list': sourceContactsList },
   actions: {
     initializeList() {
-      const model = this.api.model({
+      const model = simply.model({
         data: [],
         options: { search: '', recipientSearch: '', pickingRecipient: false }
       });
       const owner = this;
       model.addEffect(function () {
-        return owner.api.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
       model.addEffect(function (input) {
-        return owner.api.effect(() => {
+        return simply.effect(() => {
           const options = this.state.options;
           const search = options.pickingRecipient
             ? options.recipientSearch
             : options.search;
-          return owner.api
-            .from(input.current)
-            .where((row) => owner.actions.matchesPerson(row, search))
-            .orderBy({ label: owner.actions.comparePeople })
-            .toArray();
+          return owner.actions.filterPeople(input.current, search);
         });
       });
       this.data.peopleModel = model;
-      this.runtime.emptyListEffect = this.api.effect(() => {
+      this.runtime.emptyListEffect = simply.effect(() => {
         this.data.empty = model.view.current.length ? '' : 'No contacts yet.';
       });
     },
+    filterPeople(rows, search) {
+      return jaqt
+        .from(rows)
+        .where((row) => this.actions.matchesPerson(row, search))
+        .orderBy({
+          label: (left, right) => this.actions.comparePeople(left, right)
+        })
+        .toArray();
+    },
     refreshPeople() {
-      this.data.peopleModel.state.data = this.api
-        .from(this.runtime.store.collection.list())
-        .where(this.api.isPerson)
+      const nodes = this.runtime.store.collection.list();
+      this.data.peopleModel.state.data = jaqt
+        .from(nodes)
+        .where((node) => this.api.isPerson(node))
         .select((node) => ({
           id: node.id,
           selection: {

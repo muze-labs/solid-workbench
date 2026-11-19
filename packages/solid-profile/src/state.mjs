@@ -1,4 +1,4 @@
-import { from } from '@muze-nl/jaqt';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import { fields } from './index.mjs';
 import {
   apps,
@@ -34,7 +34,7 @@ export function readDraft(state) {
   return {
     subject: state.read(apps + 'forResource', 'iri', draftNode),
     values: Object.fromEntries(
-      from(fields)
+      jaqt.from(fields)
         .select((field) => [
           field.name,
           state.read(inputPredicate(field), 'string', draftNode)

@@ -1,3 +1,4 @@
+import './oldm.mjs';
 import {
   workspace,
   resource,
@@ -6,7 +7,7 @@ import {
   local,
   collection
 } from '@muze-labs/solid-workspace';
-import { oldm, loadDocument, saveDocument } from './index.mjs';
+import { loadDocument, saveDocument } from './index.mjs';
 import { StateGraph, named, literal, xsd, sameGraph } from './state-rdf.mjs';
 import { httpUrl, documentUrl } from './url.mjs';
 import {

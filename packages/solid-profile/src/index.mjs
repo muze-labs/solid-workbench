@@ -1,5 +1,6 @@
-import { from } from '@muze-nl/jaqt';
-import { oldm, prefixes, valueAt, many, idOf } from '@muze-labs/solid-app-data';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
+import '@muze-labs/solid-app-data/oldm.mjs';
+import { prefixes, valueAt, many, idOf } from '@muze-labs/solid-app-data';
 const v = prefixes.vcard,
   f = prefixes.foaf,
   s = prefixes.schema;
@@ -61,7 +62,7 @@ function text(value, field, visited = new Set()) {
   const nested = valueAt(value, v + 'value') ?? valueAt(value, v + 'hasValue');
   if (nested !== undefined) {
     const path = new Set(visited).add(value);
-    return from(many(nested))
+    return jaqt.from(many(nested))
       .select((item) => text(item, field, path))
       .where(Boolean)
       .toArray()
@@ -81,10 +82,10 @@ function text(value, field, visited = new Set()) {
 }
 export function readProfile(subject) {
   return Object.fromEntries(
-    from(fields)
+    jaqt.from(fields)
       .select((field) => [
         field.name,
-        from(many(valueAt(subject, present(subject, field))))
+        jaqt.from(many(valueAt(subject, present(subject, field))))
           .select((value) => text(value, field))
           .where(Boolean)
           .toArray()

@@ -1,7 +1,4 @@
-import { app } from '@muze-labs/simplyflow/app';
-import { model } from '@muze-labs/simplyflow/model';
-import { effect, destroy } from '@muze-labs/simplyflow/state';
-import { from } from '@muze-nl/jaqt';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import { fields, readProfile, profileLabel } from './index.mjs';
 import { profileDetails, profileEditing } from './features.mjs';
@@ -12,11 +9,7 @@ export const profileSources = sources;
 export const profileApi = {
   fields,
   readProfile,
-  profileLabel,
-  model,
-  effect,
-  destroy,
-  from
+  profileLabel
 };
 export function profileDefaults(emptyText = 'No profile selected.') {
   return {
@@ -57,7 +50,7 @@ export function profileView(
       runtime: {},
       ...overrides
     };
-    view = app(definition);
+    view = simply.app(definition);
     exposeDefinition(view, definition, sources);
   }
   view.api.profile = { ...profileApi, onChange };

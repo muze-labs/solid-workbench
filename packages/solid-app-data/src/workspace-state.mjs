@@ -1,8 +1,8 @@
+import './jaqt-runtime.mjs';
 import {
   validateDirectory,
   resetDefaultWorkspace
 } from './workspace-directory.mjs';
-import { from } from '@muze-nl/jaqt';
 import { local } from '@muze-labs/solid-workspace';
 import { httpUrl, requireOk } from './index.mjs';
 import { StateGraph, apps, named } from './state-rdf.mjs';
@@ -241,7 +241,7 @@ export class WorkspaceState {
         this.snapshot.apps.map((entry) => [entry.id, entry.url])
       );
       this.keys = Object.fromEntries(
-        from(remote.apps)
+        jaqt.from(remote.apps)
           .where(
             (entry) =>
               previous.get(entry.id) === entry.url && this.keys[entry.id]
@@ -309,7 +309,7 @@ export class WorkspaceState {
       );
       this.snapshot = validateWorkspace(this.remoteSnapshot);
       this.keys = Object.fromEntries(
-        from(this.snapshot.apps)
+        jaqt.from(this.snapshot.apps)
           .where(
             (entry) =>
               previous.get(entry.id) === entry.url && this.keys[entry.id]

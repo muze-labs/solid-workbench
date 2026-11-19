@@ -1,9 +1,6 @@
+import '@muze-labs/solid-app-data/oldm.mjs';
 import {
-  oldm,
-  loadDocument,
-  createSolidMetroClient,
-  httpUrl,
-  prefixes
+  loadDocument, createSolidMetroClient, httpUrl, prefixes
 } from '@muze-labs/solid-app-data';
 import { local } from '@muze-labs/solid-workspace';
 import {

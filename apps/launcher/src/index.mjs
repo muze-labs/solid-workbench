@@ -1,6 +1,9 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import * as shortcutMetadata from './shortcut-metadata.mjs';
 import shortcutMetadataSource from './shortcut-metadata.mjs?source';
-import * as launcherGroups from './groups.mjs';
+import { launcherGroups } from './groups.mjs';
+import groupSource from './groups.mjs?source';
 import { AppCatalog } from './catalog.mjs';
 import catalogSource from './catalog.mjs?source';
 import { providerCapabilities } from '@muze-labs/solid-preferences/providers.mjs';
@@ -10,7 +13,6 @@ import backgroundSource from './backgrounds.mjs?source';
 import manifestSource from './manifests.mjs?source';
 import { readApplicationManifest } from './manifests.mjs';
 import * as directory from '@muze-labs/solid-app-data/workspace-directory.mjs';
-import { installEvents } from '@muze-labs/simplyflow-events';
 import {
   solidDialog,
   solidListDetails,
@@ -19,9 +21,6 @@ import {
 } from '@muze-labs/solid-design';
 import shortcutSource from './shortcuts.mjs?source';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
-import { model } from '@muze-labs/simplyflow/model';
-import { effect, destroy, batch } from '@muze-labs/simplyflow/state';
-import { from } from '@muze-nl/jaqt';
 import { shell } from '@muze-labs/solid-app-ui';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
 import { WorkspaceState } from '@muze-labs/solid-app-data/workspace-state.mjs';
@@ -53,7 +52,6 @@ import {
   anonymousPredicate,
   webShortcutPredicate
 } from './shortcuts.mjs';
-import { app } from '@muze-labs/simplyflow/app';
 import {
   workspaceControls,
   workspaceSettingsService,
@@ -143,11 +141,6 @@ const definition = {
     backgrounds,
     ...directory,
     readApplicationManifest,
-    app,
-    model,
-    effect,
-    destroy,
-    from,
     shell,
     WorkspaceBroker,
     WorkspaceState,
@@ -164,9 +157,8 @@ const definition = {
     httpUrl,
     launchUrl,
     parseLaunchUrl,
-    launcherGroups,
+    launcherGroups: { ...launcherGroups },
     shortcutMetadata,
-    batch,
     shortcutOrder,
     applyShortcutOrder,
     shortcutOrderPredicate,
@@ -180,10 +172,15 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, sources);
-installEvents(ui);
+simply.installEvents(ui);
 ui.definition.modules = {
+  launcherGroups: {
+    sourceUrl: groupSource,
+    origin: 'apps/launcher/src/groups.mjs',
+    dependencies: ['oldm', './shortcuts.mjs', '@muze-labs/solid-app-data']
+  },
   shortcutMetadata: {
     sourceUrl: shortcutMetadataSource,
     origin: 'apps/launcher/src/shortcut-metadata.mjs',

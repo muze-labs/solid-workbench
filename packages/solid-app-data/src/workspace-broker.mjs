@@ -1,5 +1,5 @@
+import './jaqt-runtime.mjs';
 import { launchUrl } from './launch.mjs';
-import { from } from '@muze-nl/jaqt';
 import {
   PortConnection,
   capabilityError,
@@ -73,7 +73,7 @@ export class WorkspaceBroker {
       ...this.extra,
       version: 2,
       launcher: serializable(this.launcherState),
-      apps: from([...this.instances.values()])
+      apps: jaqt.from([...this.instances.values()])
         .where((record) => !record.embedded)
         .select((record) => serializable(record.entry))
         .toArray()
@@ -292,7 +292,7 @@ export class WorkspaceBroker {
     if (selected) {
       return selected;
     }
-    const providers = from(this.embeddedProviders)
+    const providers = jaqt.from(this.embeddedProviders)
       .where({ capability })
       .toArray();
     if (providers.length !== 1) {
@@ -620,7 +620,7 @@ export class WorkspaceBroker {
       }
       throw error;
     }
-    const failures = from(results).where({ status: 'rejected' }).toArray();
+    const failures = jaqt.from(results).where({ status: 'rejected' }).toArray();
     if (failures.length) {
       throw new Error(
         failures.map((result) => result.reason.message).join('\n')

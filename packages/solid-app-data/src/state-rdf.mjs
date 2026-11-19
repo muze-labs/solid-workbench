@@ -1,7 +1,4 @@
-import { turtleParser } from '@muze-labs/oldm-turtle';
-import { prefixes as standardPrefixes } from '@muze-nl/oldm-core';
-import { relativeIRI, turtlePrefixedIRI } from '@muze-nl/oldm-core/iri';
-
+import './oldm.mjs';
 export const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 export const xsd = 'http://www.w3.org/2001/XMLSchema#';
 export const apps = 'https://vocab.muze.nl/solid-apps#';
@@ -62,7 +59,7 @@ export function sameTerm(left, right) {
 export class StateGraph {
   constructor(text = '', base = stateRoot) {
     try {
-      const parsed = turtleParser(text, base);
+      const parsed = oldm.turtleParser(text, base);
       this.quads = parsed.quads;
       this.prefixes = parsed.prefixes;
       this.base = base;
@@ -92,7 +89,7 @@ export class StateGraph {
   write() {
     this.assertWritable();
     const bindings = new Map(Object.entries(this.prefixes));
-    const defaults = { apps, state: stateScope, ...standardPrefixes };
+    const defaults = { apps, state: stateScope, ...oldm.prefixes };
     for (const [prefix, namespace] of Object.entries(defaults)) {
       if ([...bindings.values()].includes(namespace)) {
         continue;
@@ -107,8 +104,8 @@ export class StateGraph {
     const entries = [...bindings].sort((a, b) => b[1].length - a[1].length);
     const used = new Set();
     const resource = (id) => {
-      const reference = termText(named(relativeIRI(id, this.base)));
-      const prefixed = turtlePrefixedIRI(id, entries);
+      const reference = termText(named(oldm.relativeIRI(id, this.base)));
+      const prefixed = oldm.turtlePrefixedIRI(id, entries);
       if (prefixed !== null && prefixed.length < reference.length) {
         used.add(prefixed.slice(0, prefixed.indexOf(':')));
         return prefixed;

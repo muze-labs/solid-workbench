@@ -1,4 +1,4 @@
-import { signal, effect, destroy } from '@muze-labs/simplyflow/state';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import {
   edit as editCobalt,
   render as renderCobalt,
@@ -21,7 +21,6 @@ import {
   editTextCapability,
   textDraft
 } from '@muze-labs/solid-app-data/text-capabilities.mjs';
-import { app } from '@muze-labs/simplyflow/app';
 import { shell } from '@muze-labs/solid-app-ui';
 import {
   createSolidMetroClient,
@@ -34,7 +33,6 @@ import {
   viewPresentation
 } from '@muze-labs/solid-app-data/embedded-view.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
-import { installEvents } from '@muze-labs/simplyflow-events';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
 import {
   muzeSolidViewer,
@@ -72,9 +70,6 @@ const definition = {
     muzeSolidViewerStandalone: { hidden: host.task ? '' : null }
   },
   api: {
-    signal,
-    effect,
-    destroy,
     editCobalt,
     renderCobalt,
     createLinkAnnotationTag,
@@ -100,8 +95,8 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, sources);
-installEvents(ui);
+simply.installEvents(ui);
 await ui.actions.muzeSolidViewerInitialize();
 globalThis.muzeSolidViewerApp = ui;
