@@ -1,11 +1,13 @@
-import { oldm, prefixes, valueAt } from '@muze-labs/solid-app-data';
+import '@muze-labs/solid-app-data/oldm.mjs';
+import { prefixes, valueAt } from '@muze-labs/solid-app-data';
 import { shortcutOrder } from './shortcuts.mjs';
 
 export const groupType = prefixes.apps + 'LauncherGroup';
 export const groupPredicate = prefixes.apps + 'shortcutGroup';
 
 export function shortcutGroup(subject) {
-  const value = valueAt(subject, groupPredicate);
+  const groups = this ?? launcherGroups;
+  const value = groups.valueAt(subject, groups.groupPredicate);
   if (value === undefined) {
     return '';
   }
@@ -25,18 +27,29 @@ export function groupDescription(subject) {
 }
 
 export function setShortcutGroup(subject, id) {
-  shortcutGroup(subject);
+  const groups = this ?? launcherGroups;
+  groups.shortcutGroup(subject);
   if (id) {
     subject.graph.set(
       subject.id,
-      groupPredicate,
+      groups.groupPredicate,
       subject.graph.addNamedNode(id)
     );
   }
   else {
-    subject.graph.delete(subject.id, groupPredicate);
+    subject.graph.delete(subject.id, groups.groupPredicate);
   }
 }
+
+export const launcherGroups = {
+  groupType,
+  groupPredicate,
+  groupDescription,
+  newGroupData,
+  setShortcutGroup,
+  shortcutGroup,
+  valueAt
+};
 
 export function newGroupData(order) {
   return {

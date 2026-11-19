@@ -1,5 +1,4 @@
-import { app } from '@muze-labs/simplyflow/app';
-import { installEvents } from '@muze-labs/simplyflow-events';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import { PortConnection } from '@muze-labs/solid-app-data/capabilities.mjs';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import { applyPreferences } from '@muze-labs/solid-preferences';
@@ -19,8 +18,8 @@ const definition = {
   api: { PortConnection, applyPreferences },
   runtime: {}
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, sources);
-installEvents(ui);
+simply.installEvents(ui);
 ui.actions.swb_initializeAccount();
 globalThis.swbAccountApp = ui;

@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import { render as renderCobalt } from '@muze-labs/cobalt-rich-text-note';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 import {
@@ -5,11 +7,6 @@ import {
   requireOk,
   loadDocument
 } from '@muze-labs/solid-app-data';
-import { app } from '@muze-labs/simplyflow/app';
-import { model } from '@muze-labs/simplyflow/model';
-import { effect } from '@muze-labs/simplyflow/state';
-import { from, asc } from '@muze-nl/jaqt';
-import { installEvents } from '@muze-labs/simplyflow-events';
 import { shell } from '@muze-labs/solid-app-ui';
 import {
   EmbeddedView,
@@ -102,12 +99,10 @@ const definition = {
     DocumentSession,
     renderCobalt,
     validateFragment,
+    muzeSolidPresenterRichText:
+      muzeSolidPresenter.transformers.muzeSolidPresenterRichText,
     createSolidMetroClient,
     requireOk,
-    model,
-    effect,
-    from,
-    asc,
     DeckDocument,
     PresenterDecks,
     EmbeddedView,
@@ -126,7 +121,18 @@ const definition = {
   },
   runtime: { host, views: new Map(), selected: '', busy: false }
 };
-const ui = app(definition);
+let ui;
+ui = simply.app({
+  ...definition,
+  transformers: {
+    // SimplyFlow copies the transformer map into its binding. Keep this
+    // entry stable and resolve the current implementation from the live app.
+    muzeSolidPresenterRichText(context, next) {
+      const api = ui?.api ?? definition.api;
+      return api.muzeSolidPresenterRichText.call(this, context, next, api);
+    }
+  }
+});
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
   collectionFileOperation: {
@@ -149,11 +155,10 @@ ui.definition.modules = {
     origin: 'apps/presenter/src/deck-data.mjs',
     dependencies: [
       '@muze-labs/solid-app-data',
-      '@muze-labs/solid-workspace',
-      '@muze-nl/jaqt'
+      '@muze-labs/solid-workspace'
     ]
   }
 };
-installEvents(ui);
+simply.installEvents(ui);
 await ui.actions.muzeSolidPresenterInitialize();
 globalThis.muzeSolidPresenterApp = ui;

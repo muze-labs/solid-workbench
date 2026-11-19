@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import styles from './contact-session.css' with { type: 'text' };
 export const contactSession = {
   styles: { 'swb-contact-layout': styles },
@@ -118,9 +119,9 @@ export const contactSession = {
     },
     cleanup() {
       this.runtime.widget.destroy();
-      this.api.destroy(this.runtime.emptyListEffect);
+      simply.destroy(this.runtime.emptyListEffect);
       for (const signal of this.data.peopleModel.effects.slice(1)) {
-        this.api.destroy(signal);
+        simply.destroy(signal);
       }
     }
   }

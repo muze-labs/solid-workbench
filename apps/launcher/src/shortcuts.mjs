@@ -1,10 +1,5 @@
-import {
-  oldm,
-  prefixes,
-  valueAt,
-  idOf,
-  httpUrl
-} from '@muze-labs/solid-app-data';
+import '@muze-labs/solid-app-data/oldm.mjs';
+import { prefixes, valueAt, idOf, httpUrl } from '@muze-labs/solid-app-data';
 import {
   launchUrl,
   readLaunchContext

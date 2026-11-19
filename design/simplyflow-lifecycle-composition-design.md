@@ -114,6 +114,35 @@ Verify replacement and removal in an already-running instance, including
 long-lived callbacks, affected templates, current bound data, focus, and
 unaffected instances. Reconstructing a fresh app is insufficient evidence.
 
+### Scoped follow-up for named transformers
+
+The maintainer approved scoping this as a separate SimplyFlow change on
+19 November 2026. Workbench's Presenter proof uses a local bridge with
+the published packages. [CYC290](../.spiral/cycles/CYC-20261119-QG24H-290.md)
+
+App-owned transformers currently receive the binding as `this`. The
+binding copies the app's composed transformer map when it starts. The
+transformer therefore lacks the app's API, and changing an entry on the
+app's map leaves the mounted binding with its startup definition.
+
+Propose calling app-owned render and extract transformers with
+`(context, next, app)`, keeping the binding receiver. Standalone `bind()`
+continues to supply the existing two arguments. App bindings should resolve
+the current named definition at evaluation time. Keep the original
+definition available for restoration and preserve the existing precedence
+among component definitions, app definitions and built-ins.
+
+Verify an already-mounted field and editable input use a replacement on
+their next ordinary render or extract, then return to the original when
+the override is removed. Check function-form and object-form transformers,
+`next` chain order, built-in fallback, and two apps with the same
+transformer name. Confirm that the app argument belongs to the current
+binding and that standalone bindings still work. Automatic re-evaluation
+of unchanged values belongs to the broader lifecycle design.
+
+Once a published version provides the contract, rerun Presenter's
+authored Cobalt replacement test against it and retire the local bridge.
+
 ## 3. Component-instance isolation
 
 ### Observed boundary and proposal

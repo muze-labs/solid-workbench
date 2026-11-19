@@ -1,7 +1,4 @@
-import { app } from '@muze-labs/simplyflow/app';
-import { model } from '@muze-labs/simplyflow/model';
-import { effect, signal } from '@muze-labs/simplyflow/state';
-import { installEvents } from '@muze-labs/simplyflow-events';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import {
   edit as editCobalt,
   defaultRegistry,
@@ -90,9 +87,6 @@ const definition = {
   },
   api: {
     DocumentSession,
-    model,
-    effect,
-    signal,
     editCobalt,
     NotebookController,
     NotebookDocuments,
@@ -115,7 +109,7 @@ const definition = {
   },
   runtime: { host, busy: false }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
   collectionFileOperation: {
@@ -134,7 +128,7 @@ ui.definition.modules = {
     dependencies: ['@muze-labs/solid-workspace', '@muze-labs/solid-app-data']
   }
 };
-installEvents(ui);
+simply.installEvents(ui);
 globalThis.muzeSolidNotebookApp = ui;
 try {
   await ui.actions.muzeSolidNotebookInitialize();

@@ -1,5 +1,4 @@
-import { app } from '@muze-labs/simplyflow/app';
-import { installEvents } from '@muze-labs/simplyflow-events';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import { shell } from '@muze-labs/solid-app-ui';
 import { exposeDefinition } from '@muze-labs/solid-app-data/definition.mjs';
 import { PreferenceState } from '@muze-labs/solid-preferences/state.mjs';
@@ -20,8 +19,8 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, sources);
-installEvents(ui);
+simply.installEvents(ui);
 await ui.actions.muzeSolidFilesSettingsStart();
 globalThis.muzeSolidFilesSettingsApp = ui;

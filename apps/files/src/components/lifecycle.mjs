@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 export const lifecycle = {
   actions: {
     async initialize() {
@@ -40,9 +41,9 @@ export const lifecycle = {
       });
     },
     cleanup() {
-      this.api.destroy(this.runtime.listEffect);
+      simply.destroy(this.runtime.listEffect);
       for (const signal of this.runtime.files.effects.slice(1)) {
-        this.api.destroy(signal);
+        simply.destroy(signal);
       }
     },
     captureState() {

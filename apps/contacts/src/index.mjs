@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import { describeRecipient } from '@muze-labs/solid-app-data/recipient.mjs';
 import {
   selectRecipientCapability,
@@ -9,10 +11,6 @@ import {
   solidToolbar
 } from '@muze-labs/solid-design';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
-import { app } from '@muze-labs/simplyflow/app';
-import { model } from '@muze-labs/simplyflow/model';
-import { effect, destroy } from '@muze-labs/simplyflow/state';
-import { from } from '@muze-nl/jaqt';
 import { shell } from '@muze-labs/solid-app-ui';
 import {
   openCollection,
@@ -43,6 +41,7 @@ import {
   swbRecipientPicker
 } from './features.mjs';
 import sources from './features.mjs?entries';
+import collectionSource from '@muze-labs/solid-app-data/collection.mjs?source';
 
 const host = shell({
   templates: { account: accountTemplate }
@@ -74,14 +73,9 @@ const definition = {
     visibility: { hidden: '' }
   },
   api: {
-    app,
     selectRecipientCapability,
     recipientId,
     describeRecipient,
-    model,
-    effect,
-    destroy,
-    from,
     openCollection,
     recoverCollection,
     isPerson,
@@ -98,8 +92,15 @@ const definition = {
   },
   runtime: { host, selected: null }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, { ...profileSources, ...sources });
+ui.definition.modules = {
+  collection: {
+    sourceUrl: collectionSource,
+    origin: 'packages/solid-app-data/src/collection.mjs',
+    dependencies: ['oldm', 'simply.solid', '@muze-labs/solid-workspace']
+  }
+};
 await ui.actions.initialize();
 ui.definition.instances = {
   account: host.view

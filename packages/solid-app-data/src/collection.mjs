@@ -1,14 +1,15 @@
+import './simply-solid-runtime.mjs';
+import './oldm.mjs';
 import { local } from '@muze-labs/solid-workspace';
 import { StateGraph, sameTerm } from './state-rdf.mjs';
-import { simplySolid } from '@muze-labs/simplysolid';
-import { oldm, prefixes, valueAt } from './index.mjs';
+import { prefixes } from './index.mjs';
 
 // One native RDF resource with an IndexedDB replica; shared by both people apps.
 export async function openCollection(
   name,
   { scalarPredicates = [], indexedDBFactory, localKey = name } = {}
 ) {
-  const service = simplySolid({
+  const service = simply.solid({
     context: oldm.context({ prefixes }),
     localFirst: true,
     app: { slug: 'solid-apps' },
@@ -46,15 +47,18 @@ export async function openCollection(
   };
 }
 export function isPerson(node) {
-  return (
-    [
-      'http://www.w3.org/2006/vcard/ns#Individual',
-      'http://xmlns.com/foaf/0.1/Person',
-      'https://schema.org/Person',
-      'http://schema.org/Person'
-    ].some((type) => [].concat(node.a || []).includes(type)) ||
-    valueAt(node, prefixes.vcard + 'fn') !== undefined
-  );
+  const personTypes = [
+    'http://www.w3.org/2006/vcard/ns#Individual',
+    'http://xmlns.com/foaf/0.1/Person',
+    'https://schema.org/Person',
+    'http://schema.org/Person'
+  ];
+  if (personTypes.some((type) => [].concat(node.a || []).includes(type))) {
+    return true;
+  }
+  const fullName = 'http://www.w3.org/2006/vcard/ns#fn';
+  const nameProperty = node.graph?.propertyName(fullName) ?? fullName;
+  return node[nameProperty] !== undefined;
 }
 
 // Earlier releases used origin-wide collection keys with no recorded owner.

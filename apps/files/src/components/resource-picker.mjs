@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import styles from './resource-picker.css' with { type: 'text' };
 import sourceFilesPicker from '../picker.html' with { type: 'text' };
 import sourcePickerActions from '../picker-actions.html' with { type: 'text' };
@@ -184,8 +185,7 @@ export const resourcePicker = {
       }
     },
     selectFile(url) {
-      const selected = this.api
-        .from(this.data.entries)
+      const selected = jaqt.from(this.data.entries)
         .where({ url })
         .toArray()[0];
       if (!selected) {

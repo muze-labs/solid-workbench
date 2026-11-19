@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import styles from './file-navigation.css' with { type: 'text' };
 import sourceFilesLocation from '../location.html' with { type: 'text' };
 import sourceFilesNavigation from '../navigation.html' with { type: 'text' };
@@ -183,8 +185,7 @@ export const fileNavigation = {
       if (locationSheet.matches(':popover-open')) {
         locationSheet.hidePopover();
       }
-      this.runtime.files.state.data = this.api
-        .from(entries)
+      this.runtime.files.state.data = jaqt.from(entries)
         .select((entry) => ({
           url: entry.url,
           name: this.actions.decodeName(entry.url),
@@ -254,20 +255,19 @@ export const fileNavigation = {
 
     initializeFiles() {
       const owner = this;
-      const list = this.api.model({
+      const list = simply.model({
         data: [],
         options: { picker: false, pickerMode: 'resource' }
       });
       list.addEffect(function () {
-        return owner.api.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
       list.addEffect(function (input) {
-        return owner.api.effect(() => {
+        return simply.effect(() => {
           const picking = this.state.options.picker;
           const mode = this.state.options.pickerMode;
           const selected = this.state.options.selected;
-          return owner.api
-            .from(input.current)
+          return jaqt.from(input.current)
             .where(owner.actions.visibleFile)
             .select((entry) =>
               owner.actions.fileRow(entry, picking, selected, mode)
@@ -276,7 +276,7 @@ export const fileNavigation = {
         });
       });
       this.runtime.files = list;
-      this.runtime.listEffect = this.api.effect(() => {
+      this.runtime.listEffect = simply.effect(() => {
         this.data.entries = list.view.current;
         this.data.pickerEntries = list.view.current;
         this.data.empty =
@@ -317,8 +317,7 @@ export const fileNavigation = {
       };
     },
     resourceKind(url) {
-      const entry = this.api
-        .from(this.data.entries)
+      const entry = jaqt.from(this.data.entries)
         .where({ url })
         .toArray()[0];
       return entry?.type === 'folder'

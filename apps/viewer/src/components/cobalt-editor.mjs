@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import { render as renderCobalt } from '@muze-labs/cobalt-rich-text-note';
 import { validateFragment } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
 import template from '../cobalt-editor.html' with { type: 'text' };
@@ -153,7 +154,7 @@ export const muzeSolidCobaltEditor = {
       this.runtime.cobaltGraph = graph;
       this.runtime.cobaltEditor?.destroy();
       if (this.runtime.cobaltEffect) {
-        this.api.destroy(this.runtime.cobaltEffect);
+        simply.destroy(this.runtime.cobaltEffect);
       }
       this.data.muzeSolidViewerDisplay = { hidden: '' };
       this.data.muzeSolidCobaltVisibility = {
@@ -162,13 +163,13 @@ export const muzeSolidCobaltEditor = {
       };
       this.data.muzeSolidCobaltFragment = recovered;
       const surface = this.container.querySelector('.muze-solid-cobalt-edit');
-      const state = this.api.signal(this.api.validateFragment(recovered));
+      const state = simply.signal(this.api.validateFragment(recovered));
       this.runtime.cobaltEditor = this.api.editCobalt(surface, state);
       surface.inert = this.runtime.cobaltReadOnly;
       this.runtime.cobaltLastValue = JSON.stringify(fragment);
       // The published Cobalt API edits this reactive fragment directly. Defer
       // observation until an operation has updated both text and all ranges.
-      this.runtime.cobaltEffect = this.api.effect(() => {
+      this.runtime.cobaltEffect = simply.effect(() => {
         JSON.stringify(state);
         if (!this.runtime.cobaltChangeQueued) {
           this.runtime.cobaltChangeQueued = true;

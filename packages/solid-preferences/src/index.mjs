@@ -1,12 +1,7 @@
+import '@muze-labs/solid-app-data/oldm.mjs';
 import { workspaceSettingKeys } from '@muze-labs/solid-app-data/workspace-settings.mjs';
 import {
-  oldm,
-  idOf,
-  prefixes,
-  valueAt,
-  loadDocument,
-  saveDocument,
-  httpUrl
+  idOf, prefixes, valueAt, loadDocument, saveDocument, httpUrl
 } from '@muze-labs/solid-app-data';
 import {
   StateGraph,

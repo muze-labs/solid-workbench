@@ -1,4 +1,5 @@
-import { installEvents } from '@muze-labs/simplyflow-events';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import {
   EmbeddedView,
   viewResourceCapability
@@ -15,9 +16,6 @@ import {
 import fileDataSource from './data.mjs?source';
 import { listFolder, readDownload, uploadFiles } from './data.mjs';
 import accountTemplate from './account-view.html?template' with { type: 'text' };
-import { model } from '@muze-labs/simplyflow/model';
-import { effect, destroy } from '@muze-labs/simplyflow/state';
-import { from } from '@muze-nl/jaqt';
 import { AppState } from '@muze-labs/solid-app-data/app-state.mjs';
 import { apps } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { shell } from '@muze-labs/solid-app-ui';
@@ -32,7 +30,6 @@ import {
   markResourceDeleted,
   parentContainer
 } from '@muze-labs/solid-app-data/link-metadata.mjs';
-import { app } from '@muze-labs/simplyflow/app';
 import {
   muzeSolidFileDetails,
   swbFileSharing,
@@ -111,14 +108,9 @@ const definition = {
     EmbeddedView,
     WorkspaceBroker,
     viewResourceCapability,
-    app,
     listFolder,
     readDownload,
     uploadFiles,
-    model,
-    effect,
-    destroy,
-    from,
     AppState,
     apps,
     shell,
@@ -135,7 +127,7 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
   fileData: {
@@ -147,7 +139,7 @@ ui.definition.modules = {
     ]
   }
 };
-installEvents(ui);
+simply.installEvents(ui);
 await ui.actions.initialize();
 ui.actions.muzeSolidFilesInitializeDetails();
 ui.definition.instances = {

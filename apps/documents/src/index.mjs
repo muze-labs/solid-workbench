@@ -1,7 +1,4 @@
-import { app } from '@muze-labs/simplyflow/app';
-import { model, sort } from '@muze-labs/simplyflow/model';
-import { effect, batch } from '@muze-labs/simplyflow/state';
-import { installEvents } from '@muze-labs/simplyflow-events';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import { shell } from '@muze-labs/solid-app-ui';
 import {
   solidDialog,
@@ -17,11 +14,7 @@ import {
   literal
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import {
-  createSolidMetroClient,
-  loadDocument,
-  oldm,
-  valueAt,
-  many
+  createSolidMetroClient, loadDocument, valueAt, many
 } from '@muze-labs/solid-app-data';
 import { readProfile } from '@muze-labs/solid-profile';
 import { WorkspaceBroker } from '@muze-labs/solid-app-data/workspace-broker.mjs';
@@ -112,10 +105,6 @@ const definition = {
     muzeDocumentsItalic: { 'aria-pressed': 'false' }
   },
   api: {
-    model,
-    sort,
-    effect,
-    batch,
     StateGraph,
     xsd,
     validateFragment,
@@ -126,7 +115,6 @@ const definition = {
     literal,
     createSolidMetroClient,
     loadDocument,
-    oldm,
     valueAt,
     many,
     readProfile,
@@ -142,7 +130,7 @@ const definition = {
   },
   runtime: { host, groups: new Map(), page: 1, zoom: 1, rotation: 0 }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, sources);
 ui.definition.modules = {
   readerState: {
@@ -166,6 +154,6 @@ ui.definition.modules = {
     dependencies: ['@muze-labs/cobalt-rich-text-note']
   }
 };
-installEvents(ui);
+simply.installEvents(ui);
 await ui.actions.muzeDocumentsInitialize();
 globalThis.muzeSolidDocumentsApp = ui;

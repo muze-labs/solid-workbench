@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import template from './notebook.html?template' with { type: 'text' };
 import styles from './notebook.css' with { type: 'text' };
 import {
@@ -212,7 +213,7 @@ export const muzeSolidNotebook = {
       const status = host.view.data.muzeSolidUiAppTools.find(
         (tool) => tool.command === 'Status'
       );
-      this.api.effect(() => {
+      simply.effect(() => {
         const busy = this.data.muzeSolidNotebookBusy.disabled === '';
         const kind = busy ? 'busy' : this.data.muzeSolidNotebookStatusKind;
         const state = this.api.muzeSolidNotebookStatusIcons[kind];
@@ -239,13 +240,12 @@ export const muzeSolidNotebook = {
       this.runtime.editors = new Map();
       this.actions.muzeSolidNotebookInitializeTools();
       for (const key of ['blocks', 'documentsList']) {
-        const projection = this.api.model({ data: [], options: {} });
-        const api = this.api;
+        const projection = simply.model({ data: [], options: {} });
         projection.addEffect(function () {
-          return api.effect(() => this.state.data);
+          return simply.effect(() => this.state.data);
         });
         projection.addEffect(function (input) {
-          return api.effect(() =>
+          return simply.effect(() =>
             [...input.current].sort((a, b) =>
               key === 'blocks'
                 ? a.position - b.position
@@ -255,7 +255,7 @@ export const muzeSolidNotebook = {
         });
         this.runtime[key] = projection;
       }
-      this.api.effect(() => {
+      simply.effect(() => {
         this.data.muzeSolidNotebookBlocks = this.runtime.blocks.view.current;
         this.data.muzeSolidNotebookDocuments =
           this.runtime.documentsList.view.current;

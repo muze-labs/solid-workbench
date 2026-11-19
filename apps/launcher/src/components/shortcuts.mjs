@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import { launcherScreens } from './screens.mjs';
 import { shortcutMenu } from './shortcut-menu.mjs';
 import styles from './shortcuts.css' with { type: 'text' };
@@ -166,14 +168,13 @@ export const shortcuts = {
       if (!this.runtime.store) {
         return;
       }
-      const groups = this.api
-        .from(this.runtime.store.collection.list())
+      const groups = jaqt.from(this.runtime.store.collection.list())
         .select(this.api.launcherGroups.groupDescription)
         .where(Boolean)
         .toArray();
-      const shortcuts = this.api.from(this.runtime.store.collection.list())
+      const shortcuts = jaqt.from(this.runtime.store.collection.list())
         .select(this.actions.shortcutRow).toArray();
-      this.api.batch(() => {
+      simply.batch(() => {
         const previousGroups = this.runtime.launcherScreens.state.data;
         if (groups.length !== previousGroups.length || groups.some((group, index) =>
           group.id !== previousGroups[index].id || group.order !== previousGroups[index].order)) {
@@ -493,14 +494,13 @@ export const shortcuts = {
     },
     initializeShortcuts() {
       const owner = this;
-      const list = this.api.model({ data: [], options: { insertBefore: '' } });
+      const list = simply.model({ data: [], options: { insertBefore: '' } });
       list.addEffect(function () {
-        return owner.api.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
       list.addEffect(function (input) {
-        return owner.api.effect(() =>
-          owner.api
-            .from(input.current)
+        return simply.effect(() =>
+          jaqt.from(input.current)
             .where(owner.actions.isShortcut)
             .select(owner.actions.shortcutView)
             .orderBy({ order: owner.actions.swbCompareShortcutOrder })
@@ -509,13 +509,13 @@ export const shortcuts = {
       });
       this.runtime.shortcuts = list;
       this.actions.muzeSolidLauncherInitializeScreens();
-      this.runtime.shortcutEffect = this.api.effect(() => {
+      this.runtime.shortcutEffect = simply.effect(() => {
         this.data.shortcuts = list.view.current;
         this.data.empty = list.view.current.length
           ? ''
           : 'Add links to other applications you use.';
       });
-      this.runtime.shortcutPreviewEffect = this.api.effect(() => {
+      this.runtime.shortcutPreviewEffect = simply.effect(() => {
         const target = list.state.options.insertBefore;
         const firstInGroup = new Set();
         for (const row of list.view.current) {

@@ -10,5 +10,8 @@
   },
   "dependencies": {
     "@muze-nl/theds": "^0.2.7"
+  },
+  "devDependencies": {
+    "@muze-labs/solid-app-data": "0.1.0"
   }
 }

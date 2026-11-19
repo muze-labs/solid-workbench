@@ -117,7 +117,7 @@ function sharedChunk(id, { getModuleInfo }) {
   // remain independent of rendering and the workspace-to-view bridge.
   if (
     id.includes('/packages/solid-app-data/') &&
-    !id.endsWith('/collection.mjs')
+    !/\/(?:collection|simply-runtime|simply-solid-runtime)\.mjs$/.test(id)
   ) {
     return 'shared/data';
   }

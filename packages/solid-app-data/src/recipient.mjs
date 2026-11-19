@@ -1,5 +1,5 @@
-import { turtleWriter } from '@muze-labs/oldm-turtle';
-import { oldm, prefixes, loadDocument, documentUrl, valueAt } from './index.mjs';
+import './oldm.mjs';
+import { prefixes, loadDocument, documentUrl, valueAt } from './index.mjs';
 import { recipientId, serializable } from './capabilities.mjs';
 import { StateGraph, ownedQuads } from './state-rdf.mjs';
 
@@ -57,7 +57,7 @@ export async function describeRecipient(node, document) {
       inspect(value);
     }
   }
-  const turtle = await turtleWriter({
+  const turtle = await oldm.turtleWriter({
     subjects,
     baseURI: graph.baseURI,
     prefixEntries: (preference) => graph.prefixEntries(preference),

@@ -691,10 +691,15 @@ previously covered these prerequisites or the IDE workflow.
   behavior and state changes in actions, and storage operations behind an
   explicit data API. Editable replacements must work with SimplyFlow's context
   and documented public dependencies, without recreating private module
-  closures. Keep implementation helpers private only when their behavior does
-  not need to be edited. Metro, oldm and workspace libraries remain callable
-  dependencies outside the app's editing boundary; suite-owned feature wiring
-  belongs inside it.
+  closures. Suite-owned feature wiring belongs inside the app's editing
+  boundary.
+- Make `metro`, `jaqt`, `oldm` and `simply` documented runtime globals.
+  Workbench application and module code uses those libraries through the
+  globals, with no library import statements in that code. User-supplied
+  replacement functions use the same APIs and library instances, so a
+  replacement can run without the original module's import bindings. Keep
+  Metro tracing available through `metro.trace`. Measure the cost across
+  complete app download graphs, including the auth callback.
 - Use SimplyFlow models for list filtering, sorting, paging and other supported
   transformations in every app. Replace equivalent manual array pipelines in
   UI update helpers with model effects and options. Expose app-specific model
@@ -772,17 +777,37 @@ without the source app's private state. Check initialization and cleanup without
 duplicate listeners or effects, and preserve drafts and RDF through the change.
 These checks establish app readiness; they do not claim an IDE already exists.
 
+### Library globals and replaceable functions
+
+The maintainer selected this work on 2026-11-19.
+[CYC290](../.spiral/cycles/CYC-20261119-QG24H-290.md) was accepted on 2026-11-19.
+
+Use the four runtime globals throughout app and shared Workbench modules.
+Inventory app-owned functions and what they close over. Give replaceable
+functions stable names in the existing app definitions or data APIs, and make
+long-lived callers resolve the current definition when invoked. Keep the
+documented app context and the shared library globals sufficient to run
+replacements. Expose readable originals through the existing version-matched
+authoring assets, loaded on demand.
+
+Start the verification with the Contacts search model and a shared data helper.
+Reconstruct replacements from authored source, apply and remove them in a
+running app, and verify that existing callers reach both definitions without
+losing current state or drafts. Check the same contract in the production build.
+Keep the callback lightweight, preserve the selected Turtle backend, and
+compare complete app graphs and cold phone startup before and after migration.
+
+Use existing SimplyFlow composition and Workbench action dispatch. If a
+required replacement has no supported path, record the specific gap for the
+separate SimplyFlow lifecycle and composition work. Live template updates,
+persisted overrides, remaining model-view migrations and component adoption
+remain separate roadmap work.
+
 ### Later IDE work
 
 - Open the IDE beside the app in the same page. Navigate components and named
   entries, show origins and active overrides, and offer an inspect mode that
   jumps from a rendered control to its template and active command.
-- Make selected Muze library APIs available as documented browser globals for
-  the IDE and developer console. Start with `window.metro` for inspecting
-  requests with `metro.trace`. Reuse the library instances already loaded by
-  Workbench so console tools and editable app code work with the same runtime.
-  Decide which globals to expose per library and check the download cost of
-  any additional API surface.
 - Create or import component datasets, register them, and let the user wire
   them into views. Export either the original component or a copy with that
   component's app overrides applied, in the same editable import format.

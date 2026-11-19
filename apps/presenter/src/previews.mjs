@@ -1,9 +1,9 @@
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import { StateGraph } from '@muze-labs/solid-app-data/state-rdf.mjs';
-import { from, asc } from '@muze-nl/jaqt';
 
 // Preview data is a projection. It never becomes the current editable deck.
 export function firstSlidePreview(deck) {
-  const slide = from(deck.slides()).orderBy({ position: asc }).toArray()[0];
+  const slide = jaqt.from(deck.slides()).orderBy({ position: jaqt.asc }).toArray()[0];
   if (!slide) {
     return { title: 'No slides yet', body: '', image: '' };
   }

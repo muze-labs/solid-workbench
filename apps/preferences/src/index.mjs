@@ -1,8 +1,7 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import { providerCapabilities } from '@muze-labs/solid-preferences/providers.mjs';
 import { viewResourceCapability } from '@muze-labs/solid-app-data/embedded-view.mjs';
-import { model } from '@muze-labs/simplyflow/model';
-import { effect, destroy } from '@muze-labs/simplyflow/state';
-import { from } from '@muze-nl/jaqt';
 import {
   loadDocument,
   createSolidMetroClient,
@@ -15,8 +14,6 @@ import {
   browseCapability,
   selectRecipientCapability
 } from '@muze-labs/solid-app-data/capabilities.mjs';
-import { app } from '@muze-labs/simplyflow/app';
-import { installEvents } from '@muze-labs/simplyflow-events';
 import { shell } from '@muze-labs/solid-app-ui';
 import {
   solidListDetails,
@@ -91,10 +88,6 @@ const definition = {
   api: {
     viewResourceCapability,
     providerCapabilities,
-    model,
-    effect,
-    destroy,
-    from,
     loadDocument,
     createSolidMetroClient,
     prefixes,
@@ -113,9 +106,9 @@ const definition = {
   },
   runtime: { host }
 };
-const ui = app(definition);
+const ui = simply.app(definition);
 exposeDefinition(ui, definition, sources);
-installEvents(ui);
+simply.installEvents(ui);
 host.onOpenPreferences = () => ui.actions.swb_selectSection('appearance');
 await ui.actions.swb_initializePreferences();
 globalThis.swbPreferencesApp = ui;

@@ -1,3 +1,5 @@
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 import template from '../catalog.html?template' with { type: 'text' };
 import styles from './catalog.css' with { type: 'text' };
 import manual from '../catalog-manual.html' with { type: 'text' };
@@ -178,8 +180,7 @@ export const muzeSolidLauncherCatalog = {
     muzeSolidCatalogRenderCategories() {
       const entries = this.runtime.catalogModel?.state.data || [];
       const names = new Set(entries.map((entry) => entry.category));
-      const categories = this.api
-        .from(
+      const categories = jaqt.from(
           [...names].map((label) => ({
             id: 'category:' + label,
             label
@@ -262,17 +263,16 @@ export const muzeSolidLauncherCatalog = {
     },
     muzeSolidCatalogInitializeList() {
       const owner = this;
-      const list = this.api.model({
+      const list = simply.model({
         data: [],
         options: { search: '', category: this.runtime.catalogCategory || 'all' }
       });
       list.addEffect(function () {
-        return owner.api.effect(() => this.state.data);
+        return simply.effect(() => this.state.data);
       });
       list.addEffect(function (input) {
-        return owner.api.effect(() =>
-          owner.api
-            .from(input.current)
+        return simply.effect(() =>
+          jaqt.from(input.current)
             .where((entry) =>
               owner.actions.muzeSolidCatalogMatches(
                 entry,
@@ -285,7 +285,7 @@ export const muzeSolidLauncherCatalog = {
         );
       });
       this.runtime.catalogModel = list;
-      this.runtime.catalogEffect = this.api.effect(() => {
+      this.runtime.catalogEffect = simply.effect(() => {
         this.data.muzeSolidCatalogApps = list.view.current;
         this.data.muzeSolidCatalogEmpty = list.view.current.length
           ? ''

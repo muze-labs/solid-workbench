@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/simply-runtime.mjs';
 export const muzeDocumentsNavigation = {
   commands: {
     muzeDocumentsNavigation(_button, mode) {
@@ -187,13 +188,12 @@ export const muzeDocumentsNavigation = {
   actions: {
     async muzeDocumentsBookmarks() {
       if (!this.runtime.bookmarks) {
-        const api = this.api;
-        const model = api.model({ data: [], options: { document: '' } });
+        const model = simply.model({ data: [], options: { document: '' } });
         model.addEffect(function () {
-          return api.effect(() => this.state.data);
+          return simply.effect(() => this.state.data);
         });
         model.addEffect(function (input) {
-          return api.effect(() =>
+          return simply.effect(() =>
             input.current.filter(
               (item) =>
                 !this.state.options.document ||
@@ -202,7 +202,7 @@ export const muzeDocumentsNavigation = {
           );
         });
         model.addEffect(
-          api.sort({
+          simply.model.sort({
             sortBy: 'page',
             direction: 'asc',
             sortFn(left, right) {
@@ -214,7 +214,7 @@ export const muzeDocumentsNavigation = {
           })
         );
         this.runtime.bookmarks = model;
-        this.runtime.bookmarkEffect = api.effect(() => {
+        this.runtime.bookmarkEffect = simply.effect(() => {
           this.data.muzeDocumentsBookmarks = model.view.current;
           this.data.muzeDocumentsBookmarksEmpty = model.view.current.length
             ? ''

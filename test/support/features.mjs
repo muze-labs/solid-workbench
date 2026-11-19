@@ -1,4 +1,110 @@
 import assert from 'node:assert/strict';
+import { parseAst } from 'rollup/parseAst';
+
+export async function checkLiveContactFunctions(page) {
+  const source = await page.evaluate(async () => {
+    const owner = globalThis.muzeSolidContactsApp;
+    const { sourceUrl } = owner.definition.modules.collection;
+    return (await import(sourceUrl)).default;
+  });
+  const personExport = parseAst(source).body.find(
+    (entry) =>
+      entry.type === 'ExportNamedDeclaration' &&
+      entry.declaration?.id?.name === 'isPerson'
+  );
+  assert(personExport, 'The shared Contacts helper has readable source');
+  const { start, end } = personExport.declaration;
+  const verify = async (personSource) => {
+    const owner = globalThis.muzeSolidContactsApp;
+    const descriptor = owner.definition.sources.contactList;
+    const { actions } = (await import(descriptor.url)).default;
+    const model = owner.data.peopleModel;
+    const originalFilter = owner.components.contactList.actions.filterPeople;
+    const originalIsPerson = owner.api.isPerson;
+    const collection = owner.runtime.store.collection;
+    const draft = JSON.stringify(owner.runtime.widget.draft());
+    const input = owner.container.querySelector('.solid-list-search-input');
+    const initialQuery = input.value;
+    const nativeRows = collection.list();
+    const record = model.state.data.find((row) => row.label === 'Sparse person');
+    const chosen = collection.get(record.id);
+    const check = (condition, message) => {
+      if (!condition) {
+        throw new Error('live-contact-test: ' + message);
+      }
+    };
+    function search(query) {
+      input.value = query;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    async function waitFor(condition) {
+      for (let attempt = 0; attempt < 50; attempt += 1) {
+        if (condition()) {
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      throw new Error('live-contact-test: model did not update');
+    }
+    const reconstructedFilter = Function(
+      'return (' + actions.filterPeople.source + ')'
+    )();
+    const reconstructedIsPerson = Function(
+      'return (' + personSource + ')'
+    )();
+    check(typeof metro.trace.add === 'function', 'Metro trace is available');
+    check(chosen instanceof oldm.NamedNode, 'the app and oldm share types');
+    check(reconstructedIsPerson(chosen), 'shared helper works without imports');
+    try {
+      owner.actions.filterPeople = Function(
+        'return (' + actions.filterPeople.source.replace(
+          'this.actions.matchesPerson(row, search)',
+          "!this.actions.matchesPerson(row, search)"
+        ) + ')'
+      )();
+      search(record.label);
+      await waitFor(() => model.state.options.search === record.label &&
+        !model.view.current.some((row) => row.id === record.id));
+
+      owner.actions.filterPeople = reconstructedFilter;
+      search(record.label + ' ');
+      search(record.label);
+      await waitFor(() => model.view.current.some((row) => row.id === record.id));
+      owner.actions.filterPeople = originalFilter;
+
+      owner.api.isPerson = Function(
+        'return (' + personSource.replace(
+          'const personTypes =',
+          'if (node instanceof oldm.NamedNode && node.id === ' +
+            JSON.stringify(record.id) +
+            ') { return false; }\n  const personTypes ='
+        ) + ')'
+      )();
+      const refresh = owner.actions.refreshPeople;
+      refresh();
+      check(!model.state.data.some((row) => row.id === record.id),
+        'existing refresh calls the replacement helper');
+      owner.api.isPerson = originalIsPerson;
+      refresh();
+      check(model.state.data.some((row) => row.id === record.id),
+        'existing refresh calls the restored helper');
+      check(owner.data.peopleModel === model, 'the same model remains mounted');
+      check(JSON.stringify(owner.runtime.widget.draft()) === draft,
+        'the open draft survives replacement and restoration');
+      return nativeRows.every((node) => node === collection.get(node.id));
+    }
+    finally {
+      owner.actions.filterPeople = originalFilter;
+      owner.api.isPerson = originalIsPerson;
+      owner.actions.refreshPeople();
+      search(initialQuery);
+    }
+  };
+  const result = await page.evaluate(
+    '() => (' + verify + ')(' + JSON.stringify(source.slice(start, end)) + ')'
+  );
+  assert(result, 'Replacing functions preserves authoritative RDF identity');
+}
 
 // Explicit authoring-tool coverage; normal startup must not load these assets.
 // All storage APIs in the second host are explicit fixture doubles.
@@ -108,7 +214,7 @@ export async function checkFeatureSources(page, appName) {
       mount.innerHTML =
         '<div data-simply-field="layout"><template id="contacts-list"></template></div>';
       document.body.append(mount);
-      const app = owner.api.app({
+      const app = simply.app({
         container: mount,
         components: { contactList: component },
         templates: {
@@ -119,9 +225,6 @@ export async function checkFeatureSources(page, appName) {
         },
         data: { peopleModel: null, empty: '' },
         api: {
-          model: owner.api.model,
-          effect: owner.api.effect,
-          from: owner.api.from,
           isPerson: () => true,
           readProfile: (node) => ({ name: node.label }),
           profileLabel: (node) => node.label
@@ -148,9 +251,9 @@ export async function checkFeatureSources(page, appName) {
         );
       }
       finally {
-        owner.api.destroy(app.runtime.emptyListEffect);
+        simply.destroy(app.runtime.emptyListEffect);
         for (const signal of app.data.peopleModel.effects.slice(1)) {
-          owner.api.destroy(signal);
+          simply.destroy(signal);
         }
         app.destroy();
         mount.remove();

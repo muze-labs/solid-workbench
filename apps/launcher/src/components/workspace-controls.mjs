@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import styles from './workspace-controls.css' with { type: 'text' };
 import sourceLauncherWorkspace from '../workspace.html' with { type: 'text' };
 
@@ -112,8 +113,7 @@ export const workspaceControls = {
       this.data.swb_restoreApps = {
         hidden: this.runtime.workspace.instances.size ? null : ''
       };
-      this.data.workspaceEntries = this.api
-        .from([...this.runtime.workspace.instances.values()])
+      this.data.workspaceEntries = jaqt.from([...this.runtime.workspace.instances.values()])
         .where((record) => !record.embedded)
         .select((record) => ({
           id: record.entry.id,

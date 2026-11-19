@@ -321,6 +321,71 @@ try {
     downloadThroughput: -1,
     uploadThroughput: -1
   });
+  await page.evaluate(async () => {
+    const owner = globalThis.muzeSolidPresenterApp;
+    const name = 'muzeSolidPresenterRichText';
+    if (performance.getEntriesByType('resource').some(
+      (entry) => new URL(entry.name).pathname.includes('/authoring/')
+    )) {
+      throw new Error('Presenter fetched authoring sources during normal use.');
+    }
+    const { source } = (await import(
+      owner.definition.sources.muzeSolidPresenter.url
+    )).default.transformers[name];
+    const row = owner.data.muzeSolidPresenterSlides.find(
+      (slide) => slide.id === owner.runtime.selected
+    );
+    const element = owner.container.querySelector(
+      '[aria-current="true"] .muze-solid-presenter-thumbnail-text'
+    );
+    const deck = owner.runtime.deck;
+    const native = await deck.graph.write();
+    const original = owner.api[name];
+    const fragment = row.fragment;
+    const frame = owner.container.querySelector('[data-kind="text"] iframe');
+    const editor = frame?.contentWindow?.muzeSolidViewerApp?.runtime.cobaltEditor;
+    const draft = JSON.stringify(editor.getValue());
+    async function waitFor(test) {
+      for (let attempt = 0; attempt < 50; attempt += 1) {
+        if (test()) {
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      throw new Error('Unexpected Presenter thumbnail: ' + element.innerHTML);
+    }
+    const reconstruct = (body) => Function('return (' + body + ')')();
+    try {
+      owner.api[name] = reconstruct(
+        source.replace(
+          'return next(context);',
+          'context.value.innerHTML = "<mark>" + context.value.innerHTML + "</mark>";\n' +
+            'return next(context);'
+        )
+      );
+      const previewText = 'Replacement thumbnail';
+      row.fragment = { text: previewText, annotations: [] };
+      await waitFor(
+        () => element.querySelector('mark')?.textContent === previewText
+      );
+      owner.api[name] = original;
+      row.fragment = fragment;
+      await waitFor(() => !element.querySelector('mark') &&
+        element.textContent === fragment.text);
+      if (
+        owner.runtime.deck !== deck || (await deck.graph.write()) !== native ||
+        frame !== owner.container.querySelector('[data-kind="text"] iframe') ||
+        JSON.stringify(editor.getValue()) !== draft
+      ) {
+        throw new Error('Replacing the transformer changed the deck or open draft.');
+      }
+    }
+    finally {
+      owner.api[name] = original;
+      row.fragment = fragment;
+    }
+  });
+  console.log('PASS live Cobalt thumbnail transformer replacement and restoration');
   await recoverEditor(page, 'Our first deck', {
     width: 390,
     height: 844,

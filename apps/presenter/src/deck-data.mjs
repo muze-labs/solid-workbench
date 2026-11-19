@@ -1,3 +1,4 @@
+import '@muze-labs/solid-app-data/jaqt-runtime.mjs';
 import { local } from '@muze-labs/solid-workspace';
 import {
   StateGraph,
@@ -9,7 +10,6 @@ import {
 } from '@muze-labs/solid-app-data/state-rdf.mjs';
 import { loadDocument, httpUrl } from '@muze-labs/solid-app-data';
 import { DocumentSession } from '@muze-labs/solid-app-data/document-session.mjs';
-import { from, asc } from '@muze-nl/jaqt';
 import {
   readFragment
 } from '@muze-labs/solid-app-data/cobalt-fragment.mjs';
@@ -130,7 +130,7 @@ export class DeckDocument extends DocumentSession {
     });
   }
   regions(slide) {
-    return from(
+    return jaqt.from(
       this.graph.values(named(slide), presenter + 'region').map((term) => {
         if (term.termType !== 'NamedNode') {
           throw new Error(
@@ -243,7 +243,7 @@ export class DeckDocument extends DocumentSession {
     return id;
   }
   moveSlide(id, offset) {
-    const slides = from(this.slides()).orderBy({ position: asc }).toArray();
+    const slides = jaqt.from(this.slides()).orderBy({ position: jaqt.asc }).toArray();
     const index = slides.findIndex((slide) => slide.id === id);
     const target = index + offset;
     if (index < 0 || target < 0 || target >= slides.length) {

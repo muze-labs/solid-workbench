@@ -3,13 +3,39 @@ import assert from 'node:assert/strict';
 import { shape, field, id, uri } from '@muze-labs/oldm-shape';
 import { workspace, resource, graph, solid }
   from '@muze-labs/solid-workspace';
-import { oldm } from '../packages/solid-app-data/src/index.mjs';
+import {
+  createSolidMetroClient, loadDocument, oldm
+} from '../packages/solid-app-data/src/index.mjs';
 import { sameGraph } from '../packages/solid-app-data/src/state-rdf.mjs';
 
 const url = 'https://pod.example/notes.ttl';
 const source = '@base <' + url + '> . <#note> a <urn:Note>, <urn:Foreign>; ' +
   '<urn:title> "Before"; <urn:unknown> "a", "b". ' +
   '<#other> <urn:title> "Untouched".';
+
+test('globals use the client and RDF types used by Workbench data APIs', async () => {
+  const client = createSolidMetroClient(url, { oidc: false }).with(
+    () => metro.response(new Response(source, {
+      headers: { 'Content-Type': 'text/turtle' }
+    }))
+  );
+  assert(client instanceof metro.Client);
+  assert.equal(globalThis.oldm, oldm);
+  const requests = [];
+  metro.trace.add('workbench-fixture', {
+    request(request) {
+      requests.push(request.url);
+    }
+  });
+  try {
+    const document = await loadDocument(client, url);
+    assert(document.graph.get(url + '#note') instanceof oldm.NamedNode);
+    assert(requests.includes(url));
+  }
+  finally {
+    metro.trace.remove('workbench-fixture');
+  }
+});
 
 test('published shape updates retain additional RDF types and unknown facts', async () => {
   const context = oldm.context();
