@@ -780,7 +780,7 @@ These checks establish app readiness; they do not claim an IDE already exists.
 ### Library globals and replaceable functions
 
 The maintainer selected this work on 2026-11-19.
-[CYC290](../.spiral/cycles/CYC-20261119-QG24H-290.md) is active.
+[CYC290](../.spiral/cycles/CYC-20261119-QG24H-290.md) was accepted on 2026-11-19.
 
 Use the four runtime globals throughout app and shared Workbench modules.
 Inventory app-owned functions and what they close over. Give replaceable
