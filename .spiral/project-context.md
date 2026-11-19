@@ -1,5 +1,15 @@
 # Solid Workbench project context
 
+## CYC305 dockable read-only app inspector, 2026-11-19
+
+The maintainer selects a sidebar for every top-level app and a popup
+with a Dock as sidebar control. The inspector starts closed and opens
+from Inspect alongside Preferences. CYC305 runs on
+`spiral/CYC-20261119-QG24H-305-dockable-inspector` from `94a3e9c`.
+SRC306 records scope. IMP307 and EVD308 record the shared inspector,
+SimplyFlow 0.10.7 adoption and verification. Human acceptance is pending.
+Preserve the unrelated vision document.
+
 ## CYC300 Presenter live-template edit and undo, 2026-11-19
 
 The maintainer selects the single Presenter thumbnail proof after CYC295.
