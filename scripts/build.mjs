@@ -155,6 +155,21 @@ await writeFile(
     scriptSuffix +
     '.js"></script>'
 );
+await mkdir(path.join(root, 'www/inspector'), { recursive: true });
+const inspector = await composeTemplate(
+  path.join(root, 'packages/solid-app-ui/src/inspector/index.html')
+);
+await writeFile(
+  path.join(root, 'www/inspector/index.html'),
+  '<!doctype html><html lang="en"><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>App inspector</title><link rel="stylesheet" href="../assets/theds.css">' +
+    '<link rel="stylesheet" href="../assets/workbench-design.css">' +
+    '<style>@layer reset, setup, theme, base, component, page, utility;</style>' +
+    '<body class="ds-darkmode-auto">' + inspector +
+    '<script type="module" src="../assets/inspector/panel' + scriptSuffix +
+    '.js"></script></body></html>'
+);
 await writeFile(
   path.join(root, 'www/index.html'),
   '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=workbench/"><a href="workbench/">Open Solid Workbench</a>'

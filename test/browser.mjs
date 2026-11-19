@@ -2227,13 +2227,18 @@ try {
   await menuArrow('ArrowDown');
   assert.equal(
     await evaluate('return document.activeElement.dataset.simplyCommand;'),
+    'swbInspectApp'
+  );
+  await menuArrow('ArrowDown');
+  assert.equal(
+    await evaluate('return document.activeElement.dataset.simplyCommand;'),
     'connectDialog',
     'Arrow Down wraps to the first row'
   );
   await menuArrow('ArrowUp');
   assert.equal(
     await evaluate('return document.activeElement.dataset.simplyCommand;'),
-    'preferences',
+    'swbInspectApp',
     'Arrow Up wraps to the last row'
   );
   await menuArrow('ArrowDown');
@@ -2259,9 +2264,9 @@ try {
   assert.equal(
     await evaluate(`
       const menu = document.querySelector('#muze-solid-ui-account-menu');
-      const [first, second] = menu.querySelectorAll('button');
-      return getComputedStyle(first).backgroundColor === 'rgba(0, 0, 0, 0)' &&
-        getComputedStyle(second).backgroundColor !== 'rgba(0, 0, 0, 0)';
+      return [...menu.querySelectorAll('button')].every(item =>
+        (getComputedStyle(item).backgroundColor !== 'rgba(0, 0, 0, 0)') ===
+        (item.dataset.simplyCommand === 'preferences'));
     `),
     true,
     'Hover highlights only Preferences even while the first row retains focus'
@@ -2271,11 +2276,11 @@ try {
       const menu = document.querySelector('#muze-solid-ui-account-menu');
       const bounds = menu.getBoundingClientRect();
       const rows = [...menu.querySelectorAll('button')].map(item => item.getBoundingClientRect());
-      return rows.every(row => Math.abs(row.left - bounds.left) < 1 &&
-        Math.abs(row.right - bounds.right) < 1) &&
+      return rows.every((row, index) => Math.abs(row.left - bounds.left) < 1 &&
+        Math.abs(row.right - bounds.right) < 1 &&
+        (index === 0 || Math.abs(row.top - rows[index - 1].bottom) < 1)) &&
         Math.abs(rows[0].top - bounds.top) < 1 &&
-        Math.abs(rows[0].bottom - rows[1].top) < 1 &&
-        Math.abs(rows[1].bottom - bounds.bottom) < 1;
+        Math.abs(rows.at(-1).bottom - bounds.bottom) < 1;
     `),
     true,
     'Menu rows meet each other and all popover edges without gaps'

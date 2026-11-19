@@ -1,0 +1,110 @@
+<main id="inspector" class="solid-theme">
+  <header class="solid-dialog-header swb-inspector-header">
+    <h1 class="swb-dialog-title">Inspector</h1>
+    <nav class="solid-toolbar" aria-label="Inspector actions">
+      <button type="button" class="solid-tool" data-simply-command="swbInspectPick"
+        aria-label="Pick an element" title="Pick an element">
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#crosshair"></use>
+        </svg>
+      </button>
+      <button type="button" class="solid-tool"
+        data-simply-command="swbInspectTogglePresentation"
+        aria-label="Open in new window" title="Open in new window"
+        data-simply-field="presentationAttributes"
+        data-simply-transform="attributes" data-simply-attributes="aria-label title">
+        <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+          <use href="../assets/feather-icons.svg#external-link"
+            data-simply-field="presentationIcon"
+            data-simply-transform="attributes" data-simply-attributes="href"></use>
+        </svg>
+      </button>
+    </nav>
+    <button type="button" class="ds-button solid-marker-button solid-dialog-close"
+      data-simply-command="swbInspectClose" aria-label="Close inspector"
+      title="Close inspector">
+      <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+        <use href="../assets/feather-icons.svg#x"></use>
+      </svg>
+    </button>
+  </header>
+  <p role="status" data-simply-field="status"
+    data-simply-transform="escape_html"></p>
+  <nav class="swb-inspector-trail" aria-label="Inspection breadcrumbs" hidden
+    data-simply-field="trailVisibility" data-simply-transform="attributes"
+    data-simply-attributes="hidden">
+    <ol data-simply-list="trail" data-simply-list-key="id">
+      <template>
+        <li>
+          <svg class="ds-icon ds-icon-feather swb-inspector-trail-divider"
+            aria-hidden="true">
+            <use href="../assets/feather-icons.svg#chevron-right"></use>
+          </svg>
+          <button type="button" class="solid-tool" hidden
+            data-simply-command="swbInspectBreadcrumb" data-simply-value=":value.id"
+            data-simply-field="button" data-simply-transform="attributes"
+            data-simply-attributes="hidden title">
+            <span class="swb-inspector-trail-label" data-simply-field="label"
+              data-simply-transform="escape_html"></span>
+          </button>
+          <span class="swb-inspector-trail-current" aria-current="location"
+            tabindex="-1" hidden
+            data-simply-field="current" data-simply-transform="attributes"
+            data-simply-attributes="hidden title">
+            <span class="swb-inspector-trail-label" data-simply-field="label"
+              data-simply-transform="escape_html"></span>
+          </span>
+        </li>
+      </template>
+    </ol>
+  </nav>
+  <section hidden data-simply-field="linksVisibility"
+    data-simply-transform="attributes" data-simply-attributes="hidden"
+    aria-labelledby="swb-inspector-relationships">
+    <h2 id="swb-inspector-relationships" tabindex="-1">Relationships</h2>
+    <ul data-simply-list="links" data-simply-list-key="id">
+      <template>
+        <li>
+          <button type="button" hidden aria-expanded="false"
+            class="solid-button ds-button ds-button-naked swb-inspector-relationship"
+            data-simply-command="swbInspectSource" data-simply-value=":value.id"
+            data-simply-field="sourceAttributes" data-simply-transform="attributes"
+            data-simply-attributes="hidden aria-expanded">
+            <span data-simply-field="label" data-simply-transform="escape_html"></span>
+            <code data-simply-field="value" data-simply-transform="escape_html"></code>
+          </button>
+          <div class="swb-inspector-relationship" hidden
+            data-simply-field="summaryAttributes" data-simply-transform="attributes"
+            data-simply-attributes="hidden">
+            <span data-simply-field="label" data-simply-transform="escape_html"></span>
+            <code data-simply-field="value" data-simply-transform="escape_html"></code>
+          </div>
+          {{include:./source-preview.html}}
+        </li>
+      </template>
+    </ul>
+  </section>
+  <nav hidden data-simply-field="parentsVisibility"
+    data-simply-transform="attributes" data-simply-attributes="hidden"
+    aria-labelledby="swb-inspector-parents">
+    <h2 id="swb-inspector-parents">Parents</h2>
+    <ol data-simply-list="parents" data-simply-list-key="id">
+      <template>
+        <li>
+          <button type="button" class="solid-button ds-button ds-button-naked"
+            data-simply-command="swbInspectParent" data-simply-value=":value.id">
+            <code data-simply-field="label" data-simply-transform="escape_html"></code>
+          </button>
+          <button type="button" class="solid-button ds-button ds-button-naked"
+            hidden aria-expanded="false"
+            data-simply-command="swbInspectParentSource" data-simply-value=":value.id"
+            data-simply-field="sourceAttributes" data-simply-transform="attributes"
+            data-simply-attributes="aria-label hidden aria-expanded">
+            Source
+          </button>
+          {{include:./source-preview.html}}
+        </li>
+      </template>
+    </ol>
+  </nav>
+</main>

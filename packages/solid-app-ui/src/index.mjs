@@ -135,6 +135,7 @@ export function shell({
           embeddedContentOnly && host.embedded ? '' : null
       },
       muzeSolidUiMenuVisibility: { hidden: host.embedded ? '' : null },
+      swbInspectVisibility: { hidden: window.top === window ? null : '' },
       muzeSolidUiDialog: {
         title: '',
         message: '',

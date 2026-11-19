@@ -1,0 +1,156 @@
+@layer component {
+  #inspector {
+    box-sizing: border-box;
+    min-block-size: 100dvb;
+    padding: 1rem;
+    background: color-mix(in srgb, var(--solid-surface) 55%, var(--solid-chrome));
+  }
+
+  #inspector li button:not(.solid-tool) {
+    margin: 0 0.4rem 0.5rem 0;
+    font-size: 0.85rem;
+    text-transform: none;
+  }
+
+  .swb-inspector-header {
+    margin: -1rem -1rem 0;
+    justify-content: flex-start;
+    gap: 0.25rem;
+  }
+
+  .swb-inspector-header .solid-toolbar {
+    gap: 0;
+    padding: 0;
+  }
+
+  #inspector h2 {
+    font-size: 1rem;
+  }
+
+  #inspector [role="status"] {
+    margin-block: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  #inspector [role="status"]:empty {
+    display: none;
+  }
+
+  #inspector ul {
+    list-style: none;
+    padding-inline-start: 0;
+  }
+
+  #inspector ol {
+    padding-inline-start: 1.5rem;
+  }
+
+  #inspector .swb-inspector-trail ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.25rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+  }
+
+  .swb-inspector-trail li {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    max-inline-size: 100%;
+    margin: 0;
+  }
+
+  .swb-inspector-trail-divider {
+    flex: none;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+  }
+
+  .swb-inspector-trail li:first-of-type .swb-inspector-trail-divider {
+    display: none;
+  }
+
+  .swb-inspector-trail button {
+    padding-inline: 0.25rem;
+    text-decoration: underline;
+  }
+
+  .swb-inspector-trail-current {
+    min-inline-size: 0;
+    padding-inline: 0.25rem;
+  }
+
+  .swb-inspector-trail-label {
+    display: block;
+    max-inline-size: 22ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #inspector li button {
+    text-align: start;
+    white-space: normal;
+  }
+
+  #inspector button[hidden] {
+    display: none;
+  }
+
+  #inspector .swb-inspector-relationship:not([hidden]) {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+    inline-size: 100%;
+    margin: 0;
+    padding: 0.4rem;
+    line-height: 1.35;
+  }
+
+  #inspector li code {
+    overflow-wrap: anywhere;
+    font-size: 0.8rem;
+  }
+
+  .swb-inspector-preview {
+    position: relative;
+    margin-block: 0.25rem 0.75rem;
+    padding: 0.5rem;
+    border: 1px solid var(--solid-border, currentColor);
+  }
+
+  .swb-inspector-preview-close {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    z-index: 1;
+  }
+
+  .swb-inspector-preview h3,
+  .swb-inspector-preview-origin {
+    margin-block: 0 0.25rem;
+    overflow-wrap: anywhere;
+    font-size: 0.8rem;
+  }
+
+  .swb-inspector-preview-origin:empty {
+    display: none;
+  }
+
+  .swb-inspector-preview-content {
+    max-block-size: min(14rem, 35dvb);
+    padding-inline-end: 44px;
+    overflow: auto;
+  }
+
+  .swb-inspector-preview pre {
+    margin-block: 0 0.5rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 0.8rem;
+  }
+}

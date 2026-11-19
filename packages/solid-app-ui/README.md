@@ -36,13 +36,21 @@ Runtime content is rendered only through SimplyFlow. Native dialog/popover lifec
 focus, browser downloads and document appearance remain browser operations.
 
 The original Contacts app supplies the visual reference. The compact account
-popover contains WebID/connection and Preferences. App titles and toolbars identify
-each app; cross-app navigation belongs exclusively to Launcher. Native popovers
+popover contains WebID/connection and Preferences. Top-level apps also offer
+Inspect opens a read-only inspector and remembers its last window or sidebar
+mode. Use the toolbar to change modes. Drag the sidebar’s left edge or focus
+it and use the arrow keys to resize it on larger screens. Picking an element
+shows its binding path, template, component, command and navigable parents.
+Breadcrumbs return to earlier selections. Open a relationship to see its
+source directly below it. Embedded frames are dimmed while picking,
+which is scoped to the app’s own document.
+App titles and toolbars identify each app. Cross-app navigation belongs
+exclusively to Launcher. Native popovers
 provide keyboard focus, Escape and outside-click dismissal.
 
 The connected profile's name appears to the left of the account button. The
 shared profile reader handles FOAF, vCard and schema.org names. Profiles without
-a name show “Connected”; the dropdown itself contains only its two actions.
+a name show “Connected”.
 
 The connected account's WebID dialog includes Log out. Logging out clears session
 credentials and the remembered WebID, then reloads to discard connected handles.

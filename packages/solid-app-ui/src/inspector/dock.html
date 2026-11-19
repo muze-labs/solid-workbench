@@ -1,0 +1,80 @@
+<dialog class="swb-inspector-dock" aria-label="Inspector" data-swb-inspector-dock>
+  <div class="swb-inspector-resize" role="separator" tabindex="0"
+    aria-label="Inspector width" aria-orientation="vertical"
+    aria-controls="swb-inspector-dock-content"
+    data-swb-inspector-field="widthAttributes"
+    data-swb-inspector-transform="attributes"
+    data-swb-inspector-attributes="aria-valuemin aria-valuemax aria-valuenow"></div>
+  <div id="swb-inspector-dock-content" style="display: contents"
+    data-swb-inspector-field="frame">
+    <template><iframe title="App inspector"></iframe></template>
+  </div>
+</dialog>
+<style>
+  @layer component {
+    .swb-root {
+      --swb-inspector-width: 28rem;
+    }
+    .swb-inspector-dock {
+      position: fixed;
+      inset-block: 0;
+      inset-inline: auto 0;
+      z-index: 120;
+      box-sizing: border-box;
+      inline-size: min(var(--swb-inspector-width), 100vi);
+      block-size: 100dvb;
+      max-inline-size: none;
+      max-block-size: none;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-inline-start: 1px solid var(--swb-ui-border, transparent);
+    }
+    .swb-inspector-dock iframe {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      border: 0;
+    }
+    .swb-inspector-resize {
+      display: none;
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      z-index: 1;
+      inline-size: 12px;
+      cursor: ew-resize;
+      touch-action: none;
+    }
+    .swb-inspector-resize:hover,
+    .swb-inspector-resize:focus-visible {
+      border-inline-start: 3px solid var(--ds-primary, currentColor);
+      outline-offset: -2px;
+    }
+    @media (min-width: 40rem) {
+      .swb-root {
+        --swb-inspector-width: var(--swb-inspector-resized-width, 28rem);
+      }
+      .swb-inspector-resize {
+        display: block;
+      }
+    }
+  }
+  @layer page {
+    @media (min-width: 75rem) {
+      .swb-root:has(> .swb-inspector-dock[open]) {
+        --swb-app-end-inset: var(--swb-inspector-width);
+        padding-inline-end: var(--swb-app-end-inset);
+      }
+    }
+  }
+  @layer utility {
+    .swb-root[data-swb-inspector-picking],
+    .swb-root[data-swb-inspector-picking] :not(.swb-inspector-dock, .swb-inspector-dock *) {
+      cursor: crosshair;
+    }
+    .swb-root[data-swb-inspector-picking] iframe:not(.swb-inspector-dock iframe) {
+      filter: brightness(55%);
+    }
+  }
+</style>

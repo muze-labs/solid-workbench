@@ -793,6 +793,36 @@ try {
     await wait(
       'document.querySelector(".swb-suite-main,.swb-account-controls")'
     );
+    const dock = 'document.querySelector("[data-swb-inspector-dock]")';
+    const inspect = '[data-simply-command="swbInspectApp"]';
+    assert.equal(await evaluate(dock + '.open'), false, route);
+    if (route !== 'account') {
+      await click('.swb-account-button');
+    }
+    await click(inspect);
+    const inspectorDocument = dock + '.querySelector("iframe").contentDocument';
+    const close = '[data-simply-command="swbInspectClose"]';
+    await wait(`${dock}.open && ${inspectorDocument}?.querySelector(
+      ${JSON.stringify(close)})`);
+    if (route !== 'account') {
+      assert.equal(await evaluate(`innerWidth < 1200 ||
+        document.querySelector('.swb-suite-main').getBoundingClientRect().right
+          <= ${dock}.getBoundingClientRect().left`), true, route);
+    }
+    if (route === 'presenter') {
+      await page.send('Emulation.setDeviceMetricsOverride', {
+        width: 390, height: 844, deviceScaleFactor: 1, mobile: true
+      });
+      assert.equal(await evaluate(`(() => {
+        const sidebar = ${dock};
+        const bounds = sidebar.getBoundingClientRect();
+        return sidebar.contains(document.elementFromPoint(
+          bounds.left + 60, bounds.top + 30));
+      })()`), true, 'The phone inspector appears above the app toolbar');
+    }
+    await evaluate(`${inspectorDocument}.querySelector(
+      ${JSON.stringify(close)}).click()`);
+    await wait('!' + dock + '.open');
     for (const width of [390, 1920]) {
       await page.send('Emulation.setDeviceMetricsOverride', {
         width,
@@ -841,7 +871,7 @@ try {
       await capture('ui-width-' + route + '-' + width);
     }
   }
-  console.log('PASS all ten apps fit phone/desktop; nine shells fill main');
+  console.log('PASS inspector opens from every top-level app and all layouts fit phone/desktop');
   // An opaque-origin frame verifies dismissal without reading frame contents.
   for (const route of ['contacts', 'files']) {
     await visit(route);

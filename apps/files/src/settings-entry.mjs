@@ -24,6 +24,7 @@ const definition = {
 };
 const ui = simply.app(prepareDefinition(definition));
 exposeDefinition(ui, sources);
+host.inspectApp = ui;
 simply.installEvents(ui);
 await ui.actions.muzeSolidFilesSettingsStart();
 globalThis.muzeSolidFilesSettingsApp = ui;

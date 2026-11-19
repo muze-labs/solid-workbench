@@ -8,7 +8,7 @@
     "./*": "./src/*"
   },
   "dependencies": {
-    "@muze-labs/simplyflow": "^0.10.6",
+    "@muze-labs/simplyflow": "^0.10.7",
     "@muze-nl/theds": "^0.2.7",
     "@muze-labs/solid-app-data": "0.1.0",
     "@muze-labs/solid-preferences": "0.1.0",

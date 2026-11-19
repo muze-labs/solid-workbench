@@ -1,0 +1,26 @@
+<section class="swb-inspector-preview" hidden tabindex="-1"
+  aria-label="Entry preview" data-simply-field="preview.attributes"
+  data-simply-transform="attributes" data-simply-attributes="hidden">
+  <button type="button" class="solid-tool swb-inspector-preview-close"
+    data-simply-command="swbInspectCloseSource"
+    aria-label="Close preview" title="Close preview">
+    <svg class="ds-icon ds-icon-feather" aria-hidden="true">
+      <use href="../assets/feather-icons.svg#x"></use>
+    </svg>
+  </button>
+  <div class="swb-inspector-preview-content" tabindex="0" aria-label="Preview contents">
+    <div hidden data-simply-field="preview.dataVisibility"
+      data-simply-transform="attributes" data-simply-attributes="hidden">
+      <h3 data-simply-field="preview.dataFormat" data-simply-transform="escape_html"></h3>
+      <pre aria-label="Bound data" data-simply-field="preview.dataText"
+        data-simply-transform="escape_html"></pre>
+    </div>
+    <div hidden data-simply-field="preview.codeVisibility"
+      data-simply-transform="attributes" data-simply-attributes="hidden">
+      <p class="swb-inspector-preview-origin" data-simply-field="preview.origin"
+        data-simply-transform="escape_html"></p>
+      <pre aria-label="Read-only source" data-simply-field="preview.code"
+        data-simply-transform="escape_html"></pre>
+    </div>
+  </div>
+</section>

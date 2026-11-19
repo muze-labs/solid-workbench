@@ -18,16 +18,15 @@ test('readable and minified apps preserve isolated module graphs', async () => {
   assert(authoring.size > 20, 'authored feature data is separately deployed');
   let reconstructed = 0;
   for (const asset of authoring.values()) {
-    const value = (
-      await import(
-        'data:text/javascript;base64,' +
-          Buffer.from(asset.source).toString('base64')
-      )
-    ).default;
+    const { default: value, definition } = await import(
+      'data:text/javascript;base64,' +
+        Buffer.from(asset.source).toString('base64')
+    );
     if (typeof value === 'string') {
       assert(value.length > 0, 'API source text is retained outside runtime');
       continue;
     }
+    assert(definition?.source && definition.origin, 'component source has its origin');
     for (const entries of Object.values(value)) {
       for (const metadata of Object.values(entries)) {
         assert(metadata.origin, 'authoring data retains its file identity');
@@ -70,6 +69,8 @@ test('readable and minified apps preserve isolated module graphs', async () => {
         ...[
           'files/src/settings-entry',
           'design-examples/simplyflow',
+          'inspector/host',
+          'inspector/panel',
           'redirect',
           'shared/data',
           'shared/ui',
@@ -92,6 +93,7 @@ test('readable and minified apps preserve isolated module graphs', async () => {
     const ui = chunks.get(filename('shared/ui'));
     assert.deepEqual(data.imports, []);
     assert.deepEqual(ui.imports, [data.fileName]);
+    assert.deepEqual(ui.dynamicImports, [filename('inspector/host')]);
     assert.deepEqual(chunks.get(filename('redirect')).imports, [data.fileName]);
     const dataModules = Object.keys(data.modules).join('\n');
     const uiModules = Object.keys(ui.modules).join('\n');

@@ -111,6 +111,7 @@ const definition = {
 };
 const ui = simply.app(prepareDefinition(definition));
 exposeDefinition(ui, sources);
+host.inspectApp = ui;
 simply.installEvents(ui);
 host.onOpenPreferences = () => ui.actions.swb_selectSection('appearance');
 await ui.actions.swb_initializePreferences();

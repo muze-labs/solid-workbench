@@ -135,6 +135,7 @@ const definition = {
 };
 const ui = simply.app(prepareDefinition(definition));
 exposeDefinition(ui, sources);
+host.inspectApp = ui;
 ui.definition.modules = {
   readerState: {
     sourceUrl: readerSource,

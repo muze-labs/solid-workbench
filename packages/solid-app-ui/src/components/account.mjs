@@ -1,7 +1,17 @@
 import styles from './account.css' with { type: 'text' };
+import { openInspector } from '../inspector-entry.mjs';
 export const account = {
   styles: { 'swb-account': styles },
+  api: { openInspector },
   commands: {
+    swbInspectApp() {
+      this.runtime.menu.hidePopover();
+      return this.api.openInspector(
+        this.runtime.host.inspectApp,
+        this,
+        this.container.querySelector('[popovertarget="muze-solid-ui-account-menu"]')
+      );
+    },
     muzeSolidUiOwnProfile() {
       return this.actions.run(async () => {
         const session = this.actions.requireSession();

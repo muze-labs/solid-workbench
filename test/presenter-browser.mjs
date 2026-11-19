@@ -578,6 +578,314 @@ try {
   });
   assert.equal(writes.length, writesBeforeTemplateEdit);
   console.log('PASS live thumbnail template edit and undo with focus and deck continuity');
+  const dock = 'document.querySelector("[data-swb-inspector-dock]")';
+  const panel = dock + '.querySelector("iframe").contentDocument';
+  const pick = '[data-simply-command="swbInspectPick"]';
+  const move = '[data-simply-command="swbInspectTogglePresentation"]';
+  const pickButton = `${panel}?.querySelector(${JSON.stringify(pick)})`;
+  const moveButton = `${panel}?.querySelector(${JSON.stringify(move)})`;
+  const selectedBeforeInspect = await run(page, `return ${app}.runtime.selected`);
+  assert.equal(await run(page, `return ${dock}.open`), false);
+  assert.equal(await run(page, `return Boolean(${dock}.querySelector('iframe'))`), false);
+  assert.equal(await run(page, `return performance.getEntriesByType('resource')
+    .some(entry => new URL(entry.name).pathname.includes('/inspector/'))`), false);
+  assert.equal(await run(page, `return document.querySelector('[data-kind="text"] iframe')
+    .contentDocument.querySelector('[data-simply-command="swbInspectApp"]')
+    .closest('li').hidden`), true, 'The embedded editor has no Inspect menu item');
+  await run(page, `document.querySelector(
+    '[popovertarget="muze-solid-ui-account-menu"]').click();`);
+  await click(page, 'swbInspectApp');
+  await until(page, `${dock}.open && ${pickButton}`);
+  await until(page, `${panel}.querySelector('[role="status"]')
+    .textContent.includes('Dimmed frames are outside this inspection')`);
+  const panelBackground = `(() => {
+    const surface = ${panel}.querySelector('#inspector');
+    const context = document.createElement('canvas').getContext('2d');
+    context.fillStyle = getComputedStyle(surface).backgroundColor;
+    context.fillRect(0, 0, 1, 1);
+    return context.getImageData(0, 0, 1, 1).data[0];
+  })()`;
+  const previousTheme = await run(page, 'return document.body.className;');
+  await run(page, `document.body.classList.remove('ds-darkmode-auto', 'ds-darkmode');
+    document.body.classList.add('ds-lightmode');`);
+  await until(page, `${panelBackground} > 240 && ${panelBackground} < 255`);
+  await run(page, `document.body.classList.replace('ds-lightmode', 'ds-darkmode');`);
+  await until(page, `${panelBackground} > 34 && ${panelBackground} < 48`);
+  await run(page, `document.body.className = ${JSON.stringify(previousTheme)};`);
+  const resizeHandle = `${dock}.querySelector('[role="separator"]')`;
+  assert.equal(await run(page, `return ${resizeHandle}.checkVisibility()`), false);
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 1440, height: 900, deviceScaleFactor: 1, mobile: false
+  });
+  await until(page, `${resizeHandle}.checkVisibility() &&
+    ${resizeHandle}.hasAttribute('aria-valuenow')`);
+  const edge = await run(page, `const rect = ${resizeHandle}.getBoundingClientRect();
+    return { x: rect.left + 4, y: rect.top + 180 };`);
+  const dockWidth = `${dock}.getBoundingClientRect().width`;
+  const beforeResize = await run(page, `return ${dockWidth}`);
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...edge });
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed', ...edge, button: 'left', buttons: 1, clickCount: 1
+  });
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mouseMoved', x: edge.x - 20, y: edge.y, button: 'left', buttons: 1
+  });
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mouseMoved', x: edge.x - 96, y: edge.y, button: 'left', buttons: 1
+  });
+  await page.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased', x: edge.x - 96, y: edge.y, button: 'left', clickCount: 1
+  });
+  await until(page, `${dockWidth} === ${beforeResize + 96}`);
+  assert.equal(await run(page, `return getComputedStyle(${dock}.parentElement).paddingInlineEnd`),
+    `${beforeResize + 96}px`);
+  await run(page, `${resizeHandle}.focus();`);
+  for (const type of ['keyDown', 'keyUp']) {
+    await page.send('Input.dispatchKeyEvent', {
+      type, key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39
+    });
+  }
+  await until(page, `${dockWidth} === ${beforeResize + 72} &&
+    ${resizeHandle}.getAttribute('aria-valuenow') === '${beforeResize + 72}'`);
+  await run(page, `document.querySelector(
+    '[popovertarget="muze-solid-ui-account-menu"]').click();`);
+  assert.equal(await run(page, `const menu = document.querySelector('.swb-account-menu');
+    const button = document.querySelector('[popovertarget="muze-solid-ui-account-menu"]');
+    const menuBounds = menu.getBoundingClientRect();
+    const buttonBounds = button.getBoundingClientRect();
+    return menu.matches(':popover-open') && menuBounds.right <= ${dock}.getBoundingClientRect().left
+      && Math.abs(menuBounds.right - buttonBounds.right) <= 12;`), true);
+  await run(page, "document.querySelector('.swb-account-menu').hidePopover();");
+  await page.send('Emulation.setDeviceMetricsOverride', {
+    width: 390, height: 844, deviceScaleFactor: 1, mobile: true
+  });
+  await run(page, `${pickButton}.click();
+    document.querySelector('.muze-solid-presenter-slide-button:not([aria-current])').focus();`);
+  assert.equal(await run(page, `return getComputedStyle(document.activeElement).cursor;`),
+    'crosshair');
+  assert.equal(await run(page, `return getComputedStyle(
+    document.querySelector('[data-kind="text"] iframe')).filter;`), 'brightness(0.55)');
+  for (const type of ['keyDown', 'keyUp']) {
+    await page.send('Input.dispatchKeyEvent', {
+      type, key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13
+    });
+  }
+  const showingTemplate = `body.innerText.includes('muze-solid-presenter-thumbnail')`;
+  const closeInspector = '.solid-dialog-close[aria-label="Close inspector"]';
+  const visiblePreviews = `${panel}.querySelectorAll('.swb-inspector-preview:not([hidden])')`;
+  const sourcePreview = (button) =>
+    `${button}.closest('li').querySelector('.swb-inspector-preview')`;
+  const sourceCode = (button) =>
+    `${sourcePreview(button)}.querySelector('[aria-label="Read-only source"]')`;
+  const dataCode = (button) =>
+    `${sourcePreview(button)}.querySelector('[aria-label="Bound data"]')`;
+  const sourceButton = (label) => `[...${panel}.querySelectorAll(
+    '[data-simply-command="swbInspectSource"]:not([hidden])')].find(button =>
+      button.firstElementChild.textContent === '${label}')`;
+  await until(page, `${dock}.open && ${panel}.${showingTemplate} &&
+    ${panel}.body.innerText.includes('muzeSolidPresenterSlides.1.attributes') &&
+    ${panel}.body.innerText.includes('muzeSolidPresenterSelect') &&
+    ${sourceButton('Component')}?.textContent.includes('muzeSolidPresenter')`);
+  assert.equal(await run(page, `return document.querySelector('.swb-root')
+    .hasAttribute('data-swb-inspector-picking');`), false);
+  assert.notEqual(await run(page, `return getComputedStyle(
+    document.querySelector('[data-kind="text"] iframe')).filter;`), 'brightness(0.55)');
+  const dataSource = sourceButton('Data');
+  const componentSource = sourceButton('Component');
+  const commandSource = sourceButton('Command');
+  const parentSource = `${panel}.querySelector(
+    '[data-simply-command="swbInspectParentSource"]:not([hidden])')`;
+  assert.equal(await run(page, `return ${visiblePreviews}.length`), 0);
+  await run(page, `${dataSource}.click();`);
+  await until(page, `!${sourcePreview(dataSource)}.hidden && ${sourceCode(dataSource)}.textContent
+    .includes('data-simply-field="attributes"') &&
+    ${sourcePreview(dataSource)}.querySelector('.swb-inspector-preview-origin')
+      .textContent.includes('apps/presenter/src/thumbnail.html') &&
+    ${dataCode(dataSource)}.textContent === JSON.stringify(
+      ${app}.data.muzeSolidPresenterSlides[1].attributes, null, 2)`);
+  assert.equal(await run(page, `const preview = ${sourcePreview(dataSource)};
+    const content = preview.querySelector('.swb-inspector-preview-content');
+    const close = preview.querySelector('[aria-label="Close preview"]');
+    return content.getBoundingClientRect().top < close.getBoundingClientRect().bottom;`), true);
+  await run(page, `${sourcePreview(dataSource)}
+    .querySelector('[aria-label="Close preview"]').click();`);
+  await until(page, `${visiblePreviews}.length === 0 &&
+    ${panel}.activeElement === ${dataSource} &&
+    ${dataSource}.getAttribute('aria-expanded') === 'false'`);
+  await run(page, `${commandSource}.click();`);
+  await until(page, `${sourceCode(commandSource)}.textContent
+    .includes('this.actions.muzeSolidPresenterRun')`);
+  await run(page, `${componentSource}.click();`);
+  await until(page, `${sourceCode(componentSource)}.textContent
+    .includes('export const muzeSolidPresenter =')`);
+  assert.equal(await run(page, `const content = ${sourcePreview(componentSource)}
+    .querySelector('.swb-inspector-preview-content');
+    return content.scrollHeight > content.clientHeight && content.clientHeight > 0;`), true);
+  await run(page, `${parentSource}.click();`);
+  await until(page, `${visiblePreviews}.length === 1 &&
+    !${sourcePreview(parentSource)}.hidden && ${sourceCode(parentSource)}.textContent
+      .includes('data-simply-field="attributes"') &&
+    ${parentSource}.getAttribute('aria-expanded') === 'true'`);
+  await run(page, `${parentSource}.focus(); ${parentSource}.click();`);
+  await until(page, `${visiblePreviews}.length === 0 &&
+    ${parentSource}.getAttribute('aria-expanded') === 'false' &&
+    ${panel}.activeElement === ${parentSource}`);
+  await run(page, `${parentSource}.click();`);
+  await until(page, `${visiblePreviews}.length === 1`);
+  await run(page, `const parent = ${panel}.querySelector('[data-simply-command="swbInspectParent"]');
+    if (parent.textContent.trim() !== 'muze-solid-presenter-thumbnail') {
+      throw new Error('The thumbnail row is the first navigable parent.');
+    }
+    parent.click();`);
+  await until(page, `${visiblePreviews}.length === 0 &&
+    ${sourceButton('Data')}?.querySelector('code').textContent === 'muzeSolidPresenterSlides' &&
+    !${sourceButton('Command')}`);
+  const currentBreadcrumb = `${panel}.querySelector('[aria-current="location"]:not([hidden])')`;
+  assert.equal(await run(page, `return ${currentBreadcrumb}.textContent.trim()`),
+    'muze-solid-presenter-thumbnail');
+  assert.equal(await run(page, `const current = ${currentBreadcrumb};
+    const label = current.querySelector('.swb-inspector-trail-label');
+    const item = current.closest('li');
+    const divider = item.querySelector('.swb-inspector-trail-divider');
+    return label.scrollWidth > label.clientWidth &&
+      getComputedStyle(label).textOverflow === 'ellipsis' &&
+      current.title === label.textContent &&
+      getComputedStyle(item).marginInlineStart === '0px' &&
+      divider.checkVisibility() &&
+      divider.querySelector('use').getAttribute('href').endsWith('#chevron-right');`), true);
+  await run(page, `${panel}.querySelector(
+    '[data-simply-command="swbInspectBreadcrumb"]:not([hidden])').click();`);
+  await until(page, `${sourceButton('Data')}?.textContent.includes('.attributes') &&
+    ${sourceButton('Command')} && ${currentBreadcrumb}?.textContent.trim() === 'Picked element' &&
+    ${panel}.activeElement === ${currentBreadcrumb}`);
+  assert.equal(await run(page, `return ${app}.runtime.selected`), selectedBeforeInspect);
+  await run(page, `const open = window.open;
+    try { window.open = () => null; ${moveButton}.click(); }
+    finally { window.open = open; }`);
+  await until(page, `${dock}.open && ${panel}.body.innerText.includes('browser blocked') &&
+    ${moveButton}.getAttribute('aria-label') === 'Dock as sidebar'`);
+  await run(page, `${moveButton}.click();`);
+  await until(page, `${moveButton}.getAttribute('aria-label') === 'Open in new window'`);
+  const openFromMenu = `document.querySelector(
+    '[popovertarget="muze-solid-ui-account-menu"]').click();
+    document.querySelector('[data-simply-command="swbInspectApp"]').click();`;
+  const openInspectorPopup = (target, trigger) => run(target, `const open = window.open;
+    try {
+      window.open = (...args) => {
+        window.inspectorFeatures = args[2];
+        return window.inspectorPopup = open.apply(window, args);
+      };
+      ${trigger}
+    }
+    finally { window.open = open; }`);
+  await openInspectorPopup(page, `${moveButton}.click();`);
+  const popupDocument = 'window.inspectorPopup?.document';
+  await until(page, `!${dock}.open && ${popupDocument}?.body &&
+    ${popupDocument}.${showingTemplate} &&
+    ${popupDocument}.querySelector(${JSON.stringify(move)}).getAttribute('aria-label') === 'Dock as sidebar'`);
+  assert.equal(await run(page, `return ${popupDocument}.querySelector('[role="status"]')
+    .textContent`), '');
+  assert.match(await run(page, 'return window.inspectorFeatures'), /\bpopup\b/);
+  const { targetInfos } = await page.send('Target.getTargets');
+  const inspectorTarget = targetInfos.find(
+    (target) => target.type === 'page' && target.url === origin + '/inspector/'
+  );
+  assert(inspectorTarget, 'Inspector has its own top-level Chrome target');
+  const appWindow = await page.send('Browser.getWindowForTarget');
+  const inspectorWindow = await page.send('Browser.getWindowForTarget', {
+    targetId: inspectorTarget.targetId
+  });
+  assert.notEqual(inspectorWindow.windowId, appWindow.windowId);
+  const sibling = await page.send('Target.createTarget', {
+    url: origin + '/presenter/',
+    background: true
+  });
+  try {
+    const otherPresenter = await chrome.page(sibling.targetId);
+    await otherPresenter.ready();
+    await until(otherPresenter, app);
+    assert.equal(await run(otherPresenter, `return ${dock}.open`), false);
+    await openInspectorPopup(otherPresenter, openFromMenu);
+    await until(otherPresenter, `!${dock}.open && ${popupDocument}?.querySelector(
+      ${JSON.stringify(move)})?.getAttribute('aria-label') === 'Dock as sidebar'`);
+    assert.equal(await run(otherPresenter, `return ${popupDocument}.${showingTemplate}`), false);
+    await run(otherPresenter, 'window.inspectorPopup.close();');
+  }
+  finally {
+    await page.send('Target.closeTarget', { targetId: sibling.targetId });
+  }
+  await run(page, `${popupDocument}.querySelector(${JSON.stringify(move)}).click();`);
+  await until(page, `window.inspectorPopup.closed && ${dock}.open &&
+    ${panel}.${showingTemplate} && ${moveButton}.getAttribute('aria-label') === 'Open in new window'`);
+  await openInspectorPopup(page, `${moveButton}.click();`);
+  await until(page, `!${dock}.open && ${popupDocument}?.body &&
+    ${popupDocument}.${showingTemplate}`);
+  await run(page, 'window.inspectorPopup.close();');
+  await until(page, `window.inspectorPopup.closed && !${dock}.open &&
+     document.activeElement.matches('[popovertarget="muze-solid-ui-account-menu"]')`);
+  await openInspectorPopup(page, openFromMenu);
+  await until(page, `!${dock}.open && ${popupDocument}?.body &&
+    ${popupDocument}.${showingTemplate}`);
+  await run(page, `${popupDocument}
+    .querySelector(${JSON.stringify(closeInspector)}).click();`);
+  await until(page, `window.inspectorPopup.closed && !${dock}.open`);
+  await openInspectorPopup(page, openFromMenu);
+  await until(page, `${popupDocument}?.querySelector(${JSON.stringify(move)})
+    ?.getAttribute('aria-label') === 'Dock as sidebar'`);
+  await run(page, `${popupDocument}.querySelector(${JSON.stringify(move)}).click();`);
+  await until(page, `window.inspectorPopup.closed && ${dock}.open`);
+  await run(page, `${panel}.querySelector(${JSON.stringify(closeInspector)}).click();
+    delete window.inspectorFeatures;
+    delete window.inspectorPopup;`);
+  assert.equal(await run(page, `return ${dock}.open`), false);
+  await run(page, openFromMenu);
+  await until(page, `${dock}.open && ${panel}.${showingTemplate}`);
+  await run(page, `const owner = ${app};
+    const fixture = document.createElement('div');
+    fixture.id = 'swb-inspector-test-binding';
+    fixture.dataset.simplyField = 'swbFixtureData';
+    fixture.dataset.simplyTransform = 'attributes';
+    fixture.dataset.simplyAttributes = 'title';
+    const target = document.createElement('button');
+    target.textContent = 'Runtime-only binding';
+    target.dataset.simplyCommand = 'swbFixtureMissingCommand';
+    fixture.append(target);
+    owner.data.swbFixtureData = { title: '<em>Fixture-only data</em>', values: [1, 2] };
+    owner.container.append(fixture);
+    ${pickButton}.click();
+    target.click();`);
+  await until(page, `${panel}.querySelector('div.swb-inspector-relationship:not([hidden]) code')
+    ?.textContent === 'swbFixtureMissingCommand' && !${sourceButton('Command')} &&
+    ${dataSource}?.querySelector('code').textContent === 'swbFixtureData'`);
+  assert.equal(await run(page, `const button = ${panel}.querySelector(
+    '[aria-label="Show source for swbFixtureData"]');
+    return button.hidden && !button.checkVisibility();`), true);
+  await run(page, `${dataSource}.click();`);
+  await until(page, `${dataCode(dataSource)}.checkVisibility() &&
+    ${dataCode(dataSource)}.textContent === JSON.stringify(${app}.data.swbFixtureData, null, 2) &&
+    !${sourceCode(dataSource)}.checkVisibility()`);
+  await run(page, `${dataSource}.click();`);
+  await until(page, `${visiblePreviews}.length === 0 &&
+    ${dataSource}.getAttribute('aria-expanded') === 'false'`);
+  await run(page, `const rdf = oldm.context().parse(
+    '<#person> <urn:label> "Hoi"@nl; <urn:code> "01"^^<urn:custom> . ' +
+    '<#unrelated> <urn:label> "Unrelated" .',
+    'https://example.test/people', 'text/turtle'
+  );
+  ${app}.data.swbFixtureData = rdf.get('#person');
+  ${dataSource}.click();`);
+  await until(page, `${sourcePreview(dataSource)}.querySelector('h3').textContent === 'Turtle' &&
+    ${dataCode(dataSource)}.textContent.includes('"Hoi"@nl')`);
+  assert.equal(await run(page, `const turtle = ${dataCode(dataSource)}.textContent;
+    const { quads } = oldm.turtleParser(turtle, 'https://example.test/people');
+    return quads.length === 2 &&
+      quads.every(quad => quad.subject.id === 'https://example.test/people#person') &&
+      quads.some(quad => quad.object.datatype?.id === 'urn:custom' && quad.object.value === '01');`), true);
+  await run(page, `document.querySelector('#swb-inspector-test-binding').remove();
+    delete ${app}.data.swbFixtureData;`);
+  await run(page, `${panel}.querySelector(${JSON.stringify(closeInspector)}).click();`);
+  assert.equal(writes.length, writesBeforeTemplateEdit);
+  console.log('PASS inspector previews, closes and reopens in its chosen presentation');
   const originalOrder = await run(
     page,
     `return ${app}.runtime.slides.view.current.map(slide=>slide.id)`
