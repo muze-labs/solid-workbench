@@ -1875,6 +1875,14 @@ phone/keyboard/assistive-technology reading and non-drag selection, draft recove
 unknown-RDF round trips, provider replacement and the private-note/copy/reply/
 changed-PDF scenario. This is a second-stage option, not a scheduled cycle.
 
+#### Reader name and format support
+
+Maintainer follow-up, 2026-11-19. Rename the Documents app to **Reader**
+and extend it to open ODT, DOCX, EPUB and other common document and
+e-book formats. Use the format-plugin boundary so each format shares
+the Reader's navigation and reading UI. Choose additional formats and
+implementation order during cycle planning.
+
 #### Document bookmarks and paged reading
 
 Maintainer-requested roadmap additions, 2026-11-17, following accepted CYC260:
@@ -1887,7 +1895,8 @@ Maintainer-requested roadmap additions, 2026-11-17, following accepted CYC260:
 - **EPUB-style reading mode:** offer previous/next-page navigation as an
   alternative to continuous scrolling, with an optional two-page side-by-side
   spread. Preserve the reading position when switching modes. This describes a
-  reading layout; EPUB file-format support remains separate roadmap work.
+  reading layout. [Reader format support](#reader-name-and-format-support)
+  tracks opening EPUB files.
 - **Document search sidebar:** replace the search dialog with a sidebar like
   thumbnails and outline. Show multiple text matches with enough context to
   distinguish them; clicking a result scrolls to its position and highlights or
