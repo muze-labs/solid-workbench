@@ -12,8 +12,10 @@
     "dev": "npm run build -- --readable && node scripts/serve.mjs",
     "test": "node --import ./scripts/oldm-loader.mjs --test test/*.test.mjs",
     "check": "npm test && npm run build",
-    "test:browser": "npm run build && node test/browser.mjs && node --import ./scripts/oldm-loader.mjs test/managed-browser.mjs && node test/picker-browser.mjs && node test/session-browser.mjs && node test/preferences-browser.mjs && node test/workspaces-browser.mjs && node --import ./scripts/oldm-loader.mjs test/provider-browser.mjs && node --import ./scripts/oldm-loader.mjs test/recipient-browser.mjs && node test/views-browser.mjs && node test/presenter-browser.mjs && node test/catalog-browser.mjs && node test/demo-styling-browser.mjs && node test/notebook-browser.mjs && node test/presenter-collections-browser.mjs && node test/preference-sections-browser.mjs && node test/ui-design-browser.mjs && node test/design-extension-browser.mjs && node test/launcher-groups-browser.mjs && node test/shortcut-metadata-browser.mjs && node test/documents-browser.mjs",
-    "test:picker": "node --test test/capabilities.test.mjs && node test/picker-browser.mjs"
+    "test:browser": "npm run build && node test/browser.mjs && node --import ./scripts/oldm-loader.mjs test/managed-browser.mjs && node test/picker-browser.mjs && node test/session-browser.mjs && node test/preferences-browser.mjs && node test/workspaces-browser.mjs && node --import ./scripts/oldm-loader.mjs test/provider-browser.mjs && node --import ./scripts/oldm-loader.mjs test/recipient-browser.mjs && node test/views-browser.mjs && node test/presenter-browser.mjs && node test/catalog-browser.mjs && node test/demo-styling-browser.mjs && node test/notebook-browser.mjs && node test/presenter-collections-browser.mjs && node test/preference-sections-browser.mjs && node test/ui-design-browser.mjs && node test/design-extension-browser.mjs && node test/launcher-groups-browser.mjs && node test/shortcut-metadata-browser.mjs && node test/documents-browser.mjs && npm run test:assistant",
+    "test:picker": "node --test test/capabilities.test.mjs && node test/picker-browser.mjs",
+    "dev:assistant": "node scripts/assistant-preview.mjs",
+    "test:assistant": "node test/assistant-browser.mjs"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^16.0.3",

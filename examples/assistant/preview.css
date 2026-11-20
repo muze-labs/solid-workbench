@@ -1,0 +1,117 @@
+.solid-assistant-embed {
+  margin: 0;
+}
+
+.solid-assistant-bookmarks-frame {
+  display: block;
+  inline-size: 100%;
+  block-size: 100dvb;
+  border: 0;
+}
+
+.solid-assistant-proof {
+  --solid-assistant-accent: #1755a5;
+  --solid-assistant-surface: #f5f8fc;
+  --solid-assistant-border: #67819e;
+  --solid-assistant-text: #132a45;
+  color: var(--solid-assistant-text);
+  font:
+    1rem/1.5 system-ui,
+    sans-serif;
+  max-inline-size: 48rem;
+  margin: auto;
+  padding: 0.75rem;
+}
+
+.solid-assistant-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.solid-assistant-proof :where(button, input) {
+  font: inherit;
+}
+
+.solid-assistant-proof button {
+  margin-block: 0.25rem;
+  min-block-size: 2.75rem;
+  color: var(--solid-assistant-text);
+  background: var(--solid-assistant-surface);
+  border: 1px solid var(--solid-assistant-border);
+  cursor: pointer;
+}
+
+.solid-assistant-proof :focus-visible {
+  outline: 2px solid var(--solid-assistant-accent);
+  outline-offset: 2px;
+}
+
+.solid-assistant-list {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.solid-assistant-bookmark {
+  display: flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  gap: 0.4rem;
+}
+
+.solid-assistant-url {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.solid-bookmarks-read-permission {
+  box-sizing: border-box;
+  inline-size: min(28rem, calc(100% - 2rem));
+  padding: 1rem;
+  border: 1px solid var(--solid-assistant-border);
+  background: Canvas;
+  color: var(--solid-assistant-text);
+}
+
+.solid-assistant-dock[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0 0 0 auto;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  inline-size: min(var(--solid-assistant-width, 28rem), 100vi);
+  block-size: 100dvb;
+  max-inline-size: none;
+  max-block-size: none;
+  border: 0;
+  border-inline-start: 1px solid var(--solid-assistant-border);
+  background: var(--solid-assistant-surface);
+  color: var(--solid-assistant-text);
+}
+
+.solid-assistant-dock iframe {
+  border: 0;
+  border-block-start: 1px solid var(--solid-assistant-border);
+  inline-size: 100%;
+  flex: 1;
+  min-block-size: 8rem;
+}
+
+.solid-assistant-resize {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .solid-assistant-resize {
+    display: block;
+    position: absolute;
+    inset: 0 auto 0 0;
+    inline-size: 0.5rem;
+    cursor: ew-resize;
+    touch-action: none;
+  }
+}

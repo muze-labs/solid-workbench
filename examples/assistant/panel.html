@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="solid-assistant-caller" content="{{callerOrigin}}" />
+    <title>Assistant · Approve topic suggestions</title>
+    <link rel="stylesheet" href="/preview.css" />
+    <script type="module" src="/panel.js"></script>
+  </head>
+  <body>
+    <main class="solid-assistant-proof">
+      <h1>Suggest topics</h1>
+      <p>
+        Social Bookmarks ·
+        <span
+          data-simply-field="caller"
+          data-simply-transform="escape_html"
+        ></span>
+      </p>
+      <p>Model: preview model</p>
+      <p
+        role="status"
+        data-simply-field="status"
+        data-simply-transform="escape_html"
+      ></p>
+      <section
+        aria-label="Selected bookmark data"
+        data-simply-field="selection"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+        hidden
+      >
+        <h2>Titles and URLs to share</h2>
+        <ul data-simply-list="bookmarks">
+          <template
+            ><li>
+              <span
+                data-simply-field="title"
+                data-simply-transform="escape_html"
+              ></span>
+              <span
+                class="solid-assistant-url"
+                data-simply-field="url"
+                data-simply-transform="escape_html"
+              ></span></li
+          ></template>
+        </ul>
+      </section>
+      <button
+        type="button"
+        data-simply-command="solidAssistantApprove"
+        data-simply-field="approve"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+        hidden
+      >
+        Allow sending to the model once
+      </button>
+      <button
+        type="button"
+        data-simply-command="solidAssistantRevoke"
+        data-simply-field="revoke"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+        hidden
+      >
+        Revoke request
+      </button>
+      <section
+        aria-labelledby="solid-assistant-read-title"
+        data-simply-field="bookmarkCapability"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+        hidden
+      >
+        <h2 id="solid-assistant-read-title">Bookmarks capability</h2>
+        <button type="button" data-simply-command="solidAssistantReadSelection">
+          Read selected bookmarks
+        </button>
+        <p
+          role="status"
+          data-simply-field="readStatus"
+          data-simply-transform="escape_html"
+        ></p>
+        <ul data-simply-list="readBookmarks">
+          <template
+            ><li>
+              <span
+                data-simply-field="title"
+                data-simply-transform="escape_html"
+              ></span>
+              <span
+                class="solid-assistant-url"
+                data-simply-field="url"
+                data-simply-transform="escape_html"
+              ></span></li
+          ></template>
+        </ul>
+      </section>
+      <button
+        type="button"
+        data-simply-command="solidAssistantReturnSuggestions"
+        data-simply-field="returnSuggestions"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+        hidden
+      >
+        Return suggestions to Bookmarks
+      </button>
+    </main>
+  </body>
+</html>

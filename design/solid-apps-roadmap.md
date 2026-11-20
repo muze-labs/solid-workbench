@@ -1720,12 +1720,20 @@ Both directions of app-to-assistant invocation reuse the capability broker.
   assistant-owned storage bound to the exact provider and use them only for
   provider requests. An app opens its conversation in a lazy, keyboard-resizable
   shared dock with an assistant-origin frame. Opening the panel sends no app
-  context. In the initial cross-site deployment, keep the assistant tab open
-  to authorize and dispatch model requests. Reconnect when the tab closes.
+  context. Keep the assistant tab open as the authority for its settings,
+  grants and model dispatch. Each assistant iframe coordinates with that tab
+  through a verified, session-bound channel. Use the tab's first-party model
+  selection and grant list across browser storage partitions. Reconnect when
+  the tab closes.
   Enforce the assistant's script, connection and framing policy in the browser.
-- **Scoped grants.** Ask in the trusted tab for the verified app and requested
-  operation together. Scope grants by capability, direction and data. Support
-  once-only and remembered grants, including approval of the displayed set.
+- **Scoped grants.** Show each task's prompt in the frame of the app that
+  owns the requested operation. The assistant frame asks to send selected
+  data to the model. The source app asks before serving a capability request
+  from the assistant. Show the verified requester and scope each grant by
+  capability, direction and data. The complete grant view identifies the owner
+  of each grant. Source apps continue to enforce grants for their capabilities.
+  Support once-only and remembered grants, including approval of the displayed
+  set.
   List active and remembered apps in **Connected apps**, with per-capability
   revocation and app-wide disconnect and forget. Enforce grants before
   dispatch, including queued calls. Treat same-origin apps as sharing an

@@ -1,5 +1,22 @@
 # Solid Workbench project context
 
+## CYC310 shared assistant proof accepted, 2026-11-20
+
+The maintainer confirms a shared assistant first, with one **Suggest topics**
+workflow in a Social Bookmarks fixture and a mock model. CYC310 ran on
+the verified branch `spiral/CYC-20261120-QG24H-310-assistant-fixture` from
+`d9f0827`. SRC311 records the approval of the scope. IMP312/EVD313 record
+the isolated preview and evaluation. The maintainer adds a separate
+assistant-to-Bookmarks grant, proved with a one-time selection read. Both
+apps prompt in their own frames. The Bookmarks prompt opens in a separate
+modal with the Assistant dock visible behind it. Approval resumes the
+waiting call. The planned top-level assistant tab owns
+model selection and the complete grant view. Live iframe sessions will
+coordinate with it across browser storage partitions. The maintainer accepted
+the cycle on 20 November 2026. ACC314 binds the implementation and evidence.
+Preserve the unrelated metadata roadmap entry and company data sovereignty
+draft.
+
 ## CYC305 dockable read-only app inspector, 2026-11-19
 
 The maintainer selects a sidebar for every top-level app and a popup
