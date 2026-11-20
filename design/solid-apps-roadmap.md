@@ -1698,14 +1698,67 @@ that work; this intake is a local design comparison, not conformance certificati
 Added at the maintainer's request on 2026-11-12 from the
 [AI-composable Workbench design](solid-workbench-ai-composition-design.md),
 alongside the existing [optional AI boundaries](solid-optional-ai-capabilities.md).
-Keep AI optional and replaceable: an ordinary Assistant app may propose useful
+Keep AI optional and replaceable. The shared assistant may later propose
 connections between semantic capabilities, provider-owned interfaces and named
-SimplyFlow components. The broker remains a narrow connection/policy mechanism;
-the Assistant receives no ambient credentials, protected graphs or privileged
-workspace access. Users inspect and approve consequential operations through
-ordinary application authorization and trusted operation details.
+SimplyFlow components. The broker provides scoped connections. The assistant
+receives only the data and operations covered by an explicit grant. Users
+inspect and approve consequential operations through the owning app's trusted
+workflow.
 
-Retain the proposal's staged work for future selection:
+### Shared assistant before app-specific AI
+
+The 2026-11-20 [design revision](solid-workbench-ai-composition-design.md#generic-assistant-first--20-november-2026)
+places the shared assistant before app-specific AI and later interface
+composition. Use Social Bookmarks' **Suggest topics** as the first consumer.
+The assistant receives the approved bookmark selection and returns proposed
+tags keyed by bookmark ID. Bookmarks owns validation, review, undo and saving.
+Both directions of app-to-assistant invocation reuse the capability broker.
+
+- **Assistant origin and chat.** Serve reviewed assistant assets from a
+  dedicated origin outside Workbench inspection and personal overrides. Open
+  credential setup in a top-level tab on that origin. Keep provider keys in
+  assistant-owned storage bound to the exact provider and use them only for
+  provider requests. An app opens its conversation in a lazy, keyboard-resizable
+  shared dock with an assistant-origin frame. Opening the panel sends no app
+  context. In the initial cross-site deployment, keep the assistant tab open
+  to authorize and dispatch model requests. Reconnect when the tab closes.
+  Enforce the assistant's script, connection and framing policy in the browser.
+- **Scoped grants.** Ask in the trusted tab for the verified app and requested
+  operation together. Scope grants by capability, direction and data. Support
+  once-only and remembered grants, including approval of the displayed set.
+  List active and remembered apps in **Connected apps**, with per-capability
+  revocation and app-wide disconnect and forget. Enforce grants before
+  dispatch, including queued calls. Treat same-origin apps as sharing an
+  origin grant unless the broker can verify isolated app identities.
+- **Provider settings and verification.** Manage the exact model ID and
+  supported reasoning effort in the trusted tab and hold them fixed for the
+  duration of a turn. Verify keyboard dock and focus behavior, separate app
+  conversations, same-site and cross-site reconnection, credential isolation,
+  and revocation during queued work with a mock provider. Verify that the
+  manual bookmark workflow works without a connected assistant.
+
+### App capability coverage
+
+Use the [app capability review](solid-workbench-app-capability-review.md) during
+feature design. Map meaningful UI reads and actions to app-owned semantic
+operations with input and result shapes, authority, and disclosure scope. Reuse
+the same query or command from the manual UI and authorized callers, including
+direct callers with AI disabled. Preserve filters, ordering, draft status,
+validation and recovery. Scope wider queries and report incomplete results.
+Keep preview and approval in the existing trusted workflow for operations that
+require a human decision. Verify that advertised capabilities resolve to a
+handler with the expected result before offering them to callers.
+
+Start with a Reader passage and page jump, permitted Contacts lookup and picker,
+and Notebook selection, edit, undo and save. Follow with a Time Tracker total
+and a PDF bookmark shared by Reader and Social Bookmarks. Compare the manual UI
+and direct calls on the same data. Exercise narrow grants, revocation, account
+and revision changes, drafts and the exact fields disclosed to a mock provider.
+
+### Later interface composition
+
+Retain the proposal's composition stages for future selection after the shared
+assistant foundation:
 
 1. **Inventory contracts.** Describe two real capabilities and two components,
    their public dependencies and missing metadata. Track hidden editable-state
@@ -1717,9 +1770,9 @@ Retain the proposal's staged work for future selection:
    over SimplyFlow with an approved component catalog and one capability-bound
    interaction. SimplyFlow stays the sole renderer; reject executable generated
    code and unknown actions. No external protocol/version is adopted here.
-4. **Try an optional Assistant.** Propose a small composition through an ordinary
-   replaceable AI provider. Preserve the same usable manual workflow and show
-   what information is disclosed.
+4. **Extend the optional assistant to composition.** Use it to propose a small
+   composition through a replaceable AI provider. Preserve the same usable
+   manual workflow and show what information is disclosed.
 5. **Combine component and application interfaces.** Reuse provider-owned pickers
    alongside composed controls, with scoped origins, focus, cancellation and
    lifecycle cleanup. Providers retain their own data and interaction ownership.
@@ -1732,7 +1785,7 @@ Retain the proposal's staged work for future selection:
    adapters. Refresh specifications, public APIs and licences before choosing
    anything; demonstrate independent implementations and standalone use.
 
-The proposed first vertical experiment selects a Solid resource through the
+The proposed first composition experiment selects a Solid resource through the
 existing Files provider and opens it in an explicitly chosen application, with
 the same path available without AI. Evaluate component/provider replacement,
 least-data disclosure, malformed output, cancellation and failure, phone and
@@ -1743,8 +1796,45 @@ The proposal's supplied-snapshot baseline predates accepted CYC118/CYC139
 provider preferences and recipient selection. Reuse those existing paths;
 general discovery, composition and the IDE are still future work. Broker
 Phase 4 evaluation governs before expansion. Adapter location, vocabulary,
-validation shapes and composition persistence need design; the optional-AI
-deferral remains, with no new cycle, implementation priority or delivery date.
+validation shapes and composition persistence need design. The assistant-first
+sequence is internal to the AI work. Cycle selection remains open.
+
+## Social Bookmarks, browser imports and feeds
+
+Use one owner-controlled [bookmark collection](solid-social-bookmarks-design.md)
+for web links, feed sources and intentional PDF bookmarks. Keep the original
+target, save date, author note and optional summary. Default to private. Let
+owners share with selected readers or publish, and apply the same audience
+rules to tag views, feeds, search and counts. Let readers follow people and
+collections, browse feed updates, and explicitly save items to their own log.
+Start with manual tagging and one feed adapter. Keep refresh status visible.
+
+Share the logical PDF bookmark with Reader. Import existing account-local
+bookmarks idempotently, preserving IDs, labels and positions. Show unknown save
+dates as unknown. Use the [Reader URI and anchor policy](#render-the-selected-pdf-page-first)
+for remote targets. Preserve existing fingerprints and check them when
+available without putting a full-file hash on the reading path.
+
+- **Browser imports.** Start with Firefox and Chrome HTML exports. Parse locally
+  as inert data and preview the private destination, counts, missing dates and
+  duplicates. Preserve exact targets, source metadata and original save dates.
+  Keep folder provenance private and import dates separate. Retry imports
+  without duplication, preserve deliberate repeats and show ambiguous matches.
+- **Topic suggestions.** Use the shared assistant for approved selections.
+  Exclude source folders, imported tags and existing categories from inference.
+  Offer a private preview of proposed tags and categories, with batch review,
+  exceptions and undo. Preserve accepted tags and remember dismissed suggestions.
+- **Link checks and dated summaries.** Run only on explicit request. Show the
+  retrieval provider and, for summaries, the model provider. Allow pause,
+  resume and cancel. Distinguish missing links from restricted, inconclusive
+  and temporary failures. Preserve the original target, note, save date and
+  accepted summary. Offer dated summaries of readable current content for
+  review. Keep import, retrieval, model disclosure and publication separate.
+
+Verify repeat imports, chronology and privacy with browser exports. Test
+audience-correct feeds, tag counts and search before and after revocation. Prove
+topic review and undo, and verify link checks against redirects, missing pages,
+login screens and transient failures.
 
 ## Second stage: virtual company
 
@@ -1912,6 +2002,40 @@ controls and keyboard-accessible bookmark/page navigation; adapt two-page spread
 to the available width. Coordinate the global list with the proposed Documents
 collections interface. These are future features, not additional CYC260 scope or
 authorization to start implementation.
+
+#### Render the selected PDF page first
+
+Start the PDF.js engine and the document request together. For remote PDFs,
+use PDF.js range loading through Metro for both public and authenticated reads.
+Validate partial responses and use a strong HTTP validator to ensure that the
+chunks belong to the same representation during the open session. Use the
+bounded full-download path when the server or browser access policy prevents
+validated range reads. Cancel outstanding work when the reader opens another
+document or closes the view.
+
+Render the explicitly requested page or bookmark first. On an ordinary open,
+restore the saved position for the document URI, or begin at page one. Measure
+the selected page first and use its dimensions to estimate other page slots.
+Defer the outline, thumbnails and remaining layout until the selected page is
+visible. In continuous mode, render nearby pages as the reader scrolls and
+release distant canvases. Render thumbnails when their panel opens. Fetch the
+complete file when the reader chooses Download. If the connection drops, keep
+loaded pages usable and indicate when a page needs a connection.
+
+Use explicit document URIs, including version-specific filenames, for remote
+positions and bookmarks. The full-file SHA-256 hash is optional for opening and
+reading remote PDFs. Preserve existing annotation hashes and selectors in RDF.
+Keep legacy notes readable when their anchors cannot be verified, and require
+explicit confirmation before reattaching them. A local file can still use its
+content hash to recover saved state, computed after the first page appears.
+
+On a throttled phone viewport, open a bookmark deep in a large remote PDF and
+measure when the target page becomes visible and keyboard-readable, how many
+bytes and requests that takes, and when the engine and worker are ready. Verify
+that the page is usable before the full PDF arrives and that scrolling or page
+navigation loads further pages. Cover an authenticated Pod, a server that
+ignores ranges, a source that changes during reading, and a connection loss
+with both loaded and unloaded pages.
 
 ### Sharing through user-selected invitation providers
 
