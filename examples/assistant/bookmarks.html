@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="solid-assistant-origin" content="{{assistantOrigin}}" />
+    <title>Social Bookmarks · Assistant preview</title>
+    <link rel="stylesheet" href="/preview.css" />
+    <script type="module" src="/bookmarks.js"></script>
+  </head>
+  <body>
+    <main class="solid-assistant-proof">
+      <header class="solid-assistant-toolbar">
+        <h1>Social Bookmarks</h1>
+        <button type="button" data-simply-command="solidAssistantOpen">
+          Assistant
+        </button>
+      </header>
+      <fieldset>
+        <legend>Select bookmarks</legend>
+        <ul class="solid-assistant-list" data-simply-list="bookmarks">
+          <template>
+            <li>
+              <label class="solid-assistant-bookmark">
+                <input type="checkbox" data-simply-edit="selected" />
+                <span
+                  data-simply-field="title"
+                  data-simply-transform="escape_html"
+                ></span>
+              </label>
+              <span
+                class="solid-assistant-url"
+                data-simply-field="url"
+                data-simply-transform="escape_html"
+              ></span>
+              <p>
+                Tags:
+                <span
+                  data-simply-field="tagLabel"
+                  data-simply-transform="escape_html"
+                ></span>
+              </p>
+            </li>
+          </template>
+        </ul>
+      </fieldset>
+      <form data-simply-command="solidAssistantManualTag">
+        <label for="solid-assistant-tag">Tag for selected bookmarks</label>
+        <input id="solid-assistant-tag" name="tag" required maxlength="60" />
+        <button>Add tag</button>
+      </form>
+      <button type="button" data-simply-command="solidAssistantSuggest">
+        Suggest topics
+      </button>
+      <p
+        role="status"
+        data-simply-field="status"
+        data-simply-transform="escape_html"
+      ></p>
+      <section
+        aria-label="Topic suggestions"
+        data-simply-field="review"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        <h2>Review suggested tags</h2>
+        <ul data-simply-list="suggestions">
+          <template>
+            <li>
+              <label>
+                <input type="checkbox" data-simply-edit="accepted" />
+                <span
+                  data-simply-field="label"
+                  data-simply-transform="escape_html"
+                ></span>
+              </label>
+            </li>
+          </template>
+        </ul>
+        <button type="button" data-simply-command="solidAssistantApply">
+          Apply selected tags
+        </button>
+      </section>
+      <button
+        type="button"
+        data-simply-command="solidAssistantUndo"
+        data-simply-field="undo"
+        data-simply-transform="attributes"
+        data-simply-attributes="hidden"
+      >
+        Undo tag changes
+      </button>
+      <dialog
+        class="solid-bookmarks-read-permission"
+        aria-labelledby="solid-bookmarks-permission-title"
+        aria-describedby="solid-bookmarks-permission-details"
+      >
+        <h2 id="solid-bookmarks-permission-title">
+          Social Bookmarks permissions
+        </h2>
+        <p id="solid-bookmarks-permission-details">
+          The assistant at
+          <span
+            data-simply-field="assistantOrigin"
+            data-simply-transform="escape_html"
+          ></span>
+          wants to read the titles and URLs of your selected bookmarks.
+        </p>
+        <button
+          type="button"
+          data-simply-command="solidAssistantAllowRead"
+          autofocus
+        >
+          Allow selection read once
+        </button>
+        <button type="button" data-simply-command="solidAssistantDenyRead">
+          Deny read
+        </button>
+      </dialog>
+      <dialog class="solid-assistant-dock" aria-label="Assistant">
+        <header class="solid-assistant-toolbar">
+          <h2>Assistant</h2>
+          <button type="button" data-simply-command="solidAssistantClose">
+            Close assistant
+          </button>
+        </header>
+        <div
+          class="solid-assistant-resize"
+          role="separator"
+          tabindex="0"
+          aria-label="Assistant width"
+          aria-orientation="vertical"
+          aria-controls="solid-assistant-dock-frame"
+          data-simply-field="width"
+          data-simply-transform="attributes"
+          data-simply-attributes="aria-valuemin aria-valuemax aria-valuenow"
+        ></div>
+        <p
+          role="status"
+          data-simply-field="panelStatus"
+          data-simply-transform="escape_html"
+        ></p>
+        <iframe
+          id="solid-assistant-dock-frame"
+          title="Social Bookmarks assistant"
+          sandbox="allow-scripts allow-same-origin"
+          data-simply-field="frame"
+          data-simply-transform="attributes"
+          data-simply-attributes="src hidden"
+        ></iframe>
+      </dialog>
+    </main>
+  </body>
+</html>
